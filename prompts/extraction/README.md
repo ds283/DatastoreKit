@@ -152,7 +152,8 @@ measures the survey again before doing so.
   recorded, not fixed;
 - **renaming the layer's modules to PEP 8 names** (U5);
 - `RunRegistry/`, sidecars, fingerprints and `tools/inventory_report.py`, which are SGK's.
-  **The fingerprint function** (`RunRegistry/stores.py`) stays in SGK, and so do its tests;
+  **The fingerprint function** (`RunRegistry/stores.py`) stays in SGK, and so do its tests. The
+  registry is itself a candidate for a later extraction, but not alongside this one (§8.2);
 - **CPBH's bare shard key** in `object_get_vectorized`. CPBH converts its seven callers to the dict
   form when it adopts; it is not added here;
 - **any store of any client.** Tests build their stores in temporary directories (§3).
@@ -167,7 +168,7 @@ measures the survey again before doing so.
 | 04 | `04-port-the-schema-and-inventory-tests.md` | The 175 tests of §0.2 for the schema builder, the schema refusal, the reader, the registry, drop refusal and the inventory, re-fixtured the same way. SGK's `test_layer_is_generic` becomes the package's guard. Its forbidden vocabulary is drawn from all three clients' registries, measured read-only and written into the test as data; the test never imports a client. | not written |
 | 05 | `05-supported-versions-and-ci.md` | Dependency ranges in `pyproject.toml`. The whole suite runs at both ends of §0.2's version table (Python 3.12 / Ray 2.43 / SQLAlchemy 2.0.39, and Python 3.13 / Ray 2.55 / SQLAlchemy 2.0.46). A GitHub Actions workflow runs the suite on both. `README.md` gains usage. **Tag `v0.1.0`**, the release SGK adopts (G2). | not written |
 | 06 | `06-version-keyed-lookups.md` | CPBH's version-keyed lookups (`Datastore.py:329-338`, `:500-555`; `config/version.py:55-71` at CPBH `9b3db51`), as the optional `register()` key `key_on_version`. A lookup of a class that declares it receives the store's version serial under `datastorekit.contract.VERSION_SERIAL_KEY`. A caller that supplies that key itself is refused. `key_on_version` without `version` is refused at schema build. `require_version_serial` is exported for factories. Tests on the neutral client carry over the semantics of CPBH's `test_version_keyed_lookups`. Nothing the layer writes changes. **Tag `v0.2.0`.** | not written |
-| 07 | `07-close-out-and-adoption-handover.md` | `docs/adoption/` holds one checklist per client (SGK, CPBH, SI), each saying: <br>• which imports to rewrite; <br>• where its factories move to; <br>• what its factories must change; <br>• what its call sites and test harness must change; <br>• which of its stores the new layer will refuse, and why. <br>Also a verification document for the campaign, and the campaign closed. | not written |
+| 07 | `07-close-out-and-adoption-handover.md` | `docs/adoption/` holds one checklist per client (SGK, CPBH, SI), each saying: <br>• which imports to rewrite; <br>• where its factories move to; <br>• what its factories must change; <br>• what its call sites and test harness must change; <br>• which of its stores the new layer will refuse, and why. <br>SGK's checklist also names every import of the layer from outside `Datastore/`. In particular, `RunRegistry/` imports `Datastore.SQL.ShardedPool.ShardedPool` three times, `Datastore.store_inventory.canonical_json` twice and `Datastore.store_inventory.read_inventory` once (counted at `21ee420`), and G2's rehearsal fingerprint runs through `RunRegistry/stores.py::fingerprint_store`. Also: SGK's `docs/` scripts that import the layer, and `RayTools/RayWorkPool.py`'s type-hint import. 07 re-counts them. <br>Also a verification document for the campaign, and the campaign closed. | not written |
 
 **Order.** 01 → 02 → 03 and 04 (either order, but never concurrently, since both edit the
 stand-in pool) → 05 → 06 → 07. 06 needs only 02. It is placed after 05 so that `v0.1.0`
@@ -314,3 +315,70 @@ not wait for them.
 this campaign, so that CPBH runs made before G3 keep a correct shard map. CPBH's absolute shard
 paths remain until G3. Until then, a copy of a CPBH store, in any directory, still opens the
 original's shards, so a copy is a backup only and is never run against.
+
+## 8. Later units of work
+
+These are recorded so that their planning starts from what is known. **None of them is in this
+campaign's scope**, and none is planned yet.
+
+### 8.1 `RayWorkPool`
+
+Reconciling and extracting `RayTools/RayWorkPool.py` is a separate unit of work (D2). §0.2's
+diff counts suggest the three copies are closer than expected: 39 changed lines between SGK and
+SI, and 32 between CPBH and SI. SI already has SGK's split of the store and persist handlers.
+
+### 8.2 SGK's run registry (assessed 2026-10-07, read-only, at `21ee420`)
+
+The user raised `RunRegistry/` as another shared service that could be extracted, but **not at
+the same time as DatastoreKit**. What the planner found:
+
+**Size and shape.** 3,346 lines in three modules, in two layers:
+
+| Module | Lines | What it does | Imports outside the standard library |
+|---|---|---|---|
+| `RunRegistry/__init__.py` | 646 | **Run records:** `var/runs/<id>/` holding a manifest (written once), a status file (mutable), an append-only checkpoint ledger and logs; liveness by `kill -0` plus heartbeat; git and script-hash provenance; `list_runs` | none |
+| `RunRegistry/__main__.py` | 515 | Command line: `list` and the `store …` commands | through `stores` |
+| `RunRegistry/stores.py` | 2,185 | **Store management:** the `<stem>.manifest.json` sidecar; create and adopt; copy and move with history; the store fingerprint; `store retire` and `store amend`; finding a store's references in runs and other sidecars | the layer: `ShardedPool` (×3), `store_inventory` (`read_inventory`, `canonical_json`); and SGK's `config.datastore.factories`, inside `fingerprint_store` (`:1494`) |
+
+SGK's `main.py` does not import the registry. Pipeline runs are registered by drivers (for
+example `docs/gktk-remedial/scoped_pipeline_run.py`) and under the six rules in SGK's
+`CLAUDE.md`. CPBH and SI have no registry, so there is nothing to reconcile: it would be an
+extraction only.
+
+**What extraction would have to solve:**
+1. **The root.** `REPO_ROOT = dirname(dirname(__file__))` (`__init__.py:56`) fixes `var/runs`,
+   `var/datastores` (`stores.py:185`) and the directory git provenance is read from. In an
+   installed package that is the package's own directory. The client's root has to be given (an
+   argument, an environment variable, or `git rev-parse` from the working directory). This is
+   the main change to the run-records layer.
+2. **The fingerprint's registry.** `fingerprint_store` imports `config.datastore.factories`. It has
+   to be given the registry, as the layer's reader is (`open_read_only(primary, factories)`).
+3. **The store layer sits on DatastoreKit.** Fingerprint, copy, move and retire call the layer, so
+   this half can move only after G2, once SGK imports `datastorekit`.
+4. **The policy is prose.** SGK's six registry rules in `CLAUDE.md` (liveness never by command-line
+   pattern; launch detached, manifest first; do not babysit; and the rest) are half of what the
+   registry is. They would ship as package documentation that each client's `CLAUDE.md` cites.
+
+**Tests** (282 by `def test_`):
+- **About 82 port cleanly:** `test_run_registry` (23), `test_store_amend_residuals` (9),
+  `test_store_command_line` (2), `test_store_retire_references` (10), `test_store_amend` (21) and
+  `test_store_sidecar` (17). The last two use only `shard_store_fixtures`, which 01 ports.
+- **About 101 port after a fixture swap:** `test_store_copy_move` (27), `test_store_fingerprint`
+  (33) and `test_store_retire` (41). They need 02's neutral client in place of SGK's real-store
+  fixtures.
+- **About 97 stay in SGK.** They test SGK's own pipeline and drivers: `test_killed_handler`,
+  `test_pipeline_adoption`, `test_prune_on_resume`, `test_build_rehearsal_scope` and
+  `test_quadsource_atol_sweep_prepare`.
+
+**The planner's recommendation, for when it is planned:**
+- **One package, two tiers.** The run-records core needs nothing beyond the standard library. A
+  `stores` submodule, installed as an optional extra, depends on `datastorekit`. A client can then
+  take the run records without the store sidecars.
+- **Not inside DatastoreKit.** The layer does the copying, moving and deleting. Sidecars, history
+  and retirement are provenance policy on top of that. Putting them in the layer would bring
+  registry concepts back into a layer that has just been cleared of client knowledge.
+- **When.**
+  - The run records can be extracted at any time; they do not depend on this campaign. They would
+    serve CPBH's long production runs, which its `CLAUDE.md` says have no registry today.
+  - The store tier waits for G2 and a release containing 02's neutral client.
+  - The first prompt fixes the root (item 1).
