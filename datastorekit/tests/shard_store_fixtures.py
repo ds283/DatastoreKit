@@ -22,9 +22,9 @@ from typing import Dict, Iterable, Tuple
 from datastorekit.SQL.ShardedPool import ShardedPool
 from datastorekit.shard_paths import shard_file_name
 
-KEY_TYPE = "wavenumber"
-REPLICATED = ["version", "wavenumber"]
-SHARDED = {"GkSource": "k"}
+KEY_TYPE = "keypoint"
+REPLICATED = ["version", "keypoint"]
+SHARDED = {"Sample": "k"}
 
 
 def bare_pool(primary: Path) -> ShardedPool:

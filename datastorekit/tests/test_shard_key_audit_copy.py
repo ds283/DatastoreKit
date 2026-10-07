@@ -40,9 +40,9 @@ def _write_key_table(path: Path, serials) -> None:
     conn = sqlite3.connect(path)
     try:
         with conn:
-            conn.execute("CREATE TABLE wavenumber (serial INTEGER PRIMARY KEY)")
+            conn.execute("CREATE TABLE keypoint (serial INTEGER PRIMARY KEY)")
             conn.executemany(
-                "INSERT INTO wavenumber (serial) VALUES (?)", [(s,) for s in serials]
+                "INSERT INTO keypoint (serial) VALUES (?)", [(s,) for s in serials]
             )
     finally:
         conn.close()
@@ -101,7 +101,7 @@ class TestAuditOfACopiedStore(unittest.TestCase):
         self.assertIn(
             f"cross-file check against shard #0: {self.b / NAMES[0]}", result.stdout
         )
-        self.assertIn("'wavenumber' table (shard #0) row count: 2", result.stdout)
+        self.assertIn("'keypoint' table (shard #0) row count: 2", result.stdout)
         self.assertIn("VERDICT: OK", result.stdout)
 
         # read-only: neither store changed

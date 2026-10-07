@@ -4,7 +4,7 @@ completely written current-generation ShardedPool primary, and one whose shard r
 `prompts/datastore-generic` prompt 04 §2 L2.
 
 Until prompt 04 the tool had a branch for a pre-``a2bd966`` primary (a ``shard_keys`` table keyed
-``wavenumber_serial``), tolerated a primary with no ``shard_key_config``, and ended an unusable
+``keypoint_serial``), tolerated a primary with no ``shard_key_config``, and ended an unusable
 shard record in "VERDICT: OK" and exit code 0, however unusable it was. Now:
 
 * ``shard_keys`` without ``key_serial`` meets the one "Unrecognised shard_keys schema" refusal,
@@ -62,8 +62,8 @@ def _write_key_shard(path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     _execute(
         path,
-        "CREATE TABLE wavenumber (serial INTEGER PRIMARY KEY)",
-        "INSERT INTO wavenumber (serial) VALUES (1)",
+        "CREATE TABLE keypoint (serial INTEGER PRIMARY KEY)",
+        "INSERT INTO keypoint (serial) VALUES (1)",
     )
 
 
@@ -181,15 +181,15 @@ class TestTheAuditRefuses(unittest.TestCase):
         _execute(
             primary,
             "DROP TABLE shard_keys",
-            "CREATE TABLE shard_keys (wavenumber_serial INTEGER NOT NULL PRIMARY KEY, "
+            "CREATE TABLE shard_keys (keypoint_serial INTEGER NOT NULL PRIMARY KEY, "
             "shard_id INTEGER NOT NULL REFERENCES shards (serial))",
-            "INSERT INTO shard_keys (wavenumber_serial, shard_id) VALUES (1, 0)",
+            "INSERT INTO shard_keys (keypoint_serial, shard_id) VALUES (1, 0)",
         )
 
         out = self.assertRefusesWithoutAVerdict(primary)
 
         self.assertIn("Unrecognised shard_keys schema", out)
-        self.assertIn("wavenumber_serial", out)  # the columns it found, as data
+        self.assertIn("keypoint_serial", out)  # the columns it found, as data
         self.assertNotIn("a2bd966", out)
         self.assertNotIn("pre-", out)
 
@@ -202,7 +202,7 @@ class TestTheAuditRefuses(unittest.TestCase):
             primary,
             "DROP TABLE shard_key_config",
             "CREATE TABLE shard_key_config (other VARCHAR(256))",
-            "INSERT INTO shard_key_config (other) VALUES ('wavenumber')",
+            "INSERT INTO shard_key_config (other) VALUES ('keypoint')",
         )
         out = self.assertRefusesWithoutAVerdict(primary)
         self.assertIn("shard_key_config.key_type", out)
@@ -224,9 +224,9 @@ class TestTheAuditRefuses(unittest.TestCase):
 
     def test_a_shard_0_without_the_shard_key_table(self):
         primary = self.a_current_store("A")
-        _execute(primary.parent / NAMES[0], "DROP TABLE wavenumber")
+        _execute(primary.parent / NAMES[0], "DROP TABLE keypoint")
         out = self.assertRefusesWithoutAVerdict(primary)
-        self.assertIn("does not contain the 'wavenumber' table", out)
+        self.assertIn("does not contain the 'keypoint' table", out)
         self.assertNotIn("skipping cross-file checks", out)
 
 

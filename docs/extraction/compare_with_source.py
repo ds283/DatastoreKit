@@ -8,9 +8,10 @@ Run it from the repository root with the venv's interpreter:
 
     ./venv/bin/python docs/extraction/compare_with_source.py [--show]
 
-How a difference is classified. Each class of prompt 01 §2.4 is a *rule*: a transformation applied
-to the source text. The rules are applied in turn (D-imp, D-str, D-tool, D-root for a module; D-int
-for an internalised one), and then ``black`` (D-fmt). What comes out is the text the package file
+How a difference is classified. Each class of prompt 01 §2.4, and the two of prompt 02 §2.6, is a
+*rule*: a transformation applied to the source text. The rules are applied in turn (D-imp, D-str,
+D-tool, D-root, D-fix for a module; D-split first for the stand-in pool; D-int for an internalised
+one), and then ``black`` (D-fmt). What comes out is the text the package file
 must be, byte for byte. Every line a rule changes carries that rule's class; a line changed by two
 rules carries the first. The package file is then compared with that text, and any line on which
 they differ is UNCLASSIFIED. So a rule can only ever explain a change it makes itself, and nothing
@@ -34,10 +35,26 @@ is classified by a line number.
 - D-int: the internalised modules hold only the named definitions of their source and the imports
   those definitions use, in source order with the source's spacing, under a module docstring that
   names the source file and the import commit.
+- D-fix (prompt 02 §2.4, §2.6): in the three files the 88 ported tests were re-fixtured in
+  (FIX_FILES), inside a plain (non-f) string literal, each whole identifier of FIX_MAP becomes its
+  image: a name of the source's own tables becomes the neutral test client's. Nowhere else: not
+  in a comment, a name or an f-string, and in no other file.
+- D-split (prompt 02 §2.3): the stand-in pool (kind SPLIT) is the source's generic half. Applied
+  first, before D-imp: the source is cut at the banner of its client half (SPLIT_BANNER), to the
+  end of the file; and in the two methods SPLIT_METHODS only, the two imports of the source's
+  registry become one import of the neutral client's registry (SPLIT_IMPORTS), and the getter's
+  name becomes the neutral registry's (SPLIT_RENAME). The blank lines the cut leaves at the end are
+  removed by ``black``, so they are D-fmt.
 - D-fmt: ``black`` (25.1.0, with no configuration) on the result.
 
-The script exits 0 when every differing line is classified and every file exists on both sides,
-1 otherwise, and 2 when it cannot run (wrong ``black``, or ``git show`` fails). It writes nothing.
+**An unaccounted file fails** (prompt 02 §2.6). Every ``.py`` file under ``datastorekit/`` (outside
+``__pycache__``) is either compared (FILES) or declared to have no source (NO_SOURCE). Any other is
+reported as NOT ACCOUNTED FOR, and so is a declared file that is missing; either makes the check
+fail.
+
+The script exits 0 when every differing line is classified, every file exists on both sides and
+every package file is accounted for; 1 otherwise; and 2 when it cannot run (wrong ``black``, or
+``git show`` fails). It writes nothing.
 """
 
 import argparse
@@ -61,57 +78,78 @@ PACKAGE_DIR = REPO_ROOT / "datastorekit"
 # (source path at the import commit, package path, kind)
 MODULE = "module"
 INTERNALISED = "internalised"
-FILES: List[Tuple[str, str, str]] = [
-    ("Datastore/__init__.py", "datastorekit/__init__.py", MODULE),
-    ("Datastore/object.py", "datastorekit/object.py", MODULE),
-    ("Datastore/contract.py", "datastorekit/contract.py", MODULE),
-    ("Datastore/replication.py", "datastorekit/replication.py", MODULE),
-    ("Datastore/shard_paths.py", "datastorekit/shard_paths.py", MODULE),
-    ("Datastore/store_reader.py", "datastorekit/store_reader.py", MODULE),
-    ("Datastore/store_inventory.py", "datastorekit/store_inventory.py", MODULE),
-    ("Datastore/SQL/__init__.py", "datastorekit/SQL/__init__.py", MODULE),
-    ("Datastore/SQL/schema.py", "datastorekit/SQL/schema.py", MODULE),
-    ("Datastore/SQL/ShardedPool.py", "datastorekit/SQL/ShardedPool.py", MODULE),
-    ("Datastore/SQL/Datastore.py", "datastorekit/SQL/Datastore.py", MODULE),
-    ("Datastore/SQL/ClientPool.py", "datastorekit/SQL/ClientPool.py", MODULE),
-    (
-        "Datastore/SQL/SerialPoolBroker.py",
-        "datastorekit/SQL/SerialPoolBroker.py",
-        MODULE,
-    ),
-    ("Datastore/SQL/ProfileAgent.py", "datastorekit/SQL/ProfileAgent.py", MODULE),
-    (
-        "Datastore/SQL/ObjectFactories/base.py",
-        "datastorekit/SQL/factory_base.py",
-        MODULE,
-    ),
-    ("tools/__init__.py", "datastorekit/tools/__init__.py", MODULE),
-    ("tools/sharded_store.py", "datastorekit/tools/sharded_store.py", MODULE),
-    ("tools/shard_key_audit.py", "datastorekit/tools/shard_key_audit.py", MODULE),
-    ("config/defaults.py", "datastorekit/defaults.py", INTERNALISED),
-    ("utilities.py", "datastorekit/_timing.py", INTERNALISED),
-    ("Datastore/tests/__init__.py", "datastorekit/tests/__init__.py", MODULE),
-    (
-        "Datastore/tests/shard_store_fixtures.py",
-        "datastorekit/tests/shard_store_fixtures.py",
-        MODULE,
-    ),
-] + [
-    (f"Datastore/tests/{name}.py", f"datastorekit/tests/{name}.py", MODULE)
-    for name in (
-        "test_shard_paths",
-        "test_shard_file_name",
-        "test_shardedpool_shard_paths",
-        "test_copy_move_store",
-        "test_delete_store",
-        "test_sharded_store_script",
-        "test_shard_key_audit_copy",
-        "test_shard_key_audit_refusals",
-    )
-]
+SPLIT = "split"
+FILES: List[Tuple[str, str, str]] = (
+    [
+        ("Datastore/__init__.py", "datastorekit/__init__.py", MODULE),
+        ("Datastore/object.py", "datastorekit/object.py", MODULE),
+        ("Datastore/contract.py", "datastorekit/contract.py", MODULE),
+        ("Datastore/replication.py", "datastorekit/replication.py", MODULE),
+        ("Datastore/shard_paths.py", "datastorekit/shard_paths.py", MODULE),
+        ("Datastore/store_reader.py", "datastorekit/store_reader.py", MODULE),
+        ("Datastore/store_inventory.py", "datastorekit/store_inventory.py", MODULE),
+        ("Datastore/SQL/__init__.py", "datastorekit/SQL/__init__.py", MODULE),
+        ("Datastore/SQL/schema.py", "datastorekit/SQL/schema.py", MODULE),
+        ("Datastore/SQL/ShardedPool.py", "datastorekit/SQL/ShardedPool.py", MODULE),
+        ("Datastore/SQL/Datastore.py", "datastorekit/SQL/Datastore.py", MODULE),
+        ("Datastore/SQL/ClientPool.py", "datastorekit/SQL/ClientPool.py", MODULE),
+        (
+            "Datastore/SQL/SerialPoolBroker.py",
+            "datastorekit/SQL/SerialPoolBroker.py",
+            MODULE,
+        ),
+        ("Datastore/SQL/ProfileAgent.py", "datastorekit/SQL/ProfileAgent.py", MODULE),
+        (
+            "Datastore/SQL/ObjectFactories/base.py",
+            "datastorekit/SQL/factory_base.py",
+            MODULE,
+        ),
+        ("tools/__init__.py", "datastorekit/tools/__init__.py", MODULE),
+        ("tools/sharded_store.py", "datastorekit/tools/sharded_store.py", MODULE),
+        ("tools/shard_key_audit.py", "datastorekit/tools/shard_key_audit.py", MODULE),
+        ("config/defaults.py", "datastorekit/defaults.py", INTERNALISED),
+        ("utilities.py", "datastorekit/_timing.py", INTERNALISED),
+        ("Datastore/tests/__init__.py", "datastorekit/tests/__init__.py", MODULE),
+        (
+            "Datastore/tests/shard_store_fixtures.py",
+            "datastorekit/tests/shard_store_fixtures.py",
+            MODULE,
+        ),
+    ]
+    + [
+        (f"Datastore/tests/{name}.py", f"datastorekit/tests/{name}.py", MODULE)
+        for name in (
+            "test_shard_paths",
+            "test_shard_file_name",
+            "test_shardedpool_shard_paths",
+            "test_copy_move_store",
+            "test_delete_store",
+            "test_sharded_store_script",
+            "test_shard_key_audit_copy",
+            "test_shard_key_audit_refusals",
+        )
+    ]
+    + [
+        (
+            "Datastore/tests/standin_pool.py",
+            "datastorekit/tests/standin_pool.py",
+            SPLIT,
+        ),
+    ]
+)
 
-# Files in the package that have no source, and are not compared.
-NEW_FILES = {"datastorekit/tests/test_package_imports.py"}
+# Files in the package that have no source, and are not compared: the import guard (prompt 01),
+# and the neutral test client and its tests (prompt 02). Every other file under datastorekit/ is in
+# FILES, or the check fails.
+NO_SOURCE = {
+    "datastorekit/tests/test_package_imports.py",
+    "datastorekit/tests/client/__init__.py",
+    "datastorekit/tests/client/objects.py",
+    "datastorekit/tests/client/factories.py",
+    "datastorekit/tests/client/registry.py",
+    "datastorekit/tests/client/build.py",
+    "datastorekit/tests/test_neutral_client.py",
+}
 
 # D-int: what each internalised module takes from its source.
 INTERNALISED_NAMES: Dict[str, List[str]] = {
@@ -166,16 +204,56 @@ ROOT_RULES: Dict[str, List[Tuple[str, str]]] = {
     ],
 }
 
-D_IMP, D_STR, D_TOOL, D_ROOT, D_INT, D_FMT = (
+# D-fix: the files re-fixtured onto the neutral client's names, and the map, applied to whole
+# identifiers inside plain string literals only (prompt 02 §2.4)
+FIX_FILES = {
+    "datastorekit/tests/shard_store_fixtures.py",
+    "datastorekit/tests/test_shard_key_audit_copy.py",
+    "datastorekit/tests/test_shard_key_audit_refusals.py",
+}
+FIX_MAP = {
+    "wavenumber": "keypoint",
+    "wavenumber_serial": "keypoint_serial",
+    "GkSource": "Sample",
+}
+
+# D-split: the stand-in pool's source is cut at this banner, to the end; and in these two methods
+# only, the source registry's imports become the neutral registry's, and the getter is renamed
+SPLIT_BANNER = (
+    "# " + "-" * 96 + "\n"
+    "# objects for the two stored replicated classes, and one sharded class\n"
+)
+SPLIT_METHODS = ("open_pool", "open_pool_output")
+SPLIT_IMPORTS = (
+    "        from config.datastore import factories\n"
+    "        from config.sharding import (\n"
+    "            replicated_tables,\n"
+    "            sharded_tables,\n"
+    "            shard_key_type,\n"
+    "            shard_key_wavenumber_store_id,\n"
+    "        )\n",
+    "        from datastorekit.tests.client.registry import (\n"
+    "            factories,\n"
+    "            replicated_tables,\n"
+    "            sharded_tables,\n"
+    "            shard_key_type,\n"
+    "            shard_key_store_id,\n"
+    "        )\n",
+)
+SPLIT_RENAME = ("shard_key_wavenumber_store_id", "shard_key_store_id")
+
+D_IMP, D_STR, D_TOOL, D_ROOT, D_FIX, D_SPLIT, D_INT, D_FMT = (
     "D-imp",
     "D-str",
     "D-tool",
     "D-root",
+    "D-fix",
+    "D-split",
     "D-int",
     "D-fmt",
 )
 UNCLASSIFIED = "UNCLASSIFIED"
-CLASSES = [D_IMP, D_STR, D_TOOL, D_ROOT, D_INT, D_FMT, UNCLASSIFIED]
+CLASSES = [D_IMP, D_STR, D_TOOL, D_ROOT, D_FIX, D_SPLIT, D_INT, D_FMT, UNCLASSIFIED]
 
 
 class CannotRun(Exception):
@@ -425,6 +503,60 @@ def rule_root(text: str, package_path: str) -> str:
     return text
 
 
+FIXED_NAME = re.compile(
+    r"(?<![A-Za-z0-9_])("
+    + "|".join(sorted(map(re.escape, FIX_MAP), key=len, reverse=True))
+    + r")(?![A-Za-z0-9_])"
+)
+
+
+def rule_fix(text: str, package_path: str) -> str:
+    """D-fix: in the files of FIX_FILES only, inside a plain (non-f) string literal, each whole
+    identifier of FIX_MAP becomes its image. Comments, names and f-strings are left alone.
+    """
+    if package_path not in FIX_FILES:
+        return text
+    offsets = line_offsets(text)
+    edits = []
+    for tok in tokens(text):
+        if tok.type != tokenize.STRING or STRING_PREFIX.match(tok.string) is None:
+            continue
+        base = offsets[tok.start[0] - 1] + tok.start[1]
+        for m in FIXED_NAME.finditer(tok.string):
+            edits.append((base + m.start(1), base + m.end(1), FIX_MAP[m.group(1)]))
+    return apply_edits(text, edits)
+
+
+def rule_split(text: str, package_path: str) -> str:
+    """D-split: cut the source at SPLIT_BANNER, to the end; then, in each method of
+    SPLIT_METHODS only, replace the registry imports and rename the getter. If the banner is not
+    found exactly once, a method is not found exactly once, or a method's imports are not found
+    exactly once in it, nothing is changed, and the difference shows as unclassified."""
+    if text.count(SPLIT_BANNER) != 1:
+        return text
+    cut = text[: text.index(SPLIT_BANNER)]
+
+    offsets = line_offsets(cut)
+    methods = [
+        node
+        for node in ast.walk(ast.parse(cut))
+        if isinstance(node, ast.FunctionDef) and node.name in SPLIT_METHODS
+    ]
+    if sorted(node.name for node in methods) != sorted(SPLIT_METHODS):
+        return text
+    old_imports, new_imports = SPLIT_IMPORTS
+    old_name, new_name = SPLIT_RENAME
+    spans = [(offsets[n.lineno - 1], offsets[n.end_lineno]) for n in methods]
+    for start, end in sorted(spans, reverse=True):
+        body = cut[start:end]
+        if body.count(old_imports) != 1:
+            return text
+        body = body.replace(old_imports, new_imports)
+        body = re.sub(rf"\b{re.escape(old_name)}\b", new_name, body)
+        cut = cut[:start] + body + cut[end:]
+    return cut
+
+
 def module_docstring(text: str) -> Optional[str]:
     """The package file's leading docstring, as source text with its newline, if it has one."""
     tree = ast.parse(text)
@@ -553,13 +685,17 @@ def compare(source_path: str, package_path: str, kind: str, show: bool, out: lis
     package_text = package_file.read_text()
 
     tracked = Tracked(source_text)
-    if kind == MODULE:
-        for cls, rule in (
+    if kind in (MODULE, SPLIT):
+        rules = [
             (D_IMP, rule_imp),
             (D_STR, rule_str),
             (D_TOOL, rule_tool),
             (D_ROOT, rule_root),
-        ):
+            (D_FIX, rule_fix),
+        ]
+        if kind == SPLIT:
+            rules.insert(0, (D_SPLIT, rule_split))
+        for cls, rule in rules:
             tracked.apply(cls, rule(tracked.text(), package_path))
     else:
         tracked.apply(
@@ -675,16 +811,22 @@ def main(argv: List[str]) -> int:
     )
 
     compared = {p for _, p, _ in FILES}
-    others = sorted(
+    present = {
         str(p.relative_to(REPO_ROOT))
         for p in PACKAGE_DIR.rglob("*.py")
-        if str(p.relative_to(REPO_ROOT)) not in compared
-    )
+        if "__pycache__" not in p.relative_to(REPO_ROOT).parts
+    }
+    others = sorted(present - compared)
+    unaccounted = [other for other in others if other not in NO_SOURCE]
+    missing_new = sorted(NO_SOURCE - present)
     print()
     print(f"files compared: {len(FILES)}")
+    print(f"files with no source, declared: {len(NO_SOURCE)}")
     for other in others:
-        note = "new in the package" if other in NEW_FILES else "NOT ACCOUNTED FOR"
+        note = "no source, declared" if other in NO_SOURCE else "NOT ACCOUNTED FOR"
         print(f"not compared ({note}): {other}")
+    for missing in missing_new:
+        print(f"not compared (MISSING, declared with no source): {missing}")
 
     if details:
         print()
@@ -694,10 +836,19 @@ def main(argv: List[str]) -> int:
 
     bad = totals[UNCLASSIFIED][0] + totals[UNCLASSIFIED][1]
     print()
-    if bad:
-        print(f"FAIL: {bad} line(s) unclassified, or a file missing")
+    if bad or unaccounted or missing_new:
+        if bad:
+            print(f"FAIL: {bad} line(s) unclassified, or a file missing")
+        if unaccounted:
+            print(
+                f"FAIL: {len(unaccounted)} file(s) under datastorekit/ not accounted for"
+            )
+        if missing_new:
+            print(
+                f"FAIL: {len(missing_new)} declared file(s) with no source are missing"
+            )
         return 1
-    print("OK: every differing line is classified")
+    print("OK: every differing line is classified, and every file is accounted for")
     return 0
 
 

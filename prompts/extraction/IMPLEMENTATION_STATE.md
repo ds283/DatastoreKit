@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-07 · **Status: IN PROGRESS — 2 of 7 prompts written (01, 02), 1 landed (01).**
+**Last updated:** 2026-10-07 · **Status: IN PROGRESS — 2 of 7 prompts written (01, 02), 2 landed (01, 02).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 and U8 the same day (README §6.2).
 
@@ -43,7 +43,7 @@ and U8 the same day (README §6.2).
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [Import the layer](01-import-the-layer.md) | package, 15 files and 2 tools, the two internalised dependencies, 88 tests, import guard | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `8bc60a5` | [log](logs/01-import-the-layer.md) |
-| 02 | [The neutral test client](02-the-neutral-test-client.md) | `docs/client-contract.md`, the test client, the stand-in pool; 01's tests onto the client's names (U8) | ✍️ yes, 2026-10-07 | ⬜ | — | — |
+| 02 | [The neutral test client](02-the-neutral-test-client.md) | `docs/client-contract.md`, the test client, the stand-in pool; 01's tests onto the client's names (U8) | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | this commit | [log](logs/02-the-neutral-test-client.md) |
 | 03 | Port the write-path tests | 129 tests | ⬜ | ⬜ | — | — |
 | 04 | Port the schema and inventory tests | 175 tests; the package guard | ⬜ | ⬜ | — | — |
 | 05 | Supported versions and CI | `pyproject.toml` ranges, both ends, Actions; tag `v0.1.0` | ⬜ | ⬜ | — | — |
@@ -164,6 +164,53 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     campaigns that do not exist here, and two docstrings misdescribe how the tools find the package.
   - **Next step.** Rewrite the prose once rule 8 lifts (after 05), so that 01–05's equivalence check
     stays mechanical. Unassigned.
+  - **Measured by 02 (2026-10-07):** **104 lines in 20 files.** Two additions: the comment
+    `tools/shard_key_audit.py:188` (`e.g. "wavenumber"`, a name of SGK's table, moved here from
+    `[01-ported-tests-use-sgk-table-names]`; `tools/shard_key_audit.py` 3 → 4); and the stand-in pool
+    `tests/standin_pool.py` (new, its prose SGK's under D-split), 2 lines the pattern matches (`:4`,
+    `:5`: `docs/datastore-integrity-audit/…`, `prompts/datastore-integrity`). Seven more of its lines
+    name SGK's layout or campaigns outside the pattern: `:2` (`var/`), `:195`, `:225`, `:252`
+    (`a3-v2-readiness prompt 02`), `:286` ("the production table lists"), `:314`, `:397`
+    ("prompt 02"). Log 02 §5 item 5.
+- **[01-no-ported-test-pins-the-shard-key-assignment]** *(opened 2026-10-07 by the orchestrator's
+  review of 01)*
+  - **The defect.** No test in the suite reaches `ShardedPool._assign_shard_keys`
+    (`datastorekit/SQL/ShardedPool.py:3505`). Binding `"key_id"` in place of `"key_serial"` in its
+    insert (`:3561`) fails none of the 90 (log 01 §4.4, replayed at the review). A probe raising
+    at the method's first line also fails none.
+  - **Impact.** That binding is the shard-key bug of README §0: the saved shard map could differ
+    from the one in memory after a reopen. It was fixed in SGK (`2610abe`) and SI (`20d9a61`), and
+    was still in CPBH on 2026-10-07. The package carries the fix, but nothing here would catch its
+    return.
+  - **Next step.** 03 ports the write-path tests onto the stand-in pool. Its author checks whether
+    any of the 129 reaches `_assign_shard_keys` through the package. If none does, 03 adds one
+    that writes a sharded object, reopens the store, and compares the shard map on disk with the
+    one in memory, and the `key_id` mutation is one of its breakages. Unassigned until 03 is
+    written.
+
+- **[02-no-test-reaches-revalidate]** *(opened 2026-10-07 by prompt 02)*
+  - **The defect.** No test reaches a factory's `revalidate`. Its one call site is
+    `ShardedPool._recompute_validated` (`datastorekit/SQL/ShardedPool.py:1992`), called by the check
+    at open only after an interrupted validate of a replicated class that declares
+    `validated_column`. Making the neutral client's `Gadget_factory.revalidate` return `True`
+    without writing fails none of the 109 tests (log 02 §4.5 (k), the diff there).
+  - **Impact.** The repair that recomputes a validated flag at open could be broken, or a client's
+    `revalidate` could write nothing, and the suite would pass.
+  - **Next step.** 03 ports `test_reconcile_at_open` (41 tests), which interrupts a validate of a
+    replicated owner. Its author checks that a test there reaches `revalidate` on the neutral
+    client's `Gadget`, and makes (k)'s diff one of its breakages. Unassigned until 03 is written.
+- **[02-an-unsupplied-sharded-table-raises-keyerror]** *(opened 2026-10-07 by prompt 02)*
+  - **The defect.** Reopening a store whose primary records a sharded table that the constructor's
+    `sharded_tables` lacks raises a bare `KeyError('<table>')` from `_read_shard_data`
+    (`datastorekit/SQL/ShardedPool.py:1015`, `attr = self._sharded_tables[row.table]`), before the
+    list it prints and the `RuntimeError` meant for that case (`:1022-1045`) are reached. Probed with
+    `shard_store_fixtures` (log 02 §5 item 1).
+  - **Impact.** The open is still refused; the refusal does not say why. Inherited from SGK
+    unchanged.
+  - **Next step.** Fix once rule 8 lifts (after 05), with a test that opens such a store. Unassigned.
+
+## 4. Resolved issues
+
 - **[01-ported-tests-use-sgk-table-names]** *(opened 2026-10-07 by prompt 01)*
   - **The defect.** The ported fixture and tests, imported unchanged (README §5 rule 6), use SGK's
     table names: `tests/shard_store_fixtures.py:25-27` (`KEY_TYPE = "wavenumber"`,
@@ -181,22 +228,10 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     names in the tests onto the neutral client's (§2.4), and moves the one comment in
     `tools/shard_key_audit.py:188` to `[01-package-prose-names-sgks-layout]`, since package prose
     stays unchanged until 05.
-- **[01-no-ported-test-pins-the-shard-key-assignment]** *(opened 2026-10-07 by the orchestrator's
-  review of 01)*
-  - **The defect.** No test in the suite reaches `ShardedPool._assign_shard_keys`
-    (`datastorekit/SQL/ShardedPool.py:3505`). Binding `"key_id"` in place of `"key_serial"` in its
-    insert (`:3561`) fails none of the 90 (log 01 §4.4, replayed at the review). A probe raising
-    at the method's first line also fails none.
-  - **Impact.** That binding is the shard-key bug of README §0: the saved shard map could differ
-    from the one in memory after a reopen. It was fixed in SGK (`2610abe`) and SI (`20d9a61`), and
-    was still in CPBH on 2026-10-07. The package carries the fix, but nothing here would catch its
-    return.
-  - **Next step.** 03 ports the write-path tests onto the stand-in pool. Its author checks whether
-    any of the 129 reaches `_assign_shard_keys` through the package. If none does, 03 adds one
-    that writes a sharded object, reopens the store, and compares the shard map on disk with the
-    one in memory, and the `key_id` mutation is one of its breakages. Unassigned until 03 is
-    written.
-
-## 4. Resolved issues
-
-None.
+  - **Closed (2026-10-07) by prompt 02** (this commit, log 02 §3). The 15 lines moved onto the
+    neutral client's names by the map `wavenumber` → `keypoint`, `wavenumber_serial` →
+    `keypoint_serial`, `GkSource` → `Sample`, inside string literals only, as whole identifiers:
+    `tests/shard_store_fixtures.py` 3, `tests/test_shard_key_audit_copy.py` 3,
+    `tests/test_shard_key_audit_refusals.py` 9. The equivalence check accounts for them as D-fix,
+    restricted to those three files. The comment `tools/shard_key_audit.py:188` (`e.g.
+    "wavenumber"`) is unchanged, and moved to `[01-package-prose-names-sgks-layout]`.
