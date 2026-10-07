@@ -1,0 +1,66 @@
+"""
+`WallclockTimer`, `format_time` and the three `SECONDS_PER_*` constants `format_time` uses, with
+the imports they need, from the source repository's `utilities.py` at the import commit 6f7f291,
+copied byte for byte. See `PROVENANCE.md`.
+"""
+
+import time
+from traceback import print_tb
+
+
+class WallclockTimer:
+    def __enter__(self):
+        self.start_time = time.perf_counter()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.end_time = time.perf_counter()
+        self.elapsed = self.end_time - self.start_time
+
+        if exc_type is not None:
+            print(f"type={exc_type}, value={exc_val}")
+            print_tb(exc_tb)
+
+
+SECONDS_PER_MINUTE = 60
+SECONDS_PER_HOUR = 60 * SECONDS_PER_MINUTE
+SECONDS_PER_DAY = 24 * SECONDS_PER_HOUR
+
+
+def format_time(interval: float) -> str:
+    int_interval = int(interval)
+    str = ""
+
+    if int_interval > SECONDS_PER_DAY:
+        days = int_interval // SECONDS_PER_DAY
+        int_interval = int_interval - days * SECONDS_PER_DAY
+        interval = interval - days * SECONDS_PER_DAY
+        if len(str) > 0:
+            str = str + f" {days}d"
+        else:
+            str = f"{days}d"
+
+    if int_interval > SECONDS_PER_HOUR:
+        hours = int_interval // SECONDS_PER_HOUR
+        int_interval = int_interval - hours * SECONDS_PER_HOUR
+        interval = interval - hours * SECONDS_PER_HOUR
+        if len(str) > 0:
+            str = str + f" {hours}h"
+        else:
+            str = f"{hours}h"
+
+    if int_interval > SECONDS_PER_MINUTE:
+        minutes = int_interval // SECONDS_PER_MINUTE
+        int_interval = int_interval - minutes * SECONDS_PER_MINUTE
+        interval = interval - minutes * SECONDS_PER_MINUTE
+        if len(str) > 0:
+            str = str + f" {minutes}m"
+        else:
+            str = f"{minutes}m"
+
+    if len(str) > 0:
+        str = str + f" {interval:.3g}s"
+    else:
+        str = f"{interval:.3g}s"
+
+    return str
