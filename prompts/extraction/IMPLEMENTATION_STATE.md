@@ -1,8 +1,8 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-07 · **Status: IN PROGRESS — 3 of 8 prompts written (01, 02, 03a), 3 landed (01, 02, 03a).**
+**Last updated:** 2026-10-07 · **Status: IN PROGRESS — 4 of 8 prompts written (01, 02, 03a, 03b), 3 landed (01, 02, 03a).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
-and U8–U12 the same day (README §6.2); U10 split 03 into 03a and 03b.
+and U8–U13 the same day (README §6.2); U10 split 03 into 03a and 03b.
 
 **Campaign:** [`README.md`](README.md) ·
 **Source:** SecondaryGWKit's `Datastore/` layer at the import commit `6f7f291` (G1) ·
@@ -39,6 +39,7 @@ and U8–U12 the same day (README §6.2); U10 split 03 into 03a and 03b.
 | **U10** splitting 03 | 03a (76 tests) and 03b (53 defined, 80 run) | **taken** 2026-10-07 |
 | **U11** `test_read_only_pool`'s SGK probe | `build_store` and a neutral reader sequence | **taken** 2026-10-07 |
 | **U12** test names that are client table names | renamed by the table map | **taken** 2026-10-07 |
+| **U13** roles the neutral client lacks for 03b | 03b adds two replicated classes to the client | **taken** 2026-10-07 |
 
 ---
 
@@ -49,7 +50,7 @@ and U8–U12 the same day (README §6.2); U10 split 03 into 03a and 03b.
 | 01 | [Import the layer](01-import-the-layer.md) | package, 15 files and 2 tools, the two internalised dependencies, 88 tests, import guard | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `8bc60a5` | [log](logs/01-import-the-layer.md) |
 | 02 | [The neutral test client](02-the-neutral-test-client.md) | `docs/client-contract.md`, the test client, the stand-in pool; 01's tests onto the client's names (U8) | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `e988e69` | [log](logs/02-the-neutral-test-client.md) |
 | 03a | [Port the replicated-write tests](03a-port-the-replicated-write-tests.md) | 76 tests (replicated write, check at open, prune at open); the port check; the `key_id` pin and `revalidate` | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `11247c7` | [log](logs/03a-port-the-replicated-write-tests.md) |
-| 03b | Port the open and read-only tests | 53 tests, 80 run (version row, read-only pool, one timestamp, shard records) | ⬜ | ⬜ | — | — |
+| 03b | [Port the open and read-only tests](03b-port-the-open-and-read-only-tests.md) | 53 tests, 80 run (version row, read-only pool, one timestamp, shard records); the two client classes (U13); the neutral reader sequence (U11) | ✍️ yes, 2026-10-07 | ⬜ | — | — |
 | 04 | Port the schema and inventory tests | 175 tests; the package guard | ⬜ | ⬜ | — | — |
 | 05 | Supported versions and CI | `pyproject.toml` ranges, both ends, Actions; tag `v0.1.0` | ⬜ | ⬜ | — | — |
 | 06 | Version-keyed lookups | `key_on_version`; tag `v0.2.0` | ⬜ | ⬜ | — | — |
