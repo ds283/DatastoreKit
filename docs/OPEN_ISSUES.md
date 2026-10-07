@@ -3,7 +3,7 @@
 One line per open issue, pointing at the board that holds it. The board is right if the two
 disagree. See `CLAUDE.md` for the maintenance rule.
 
-**Last updated:** 2026-10-07 · **6 open**: 2 on this repository's boards, 4 inherited (§1.2).
+**Last updated:** 2026-10-07 · **7 open**: 3 on this repository's boards, 4 inherited (§1.2).
 
 ## 1. By campaign
 
@@ -13,6 +13,7 @@ disagree. See `CLAUDE.md` for the maintenance rule.
 |---|---|
 | `[01-package-prose-names-sgks-layout]` | 101 prose lines in the package name SGK's paths and campaigns; two describe the removed `sys.path` bootstrap |
 | `[01-ported-tests-use-sgk-table-names]` | The ported fixture and tests use SGK's table names (`wavenumber`, `GkSource`), which 04's vocabulary guard would find |
+| `[01-no-ported-test-pins-the-shard-key-assignment]` | No test reaches `_assign_shard_keys`, so the `key_id` binding of the shard-key bug fails none of the 90; for 03 |
 
 ### 1.2 Inherited from SecondaryGWKit, on SGK's boards
 

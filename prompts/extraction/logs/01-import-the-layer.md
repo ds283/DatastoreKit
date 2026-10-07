@@ -1,6 +1,6 @@
 # Log 01 — import the layer
 
-**Subject:** Import SGK's datastore layer as the package datastorekit · **Commit:** this commit ·
+**Subject:** Import SGK's datastore layer as the package datastorekit · **Commit:** `8bc60a5` ·
 **Date:** 2026-10-07 · **Model:** Claude Opus 5.5 · **Result:** landed. The package is SGK's layer at
 `6f7f291` under README §4's names; `compare_with_source.py` exits 0; `Ran 90 tests … OK`.
 
@@ -571,7 +571,7 @@ Both on the board's §3 and in `docs/OPEN_ISSUES.md` §1.1; the index is at **6 
 
 ## 7. State handed to the next prompt
 
-- `HEAD` is this commit. The tree is clean; `venv/` exists (Python 3.12.15, `ray==2.43.0`,
+- `HEAD` is `8bc60a5`. The tree is clean; `venv/` exists (Python 3.12.15, `ray==2.43.0`,
   `sqlalchemy==2.0.39`, `black==25.1.0`, `datastorekit` installed editable). `venv/` and
   `datastorekit.egg-info/` are gitignored.
 - The suite: **90** (`Ran 90 tests … OK`). 02 records 90 as its "before".
