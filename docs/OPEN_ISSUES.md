@@ -12,8 +12,8 @@ disagree. See `CLAUDE.md` for the maintenance rule.
 | Issue | Hook |
 |---|---|
 | `[01-package-prose-names-sgks-layout]` | 104 prose lines in the package name SGK's paths and campaigns (02: the stand-in pool's, and one comment naming SGK's table); two describe the removed `sys.path` bootstrap |
-| `[01-no-ported-test-pins-the-shard-key-assignment]` | 02's round trip reaches `_assign_shard_keys`, but the `key_id` binding of the shard-key bug fails none of the 109: keys are assigned in serial order; for 03 |
-| `[02-no-test-reaches-revalidate]` | No test reaches a factory's `revalidate` (the check at open's recompute after an interrupted replicated validate); for 03 |
+| `[01-no-ported-test-pins-the-shard-key-assignment]` | 02's round trip reaches `_assign_shard_keys`, but the `key_id` binding of the shard-key bug fails none of the 109: keys are assigned in serial order; assigned to 03a |
+| `[02-no-test-reaches-revalidate]` | No test reaches a factory's `revalidate` (the check at open's recompute after an interrupted replicated validate); assigned to 03a |
 | `[02-an-unsupplied-sharded-table-raises-keyerror]` | Reopening with a recorded sharded table the constructor lacks raises a bare `KeyError` before the intended message |
 
 ### 1.2 Inherited from SecondaryGWKit, on SGK's boards

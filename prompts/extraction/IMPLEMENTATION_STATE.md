@@ -1,8 +1,8 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-07 · **Status: IN PROGRESS — 2 of 7 prompts written (01, 02), 2 landed (01, 02).**
+**Last updated:** 2026-10-07 · **Status: IN PROGRESS — 3 of 8 prompts written (01, 02, 03a), 2 landed (01, 02).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
-and U8 the same day (README §6.2).
+and U8–U12 the same day (README §6.2); U10 split 03 into 03a and 03b.
 
 **Campaign:** [`README.md`](README.md) ·
 **Source:** SecondaryGWKit's `Datastore/` layer at the import commit `6f7f291` (G1) ·
@@ -35,6 +35,10 @@ and U8 the same day (README §6.2).
 | **U6** supported range and CI | Python ≥ 3.12; GitHub Actions at both ends | open |
 | **U7** licence | Apache 2.0 | applied at set-up; changeable |
 | **U8** SGK's table names in 01's 88 tests | re-fixture onto the neutral client's names in 02 | **taken** 2026-10-07 |
+| **U9** checking a re-fixtured test | a port-check script: names and assertion skeletons | **taken** 2026-10-07 |
+| **U10** splitting 03 | 03a (76 tests) and 03b (53 defined, 80 run) | **taken** 2026-10-07 |
+| **U11** `test_read_only_pool`'s SGK probe | `build_store` and a neutral reader sequence | **taken** 2026-10-07 |
+| **U12** test names that are client table names | renamed by the table map | **taken** 2026-10-07 |
 
 ---
 
@@ -44,7 +48,8 @@ and U8 the same day (README §6.2).
 |---|---|---|---|---|---|---|
 | 01 | [Import the layer](01-import-the-layer.md) | package, 15 files and 2 tools, the two internalised dependencies, 88 tests, import guard | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `8bc60a5` | [log](logs/01-import-the-layer.md) |
 | 02 | [The neutral test client](02-the-neutral-test-client.md) | `docs/client-contract.md`, the test client, the stand-in pool; 01's tests onto the client's names (U8) | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `e988e69` | [log](logs/02-the-neutral-test-client.md) |
-| 03 | Port the write-path tests | 129 tests | ⬜ | ⬜ | — | — |
+| 03a | [Port the replicated-write tests](03a-port-the-replicated-write-tests.md) | 76 tests (replicated write, check at open, prune at open); the port check; the `key_id` pin and `revalidate` | ✍️ yes, 2026-10-07 | ⬜ | — | — |
+| 03b | Port the open and read-only tests | 53 tests, 80 run (version row, read-only pool, one timestamp, shard records) | ⬜ | ⬜ | — | — |
 | 04 | Port the schema and inventory tests | 175 tests; the package guard | ⬜ | ⬜ | — | — |
 | 05 | Supported versions and CI | `pyproject.toml` ranges, both ends, Actions; tag `v0.1.0` | ⬜ | ⬜ | — | — |
 | 06 | Version-keyed lookups | `key_on_version`; tag `v0.2.0` | ⬜ | ⬜ | — | — |
@@ -279,6 +284,9 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     autoincrements, and since the neutral client's keys are assigned in serial order from 1, the
     saved map equals the one in memory. The test 03 adds must assign shard keys out of serial
     order (for example, get a later `keypoint` first), or the mutation stays invisible.
+  - **Assigned (2026-10-07):** to prompt 03a (U10). None of 03a's 76 SGK tests compares the
+    saved shard map with the one in memory, so 03a adds `test_shard_key_assignment.py`, which
+    assigns shard keys out of serial order and which the `key_id` binding must fail (03a §2.5).
 
 - **[02-no-test-reaches-revalidate]** *(opened 2026-10-07 by prompt 02)*
   - **The defect.** No test reaches a factory's `revalidate`. Its one call site is
@@ -291,6 +299,9 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
   - **Next step.** 03 ports `test_reconcile_at_open` (41 tests), which interrupts a validate of a
     replicated owner. Its author checks that a test there reaches `revalidate` on the neutral
     client's `Gadget`, and makes (k)'s diff one of its breakages. Unassigned until 03 is written.
+  - **Assigned (2026-10-07):** to prompt 03a (U10). `test_reconcile_at_open`'s
+    `TestKillAndReopen.test_validate_of_a_background_model` expects "validated recomputed"
+    actions, and on `Gadget` reaches `revalidate`; (k)'s diff must fail it (03a §2.5).
 - **[02-an-unsupplied-sharded-table-raises-keyerror]** *(opened 2026-10-07 by prompt 02)*
   - **The defect.** Reopening a store whose primary records a sharded table that the constructor's
     `sharded_tables` lacks raises a bare `KeyError('<table>')` from `_read_shard_data`
