@@ -12,7 +12,7 @@ disagree. See `CLAUDE.md` for the maintenance rule.
 | Issue | Hook |
 |---|---|
 | `[01-package-prose-names-sgks-layout]` | 101 prose lines in the package name SGK's paths and campaigns; two describe the removed `sys.path` bootstrap |
-| `[01-ported-tests-use-sgk-table-names]` | The ported fixture and tests use SGK's table names (`wavenumber`, `GkSource`), which 04's vocabulary guard would find |
+| `[01-ported-tests-use-sgk-table-names]` | The ported fixture and tests use SGK's table names (`wavenumber`, `GkSource`), which 04's vocabulary guard would find; assigned to 02 (U8) |
 | `[01-no-ported-test-pins-the-shard-key-assignment]` | No test reaches `_assign_shard_keys`, so the `key_id` binding of the shard-key bug fails none of the 90; for 03 |
 
 ### 1.2 Inherited from SecondaryGWKit, on SGK's boards

@@ -1,8 +1,8 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-07 · **Status: IN PROGRESS — 1 of 7 prompts written (01), 1 landed (01).**
-G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07
-(README §6.2).
+**Last updated:** 2026-10-07 · **Status: IN PROGRESS — 2 of 7 prompts written (01, 02), 1 landed (01).**
+G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
+and U8 the same day (README §6.2).
 
 **Campaign:** [`README.md`](README.md) ·
 **Source:** SecondaryGWKit's `Datastore/` layer at the import commit `6f7f291` (G1) ·
@@ -34,6 +34,7 @@ G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommend
 | **U5** module names | keep SGK's through this campaign | **taken** 2026-10-07 |
 | **U6** supported range and CI | Python ≥ 3.12; GitHub Actions at both ends | open |
 | **U7** licence | Apache 2.0 | applied at set-up; changeable |
+| **U8** SGK's table names in 01's 88 tests | re-fixture onto the neutral client's names in 02 | **taken** 2026-10-07 |
 
 ---
 
@@ -42,7 +43,7 @@ G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommend
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [Import the layer](01-import-the-layer.md) | package, 15 files and 2 tools, the two internalised dependencies, 88 tests, import guard | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `8bc60a5` | [log](logs/01-import-the-layer.md) |
-| 02 | The neutral test client | `docs/client-contract.md`, the test client, the stand-in pool | ⬜ | ⬜ | — | — |
+| 02 | [The neutral test client](02-the-neutral-test-client.md) | `docs/client-contract.md`, the test client, the stand-in pool; 01's tests onto the client's names (U8) | ✍️ yes, 2026-10-07 | ⬜ | — | — |
 | 03 | Port the write-path tests | 129 tests | ⬜ | ⬜ | — | — |
 | 04 | Port the schema and inventory tests | 175 tests; the package guard | ⬜ | ⬜ | — | — |
 | 05 | Supported versions and CI | `pyproject.toml` ranges, both ends, Actions; tag `v0.1.0` | ⬜ | ⬜ | — | — |
@@ -176,6 +177,10 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     move onto the neutral client's names.
   - **Next step.** 02 or 04 decides: re-fixture these tests onto the neutral client's names, or
     exempt them from the vocabulary guard with a reason. Unassigned.
+  - **Assigned (2026-10-07):** to prompt 02, by the user's decision U8 (README §6.2). 02 moves the
+    names in the tests onto the neutral client's (§2.4), and moves the one comment in
+    `tools/shard_key_audit.py:188` to `[01-package-prose-names-sgks-layout]`, since package prose
+    stays unchanged until 05.
 - **[01-no-ported-test-pins-the-shard-key-assignment]** *(opened 2026-10-07 by the orchestrator's
   review of 01)*
   - **The defect.** No test in the suite reaches `ShardedPool._assign_shard_keys`
