@@ -1,9 +1,8 @@
 # Campaign — extraction
 
 **Written:** 2026-10-07 by Claude Opus 5.5, at the user's request, from a comparison of the three
-client projects' datastore layers made the same day (§0.2). **Draft for the user's review.** No
-prompt is written yet. Prompt 01 is written once gate G1 (§7) holds, because its source commit is
-fixed by G1. Each later prompt is written after the one before it has landed and been reviewed,
+client projects' datastore layers made the same day (§0.2). **Prompt 01 is written** (2026-10-07):
+G1 held and the user took U2–U5 as recommended. Its import commit is SGK `6f7f291`. Each later prompt is written after the one before it has landed and been reviewed,
 against the tree it left.
 
 ## 0. Why this campaign exists
@@ -162,7 +161,7 @@ measures the survey again before doing so.
 
 | # | Prompt | Covers | Status |
 |---|---|---|---|
-| 01 | `01-import-the-layer.md` | The package skeleton (`pyproject.toml`, `datastorekit/`), SGK's 15 files and two tools at the import commit, under §4's names. The two client dependencies are internalised: `datastorekit.defaults.DEFAULT_STRING_LENGTH = 256`, and `datastorekit._timing` holding `WallclockTimer` and `format_time`, copied from SGK's `utilities.py`. `PROVENANCE.md` records the source commit and the file map. The 88 client-free tests and `shard_store_fixtures.py` are ported. A first guard test checks that the package imports only the standard library, `ray`, `sqlalchemy` and itself. **Acceptance:** <br>• `import datastorekit` works in a fresh venv with no client on `sys.path`; <br>• a script compares each package module with its SGK source, and finds no difference beyond the rewrite map and the two internalisations; the script is kept in `docs/extraction/` and its output in the log; <br>• the 88 tests pass. | not written; waits on G1 |
+| 01 | [`01-import-the-layer.md`](01-import-the-layer.md) | The package skeleton (`pyproject.toml`, `datastorekit/`), SGK's 15 files and two tools at the import commit, under §4's names. The two client dependencies are internalised: `datastorekit.defaults.DEFAULT_STRING_LENGTH = 256`, and `datastorekit._timing` holding `WallclockTimer` and `format_time`, copied from SGK's `utilities.py`. `PROVENANCE.md` records the source commit and the file map. The 88 client-free tests and `shard_store_fixtures.py` are ported. A first guard test checks that the package imports only the standard library, `ray`, `sqlalchemy` and itself. **Acceptance:** <br>• `import datastorekit` works in a fresh venv with no client on `sys.path`; <br>• a script compares each package module with its SGK source, and finds no difference beyond the rewrite map and the two internalisations; the script is kept in `docs/extraction/` and its output in the log; <br>• the 88 tests pass. | **written** 2026-10-07 |
 | 02 | `02-the-neutral-test-client.md` | `docs/client-contract.md`, re-measured: every constructor argument, `register()` key, hook, declaration and layer-owned table, saying which are required, optional or defaulted. A neutral test client under `datastorekit/tests/client/` that exercises each item at least once, with abstract names: <br>• a shard-key class; <br>• replicated leaf tables, one with `monotone_flags`; <br>• a sharded parent with `validate_on_startup` and a `validated_column` and `revalidate`; <br>• an owned value table (`owner_column`); <br>• a tag association; <br>• a polymorphic `Parent`; <br>• `read_table`, `read_batch` and `stepping`. <br>The generic part of `standin_pool.py` is ported with its defaults pointed at that client. **Acceptance:** the log's table maps each contract item to the fixture that exercises it, and every item is covered. | not written |
 | 03 | `03-port-the-write-path-tests.md` | The 129 write-path tests of §0.2, re-fixtured onto the neutral client: replicated writes, the check at open (compare, repair, refuse), the prune at open, the version row, the read-only pool, and shard records. Each test keeps its name and its assertions. A test that cannot be expressed on the neutral client is listed in the log with the reason, and is not dropped silently. | not written |
 | 04 | `04-port-the-schema-and-inventory-tests.md` | The 175 tests of §0.2 for the schema builder, the schema refusal, the reader, the registry, drop refusal and the inventory, re-fixtured the same way. SGK's `test_layer_is_generic` becomes the package's guard. Its forbidden vocabulary is drawn from all three clients' registries, measured read-only and written into the test as data; the test never imports a client. | not written |
@@ -263,23 +262,24 @@ The project-wide ones in `CLAUDE.md`, plus:
 
 ### 6.2 Decisions this campaign needs
 
-Each is put with a recommendation. **None is taken yet.** 01 is not written until U2–U5 are
-settled.
+Each is put with a recommendation. **U2–U5 were taken by the user on 2026-10-07, each as
+recommended**; the recommendation below is the decision. U1 and U7 were applied at set-up. U6 is
+open until 05 is written.
 
 - **U1: the name.** *Taken at set-up, changeable until 01 lands:* the repository is
   **DatastoreKit**, the package `datastorekit`. "DataKit" names many unrelated tools, and
   "datastore" says what this is.
-- **U2: history.** **Recommended:** a fresh import, with `PROVENANCE.md` naming SGK's import commit
+- **U2: history. (taken, as recommended)** **Recommended:** a fresh import, with `PROVENANCE.md` naming SGK's import commit
   and the file map. SGK's history stays the record of how the layer came to be, reachable through
   that commit. **Rejected:** `git filter-repo` over SGK to carry the 17 files' history here. It
   would bring many commits whose messages refer to SGK campaigns, boards and stores that do not
   exist in this repository, and file renames make the result hard to follow.
-- **U3: SGK's layer is frozen from the import commit until SGK adopts (G2).** **Recommended:**
+- **U3: SGK's layer is frozen from the import commit until SGK adopts (G2). (taken, as recommended)** **Recommended:**
   between G1 and G2, SGK lands no change to its 15 layer files or the two tools. A defect found
   there in that time is recorded on SGK's board, and fixed here after G2. **Rejected:** mirroring
   SGK changes here as they land. That makes the import commit a moving target and breaks rule 8's
   check. Taking U3 needs a line in SGK's `CLAUDE.md` or index, which is SGK's to write.
-- **U4: distribution.** **Recommended:** clients pin a tag in `requirements.txt`
+- **U4: distribution. (taken, as recommended)** **Recommended:** clients pin a tag in `requirements.txt`
   (`datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.1.0`); an editable install is for
   developing the package only (`CLAUDE.md`, "Releases"). **Rejected:**
   - a git submodule, which is awkward to update and easy to leave detached;
@@ -288,7 +288,7 @@ settled.
   - an unpinned editable install shared by all three clients, under which a change made for one
     client silently changes another's production run;
   - publishing to PyPI, which is not needed for three private consumers, and can come later.
-- **U5: module names.** **Recommended:** keep SGK's names (`SQL`, `ShardedPool.py`, …) through
+- **U5: module names. (taken, as recommended)** **Recommended:** keep SGK's names (`SQL`, `ShardedPool.py`, …) through
   this campaign, so that rule 8's check stays mechanical and every client's rewrite is a prefix
   substitution. **Rejected for now:** PEP 8 names (`datastorekit.sql.sharded_pool`). They are a
   later, separate change, once the clients are on the package.
@@ -303,7 +303,7 @@ settled.
 
 | Gate | Holds when | Needed by |
 |---|---|---|
-| **G1** | SGK's `datastore-generic-followup` has closed: its prompt 03 landed and was reviewed (in progress on 2026-10-07). The commit that closes it is the **import commit**. SGK's tree is clean at it, and SGK's suites pass there. | 01 |
+| **G1** | SGK's `datastore-generic-followup` has closed: its prompt 03 landed and was reviewed. The commit that closes it is the **import commit**. SGK's tree is clean at it, and SGK's suites pass there. **Holds (2026-10-07):** 03 landed as `086c81a` and its review `6f7f291` closed the campaign, so the import commit is **`6f7f291`**. The next commit, `99456d8`, adds only a `.tex` status note. | 01 |
 | **G2** | SGK has adopted `v0.1.0` in a campaign of its own: its 15 layer files and two tools are deleted, it imports `datastorekit` at a pinned tag, its remaining suites pass, and a rehearsal rebuild through the package reproduces its reference fingerprint (run by a person, under SGK's rules). | CPBH's adoption; the end of U3's freeze |
 | **G3** | CPBH has adopted `v0.2.0` in a campaign of its own (07's checklist; its stores rebuilt, D4). | — |
 | **G4** | SI has adopted, when it is next active. | — |
