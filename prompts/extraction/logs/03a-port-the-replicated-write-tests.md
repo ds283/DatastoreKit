@@ -1,7 +1,7 @@
 # Log 03a — port the replicated-write tests
 
-**Subject:** Port the replicated-write, check-at-open and prune-at-open tests · **Commit:** this
-commit · **Date:** 2026-10-07 · **Model:** Claude Opus 5.5 · **Result:** landed. SGK's
+**Subject:** Port the replicated-write, check-at-open and prune-at-open tests · **Commit:**
+`11247c7` · **Date:** 2026-10-07 · **Model:** Claude Opus 5.5 · **Result:** landed. SGK's
 `test_replicated_write` (25), `test_reconcile_at_open` (41) and `test_prune_at_open` (10) run in
 `datastorekit/tests/` under their names, on the stand-in pool and the neutral client;
 `docs/extraction/compare_ported_tests.py` finds their tests, classes and assertion skeletons equal
@@ -527,7 +527,7 @@ unchanged.`
 ## 6. The deliberate-breakage record (§3.5)
 
 Each diff below is exactly as applied. Each was made by editing the tree, taken with `git diff`
-against the staged tree this commit records, and the file restored from the index; then checked
+against the staged tree `11247c7` records, and the file restored from the index; then checked
 with `git apply --check` and `git apply -R --check`, applied with `git apply`, run, and reverted
 with `git apply -R`, in `bash`. `git diff` and the untracked list were empty after each. None is
 committed.
@@ -665,7 +665,7 @@ FAIL: 1 of 3 module(s) differ from their source
 ```
 
 **(e) one ported module deleted** (`test_prune_at_open.py`) — `compare_with_source.py` exits
-**1**. The diff is the deletion of the whole file as this commit records it (`rm` of the file,
+**1**. The diff is the deletion of the whole file as `11247c7` records it (`rm` of the file,
 then `git diff`); it is given in full below.
 
 ```
@@ -1499,7 +1499,7 @@ The index is at **6 open**: 2 on this board, 4 inherited.
 
 ## 10. State handed to the next prompt
 
-- `HEAD` is this commit. The tree is clean; `venv/` unchanged.
+- `HEAD` is `11247c7`. The tree is clean; `venv/` unchanged.
 - The suite: **188** (`Ran 188 tests … OK`). 03b records 188 as its "before".
 - `compare_ported_tests.py` exits 0 over `PORTED`'s three pairs; 03b and 04 extend `PORTED` (and
   `NAME_MAP`, for U12's four renames). `compare_with_source.py` exits 0 over 31 compared files, 3

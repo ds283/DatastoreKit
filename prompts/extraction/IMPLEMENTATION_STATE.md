@@ -48,7 +48,7 @@ and U8–U12 the same day (README §6.2); U10 split 03 into 03a and 03b.
 |---|---|---|---|---|---|---|
 | 01 | [Import the layer](01-import-the-layer.md) | package, 15 files and 2 tools, the two internalised dependencies, 88 tests, import guard | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `8bc60a5` | [log](logs/01-import-the-layer.md) |
 | 02 | [The neutral test client](02-the-neutral-test-client.md) | `docs/client-contract.md`, the test client, the stand-in pool; 01's tests onto the client's names (U8) | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `e988e69` | [log](logs/02-the-neutral-test-client.md) |
-| 03a | [Port the replicated-write tests](03a-port-the-replicated-write-tests.md) | 76 tests (replicated write, check at open, prune at open); the port check; the `key_id` pin and `revalidate` | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | this commit | [log](logs/03a-port-the-replicated-write-tests.md) |
+| 03a | [Port the replicated-write tests](03a-port-the-replicated-write-tests.md) | 76 tests (replicated write, check at open, prune at open); the port check; the `key_id` pin and `revalidate` | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `11247c7` | [log](logs/03a-port-the-replicated-write-tests.md) |
 | 03b | Port the open and read-only tests | 53 tests, 80 run (version row, read-only pool, one timestamp, shard records) | ⬜ | ⬜ | — | — |
 | 04 | Port the schema and inventory tests | 175 tests; the package guard | ⬜ | ⬜ | — | — |
 | 05 | Supported versions and CI | `pyproject.toml` ranges, both ends, Actions; tag `v0.1.0` | ⬜ | ⬜ | — | — |
@@ -59,7 +59,8 @@ and U8–U12 the same day (README §6.2); U10 split 03 into 03a and 03b.
 ✅ landed.
 
 **Orchestrator notes:** [`orchestrator/prompt-01.md`](orchestrator/prompt-01.md) (`bd9f461`),
-used for 01; [`orchestrator/prompt-02.md`](orchestrator/prompt-02.md) (`737ad6e`), used for 02.
+used for 01; [`orchestrator/prompt-02.md`](orchestrator/prompt-02.md) (`737ad6e`), used for 02;
+[`orchestrator/prompt-03a.md`](orchestrator/prompt-03a.md) (`f7f053d`), used for 03a.
 
 **Orchestrator review of prompt 01 (2026-10-07).** Dispatched from `bd9f461` to one Opus
 subagent, with the note's §0 corrections and additions. Reviewed against its commit `8bc60a5`,
@@ -216,6 +217,118 @@ Ray process was up.
   03's author reads the roles as they were built;
 - this paragraph, the notes line, and the issue measurement above.
 
+**Orchestrator review of prompt 03a (2026-10-07).** Dispatched from `f7f053d` to one Opus
+subagent, with the note's two corrections and two additions. Reviewed against its commit
+`11247c7`, with nothing landed after it. **Every check of the note's §3 passed**, and acceptance
+1–4 are met. No stop condition fired.
+
+*At dispatch.* The note's gate held at `f7f053d`. The tree was clean, and the only worktree was
+this checkout. The suite gave `Ran 109 tests … OK`, and `compare_with_source.py` exited 0 (31
+compared, 7 with no source). SGK's `Datastore/`, `tools/`, `utilities.py` and
+`config/defaults.py` were unchanged from `6f7f291` to SGK `HEAD` (`b510bc9`). No Ray process was
+up. Before dispatch the orchestrator probed (i) and (j) from the scratchpad: each could bite on
+the neutral client.
+
+*The checks.*
+1. **Scope.** `11247c7` touches 11 files: the four test modules, `build.py`, the two checks, the
+   log, the board, the index and `prompts/INDEX.md`. Nothing under `datastorekit/` outside
+   `tests/`, no change to `standin_pool.py`, `objects.py`, `factories.py`, `registry.py` or
+   `test_neutral_client.py`, and no `venv/`, `*.egg-info`, `__pycache__` or scratch file.
+2. **E1, the names.** By the orchestrator's own `ast` walk, each module's set of `Class.method`
+   (25, 41, 10) and each class's bases equal SGK's at `6f7f291`. The 109 are unchanged by name
+   from `0d02ea6`. `Ran 188 tests … OK`.
+3. **E2, the port check, by reading.** It reads SGK with `git show 6f7f291:` and writes nothing.
+   `PORTED` names the three modules, and `NAME_MAP` is empty. The skeleton is taken in source order
+   at any depth, nested functions apart and lambdas included. It counts `assert*`/`fail*` calls,
+   `raise AssertionError` and `subTest`. Every asserting function is compared by qualified name,
+   including `tearDownModule` and helpers such as `run_case` and `refused_reopen`. A new function
+   that asserts fails. The exit codes are 0, 1 and 2.
+   - It counts an assertion call on any receiver, not only `self`'s: wider than §2.4, and kept
+     (log §2 item 5).
+4. **E2, by running.** Both checks exit 0. The port check's output equals the log's line for
+   line: 125, 148 and 74 assertions in 32, 52 and 16 functions. `compare_with_source.py`'s totals
+   are 02's unchanged (D-imp −50/+50 … D-fmt −3/+0), over 31 compared, 3 `PORTED` and 8 with no
+   source.
+   - (a)–(e) and (o), replayed from the log, each exit 1, naming the test or the file.
+   - The orchestrator's own breakage, one `assertEqual` deleted from
+     `_ReconcileTestCase.refused_reopen`, exits 1, naming the helper at position 3.
+   - The tree was clean after each.
+5. **E3, R-map and R-value, by reading.** The diff of `test_prune_at_open` against SGK was read in
+   full, and `TestKillAndReopen` and the base classes of the other two modules. Every change is of
+   a kind the port table names. R-value keeps SGK's distinctions: tolerances 1e-6, 1e-9 and 1e-10
+   become dial levels 6, 9 and 10; scales 1.0 and 2.0 stay. Corrections 1 and 2 are applied as
+   the note states. `REPLICATED` filters the registry on `register() is not None`, and the prune
+   fixture's Sample is stored validated. The only R-count in a test (#65) is `REPLICATED` itself.
+6. **E3, control flow, by measuring.** The orchestrator's own `ast` comparison covers all 158
+   functions of the three modules. For each, the sequence of `If`, `For`, `While`, `With` (with
+   its item count), `Try`, `Return`, `Raise`, `Break`, `Continue`, conditional expressions,
+   comprehensions and nested `def`s equals SGK's. No function is added or missing. This covers the
+   port check's blind spot (log §7 item 1) for 03a.
+7. **E4, the client.** `build.py` changes by addition only: `make_framed_gadget`,
+   `make_sample_on`, two constants and an import. The four modules with `test_neutral_client` ran
+   eight times, `Ran 98 tests … OK` each time.
+8. **E5, the layer.** Replayed (f)–(i). The failing tests are exactly the log's:
+   - (f): `TestWriteOverASetRecord.test_every_path_refuses`;
+   - (g): two `TestKillAndReopen` flag tests;
+   - (h): one prune test and one reconcile test;
+   - (i): `test_validate_of_a_background_model` (three subtests) and
+     `TestPruningAfterRepair.test_an_interrupted_validate` (two).
+
+   (f), (g) and (i) show as errors, not failures. Each is the mutated layer's own `RuntimeError`
+   or `ReplicatedDivergence`, raised from test code, not a broken fixture.
+9. **E6, the closures.** `test_shard_key_assignment.py` assigns keys in the order 2, 3, 1. It
+   reads the primary's `shard_keys` with `_read` after closing, and compares it with the map
+   before closing and the reopened map. It finds each Sample on that shard's file alone, and
+   through the reopened pool. Replayed:
+   - (j) fails its three tests on the map comparison and the Samples' shards;
+   - (i) fails `test_validate_of_a_background_model`.
+
+   The module passed 40 runs of 40 on the unmutated tree.
+10. **E7, the records.** The log has every section of README §5.1 and each §4.4 addition: a port
+    table of 76 rows, the map, the hazards, the corrections, the helpers, both checks' output,
+    109 → 188 and (a)–(j) and (o). The index counts 6 rows and its header says 6. `black --check`
+    (25.1.0) is clean. The vocabulary grep finds none of the 80 client names in the four modules.
+    No Ray process was up afterwards.
+
+*Where the note was wrong, and the agent right.*
+- (o)'s example pair: the first two assertion calls of
+  `test_a_sharded_store_stamps_its_own_time_and_writes_no_record` are both `assertEqual`, so
+  swapping them changes no skeleton. The agent swapped the fourth and fifth.
+- The sharded test at `test_reconcile_at_open.py:794` is in `TestNoRecordRefuses`, not
+  `TestRecordDoesNotExplain`.
+- The prose figure. The orchestrator's 108 in 24 was a looser reading of the pattern. The agent's
+  method (log §8) reproduces 01's 101 and 02's 104, and gives 114 in 23 after 03a. The review did
+  not re-derive it independently.
+
+*Observations, not opened.*
+- **(j) reaches `test_prune_at_open` only by chance.** Its pools do not pin a controller, so a
+  keypoint get may run on an actor whose serial lease starts at 501. That is inherited from SGK,
+  whose redshift serials vary the same way. Under (j), a varying set of prune tests is then
+  refused at the reopen. The new module catches (j) every time, and the unmutated tree passed
+  every run. Recorded, not opened.
+- **The port check still passes a swap of two assertion calls of the same name.** Check 6 does
+  not see that either. It is stated in the log (§7 item 1).
+
+*Handed on to 03b's author.*
+- Correction 1's `REPLICATED`, which `test_one_timestamp_per_write` inherits through 03a's
+  classes.
+- Correction 2's reading of the sharded role: Sample stored validated wherever a store is reopened
+  under a prune.
+- The port check compares bases by name as written, and counts only test methods defined in the
+  module. `test_one_timestamp_per_write` subclasses classes of other modules, so its inherited
+  tests are not compared there. 03b decides whether they need to be.
+- The wider receiver rule (log §2 item 5) brings 03b's `super().assertIdentical()`,
+  `mock.assert_not_called()` and `unittest.TestCase().assertRaises` into the skeleton.
+
+*Issues.* `[02-no-test-reaches-revalidate]` and `[01-no-ported-test-pins-the-shard-key-assignment]`
+are closed; `[01-package-prose-names-sgks-layout]` stands at 114 lines in 23 files. The review
+opens nothing, and the index stays at 6.
+
+*Residue fixed in this follow-up:*
+- "this commit" → `11247c7` in the log, the board and `prompts/INDEX.md`;
+- README's header, and its §2 status for 03a;
+- this paragraph and the notes line.
+
 ## 2. Gates outside this repository (README §7)
 
 | Gate | Status |
@@ -308,7 +421,7 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
   - **Assigned (2026-10-07):** to prompt 03a (U10). None of 03a's 76 SGK tests compares the
     saved shard map with the one in memory, so 03a adds `test_shard_key_assignment.py`, which
     assigns shard keys out of serial order and which the `key_id` binding must fail (03a §2.5).
-  - **Closed (2026-10-07) by prompt 03a** (this commit, log 03a §4). The new module
+  - **Closed (2026-10-07) by prompt 03a** (`11247c7`, log 03a §4). The new module
     `datastorekit/tests/test_shard_key_assignment.py` assigns shard keys out of serial order
     (a get of keypoint A killed on a replica, the store reopened so that the check at open copies
     A with no key, then B and C got and A's key assigned last: the order 2, 3, 1), and requires
@@ -331,7 +444,7 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
   - **Assigned (2026-10-07):** to prompt 03a (U10). `test_reconcile_at_open`'s
     `TestKillAndReopen.test_validate_of_a_background_model` expects "validated recomputed"
     actions, and on `Gadget` reaches `revalidate`; (k)'s diff must fail it (03a §2.5).
-  - **Closed (2026-10-07) by prompt 03a** (this commit, log 03a §4). The ported
+  - **Closed (2026-10-07) by prompt 03a** (`11247c7`, log 03a §4). The ported
     `test_reconcile_at_open.TestKillAndReopen.test_validate_of_a_background_model` interrupts the
     replicated validate of a `Gadget` and expects `"validated recomputed"` actions, which come from
     `Gadget_factory.revalidate`. 02's breakage (k), replayed as 03a's (i), fails it (three
