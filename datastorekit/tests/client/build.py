@@ -20,6 +20,7 @@ from datastorekit.tests.client.objects import (
     Gadget,
     GadgetPart,
     Sample,
+    SerialHandle,
     Tessera,
     dial_setting,
     ephemeral_probe,
@@ -303,3 +304,45 @@ def build_store(directory, shards: int = 3) -> Path:
         finally:
             cluster.close_pool(pool)
     return primary
+
+
+# ------------------------------------------------------------------------------------------------
+# the fixtures of the ported write-path tests (added by prompt 03a)
+# ------------------------------------------------------------------------------------------------
+
+# the knob setting a framed Gadget is written on, and the keypoint positions its parts are got
+# over
+FRAME_TURNS = 1
+PART_POSITIONS = (1.0e4, 1.0e2, 1.0)
+
+
+def make_framed_gadget(
+    pool,
+    tags: Sequence[tag_entry],
+    positions: Sequence[float] = PART_POSITIONS,
+    scale: float = 1.0,
+    label: str = "standin-gadget",
+) -> Gadget:
+    """
+    An unstored ``Gadget`` labelled ``label``, with ``tags`` and one part per position of
+    ``positions``, as a computation would leave it. Its frame (a ``knob_setting``) and its
+    keypoints (one vectorized get, every keypoint marked) are got through ``pool``, both
+    replicated gets. Part ``i`` has the value ``scale * (1 + position)`` of its keypoint, so that
+    a ``scale`` other than 1 gives a Gadget whose row and tags are the same and whose parts
+    differ.
+    """
+    points = get_keypoints(pool, positions, marked=True)
+    frame = get_knob(pool, FRAME_TURNS)
+    return make_gadget(label, frame, tags, [scale * (1.0 + p.position) for p in points])
+
+
+def make_sample_on(
+    alias: keypoint_alias, gadget_serial: int = 1, code: str = "standin-sample"
+) -> Sample:
+    """
+    An unstored ``Sample`` with no tags and no members, on the keypoint that ``alias`` names (so
+    on that keypoint's shard), keyed on a Gadget given only by its serial
+    (``objects.SerialHandle``): the factory reads only its ``store_id``, and the layer enforces
+    no foreign key across a store.
+    """
+    return make_sample(alias.keypoint, SerialHandle(gadget_serial), code)

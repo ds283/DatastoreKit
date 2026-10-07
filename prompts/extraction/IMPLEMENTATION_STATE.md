@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-07 · **Status: IN PROGRESS — 3 of 8 prompts written (01, 02, 03a), 2 landed (01, 02).**
+**Last updated:** 2026-10-07 · **Status: IN PROGRESS — 3 of 8 prompts written (01, 02, 03a), 3 landed (01, 02, 03a).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 and U8–U12 the same day (README §6.2); U10 split 03 into 03a and 03b.
 
@@ -48,7 +48,7 @@ and U8–U12 the same day (README §6.2); U10 split 03 into 03a and 03b.
 |---|---|---|---|---|---|---|
 | 01 | [Import the layer](01-import-the-layer.md) | package, 15 files and 2 tools, the two internalised dependencies, 88 tests, import guard | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `8bc60a5` | [log](logs/01-import-the-layer.md) |
 | 02 | [The neutral test client](02-the-neutral-test-client.md) | `docs/client-contract.md`, the test client, the stand-in pool; 01's tests onto the client's names (U8) | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `e988e69` | [log](logs/02-the-neutral-test-client.md) |
-| 03a | [Port the replicated-write tests](03a-port-the-replicated-write-tests.md) | 76 tests (replicated write, check at open, prune at open); the port check; the `key_id` pin and `revalidate` | ✍️ yes, 2026-10-07 | ⬜ | — | — |
+| 03a | [Port the replicated-write tests](03a-port-the-replicated-write-tests.md) | 76 tests (replicated write, check at open, prune at open); the port check; the `key_id` pin and `revalidate` | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | this commit | [log](logs/03a-port-the-replicated-write-tests.md) |
 | 03b | Port the open and read-only tests | 53 tests, 80 run (version row, read-only pool, one timestamp, shard records) | ⬜ | ⬜ | — | — |
 | 04 | Port the schema and inventory tests | 175 tests; the package guard | ⬜ | ⬜ | — | — |
 | 05 | Supported versions and CI | `pyproject.toml` ranges, both ends, Actions; tag `v0.1.0` | ⬜ | ⬜ | — | — |
@@ -262,6 +262,27 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     name SGK's layout or campaigns outside the pattern: `:2` (`var/`), `:195`, `:225`, `:252`
     (`a3-v2-readiness prompt 02`), `:286` ("the production table lists"), `:314`, `:397`
     ("prompt 02"). Log 02 §5 item 5.
+  - **Measured by 03a (2026-10-07):** **114 lines in 23 files.** 02's figure, 104 in 20, was
+    first reproduced at `03fa97a` (method: log 03a §8; the pattern above with "`Datastore.<module>`"
+    read as a module of the layer, this repository's own `docs/` paths not counted, and 02's moved
+    comment counted by hand). The three ported modules add 10 lines, all SGK's prose ported
+    unchanged under 03a §2.1: `tests/test_reconcile_at_open.py` 5 (`:2`, `:9`, `:733`, `:1061`,
+    `:1092`), `tests/test_replicated_write.py` 3 (`:2`, `:6`, `:615`), `tests/test_prune_at_open.py`
+    2 (`:2`, `:12`); `tests/test_shard_key_assignment.py` adds none. Their SGK references outside
+    the pattern (`var/`, `utilities.WallclockTimer`, SGK's commit `e53f323`, "log 01", "the audit
+    probe", `hot_journal_probe.py`) are listed in log 03a §7 item 2.
+- **[02-an-unsupplied-sharded-table-raises-keyerror]** *(opened 2026-10-07 by prompt 02)*
+  - **The defect.** Reopening a store whose primary records a sharded table that the constructor's
+    `sharded_tables` lacks raises a bare `KeyError('<table>')` from `_read_shard_data`
+    (`datastorekit/SQL/ShardedPool.py:1015`, `attr = self._sharded_tables[row.table]`), before the
+    list it prints and the `RuntimeError` meant for that case (`:1022-1045`) are reached. Probed with
+    `shard_store_fixtures` (log 02 §5 item 1).
+  - **Impact.** The open is still refused; the refusal does not say why. Inherited from SGK
+    unchanged.
+  - **Next step.** Fix once rule 8 lifts (after 05), with a test that opens such a store. Unassigned.
+
+## 4. Resolved issues
+
 - **[01-no-ported-test-pins-the-shard-key-assignment]** *(opened 2026-10-07 by the orchestrator's
   review of 01)*
   - **The defect.** No test in the suite reaches `ShardedPool._assign_shard_keys`
@@ -287,6 +308,14 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
   - **Assigned (2026-10-07):** to prompt 03a (U10). None of 03a's 76 SGK tests compares the
     saved shard map with the one in memory, so 03a adds `test_shard_key_assignment.py`, which
     assigns shard keys out of serial order and which the `key_id` binding must fail (03a §2.5).
+  - **Closed (2026-10-07) by prompt 03a** (this commit, log 03a §4). The new module
+    `datastorekit/tests/test_shard_key_assignment.py` assigns shard keys out of serial order
+    (a get of keypoint A killed on a replica, the store reopened so that the check at open copies
+    A with no key, then B and C got and A's key assigned last: the order 2, 3, 1), and requires
+    that the map saved in the primary's `shard_keys` equals the map the pool held before closing
+    and the reopened pool's, and that every Sample is on the shard that map names after the
+    reopen. 01's `key_id` diff (`SQL/ShardedPool.py:3561`) fails its three tests on every run (log
+    03a §6.2 (j)).
 
 - **[02-no-test-reaches-revalidate]** *(opened 2026-10-07 by prompt 02)*
   - **The defect.** No test reaches a factory's `revalidate`. Its one call site is
@@ -302,17 +331,12 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
   - **Assigned (2026-10-07):** to prompt 03a (U10). `test_reconcile_at_open`'s
     `TestKillAndReopen.test_validate_of_a_background_model` expects "validated recomputed"
     actions, and on `Gadget` reaches `revalidate`; (k)'s diff must fail it (03a §2.5).
-- **[02-an-unsupplied-sharded-table-raises-keyerror]** *(opened 2026-10-07 by prompt 02)*
-  - **The defect.** Reopening a store whose primary records a sharded table that the constructor's
-    `sharded_tables` lacks raises a bare `KeyError('<table>')` from `_read_shard_data`
-    (`datastorekit/SQL/ShardedPool.py:1015`, `attr = self._sharded_tables[row.table]`), before the
-    list it prints and the `RuntimeError` meant for that case (`:1022-1045`) are reached. Probed with
-    `shard_store_fixtures` (log 02 §5 item 1).
-  - **Impact.** The open is still refused; the refusal does not say why. Inherited from SGK
-    unchanged.
-  - **Next step.** Fix once rule 8 lifts (after 05), with a test that opens such a store. Unassigned.
-
-## 4. Resolved issues
+  - **Closed (2026-10-07) by prompt 03a** (this commit, log 03a §4). The ported
+    `test_reconcile_at_open.TestKillAndReopen.test_validate_of_a_background_model` interrupts the
+    replicated validate of a `Gadget` and expects `"validated recomputed"` actions, which come from
+    `Gadget_factory.revalidate`. 02's breakage (k), replayed as 03a's (i), fails it (three
+    subtests) and `TestPruningAfterRepair.test_an_interrupted_validate` (both subtests) (log 03a
+    §6.2 (i)).
 
 - **[01-ported-tests-use-sgk-table-names]** *(opened 2026-10-07 by prompt 01)*
   - **The defect.** The ported fixture and tests, imported unchanged (README §5 rule 6), use SGK's

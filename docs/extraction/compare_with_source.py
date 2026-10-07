@@ -47,10 +47,18 @@ is classified by a line number.
   removed by ``black``, so they are D-fmt.
 - D-fmt: ``black`` (25.1.0, with no configuration) on the result.
 
+**A ported file is not compared here** (prompt 03a §2.4). A test module re-fixtured onto the neutral
+test client (kind PORTED) cannot equal its source line by line: its fixture calls, table names and
+expected values change by the classes of prompt 03a §2.1. It is checked by
+``compare_ported_tests.py`` instead, which compares its test names and each function's assertion
+skeleton with the source's. Here a PORTED entry of FILES requires only that the source exists at the
+import commit and the package file exists; its lines are not compared, and no class above applies to
+it. Each is reported as "ported: checked by compare_ported_tests.py", and the summary counts them.
+
 **An unaccounted file fails** (prompt 02 §2.6). Every ``.py`` file under ``datastorekit/`` (outside
-``__pycache__``) is either compared (FILES) or declared to have no source (NO_SOURCE). Any other is
-reported as NOT ACCOUNTED FOR, and so is a declared file that is missing; either makes the check
-fail.
+``__pycache__``) is either in FILES (compared, or PORTED) or declared to have no source (NO_SOURCE).
+Any other is reported as NOT ACCOUNTED FOR, and so is a declared file that is missing; either makes
+the check fail.
 
 The script exits 0 when every differing line is classified, every file exists on both sides and
 every package file is accounted for; 1 otherwise; and 2 when it cannot run (wrong ``black``, or
@@ -79,6 +87,7 @@ PACKAGE_DIR = REPO_ROOT / "datastorekit"
 MODULE = "module"
 INTERNALISED = "internalised"
 SPLIT = "split"
+PORTED = "ported"
 FILES: List[Tuple[str, str, str]] = (
     [
         ("Datastore/__init__.py", "datastorekit/__init__.py", MODULE),
@@ -136,11 +145,20 @@ FILES: List[Tuple[str, str, str]] = (
             SPLIT,
         ),
     ]
+    # prompt 03a: re-fixtured onto the neutral client, checked by compare_ported_tests.py
+    + [
+        (f"Datastore/tests/{name}.py", f"datastorekit/tests/{name}.py", PORTED)
+        for name in (
+            "test_replicated_write",
+            "test_reconcile_at_open",
+            "test_prune_at_open",
+        )
+    ]
 )
 
 # Files in the package that have no source, and are not compared: the import guard (prompt 01),
-# and the neutral test client and its tests (prompt 02). Every other file under datastorekit/ is in
-# FILES, or the check fails.
+# the neutral test client and its tests (prompt 02), and the shard-key assignment's test (prompt
+# 03a). Every other file under datastorekit/ is in FILES, or the check fails.
 NO_SOURCE = {
     "datastorekit/tests/test_package_imports.py",
     "datastorekit/tests/client/__init__.py",
@@ -149,6 +167,7 @@ NO_SOURCE = {
     "datastorekit/tests/client/registry.py",
     "datastorekit/tests/client/build.py",
     "datastorekit/tests/test_neutral_client.py",
+    "datastorekit/tests/test_shard_key_assignment.py",
 }
 
 # D-int: what each internalised module takes from its source.
@@ -788,11 +807,13 @@ def main(argv: List[str]) -> int:
     )
     print("removed, and the package lines it accounts for.")
     print()
-    width = max(len(p) for _, p, _ in FILES)
+    compared_files = [f for f in FILES if f[2] != PORTED]
+    ported_files = [f for f in FILES if f[2] == PORTED]
+    width = max(len(p) for _, p, _ in compared_files)
     print(f"{'file':<{width}}  " + "  ".join(f"{c:>12}" for c in CLASSES))
     totals = {cls: [0, 0] for cls in CLASSES}
     details = []
-    for source_path, package_path, kind in FILES:
+    for source_path, package_path, kind in compared_files:
         out = []
         counts = compare(source_path, package_path, kind, args.show, out)
         cells = []
@@ -810,6 +831,26 @@ def main(argv: List[str]) -> int:
         + "  ".join(f"{f'-{t[0]}/+{t[1]}':>12}" for t in totals.values())
     )
 
+    # the ported files: the source at the import commit and the package file must both exist
+    ported_missing = []
+    ported_lines = []
+    for source_path, package_path, _ in ported_files:
+        if git_show(source_path) is None:
+            ported_missing.append(f"{source_path} at {IMPORT_COMMIT}")
+            ported_lines.append(
+                f"ported (MISSING in the source): {package_path} (from {source_path})"
+            )
+        elif not (REPO_ROOT / package_path).is_file():
+            ported_missing.append(package_path)
+            ported_lines.append(
+                f"ported (MISSING in the package): {package_path} (from {source_path})"
+            )
+        else:
+            ported_lines.append(
+                f"ported: checked by compare_ported_tests.py: {package_path} "
+                f"(from {source_path})"
+            )
+
     compared = {p for _, p, _ in FILES}
     present = {
         str(p.relative_to(REPO_ROOT))
@@ -820,8 +861,11 @@ def main(argv: List[str]) -> int:
     unaccounted = [other for other in others if other not in NO_SOURCE]
     missing_new = sorted(NO_SOURCE - present)
     print()
-    print(f"files compared: {len(FILES)}")
+    print(f"files compared: {len(compared_files)}")
+    print(f"files ported, checked by compare_ported_tests.py: {len(ported_files)}")
     print(f"files with no source, declared: {len(NO_SOURCE)}")
+    for line in ported_lines:
+        print(line)
     for other in others:
         note = "no source, declared" if other in NO_SOURCE else "NOT ACCOUNTED FOR"
         print(f"not compared ({note}): {other}")
@@ -836,9 +880,14 @@ def main(argv: List[str]) -> int:
 
     bad = totals[UNCLASSIFIED][0] + totals[UNCLASSIFIED][1]
     print()
-    if bad or unaccounted or missing_new:
+    if bad or unaccounted or missing_new or ported_missing:
         if bad:
             print(f"FAIL: {bad} line(s) unclassified, or a file missing")
+        if ported_missing:
+            print(
+                f"FAIL: {len(ported_missing)} ported file(s) missing: "
+                + ", ".join(ported_missing)
+            )
         if unaccounted:
             print(
                 f"FAIL: {len(unaccounted)} file(s) under datastorekit/ not accounted for"
