@@ -278,7 +278,7 @@ open until 05 is written.
   between G1 and G2, SGK lands no change to its 15 layer files or the two tools. A defect found
   there in that time is recorded on SGK's board, and fixed here after G2. **Rejected:** mirroring
   SGK changes here as they land. That makes the import commit a moving target and breaks rule 8's
-  check. Taking U3 needs a line in SGK's `CLAUDE.md` or index, which is SGK's to write.
+  check. In force from SGK `b510bc9` (2026-10-07), a section of SGK's `CLAUDE.md` naming the frozen files.
 - **U4: distribution. (taken, as recommended)** **Recommended:** clients pin a tag in `requirements.txt`
   (`datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.1.0`); an editable install is for
   developing the package only (`CLAUDE.md`, "Releases"). **Rejected:**

@@ -29,7 +29,7 @@ G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommend
 |---|---|---|
 | **U1** name | DatastoreKit / `datastorekit` | applied at set-up; changeable until 01 lands |
 | **U2** history | fresh import plus `PROVENANCE.md` | **taken** 2026-10-07 |
-| **U3** SGK layer freeze from G1 to G2 | freeze | **taken** 2026-10-07; SGK's note not yet written |
+| **U3** SGK layer freeze from G1 to G2 | freeze | **taken** 2026-10-07; in force from SGK `b510bc9` (its `CLAUDE.md`, "The datastore layer is frozen") |
 | **U4** distribution | pinned git tag in each client's `requirements.txt` | **taken** 2026-10-07 |
 | **U5** module names | keep SGK's through this campaign | **taken** 2026-10-07 |
 | **U6** supported range and CI | Python ≥ 3.12; GitHub Actions at both ends | open |
