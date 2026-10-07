@@ -1,7 +1,7 @@
 # Log 02 — the neutral test client
 
 **Subject:** Add the neutral test client, the stand-in pool and the client contract · **Commit:**
-this commit · **Date:** 2026-10-07 · **Model:** Claude Opus 5.5 · **Result:** landed.
+`e988e69` · **Date:** 2026-10-07 · **Model:** Claude Opus 5.5 · **Result:** landed.
 `docs/client-contract.md` states every fact a client supplies; the neutral client supplies each
 one; the stand-in pool is SGK's generic half; the 88 ported tests use the client's names (U8);
 `compare_with_source.py` exits 0 over 31 files and now fails on an unaccounted file;
@@ -114,7 +114,7 @@ scratchpad. Registry keys (the table names):
 11). Shard-key types: `wavenumber`, `beta_value`, `delta_Nstar`.
 
 None of the neutral client's 14 class names is among the 82, and none occurs as a whole word in the
-package's code or prose before this commit (`grep -rw`; `Tessera` was chosen over `Fragment`,
+package's code or prose before `e988e69` (`grep -rw`; `Tessera` was chosen over `Fragment`,
 whose lower-case form occurs in four test modules).
 
 ### 1.3 The role table for 03 and 04
@@ -199,7 +199,7 @@ shards=3, **kwargs)`, `open_pool_output(primary, shards=3, **kwargs)`, `close_po
    replicated `keypoint`; `Sample` keeps `validate_on_startup` only. The contract says, for each of
    the five, that it is read for replicated classes only. **STRUCTURALLY REQUIRED.**
 2. **Corrections 2-4** (orchestrator): `build_schema(sqla.MetaData(), factories)`; §2.4 re-fixtures
-   three files; breakage (m) fails a test in this commit
+   three files; breakage (m) fails a test in `e988e69`
    (`test_a_replicated_get_is_written_on_the_pinned_controller_then_copied`, written for it).
    **STRUCTURALLY REQUIRED.**
 3. **The drop groups are not each closed.** The notes read "`dependent_tables` accepts each group
@@ -417,7 +417,7 @@ exit 0
 ### 4.5 The deliberate-breakage record (§3.4)
 
 Each was checked with `git apply --check` and `git apply -R --check`, applied, run, and reverted
-with `git apply -R`, in `bash`, against the staged tree this commit records; `git diff` and the
+with `git apply -R`, in `bash`, against the staged tree `e988e69` records; `git diff` and the
 untracked list were empty after each. None is committed. No Ray process was up at any point.
 
 **(a)-(e), 01's, replayed** byte for byte from log 01 §4.4 (extracted from its ```` ```diff ````
@@ -643,7 +643,7 @@ The index is at **8 open**: 4 on this board, 4 inherited.
 
 ## 7. State handed to the next prompt
 
-- `HEAD` is this commit. The tree is clean; `venv/` unchanged.
+- `HEAD` is `e988e69`. The tree is clean; `venv/` unchanged.
 - The suite: **109** (`Ran 109 tests … OK`). 03 records 109 as its "before".
 - `compare_with_source.py` exits 0 over 31 files, with 7 declared no-source files. A file 03 or 04
   ports from SGK goes into `FILES`; a new file with no source into `NO_SOURCE`; any other fails the

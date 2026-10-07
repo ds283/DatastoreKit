@@ -43,7 +43,7 @@ and U8 the same day (README §6.2).
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [Import the layer](01-import-the-layer.md) | package, 15 files and 2 tools, the two internalised dependencies, 88 tests, import guard | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `8bc60a5` | [log](logs/01-import-the-layer.md) |
-| 02 | [The neutral test client](02-the-neutral-test-client.md) | `docs/client-contract.md`, the test client, the stand-in pool; 01's tests onto the client's names (U8) | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | this commit | [log](logs/02-the-neutral-test-client.md) |
+| 02 | [The neutral test client](02-the-neutral-test-client.md) | `docs/client-contract.md`, the test client, the stand-in pool; 01's tests onto the client's names (U8) | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `e988e69` | [log](logs/02-the-neutral-test-client.md) |
 | 03 | Port the write-path tests | 129 tests | ⬜ | ⬜ | — | — |
 | 04 | Port the schema and inventory tests | 175 tests; the package guard | ⬜ | ⬜ | — | — |
 | 05 | Supported versions and CI | `pyproject.toml` ranges, both ends, Actions; tag `v0.1.0` | ⬜ | ⬜ | — | — |
@@ -54,7 +54,7 @@ and U8 the same day (README §6.2).
 ✅ landed.
 
 **Orchestrator notes:** [`orchestrator/prompt-01.md`](orchestrator/prompt-01.md) (`bd9f461`),
-used for 01.
+used for 01; [`orchestrator/prompt-02.md`](orchestrator/prompt-02.md) (`737ad6e`), used for 02.
 
 **Orchestrator review of prompt 01 (2026-10-07).** Dispatched from `bd9f461` to one Opus
 subagent, with the note's §0 corrections and additions. Reviewed against its commit `8bc60a5`,
@@ -126,6 +126,91 @@ natural place to make an unaccounted file a failure. Recommended, not opened.
 *Residue fixed in this follow-up:* "this commit" → `8bc60a5` in the log, the board and
 `prompts/INDEX.md`; README §2's status for 01; this paragraph and the notes line.
 
+**Orchestrator review of prompt 02 (2026-10-07).** Dispatched from `737ad6e` to one Opus
+subagent, with the note's four corrections and two additions. The agent was cut off once by a
+usage limit, with its work uncommitted; it was resumed with its context, and committed once.
+Reviewed against its commit `e988e69`, with nothing landed after it. **Every check of the note's
+§3 passed**, and acceptance 1–4 are met. No stop condition fired.
+
+*At dispatch.* The note's gate held at `737ad6e`. The tree was clean, and the only worktree was
+this checkout. The suite gave `Ran 90 tests … OK`, and the check exited 0 over 30 files. SGK's
+frozen files and its stand-in pool were unchanged from `6f7f291` to SGK `HEAD` (`b510bc9`). No
+Ray process was up.
+
+*The checks.*
+1. **Scope.** `e988e69` touches 16 files: the prompt's §6 list and the records. No file under
+   `datastorekit/` outside `tests/`, no `venv/`, `*.egg-info`, `__pycache__` or scratch file.
+2. **E1, the contract.** Every constructor argument, `register()` key, hook, declaration field,
+   layer-owned name and entry point the review re-derived is in `docs/client-contract.md`.
+   Five "when wrong" lines were read and hold: `stepping` (`SQL/Datastore.py:753-755`),
+   `owner_column` (`SQL/schema.py:206-219`), `monotone_flags` (`:229-255`), `validated_column`
+   (`:268-283`) and `job_name` (stored at `SQL/ShardedPool.py:138`, read by nothing). The five
+   replicated-only items say so. No client's name or table is in it.
+3. **E2, the roles.** Read from the registry. `validated_column`, `revalidate`, `owned_serials`
+   and `validate_on_startup` are on the replicated `Gadget`, `owner_column` on the replicated
+   `GadgetPart`, and `monotone_flags` on the replicated `keypoint`. `Sample` is sharded on `"k"`,
+   with `validate_on_startup`, `read_batch`, a nullable `cross_shard` parent and a `ParentSet`.
+   The polymorphic parent is `Gadget`'s `frame`. The proxy is `keypoint_alias`. The `stepping`
+   forms are on `keypoint_alias`, `dial_setting` and `knob_setting`. `ephemeral_probe` registers
+   `None`. `read_table_config` gives `tables_arg` both ways. `__all__` is exactly the nine names.
+4. **E2, by running.** `build_store` (3 shards) in a scratch `tempfile` directory fills all 13
+   tables. `read_inventory` reads nine classes with no problem, and `ray.is_initialized()` is
+   false throughout.
+5. **E3, the stand-in pool.** Against SGK's `:1-418`, the only hunks are D-str's three module
+   paths (`:43-45`), and D-split's two imports and two renames.
+6. **E4, U8.** The word diff of the three files changes exactly the 15 lines, each inside a
+   string literal only. Per module, the set of `Class.test_name` of `737ad6e`'s 90 is unchanged
+   (by `ast`). `Ran 109 tests … OK`.
+7. **E5, the check.** It exits 0 over 31 files with 7 declared with no source: D-imp −50/+50,
+   D-str −7/+7, D-tool −26/+22, D-root −8/+6, D-fix −15/+15, D-split −169/+8, D-int −222/+11,
+   D-fmt −3/+0, unclassified 0.
+   - By reading: D-fix and D-split are transformations of the source, restricted to their files
+     (D-split also to its two methods), and an unaccounted or missing file makes `main` return 1.
+   - (a)–(i) were replayed in `bash`, and each exits 1. (a)–(e) name the same lines as at 01's
+     review. (h) is reported as NOT ACCOUNTED FOR.
+   - The orchestrator's own breakage also exits 1, naming `standin_pool.py:293`: a sixth name
+     added to D-split's registry import.
+   - The tree was clean after each.
+8. **E6, the tests bite.**
+   - (j) fails two coverage tests.
+   - (l) fails `test_audit_of_the_copy_attaches_the_copys_shard`.
+   - (m) fails `test_a_replicated_get_is_written_on_the_pinned_controller_then_copied`.
+   - (k) and (n) fail nothing, as the log records, and (k)'s issue is open.
+9. **Isolation.** From the scratchpad, with `PYTHONPATH` unset, both of §3.3's imports succeed,
+   and Ray is not initialised. The import guard passes over the new files.
+10. **E7, the records.** The log has every section of README §5.1 and each §4.4 addition,
+    including a role table with a row per imported name. The board and the index count 8, and
+    match. `black --check` (25.1.0) is clean.
+
+*Where the note was wrong, and the agent right.*
+- `QCD_Cosmology` is not in SI's registry. The note repeated the prompt's claim that all three
+  clients share it.
+- `validate_on_startup` is read for replicated classes as well, by the pool's own prune.
+- The drop groups. The note read §2.7's "accepts each group as the client declares it" as
+  `dependent_tables` returning `[]` for each group. The agent built the groups for what 04's
+  `test_drop_refuses_dangling_references` needs: a dependent reached through a declared parent
+  alone, one through a foreign key alone, and one transitively. Only `samples` is closed on its
+  own. `dependent_tables` accepts every group (none raises), and the test asserts each group's
+  measured dependents. This reading is kept: it fits the prompt's words, and the note's would
+  have left 04 nothing to refuse.
+
+*Issues.*
+- `[01-ported-tests-use-sgk-table-names]` is closed.
+- The agent opened `[02-no-test-reaches-revalidate]`, as the note expected.
+- It also opened `[02-an-unsupplied-sharded-table-raises-keyerror]`. The review confirms it:
+  `SQL/ShardedPool.py:1015` indexes `self._sharded_tables` by the very rows it has just found
+  missing.
+- The review adds a measurement to `[01-no-ported-test-pins-the-shard-key-assignment]`.
+  `_assign_shard_keys` is now reached, but the `key_id` binding stays invisible while keys are
+  assigned in serial order; the index hook is corrected.
+- The index stays at 8.
+
+*Residue fixed in this follow-up:*
+- "this commit" → `e988e69` in the log, the board and `prompts/INDEX.md`;
+- README's header, and its §2 row and status for 02. The row is amended for correction 1, so that
+  03's author reads the roles as they were built;
+- this paragraph, the notes line, and the issue measurement above.
+
 ## 2. Gates outside this repository (README §7)
 
 | Gate | Status |
@@ -187,6 +272,13 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     that writes a sharded object, reopens the store, and compares the shard map on disk with the
     one in memory, and the `key_id` mutation is one of its breakages. Unassigned until 03 is
     written.
+  - **Measured by the review of 02 (2026-10-07).** The defect's first sentence no longer holds:
+    `build_store`'s gets of `keypoint` reach `_assign_shard_keys` (`SQL/ShardedPool.py:687`,
+    `:3246`). But the `key_id` binding still fails none of the 109 (log 02 §4.5 (n), replayed at
+    the review). SQLAlchemy ignores the unknown `key_id` parameter, so `key_serial`
+    autoincrements, and since the neutral client's keys are assigned in serial order from 1, the
+    saved map equals the one in memory. The test 03 adds must assign shard keys out of serial
+    order (for example, get a later `keypoint` first), or the mutation stays invisible.
 
 - **[02-no-test-reaches-revalidate]** *(opened 2026-10-07 by prompt 02)*
   - **The defect.** No test reaches a factory's `revalidate`. Its one call site is
@@ -228,7 +320,7 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     names in the tests onto the neutral client's (§2.4), and moves the one comment in
     `tools/shard_key_audit.py:188` to `[01-package-prose-names-sgks-layout]`, since package prose
     stays unchanged until 05.
-  - **Closed (2026-10-07) by prompt 02** (this commit, log 02 §3). The 15 lines moved onto the
+  - **Closed (2026-10-07) by prompt 02** (`e988e69`, log 02 §3). The 15 lines moved onto the
     neutral client's names by the map `wavenumber` → `keypoint`, `wavenumber_serial` →
     `keypoint_serial`, `GkSource` → `Sample`, inside string literals only, as whole identifiers:
     `tests/shard_store_fixtures.py` 3, `tests/test_shard_key_audit_copy.py` 3,
