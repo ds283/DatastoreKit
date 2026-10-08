@@ -252,6 +252,20 @@ One addition: **work in this order, and run the suite after each step.**
 A ripple of the client change then shows up before any port depends on it, and the full rows are
 designed against the four modules that read the default rows already passing.
 
+**Addendum (2026-10-08), after the agent's first stop.** Correction 5, STRUCTURALLY REQUIRED, the
+user's U19 (README §6.2).
+
+5. **03a's `test_an_interrupted_store` drops `traces` too.** With §2.3 applied, `Weave` names a
+   `Tessera` (its `anchor`, and `Weave_members.anchor_serial`), so the layer refuses to drop
+   `aliases` and `tesserae` without the `traces` tables. `test_reconcile_at_open.py:1108-1114`
+   passes `tables_to_drop(["samples", "aliases", "tesserae"])`; add `"traces"` to that list
+   (R-count: the list is aliases' dependents, measured over the registry). The docstring's list of
+   those dependents may gain `traces`. No other line of 03a's or 03b's modules changes; the port
+   check's counts for `test_reconcile_at_open` stay 148 in 52 functions, and
+   `compare_with_source.py` still accounts for it as `PORTED`. This is the one exception to "03a's
+   and 03b's modules are not edited" (§2.3, §6), and the log lists it with the client's ripple.
+   The review's checks 1 and 7 read with it allowed.
+
 ## 1. Before you dispatch
 
 1. **The tree.** Record the branch and `HEAD`. `git status --short` and `git diff --cached` must

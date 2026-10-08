@@ -2,7 +2,7 @@
 
 **Last updated:** 2026-10-08 · **Status: IN PROGRESS — 5 of 9 prompts written (01, 02, 03a, 03b, 04a), 4 landed (01, 02, 03a, 03b).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
-U8–U13 the same day, and U14–U18 on 2026-10-08 (README §6.2); U10 split 03 into 03a and 03b, and
+U8–U13 the same day, and U14–U19 on 2026-10-08 (README §6.2); U10 split 03 into 03a and 03b, and
 U14 split 04 into 04a and 04b.
 
 **Campaign:** [`README.md`](README.md) ·
@@ -46,6 +46,7 @@ U14 split 04 into 04a and 04b.
 | **U16** the test about SGK's report | not ported; declared in a `NOT_PORTED` list of the port check (04b) | **taken** 2026-10-08 |
 | **U17** the guard and the layer's frozen prose | a pinned list of known hits, exact in both directions (04b) | **taken** 2026-10-08 |
 | **U18** the neutral `Sample`'s validated flag in the inventory | 04a deletes `validated` from `Sample`'s `inventory_spec`; `Trace` takes the sharded flag | **taken** 2026-10-08, at 04a's orchestration |
+| **U19** a drop list of 03a's that the new client outgrows | 04a adds `traces` to `test_an_interrupted_store`'s `tables_to_drop` list (R-count) | **taken** 2026-10-08, at 04a's first stop |
 
 ---
 

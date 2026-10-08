@@ -9,7 +9,8 @@ G1 held and the user took U2–U5 as recommended. Its import commit is SGK `6f7f
 the same day; **prompt 03b is written** (2026-10-07), and landed as `0d5380c` (2026-10-08) and
 was reviewed. The user took U14–U17 on 2026-10-08, splitting 04 into 04a and 04b; **prompt 04a is
 written** (2026-10-08). Its orchestrator found a test the neutral client could not pass, and the
-user took U18 the same day. Each later prompt is written after the one before it has landed and been
+user took U18 the same day; its agent stopped on a 03a test the new client breaks, and the user
+took U19. Each later prompt is written after the one before it has landed and been
 reviewed, against the tree it left.
 
 ## 0. Why this campaign exists
@@ -430,6 +431,19 @@ open until 05 is written.
     groups and the sharded prune;
   - leaving the test in SGK, as U16 does for the report test, which drops the one test of that
     rule.
+- **U19: a drop list of 03a's that the new client outgrows. (taken 2026-10-08, as recommended)**
+  04a's agent stopped at step 1 (prompt §5, third condition). `Weave` names a `Tessera`, as a
+  declared parent (`anchor`) and by `Weave_members`' foreign key (U15, hazard 8), so the layer
+  refuses to drop `aliases` and `tesserae` without the `traces` tables
+  (`ShardedPool._refuse_drop_that_leaves_references`). 03a's
+  `test_reconcile_at_open.TestPruningAfterRepair.test_an_interrupted_store` drops
+  `tables_to_drop(["samples", "aliases", "tesserae"])` (`:1108-1114`), "aliases' dependents", and
+  errors on both subtests, as does 03b's inheritor in `test_one_timestamp_per_write`: 4 errors.
+  **Recommended:** 04a adds `"traces"` to that one list, as R-count (a list of dependents measured
+  over the registry), and its docstring's list may say so. No assertion changes. Probed by the
+  agent: the two modules give `Ran 69 tests … OK`. **Rejected:**
+  - pointing `Weave`'s `anchor` at another class, against §2.2's map and hazard 8;
+  - putting `Weave`'s tables in the `tesserae` group, against U15's `traces` group of six.
 
 ## 7. Gates outside this repository
 
