@@ -266,6 +266,26 @@ user's U19 (README §6.2).
    and 03b's modules are not edited" (§2.3, §6), and the log lists it with the client's ripple.
    The review's checks 1 and 7 read with it allowed.
 
+**Addendum (2026-10-08), after the agent's second stop.** Two more corrections, the user's U20 and
+U21 (README §6.2).
+
+6. **U20, STRUCTURALLY REQUIRED: the witness is of the classes with a table.** The client's
+   `ephemeral_probe` registers `None`. Its record differs between `build_schema` (no `insert` key)
+   and the actor (`"insert": None`), so no one witness matches both, and
+   `test_actor_adds_only_the_inserters` raises `KeyError` on it (reproduced by the orchestrator:
+   2 failures and 1 error of 7). `test_schema_builder`'s registry, and the registry
+   `schema_description.actor_with_built_schema` and its `__main__` use, are
+   `{n: f for n, f in registry.factories.items() if f.register() is not None}` (R-help, as 03a's
+   `REPLICATED`). Capture the witness again, twice, from that registry; the first capture is
+   superseded and is not committed. The log records both captures, the superseded one's SHA-256,
+   and why. No assertion changes.
+7. **U21, IMPLEMENTATION CHOICE at the user's direction: the witness history.** In
+   `test_schema_builder`'s module docstring, rewrite the run from "The current one is …" to the end
+   of SGK's witness history (SGK `:16-34`) so that it names `schema_at_extraction-04a.json` as the
+   current witness, captured by this prompt, and says that SGK's earlier witnesses are SGK's
+   history and are not copied (§2.5). The rest of the docstring is ported unchanged. The log quotes
+   the sentence before and after.
+
 ## 1. Before you dispatch
 
 1. **The tree.** Record the branch and `HEAD`. `git status --short` and `git diff --cached` must

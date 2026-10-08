@@ -10,7 +10,7 @@ the same day; **prompt 03b is written** (2026-10-07), and landed as `0d5380c` (2
 was reviewed. The user took U14–U17 on 2026-10-08, splitting 04 into 04a and 04b; **prompt 04a is
 written** (2026-10-08). Its orchestrator found a test the neutral client could not pass, and the
 user took U18 the same day; its agent stopped on a 03a test the new client breaks, and the user
-took U19. Each later prompt is written after the one before it has landed and been
+took U19, and on its second stop U20 and U21. Each later prompt is written after the one before it has landed and been
 reviewed, against the tree it left.
 
 ## 0. Why this campaign exists
@@ -444,6 +444,26 @@ open until 05 is written.
   agent: the two modules give `Ran 69 tests … OK`. **Rejected:**
   - pointing `Weave`'s `anchor` at another class, against §2.2's map and hazard 8;
   - putting `Weave`'s tables in the `tesserae` group, against U15's `traces` group of six.
+- **U20: the schema witness and a class with no table. (taken 2026-10-08, as recommended)** 04a's
+  agent stopped a second time (prompt §5, fourth condition) on `test_schema_builder`. The client's
+  `ephemeral_probe` registers `None`, which no SGK class does. The actor's record of it carries
+  `"insert": None` and `build_schema`'s does not, so no one witness matches both descriptions,
+  and `test_actor_adds_only_the_inserters` raises `KeyError`, since the actor makes no inserter for
+  a class with no table. Both shapes are the layer's, pinned by `TestNoneRegistration`.
+  **Recommended:** `test_schema_builder` and `schema_description.actor_with_built_schema` use the
+  registry less the classes whose `register()` is `None`, the filter 03a applied to `REPLICATED`,
+  and the witness (never committed) is captured again, twice, from it. No assertion changes;
+  `TestNoneRegistration` keeps the `None` case. Probed by the agent in a scratch copy: 7 OK.
+  **Rejected:** removing `ephemeral_probe` from the client, which loses 02's coverage of a `None`
+  registration; and leaving the three tests in SGK.
+- **U21: `test_schema_builder`'s witness history. (taken 2026-10-08, as recommended)** Its module
+  docstring is SGK's history of SGK's witnesses: it names SGK tables on 12 lines, against §3.5's
+  grep, and calls `schema_at_datastore-generic-07.json` the current witness, which is false here.
+  **Recommended:** 04a rewrites that run, from "The current one is …" to the end of the history,
+  to name `schema_at_extraction-04a.json` as the current witness and to say that SGK's earlier
+  witnesses are SGK's history and are not copied (§2.5); the rest of the docstring is ported
+  unchanged. **Rejected:** removing only the table names, which keeps a false sentence; and
+  mapping them by the table map, which describes changes the neutral client never had.
 
 ## 7. Gates outside this repository
 
