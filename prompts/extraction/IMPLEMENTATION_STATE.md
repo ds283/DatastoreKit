@@ -62,7 +62,7 @@ U14 split 04 into 04a and 04b.
 | 03a | [Port the replicated-write tests](03a-port-the-replicated-write-tests.md) | 76 tests (replicated write, check at open, prune at open); the port check; the `key_id` pin and `revalidate` | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `11247c7` | [log](logs/03a-port-the-replicated-write-tests.md) |
 | 03b | [Port the open and read-only tests](03b-port-the-open-and-read-only-tests.md) | 53 tests, 80 run (version row, read-only pool, one timestamp, shard records); the two client classes (U13); the neutral reader sequence (U11) | ✍️ yes, 2026-10-07 | ✅ 2026-10-08 | `0d5380c` | [log](logs/03b-port-the-open-and-read-only-tests.md) |
 | 04a | [Port the store and inventory tests](04a-port-the-store-and-inventory-tests.md) | 85 tests (inventory, store schema, reader, foreign keys, schema builder); `real_store_fixtures` and `schema_description` on neutral rows; the schema witness; the client's sharded family (U15) | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | `7ceed25` | [log](logs/04a-port-the-store-and-inventory-tests.md) |
-| 04b | [Port the declaration and registry tests](04b-port-the-declaration-and-registry-tests.md) | 89 of 90 tests (inventory declarations, declared facts, layer registry, drop refusal; U16's one not ported); the package guard with its vocabulary as data (U17); `test_parent_set_members` | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | this commit | [log](logs/04b-port-the-declaration-and-registry-tests.md) |
+| 04b | [Port the declaration and registry tests](04b-port-the-declaration-and-registry-tests.md) | 89 of 90 tests (inventory declarations, declared facts, layer registry, drop refusal; U16's one not ported); the package guard with its vocabulary as data (U17); `test_parent_set_members` | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | `0c66505` | [log](logs/04b-port-the-declaration-and-registry-tests.md) |
 | 05 | Supported versions and CI | `pyproject.toml` ranges, both ends, Actions; tag `v0.1.0` | ⬜ | ⬜ | — | — |
 | 06 | Version-keyed lookups | `key_on_version`; tag `v0.2.0` | ⬜ | ⬜ | — | — |
 | 07 | Close-out and adoption handover | `docs/adoption/` checklists; verification document | ⬜ | ⬜ | — | — |
@@ -75,7 +75,8 @@ used for 01; [`orchestrator/prompt-02.md`](orchestrator/prompt-02.md) (`737ad6e`
 [`orchestrator/prompt-03a.md`](orchestrator/prompt-03a.md) (`f7f053d`), used for 03a;
 [`orchestrator/prompt-03b.md`](orchestrator/prompt-03b.md) (`72cf34a`), used for 03b;
 [`orchestrator/prompt-04a.md`](orchestrator/prompt-04a.md) (`ae94aaa`, with addenda at `66535b2` and
-`74c6343`), used for 04a.
+`74c6343`), used for 04a; [`orchestrator/prompt-04b.md`](orchestrator/prompt-04b.md) (`f79f254`,
+with an addendum at `7ee9b6e`), used for 04b.
 
 **Orchestrator review of prompt 01 (2026-10-07).** Dispatched from `bd9f461` to one Opus
 subagent, with the note's §0 corrections and additions. Reviewed against its commit `8bc60a5`,
@@ -601,6 +602,104 @@ stands at 146 lines in 35 files. Nothing is closed. The index goes to 7.
 - the note's line range;
 - this paragraph and the notes line.
 
+**Orchestrator review of prompt 04b (2026-10-08).** Dispatched from `f79f254` to one Opus
+subagent, with the note's five corrections and four additions. The agent stopped once,
+uncommitted, on two `TestTheRecords` tests that cannot hold over a class that registers `None`
+(U22, the note's correction 6, `7ee9b6e`; the user also kept the agent's fifth `NOT_PORTED` rule,
+correction 7). It was resumed with its context. Reviewed against its commit `0c66505`, with
+nothing landed after it. **Every check of the note's §3 passed**, and acceptance 1–4 are met. No
+other stop condition fired.
+
+*At dispatch.* The note's gate held at `a80af57`. The tree was clean, and the only worktree was
+this checkout. The suite gave `Ran 353 tests … OK`, and both checks exited 0. SGK's layer was
+unchanged from `6f7f291` to `b510bc9`, and CPBH's and SI's `HEAD`s were the prompt's `52142d7` and
+`00d254e`. No Ray process was up. While writing the note the orchestrator:
+- re-measured §2.2 and probed hazards 7, 8 and 9 on the full store and the stand-in pool;
+- rebuilt the vocabulary from the three clients by `git show` and scanned the layer with SGK's
+  own scanners: 82 tables, 301 columns, 16 packages, 398 words, one comment hit;
+- found that (k) among `store_inventory.py`'s imports is a circular import, and that appended it
+  fails none of the 353.
+
+*The checks.*
+1. **Scope.** `0c66505` touches 14 files: the five ported modules, `test_parent_set_members.py`,
+   the data file, `measure_client_vocabulary.py`, the two checks, the log, the board, the index and
+   `prompts/INDEX.md`. Nothing under `datastorekit/` outside `tests/`, nothing in `tests/client/`,
+   and no fixture, witness or earlier module.
+2. **E1, the names.** By the orchestrator's own `ast` walk, each module's test methods and class
+   bases equal SGK's at `6f7f291`, less U16's one test. `Ran 444 tests … OK`, and the loader gives
+   25, 25, 20, 11, 8 and 2.
+3. **E2, by reading.** `compare_ported_tests.py` gains the five `PORTED` pairs, `NOT_PORTED` with
+   its one entry, and §2.5's four rules with correction 7's fifth; `compare_with_source.py` gains
+   five `FILES` entries and one `NO_SOURCE`.
+4. **E2, by running.** Both checks exit 0: twenty modules with one test declared not ported (25,
+   26 and 57 for `test_inventory_declarations`, SGK's counts for the other four), and 31, 20 and
+   10. All 16 of the log's diffs pass `git apply --check` and `-R --check` as recorded. (a)–(d),
+   (p) and (q), replayed, each exit 1, naming what the log says. The orchestrator's two exit 1:
+   one `assertEqual` deleted from `test_each_group_alone_needs_its_measured_dependents`, and
+   `_LayerTestCase` removed ("class missing from the package").
+5. **E3, by reading.** The two retargeted classes change only in `PROJECT_PACKAGES`,
+   `FORBIDDEN_MODULES`, the factory prefix and §2.4's `any(...)` membership expression. U22's
+   `WITH_A_TABLE` reaches exactly the two `build_schema` calls. `DECLARED` holds the three; the
+   test keeps its "four" name.
+6. **E3, control flow.** The orchestrator's own `ast` comparison covers SGK's 154 functions. The
+   only differences are the log's: U16's test; the generator of §2.4; the guard's `_clients` and
+   `extra_names`, `registry_words`' second comprehension, `layer_files`' single filter, and
+   `import_allowed` without SGK's `RayTools` branch (D2).
+7. **E4, the data.** `measure_client_vocabulary.py`, run from a copy of `0c66505`'s tree to a
+   scratch path, gives the committed file byte for byte: 19,733 bytes, SHA-256 `98af1124…7f332e`.
+   It reads the clients only by `git show`, `git ls-tree` and `git rev-parse`. Each client's
+   registry keys, column names and packages equal the orchestrator's own measurement, and the
+   guard's functions give 80 tables, 300 columns, 16 packages and 398 words.
+8. **E4, the guard.** It imports only the standard library and `datastorekit.contract`.
+   `KNOWN_HITS` holds the one comment hit with its reason; `assertNoHits` is one `assertEqual`
+   against it. `layer_files()` gives 20 files, holding the twelve of `AUDIT_LIST`. A client word
+   added to `store_reader.py`'s docstring fails `test_no_string_or_docstring`, naming
+   `store_reader.py:2 GkSource`.
+9. **E5, the retargeted classes.** (k), appended, fails the four tests correction 1 named; (n)
+   fails three, all but `test_reading_records_loads_no_project_module`. The orchestrator's own,
+   `import datastorekit.tests.client.factories` appended to `store_reader.py`, fails
+   `TestTheLayerImportsNoClient`'s two tests and `test_every_import_is_allowed`.
+10. **E6, the issue.** (l) fails both tests of `test_parent_set_members`, on assertions, and
+    nothing else.
+11. **E7, the layer.** Replayed (e)–(j) and (m) on the full suite. The failing tests are exactly
+    the log's, including 04a's `test_every_class_has_a_record` under (e), 02's three subtests
+    under (f), and under (h) 4 failures and 26 errors of 02's, 03a's and 03b's prune and repair
+    tests. The tree was clean after each.
+12. **E8, the records.**
+    - The log has every section of README §5.1 and each §4.5 addition, including the 89-row port
+      table and (a)–(q).
+    - `[01-package-prose-names-sgks-layout]` is 155 lines in 40 files. The orchestrator reproduced
+      it by log 03a §8's method, with 102 at `8bc60a5` and 146 at `7ceed25` first.
+    - The index has 6 rows, and says 6. `black --check` (25.1.0) is clean. No Ray process was up
+      afterwards.
+
+*Where the note was wrong, and the agent right.*
+- **`ephemeral_probe` and `build_schema`.** The note checked the class against the inventory, not
+  against `build_schema`'s records, and so missed the two tests U22 settled.
+- **Correction 4** gave the guard's derived counts; the agent's data file holds only what was
+  read (82 keys, 325 column names, 20 packages), with the derived counts in its log. That is
+  better: the file is a measurement, and the rule is the guard's.
+
+*Kept, though beyond the prompt's letter.*
+- `NOT_PORTED`'s fifth rule and its breakage (q) (correction 7).
+- `EXTRA_NAMES` read from SGK's guard into the data file, under SGK.
+- Two local variables renamed (`tolerance`, `tk_numeric`) so that the vocabulary grep finds no
+  client name outside the guard and its data.
+
+*Observations.* The guard's comment on `_NOT_PROJECT_PACKAGES` reads garbled ("and ``config``,
+which "config" is an English word") and still calls `Datastore` and `RayTools` "part of the
+layer", which here they are not. It is prose of the kind `[01-package-prose-names-sgks-layout]`
+rewrites after 05, and is left for it.
+
+*Issues.* `[04a-no-test-pins-a-second-parent-set-member]` is closed (§4).
+`[01-package-prose-names-sgks-layout]` stands at 155 lines in 40 files. Nothing is opened. The
+index is 6.
+
+*Residue fixed in this follow-up:*
+- "this commit" → `0c66505` in the log, the board and `prompts/INDEX.md`;
+- README's header, and its §2 status for 04b;
+- this paragraph and the notes line.
+
 ## 2. Gates outside this repository (README §7)
 
 | Gate | Status |
@@ -727,7 +826,7 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     `test_the_full_store_resolves_no_absent_parent_as_unresolved` walks the member field `anchor`
     only. So 04b adds `datastorekit/tests/test_parent_set_members.py`, whose two tests the
     deletion must fail (04b §2.6).
-  - **Closed (2026-10-08) by prompt 04b** (this commit, log 04b §4). The new module
+  - **Closed (2026-10-08) by prompt 04b** (`0c66505`, log 04b §4). The new module
     `datastorekit/tests/test_parent_set_members.py` requires that `Weave`'s
     `parent_sets["strands"]` is `[("anchor", "Tessera"), ("origin", "Trace")]` in that order, and
     that setting `Weave_members` row 702's `origin_serial` from 3 to 1 (`vary_row`, on

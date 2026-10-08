@@ -1,6 +1,6 @@
 # Log 04b — port the declaration and registry tests, and write the package's guard
 
-**Subject:** Port the declaration and registry tests and write the guard · **Commit:** this commit
+**Subject:** Port the declaration and registry tests and write the guard · **Commit:** `0c66505`
 · **Date:** 2026-10-08 · **Model:** Claude Opus 5.5 · **Result:** landed.
 
 SGK's `test_inventory_declarations` (25 of 26; U16's one test declared not ported),
@@ -1388,7 +1388,7 @@ The index is at **6 open**: 2 on this board, 4 inherited.
 
 ## 10. State handed to the next prompt
 
-- `HEAD` is this commit. The tree is clean, and `venv/` is unchanged.
+- `HEAD` is `0c66505`. The tree is clean, and `venv/` is unchanged.
 - **The suite is 444** (`Ran 444 tests … OK`). 05 records 444 as its "before".
 - **The checks.** `compare_ported_tests.py` exits 0 over twenty modules with one test declared not
   ported; `compare_with_source.py` exits 0 with 31 compared, 20 `PORTED` and 10 with no source.
