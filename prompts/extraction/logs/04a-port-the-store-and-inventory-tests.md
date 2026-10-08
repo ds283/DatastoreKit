@@ -1,6 +1,6 @@
 # Log 04a — port the store and inventory tests
 
-**Subject:** Port the store, reader, inventory and schema tests · **Commit:** this commit ·
+**Subject:** Port the store, reader, inventory and schema tests · **Commit:** `7ceed25` ·
 **Date:** 2026-10-08 · **Model:** Claude Opus 5.5 · **Result:** landed.
 
 SGK's five modules now run in `datastorekit/tests/` under their names, on the neutral client and a
@@ -1467,7 +1467,7 @@ The index is at **6 open**: 2 on this board, 4 inherited.
 
 ## 9. State handed to the next prompt (04b)
 
-- `HEAD` is this commit. The tree is clean, and `venv/` is unchanged.
+- `HEAD` is `7ceed25`. The tree is clean, and `venv/` is unchanged.
 - **The suite is 353** (`Ran 353 tests … OK`). 04b records 353 as its "before".
 - **The checks.**
   - `compare_ported_tests.py` exits 0 over `PORTED`'s fifteen pairs.

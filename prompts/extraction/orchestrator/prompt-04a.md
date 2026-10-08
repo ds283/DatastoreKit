@@ -281,7 +281,7 @@ U21 (README §6.2).
    and why. No assertion changes.
 7. **U21, IMPLEMENTATION CHOICE at the user's direction: the witness history.** In
    `test_schema_builder`'s module docstring, rewrite the run from "The current one is …" to the end
-   of SGK's witness history (SGK `:16-34`) so that it names `schema_at_extraction-04a.json` as the
+   of SGK's witness history (SGK `:16-35`) so that it names `schema_at_extraction-04a.json` as the
    current witness, captured by this prompt, and says that SGK's earlier witnesses are SGK's
    history and are not copied (§2.5). The rest of the docstring is ported unchanged. The log quotes
    the sentence before and after.

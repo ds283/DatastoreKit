@@ -60,7 +60,7 @@ U14 split 04 into 04a and 04b.
 | 02 | [The neutral test client](02-the-neutral-test-client.md) | `docs/client-contract.md`, the test client, the stand-in pool; 01's tests onto the client's names (U8) | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `e988e69` | [log](logs/02-the-neutral-test-client.md) |
 | 03a | [Port the replicated-write tests](03a-port-the-replicated-write-tests.md) | 76 tests (replicated write, check at open, prune at open); the port check; the `key_id` pin and `revalidate` | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `11247c7` | [log](logs/03a-port-the-replicated-write-tests.md) |
 | 03b | [Port the open and read-only tests](03b-port-the-open-and-read-only-tests.md) | 53 tests, 80 run (version row, read-only pool, one timestamp, shard records); the two client classes (U13); the neutral reader sequence (U11) | ✍️ yes, 2026-10-07 | ✅ 2026-10-08 | `0d5380c` | [log](logs/03b-port-the-open-and-read-only-tests.md) |
-| 04a | [Port the store and inventory tests](04a-port-the-store-and-inventory-tests.md) | 85 tests (inventory, store schema, reader, foreign keys, schema builder); `real_store_fixtures` and `schema_description` on neutral rows; the schema witness; the client's sharded family (U15) | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | this commit | [log](logs/04a-port-the-store-and-inventory-tests.md) |
+| 04a | [Port the store and inventory tests](04a-port-the-store-and-inventory-tests.md) | 85 tests (inventory, store schema, reader, foreign keys, schema builder); `real_store_fixtures` and `schema_description` on neutral rows; the schema witness; the client's sharded family (U15) | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | `7ceed25` | [log](logs/04a-port-the-store-and-inventory-tests.md) |
 | 04b | Port the declaration and registry tests | 90 tests (inventory declarations, declared facts, layer registry, drop refusal); the package guard (U16, U17) | ⬜ | ⬜ | — | — |
 | 05 | Supported versions and CI | `pyproject.toml` ranges, both ends, Actions; tag `v0.1.0` | ⬜ | ⬜ | — | — |
 | 06 | Version-keyed lookups | `key_on_version`; tag `v0.2.0` | ⬜ | ⬜ | — | — |
@@ -72,7 +72,9 @@ U14 split 04 into 04a and 04b.
 **Orchestrator notes:** [`orchestrator/prompt-01.md`](orchestrator/prompt-01.md) (`bd9f461`),
 used for 01; [`orchestrator/prompt-02.md`](orchestrator/prompt-02.md) (`737ad6e`), used for 02;
 [`orchestrator/prompt-03a.md`](orchestrator/prompt-03a.md) (`f7f053d`), used for 03a;
-[`orchestrator/prompt-03b.md`](orchestrator/prompt-03b.md) (`72cf34a`), used for 03b.
+[`orchestrator/prompt-03b.md`](orchestrator/prompt-03b.md) (`72cf34a`), used for 03b;
+[`orchestrator/prompt-04a.md`](orchestrator/prompt-04a.md) (`ae94aaa`, with addenda at `66535b2` and
+`74c6343`), used for 04a.
 
 **Orchestrator review of prompt 01 (2026-10-07).** Dispatched from `bd9f461` to one Opus
 subagent, with the note's §0 corrections and additions. Reviewed against its commit `8bc60a5`,
@@ -445,6 +447,159 @@ Nothing was opened or closed, and the index stays at 6.
 - README's header, and its §2 status for 03b;
 - this paragraph and the notes line.
 
+**Orchestrator review of prompt 04a (2026-10-08).** Dispatched from `ae94aaa` to one Opus
+subagent, with the note's four corrections and five additions. The agent stopped twice, uncommitted,
+and was resumed with its context each time:
+- at its first step, on 03a's `test_an_interrupted_store`, which the new client breaks (U19, the
+  note's correction 5, `66535b2`);
+- on `test_schema_builder`, which cannot hold over a class that registers `None` (U20 and U21,
+  corrections 6 and 7, `74c6343`).
+
+Reviewed against its commit `7ceed25`, with nothing landed after it. **Every check of the note's
+§3 passed**, and acceptance 1–4 are met. No other stop condition fired.
+
+*At dispatch.* The note's gate held at `ae94aaa`. The tree was clean, and the only worktree was
+this checkout. The suite gave `Ran 268 tests … OK`, and both checks exited 0. SGK's `Datastore/`,
+`tools/`, `utilities.py` and `config/` were unchanged from `6f7f291` to SGK `HEAD` (`b510bc9`). No
+Ray process was up. While writing the note the orchestrator probed:
+- hazards 2, 6 and 10 on `build_store` and a stand-in pool;
+- breakage (h), which already failed two of 03b's tests;
+- U18's one line, against the 268.
+
+It also found the `Sample` conflict that became U18.
+
+*The checks.*
+1. **Scope.** `7ceed25` touches 21 files:
+   - the five modules, the two fixtures and the witness;
+   - the client's four files, `test_neutral_client.py`, and `test_reconcile_at_open.py` (U19's 3
+     lines only);
+   - the contract and the two checks;
+   - the log, the board, the index and `prompts/INDEX.md`.
+
+   Nothing under `datastorekit/` outside `tests/`. No change to `standin_pool.py`,
+   `shard_store_fixtures.py`, `client/reader.py`, or 03b's modules. No `venv/`, `*.egg-info`,
+   `__pycache__` or scratch file.
+2. **E1, the names.**
+   - By the orchestrator's own `ast` walk, each module's test methods and each class's bases equal
+     SGK's at `6f7f291`, with no rename.
+   - The fixtures define every public name of SGK's, with the same parameter lists.
+   - The 268 test ids of `ae94aaa` are all present, and the 85 new ones split 42, 13, 15, 8 and 7.
+     `Ran 353 tests … OK`, and the loader gives the same per module.
+3. **E2, the port check, by reading.** `compare_ported_tests.py` gains seven `PORTED` pairs and
+   nothing else. `compare_with_source.py` gains the same seven in `FILES` and nothing else.
+4. **E2, by running.**
+   - Both checks exit 0. The port check's counts equal the note's table of SGK's seven, and the
+     eight earlier modules' are unchanged.
+   - `compare_with_source.py` gives 31 compared, 15 `PORTED` and 9 with no source.
+   - All 13 of the log's breakage diffs pass `git apply --check` as recorded. (a), (b), (m) and
+     (c), replayed, each exit 1, naming what the log says.
+   - The orchestrator's two exit 1:
+     - one `assertIn` deleted from `TestTags.test_a_tag_no_row_carries_is_only_a_store_tag`
+       (named, position 1);
+     - `RealStore` removed ("class missing from the package").
+   - The tree was clean after each.
+5. **E3, R-map, R-value and R-count, by reading.** Read in full against SGK, after R-imp:
+   - `test_foreign_key_check`, `test_schema_builder` and `test_store_schema`;
+   - `test_store_inventory` from `TestTags` to `TestDuplicates`;
+   - `test_store_reader`'s word diff.
+
+   Every change is of a kind the port table names.
+   - The divergence tests use `routing_rule` (hazard 5).
+   - The `changed(...)` sets of `TestTags` follow the neutral references: Trace 4 to its Weave,
+     and Gadget 2 to Sample 4.
+   - The pair given in reverse declaration order is `["Weave_tags", "Sample_members"]`.
+   - `test_the_added_row_is_not_satisfied_by_coincidence` keeps SGK's reason. A wrong foreign key
+     from `Sample_members.tessera_serial` to `Sample.serial` would be satisfied by the fixture's
+     own member rows and not by the added one (deviation 9).
+   - Corrections 1–7 and the five additions are applied as stated.
+6. **E3, control flow, by measuring.** The orchestrator's own `ast` comparison covers all 138 of
+   SGK's functions in the five modules. Each one's sequence of compound statements, returns,
+   raises, comprehensions, lambdas and nested `def`s equals SGK's. In the fixtures, only these
+   differ:
+   - the row builders `_full_shard0` and `_full_shard1` (new data);
+   - `references()`, derived as §2.4 directs;
+   - `actor_with_built_schema`'s U20 filter.
+7. **E4, the client.**
+   - The four files remove two lines: U18's, and one line of `write_every_class`'s docstring.
+   - The registry has the six after `Sample_members`, `Trace` and `Weave` in `sharded_tables`, and
+     the group `traces`. The other names are unchanged.
+   - `Trace`'s frame declares the same `FRAME_TYPES` object as `Gadget`'s (`is`, from the
+     scratchpad).
+   - `test_neutral_client.py` changes in measured literals only: `MEASURED_DEPENDENTS`, the
+     `no_serial` list, the polymorphic count, the `sharded_tables` literal, `counts` and U18's
+     Sample flags. `KEPT` is unchanged.
+8. **E5, the fixture.**
+   - The transcribed functions are SGK's line for line, except:
+     - `_ShardKeyType_name`;
+     - one docstring count;
+     - `relabel_serials`' polymorphic target, read through the declared type map (hazard 8).
+   - Run by the orchestrator on `build_full_store`:
+     - every table has rows, and every timestamp is `FIXED_TIMESTAMP`;
+     - each `part_count`, `step_count` and `member_count` equals its rows;
+     - `PRAGMA foreign_key_check` is empty on both shards, and `read_inventory` reads 13 classes
+       with no problem;
+     - the run tag `fixture-run` is on every tagged record, and `unused-tag` on none;
+     - one `Gadget` and one `Trace` are unvalidated, and the `Weave`'s anchor is `None`.
+   - `references()` was printed and checked against the foreign keys and specs by hand.
+   - Seven `IDENTITY` entries, two of them chosen, five at random, each change their class's
+     records with no problem. Two `NON_IDENTITY` entries change none.
+9. **E6, the witness.** Recaptured from a copy of `7ceed25`'s tree, with the copy's
+   `datastorekit` on the path: byte-identical, 73,842 bytes, SHA-256 `c3536a2b…bad6c`, 21 classes
+   without `ephemeral_probe`. It is the only witness in the tree, and `WITNESS` names it.
+10. **E7, the layer and the client.** Replayed (d)–(l). The failing tests are exactly the log's:
+    - (d): five `TestFloats`;
+    - (e): `test_an_orphan_value_row`;
+    - (f): three `TestDuplicates`;
+    - (g): three failures and two errors in `test_store_schema` and `test_store_reader`;
+    - (h): three `test_store_reader` tests (eight failures with subtests), with 03b's two;
+    - (i): sixteen in the two witness tests;
+    - (j): four;
+    - (k): `(cls='Weave', field='strands')`;
+    - (l): three failures and seven errors, `test_every_class_has_a_record` among them.
+
+    (g)'s errors are the unrefused open failing later, and (l)'s are `find_row` on the deleted
+    rows. None is a broken fixture.
+11. **E8, the records.**
+    - The log has every section of README §5.1 and each §4.4 addition, including:
+      - the 85-row port table;
+      - the four data tables (93 → 33, 40 → 17, with the 19 absent);
+      - the witness, and the superseded capture.
+    - `[01-package-prose-names-sgks-layout]` is 146 lines in 35 files, which the orchestrator
+      reproduced by log 03a §8's method.
+    - The index had 6 rows, and said 6.
+    - `black --check` (25.1.0) is clean, re-run by the orchestrator. No Ray process was up
+      afterwards.
+
+*Where the note was wrong, and the agent right.*
+- **Correction 3 was itself incomplete.** `build_store`'s dial serials vary from run to run: 1
+  and 2, or 1 and 501, at either shard count. The conclusion stands.
+- **§2.7's wording, passed on unchecked.** It says the added member row's Tessera is also a
+  `Sample` serial on that shard. The test asserts the opposite of the added row, and the
+  coincidence of the fixture's own rows (deviation 9).
+- **What the note did not foresee.** Its U18 probe changed only `Sample`'s spec, so it could not
+  see U19's drop ripple. Its witness plan did not foresee a class that registers `None` (U20).
+- **One line range.** The history U21 rewrote is SGK `:16-35`, not `:16-34`.
+
+*Kept, though beyond the prompt's letter.*
+- Every full-store `Sample` has an anchor, against §2.4's "and one None" (deviation 11).
+  `test_resolve_names_every_parent` cannot hold with a `None` parent on `Sample` in
+  `QuadSourceIntegral`'s role. `Weave` and its strands carry the `None` key parents.
+- `test_across_shards` loops over an empty chain (deviation 14). Its control flow is SGK's, and a
+  `Trace` has no same-shard parent to copy.
+- Docstrings and comments that described SGK's rows now describe the neutral ones (deviation 21),
+  as 03b's R-map of docstrings did.
+
+*Issues.* **The review opens `[04a-no-test-pins-a-second-parent-set-member]`.** The agent recorded
+it as an observation (log §7 item 1). The orchestrator measured it: deleting `Weave`'s `origin`
+member (`factories.py:1684`) leaves `Ran 353 tests … OK`. `[01-package-prose-names-sgks-layout]`
+stands at 146 lines in 35 files. Nothing is closed. The index goes to 7.
+
+*Residue fixed in this follow-up:*
+- "this commit" → `7ceed25` in the log, the board and `prompts/INDEX.md`;
+- README's header, and its §2 status for 04a;
+- the note's line range;
+- this paragraph and the notes line.
+
 ## 2. Gates outside this repository (README §7)
 
 | Gate | Status |
@@ -534,6 +689,22 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
   - **Impact.** The open is still refused; the refusal does not say why. Inherited from SGK
     unchanged.
   - **Next step.** Fix once rule 8 lifts (after 05), with a test that opens such a store. Unassigned.
+
+- **[04a-no-test-pins-a-second-parent-set-member]** *(opened 2026-10-08 by the orchestrator's
+  review of 04a)*
+  - **The defect.** No test fails when `Weave`'s parent set loses its second member. Deleting
+    `"origin": Parent("origin_serial", "Trace", nullable=True)` from `Weave_factory.inventory_spec`
+    (`datastorekit/tests/client/factories.py:1684`) leaves `Ran 353 tests … OK` (replayed by the
+    review). `IDENTITY` holds one entry per key field, and `strands` varies strand 701's `anchor`
+    member (log 04a §2 item 13). `Sample`'s parent set has one member. So nothing in the suite
+    reads a member after the first.
+  - **Impact.** The inventory's handling of a parent set with more than one member is unpinned:
+    the order of a member tuple, a `None` in a later member, a later member naming another class.
+    A layer change there, or a client declaration that drops a member, would pass the suite.
+  - **Next step.** 04b ports `test_inventory_declarations` and `test_declared_facts`, which test
+    declarations and resolution. Its author checks whether any of them fails under this deletion.
+    If none does, 04b varies strand 702's `origin` in a test of its own, and makes the deletion one
+    of its breakages. Unassigned until 04b is written.
 
 ## 4. Resolved issues
 
