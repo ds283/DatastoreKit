@@ -50,7 +50,7 @@ and U8–U13 the same day (README §6.2); U10 split 03 into 03a and 03b.
 | 01 | [Import the layer](01-import-the-layer.md) | package, 15 files and 2 tools, the two internalised dependencies, 88 tests, import guard | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `8bc60a5` | [log](logs/01-import-the-layer.md) |
 | 02 | [The neutral test client](02-the-neutral-test-client.md) | `docs/client-contract.md`, the test client, the stand-in pool; 01's tests onto the client's names (U8) | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `e988e69` | [log](logs/02-the-neutral-test-client.md) |
 | 03a | [Port the replicated-write tests](03a-port-the-replicated-write-tests.md) | 76 tests (replicated write, check at open, prune at open); the port check; the `key_id` pin and `revalidate` | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `11247c7` | [log](logs/03a-port-the-replicated-write-tests.md) |
-| 03b | [Port the open and read-only tests](03b-port-the-open-and-read-only-tests.md) | 53 tests, 80 run (version row, read-only pool, one timestamp, shard records); the two client classes (U13); the neutral reader sequence (U11) | ✍️ yes, 2026-10-07 | ✅ 2026-10-08 | this commit | [log](logs/03b-port-the-open-and-read-only-tests.md) |
+| 03b | [Port the open and read-only tests](03b-port-the-open-and-read-only-tests.md) | 53 tests, 80 run (version row, read-only pool, one timestamp, shard records); the two client classes (U13); the neutral reader sequence (U11) | ✍️ yes, 2026-10-07 | ✅ 2026-10-08 | `0d5380c` | [log](logs/03b-port-the-open-and-read-only-tests.md) |
 | 04 | Port the schema and inventory tests | 175 tests; the package guard | ⬜ | ⬜ | — | — |
 | 05 | Supported versions and CI | `pyproject.toml` ranges, both ends, Actions; tag `v0.1.0` | ⬜ | ⬜ | — | — |
 | 06 | Version-keyed lookups | `key_on_version`; tag `v0.2.0` | ⬜ | ⬜ | — | — |
@@ -61,7 +61,8 @@ and U8–U13 the same day (README §6.2); U10 split 03 into 03a and 03b.
 
 **Orchestrator notes:** [`orchestrator/prompt-01.md`](orchestrator/prompt-01.md) (`bd9f461`),
 used for 01; [`orchestrator/prompt-02.md`](orchestrator/prompt-02.md) (`737ad6e`), used for 02;
-[`orchestrator/prompt-03a.md`](orchestrator/prompt-03a.md) (`f7f053d`), used for 03a.
+[`orchestrator/prompt-03a.md`](orchestrator/prompt-03a.md) (`f7f053d`), used for 03a;
+[`orchestrator/prompt-03b.md`](orchestrator/prompt-03b.md) (`72cf34a`), used for 03b.
 
 **Orchestrator review of prompt 01 (2026-10-07).** Dispatched from `bd9f461` to one Opus
 subagent, with the note's §0 corrections and additions. Reviewed against its commit `8bc60a5`,
@@ -328,6 +329,110 @@ opens nothing, and the index stays at 6.
 *Residue fixed in this follow-up:*
 - "this commit" → `11247c7` in the log, the board and `prompts/INDEX.md`;
 - README's header, and its §2 status for 03a;
+- this paragraph and the notes line.
+
+**Orchestrator review of prompt 03b (2026-10-08).** Dispatched from `72cf34a` to one Opus
+subagent, with the note's one correction and four additions. The agent was cut off once by a
+usage limit, with its work uncommitted; it was resumed with its context, and committed once.
+Reviewed against its commit `0d5380c`, with nothing landed after it. **Every check of the note's
+§3 passed**, and acceptance 1–4 are met. No stop condition fired.
+
+*At dispatch.* The note's gate held at `72cf34a`. The tree was clean, and the only worktree was
+this checkout. The suite gave `Ran 188 tests … OK`, and both checks exited 0. SGK's `Datastore/`,
+`tools/`, `utilities.py`, `config/defaults.py`, `config/sharding.py` and the probe were unchanged
+from `6f7f291` to SGK `HEAD` (`b510bc9`). No Ray process was up. Before writing the note the
+orchestrator probed a read-only `build_store` from the scratchpad. It found that a miss's payload
+is keyed by column name, that `keypoint` can play both of SGK's write roles, and that a missing
+`Sample` or `Tessera` table is refused with the table named. It also re-ran 03a's 19 tests under
+the ticking clock.
+
+*The checks.*
+1. **Scope.** `0d5380c` touches 18 files: the five ported modules, `reader.py`, the client's four
+   files, `test_neutral_client.py`, the contract, the two checks, the log, the board, the index
+   and `prompts/INDEX.md`. Nothing under `datastorekit/` outside `tests/`. No change to
+   `standin_pool.py`, `shard_store_fixtures.py` or 03a's four modules. No `venv/`, `*.egg-info`,
+   `__pycache__` or scratch file.
+2. **E1, the names.** By the orchestrator's own `ast` walk, with U12's four renames applied, each
+   module's test methods and each class's bases equal SGK's at `6f7f291`. The only other name
+   change is a helper's, below. `Ran 268 tests … OK`. The loader runs 12, 23, 28, 12 and 5.
+3. **E2, the port check, by reading.** `compare_ported_tests.py` gains five `PORTED` pairs and
+   `NAME_MAP`'s four entries, keyed by `test_read_only_pool.py`, and nothing else.
+   `compare_with_source.py` changes only in `FILES` and `NO_SOURCE`.
+4. **E2, by running.**
+   - Both checks exit 0. The port check gives 12/7/16/79, 23/5/27/138, 1/9/5/7, 12/3/14/28 and
+     5/3/7/21, the note's measurement of SGK. 03a's three are unchanged.
+   - `compare_with_source.py` gives 31 compared, 8 `PORTED` and 9 with no source.
+   - (a)–(d) and (p), replayed, each exit 1, naming what the log says.
+   - The orchestrator's two exit 1: the `assertFalse` deleted from
+     `_TickingClock.assertNoShardClock` (named, position 1), and `test_routing_rule` renamed back
+     to `test_GkSourcePolicy` (named both ways).
+   - The tree was clean after each.
+5. **E3, R-map and R-value, by reading.** The miss tests read the payload by column name. The
+   deleted gauge (exponent 12) and rule (`rule-high`) are the ones the sequence reaches fourth and
+   second, as SGK's were. `test_versioned_rows_carry_the_serial_on_every_shard` keeps its two
+   gauge gets, with exponents 10 and 9. Deviation 8 (`test_object_validate` asks for the Gadget
+   with the run's tag, where SGK passed `tags=[]`) is an argument change the neutral factory
+   requires, and the test still validates an available, stored model.
+6. **E3, control flow, by measuring.** The orchestrator's own `ast` comparison covers all 116 of
+   SGK's functions in the five modules. Each one's sequence of compound statements, returns,
+   raises, comprehensions, lambdas and nested `def`s equals SGK's, except `_load_probe`, which
+   goes by the note's direction.
+7. **E4, the client.** `objects.py`, `factories.py`, `registry.py` and `build.py` remove no line.
+   Both classes come after `knob_setting` in `factories` and `replicated_tables`, in no drop
+   group, `read_table_config` or `serial_batch_sizes`. `test_neutral_client.py` changes in `KEPT`
+   and `counts` only. The contract changes in counts and class lists only. 03a's modules are
+   byte-identical, and pass.
+8. **E5, the reader.**
+   - `change_counter`, `table_counts`, `file_state`, `state_delta`, `ReplicatedWriteLog`, `Step`
+     and `quiet` are the probe's, identical by `ast`. `Recorder` is the probe's without `print`
+     (deviation 2).
+   - `reader.py` makes no assertion.
+   - Run by the orchestrator from the scratchpad:
+     - on a read-write copy, only `store.sqlite` changes, with 18 `_replicated_write` calls and
+       nothing inserted;
+     - on a read-only copy, nothing changes, and every step's outcome equals the read-write
+       run's;
+     - the sequence stops at `[knob] Gadget` with its own message.
+   - With each of the four classes' rows deleted, the `ReadOnlyMiss` comes from the step the test
+     expects (the frames, the gauges, the rules), with the payload it asserts.
+9. **E6, the layer.** Replayed (e)–(j). The failing tests are exactly the log's:
+   - (e): 77 tests (139 failures and errors), including 19 of `test_one_timestamp_per_write`'s 28
+     on all three paths;
+   - (f): `TestInsertBeforeSetVersion.test_a_versioned_insert_raises_names_the_class_and_writes_nothing`;
+   - (g): the five `TestEachMissRaisesReadOnlyMiss` tests;
+   - (h): ten of `test_absolute_shard_record_refused`, and three of 01's;
+   - (i): the two prefix tests of `test_closed_store_refusals`;
+   - (j): `test_every_connection_is_opened_read_only`.
+10. **E7, the records.** The log has every section of README §5.1 and each §4.4 addition: a port
+    table of 53 rows and the 27 inherited, the map, the hazards, the step table, both checks'
+    output and the breakage record. The index has 6 rows, and its header says 6. `black --check`
+    (25.1.0) is clean. Neither vocabulary grep finds anything in the five modules or the
+    client. No Ray process was up afterwards.
+
+*Where the agent went beyond the prompt, and it is kept.* §2.1 says "No other name changes". The
+agent renamed `TestOtherWritesRaiseReadOnlyWrite`'s helper `lcdm` to `dial_frame` (log §2 item
+14). The prompt's stop condition is about a ported test's name, and `lcdm` is a helper that
+asserts nothing and is named for SGK's `LambdaCDM`. The rename is kept, and recorded here.
+
+*Observations, not opened.*
+- **Three of the log's eleven breakage diffs could not be replayed as recorded.** (b), (p) and (h)
+  had lost their trailing blank context lines in the log, so `git apply` refused them; each
+  replayed with `--recount`. They were regenerated from the tree, making the same changes, and
+  replaced in the log in this follow-up. All eleven now pass `git apply --check` as recorded.
+- **A comment now attributes the neutral count to SGK's audit.** In
+  `test_the_instrument_counts_…`, "enters _replicated_write 18 times (audit R2 Run 1)" gives the
+  neutral sequence's count beside SGK's audit run, which recorded 21 (log §2 item 12). The
+  sentences after it mix the neutral stop with R2's serials. This is prose only, and is left for
+  the rewrite of `[01-package-prose-names-sgks-layout]`.
+
+*Issues.* `[01-package-prose-names-sgks-layout]` stands at 124 lines in 28 files, by log 03a §8's
+method, which reproduced 114 in 23 at `72cf34a`. The review did not re-derive it independently.
+Nothing was opened or closed, and the index stays at 6.
+
+*Residue fixed in this follow-up:*
+- "this commit" → `0d5380c` in the log, the board and `prompts/INDEX.md`;
+- the three breakage diffs above, in the log;
+- README's header, and its §2 status for 03b;
 - this paragraph and the notes line.
 
 ## 2. Gates outside this repository (README §7)

@@ -1,6 +1,6 @@
 # Log 03b — port the open and read-only tests
 
-**Subject:** Port the version-row, read-only and refusal tests · **Commit:** this commit ·
+**Subject:** Port the version-row, read-only and refusal tests · **Commit:** `0d5380c` ·
 **Date:** 2026-10-08 · **Model:** Claude Opus 5.5 · **Result:** landed. SGK's
 `test_version_row_at_open` (12), `test_read_only_pool` (23), `test_one_timestamp_per_write` (1
 defined, 28 run), `test_absolute_shard_record_refused` (12) and `test_closed_store_refusals` (5)
@@ -611,6 +611,8 @@ index 0c3ddf0..6f0aa66 100644
 -class TestRepairAtOpen(_TickingClock, reconcile_at_open.TestKillAndReopen):
 +class TestRepairAtOpen(reconcile_at_open.TestKillAndReopen):
      pass
+ 
+ 
 ```
 ```
   DIFFERS  class TestRepairAtOpen: bases ['reconcile_at_open.TestKillAndReopen'], the source's ['_TickingClock', 'reconcile_at_open.TestKillAndReopen']
@@ -676,6 +678,8 @@ index 0c3ddf0..5e2a5ba 100644
 +
 +class TestRepairAtOpen(_TickingClock, TestKillAndReopen):
      pass
+ 
+ 
 ```
 ```
   DIFFERS  class TestRepairAtOpen: bases ['_TickingClock', 'TestKillAndReopen'], the source's ['_TickingClock', 'reconcile_at_open.TestKillAndReopen']
@@ -771,6 +775,7 @@ index c5354a8..e019acc 100644
 +    )
  
      return primary.parent / name
+ 
 ```
 
 **(i)** `delete_store`'s refusal stating its prefix twice (`SQL/ShardedPool.py:2932`) — `Ran 268 tests` / `FAILED (failures=2)`: `test_closed_store_refusals.TestEachPrefixOnce.test_delete_and_closed_store_files_state_their_prefix_once` and `test_an_unreadable_shards_table_is_named_once_by_each` (`operation='delete_store'`), each `2 != 1`. SGK: the same two tests pin it.
@@ -851,7 +856,7 @@ The index is at **6 open**: 2 on this board, 4 inherited.
 
 ## 9. State handed to the next prompt
 
-- `HEAD` is this commit. The tree is clean; `venv/` unchanged.
+- `HEAD` is `0d5380c`. The tree is clean; `venv/` unchanged.
 - The suite: **268** (`Ran 268 tests … OK`). 04 records 268 as its "before".
 - `compare_ported_tests.py` exits 0 over eight modules, with U12's four renames in `NAME_MAP`;
   `compare_with_source.py` exits 0 over 31 compared, 8 `PORTED`, 9 with no source (48 `.py` files
