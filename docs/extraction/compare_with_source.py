@@ -178,12 +178,23 @@ FILES: List[Tuple[str, str, str]] = (
             "schema_description",
         )
     ]
+    # prompt 04b: the same, the package's guard among them
+    + [
+        (f"Datastore/tests/{name}.py", f"datastorekit/tests/{name}.py", PORTED)
+        for name in (
+            "test_inventory_declarations",
+            "test_declared_facts",
+            "test_layer_registry",
+            "test_drop_refuses_dangling_references",
+            "test_layer_is_generic",
+        )
+    ]
 )
 
 # Files in the package that have no source, and are not compared: the import guard (prompt 01),
 # the neutral test client and its tests (prompt 02), the shard-key assignment's test (prompt
-# 03a), and the neutral reader (prompt 03b). Every other file under datastorekit/ is in FILES, or
-# the check fails.
+# 03a), the neutral reader (prompt 03b), and the parent-set members' test (prompt 04b). Every other
+# file under datastorekit/ is in FILES, or the check fails.
 NO_SOURCE = {
     "datastorekit/tests/test_package_imports.py",
     "datastorekit/tests/client/__init__.py",
@@ -194,6 +205,7 @@ NO_SOURCE = {
     "datastorekit/tests/test_neutral_client.py",
     "datastorekit/tests/test_shard_key_assignment.py",
     "datastorekit/tests/client/reader.py",
+    "datastorekit/tests/test_parent_set_members.py",
 }
 
 # D-int: what each internalised module takes from its source.

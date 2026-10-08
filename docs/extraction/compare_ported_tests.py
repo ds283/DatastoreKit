@@ -34,8 +34,21 @@ package module from the tree, parses both with ``ast``, and requires:
    hide a changed assertion.
 
 NAME_MAP holds the R-name changes (prompt 03a §2.1, U12): per package module, a source class or
-method name and the name it was given. It is empty for prompt 03a's modules. Nothing else is
-configurable.
+method name and the name it was given. It is empty for prompt 03a's modules.
+
+NOT_PORTED declares the tests of a ported module that are not ported (prompt 04b §2.5; README §6.2,
+U16): per test, the package module, its ``Class.method`` (the source's name, after NAME_MAP) and
+the reason. For a module with declared tests:
+
+- **the names**: the source's tests less the declared ones equal the package's;
+- **the skeletons**: a declared function (and any function nested in it) is not compared, and is
+  not counted;
+- a declared test that the package does define is a difference;
+- a declared test that the source does not define is a difference, and so is a declaration for a
+  module that PORTED does not hold, whose source is never read.
+
+The report prints each declared test with its reason, and the module's ``tests`` line gives the
+source's count and the number not ported. Nothing else is configurable.
 
 Output, per module: the counts of tests, of functions compared and of assertions; each difference,
 naming the qualified name and the first position at which the skeletons differ; then a final
@@ -117,6 +130,26 @@ PORTED: List[Tuple[str, str]] = [
         "Datastore/tests/schema_description.py",
         "datastorekit/tests/schema_description.py",
     ),
+    (
+        "Datastore/tests/test_inventory_declarations.py",
+        "datastorekit/tests/test_inventory_declarations.py",
+    ),
+    (
+        "Datastore/tests/test_declared_facts.py",
+        "datastorekit/tests/test_declared_facts.py",
+    ),
+    (
+        "Datastore/tests/test_layer_registry.py",
+        "datastorekit/tests/test_layer_registry.py",
+    ),
+    (
+        "Datastore/tests/test_drop_refuses_dangling_references.py",
+        "datastorekit/tests/test_drop_refuses_dangling_references.py",
+    ),
+    (
+        "Datastore/tests/test_layer_is_generic.py",
+        "datastorekit/tests/test_layer_is_generic.py",
+    ),
 ]
 
 # R-name: package path -> {source class or method name: its name in the package}
@@ -129,6 +162,16 @@ NAME_MAP: Dict[str, Dict[str, str]] = {
         "test_GkSourcePolicy": "test_routing_rule",
     },
 }
+
+
+# U16: the tests of a ported module that are not ported: (package path, source Class.method, reason)
+NOT_PORTED: List[Tuple[str, str, str]] = [
+    (
+        "datastorekit/tests/test_inventory_declarations.py",
+        "TestResolve.test_the_report_renders_both_cosmology_types",
+        "asserts on SGK's tools.inventory_report, which stays in SGK (README §1)",
+    ),
+]
 
 
 class CannotRun(Exception):
@@ -274,6 +317,9 @@ def first_difference(a: List[str], b: List[str]) -> Tuple[int, str, str]:
 def check(source_path: str, package_path: str) -> Tuple[List[str], List[str]]:
     """Returns (report lines, differences)."""
     names = NAME_MAP.get(package_path, {})
+    declared = {
+        test: reason for path, test, reason in NOT_PORTED if path == package_path
+    }
 
     def rename(name: str) -> str:
         return names.get(name, name)
@@ -294,7 +340,16 @@ def check(source_path: str, package_path: str) -> Tuple[List[str], List[str]]:
     package_classes = top_level_classes(package)
     source_tests = test_names(source_classes, rename)
     package_tests = test_names(package_classes, same)
-    for name in sorted(source_tests - package_tests):
+    for name in sorted(declared):
+        if name not in source_tests:
+            differences.append(
+                f"declared not ported, and the source does not define it: {name}"
+            )
+        if name in package_tests:
+            differences.append(
+                f"declared not ported, and the package defines it: {name}"
+            )
+    for name in sorted(source_tests - set(declared) - package_tests):
         differences.append(f"test missing from the package: {name}")
     for name in sorted(package_tests - source_tests):
         differences.append(f"test not in the source: {name}")
@@ -315,6 +370,8 @@ def check(source_path: str, package_path: str) -> Tuple[List[str], List[str]]:
     assertions = 0
     for name, items in source_functions.items():
         if not items:
+            continue
+        if any(name == test or name.startswith(test + ".") for test in declared):
             continue
         compared += 1
         assertions += len(items)
@@ -345,11 +402,12 @@ def check(source_path: str, package_path: str) -> Tuple[List[str], List[str]]:
             )
 
     report = [
-        f"  tests: {len(package_tests)} (source {len(source_tests)})",
+        f"  tests: {len(package_tests)} (source {len(source_tests)}"
+        + (f", {len(declared)} not ported)" if declared else ")"),
         f"  classes: {len(package_classes)} (source {len(source_classes)})",
         f"  functions compared: {compared}",
         f"  assertions: {assertions}",
-    ]
+    ] + [f"  NOT PORTED  {test}: {reason}" for test, reason in sorted(declared.items())]
     return report, differences
 
 
@@ -384,13 +442,24 @@ def main(argv: List[str]) -> int:
             print(f"  DIFFERS  {line}")
         if differences:
             failed += 1
+    checked = {package_path for _, package_path in PORTED}
+    unchecked = sorted({path for path, _, _ in NOT_PORTED} - checked)
+    for path in unchecked:
+        print(f"  DIFFERS  NOT_PORTED names a module that PORTED does not hold: {path}")
     print()
-    if failed:
-        print(f"FAIL: {failed} of {len(PORTED)} module(s) differ from their source")
+    if failed or unchecked:
+        print(
+            f"FAIL: {failed} of {len(PORTED)} module(s) differ from their source"
+            + (
+                f"; {len(unchecked)} declaration(s) name no ported module"
+                if unchecked
+                else ""
+            )
+        )
         return 1
     print(
         f"OK: {len(PORTED)} module(s) keep their source's tests, classes and assertion "
-        "skeletons"
+        f"skeletons; {len(NOT_PORTED)} test(s) declared not ported"
     )
     return 0
 

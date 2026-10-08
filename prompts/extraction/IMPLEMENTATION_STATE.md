@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-08 · **Status: IN PROGRESS — 6 of 9 prompts written (01, 02, 03a, 03b, 04a, 04b), 5 landed (01, 02, 03a, 03b, 04a).**
+**Last updated:** 2026-10-08 · **Status: IN PROGRESS — 6 of 9 prompts written (01, 02, 03a, 03b, 04a, 04b), 6 landed (01, 02, 03a, 03b, 04a, 04b).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 U8–U13 the same day, and U14–U22 on 2026-10-08 (README §6.2); U10 split 03 into 03a and 03b, and
 U14 split 04 into 04a and 04b.
@@ -62,7 +62,7 @@ U14 split 04 into 04a and 04b.
 | 03a | [Port the replicated-write tests](03a-port-the-replicated-write-tests.md) | 76 tests (replicated write, check at open, prune at open); the port check; the `key_id` pin and `revalidate` | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `11247c7` | [log](logs/03a-port-the-replicated-write-tests.md) |
 | 03b | [Port the open and read-only tests](03b-port-the-open-and-read-only-tests.md) | 53 tests, 80 run (version row, read-only pool, one timestamp, shard records); the two client classes (U13); the neutral reader sequence (U11) | ✍️ yes, 2026-10-07 | ✅ 2026-10-08 | `0d5380c` | [log](logs/03b-port-the-open-and-read-only-tests.md) |
 | 04a | [Port the store and inventory tests](04a-port-the-store-and-inventory-tests.md) | 85 tests (inventory, store schema, reader, foreign keys, schema builder); `real_store_fixtures` and `schema_description` on neutral rows; the schema witness; the client's sharded family (U15) | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | `7ceed25` | [log](logs/04a-port-the-store-and-inventory-tests.md) |
-| 04b | [Port the declaration and registry tests](04b-port-the-declaration-and-registry-tests.md) | 89 of 90 tests (inventory declarations, declared facts, layer registry, drop refusal; U16's one not ported); the package guard with its vocabulary as data (U17); `test_parent_set_members` | ✍️ yes, 2026-10-08 | ⬜ | — | — |
+| 04b | [Port the declaration and registry tests](04b-port-the-declaration-and-registry-tests.md) | 89 of 90 tests (inventory declarations, declared facts, layer registry, drop refusal; U16's one not ported); the package guard with its vocabulary as data (U17); `test_parent_set_members` | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | this commit | [log](logs/04b-port-the-declaration-and-registry-tests.md) |
 | 05 | Supported versions and CI | `pyproject.toml` ranges, both ends, Actions; tag `v0.1.0` | ⬜ | ⬜ | — | — |
 | 06 | Version-keyed lookups | `key_on_version`; tag `v0.2.0` | ⬜ | ⬜ | — | — |
 | 07 | Close-out and adoption handover | `docs/adoption/` checklists; verification document | ⬜ | ⬜ | — | — |
@@ -681,6 +681,21 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     The client's files add none. `test_schema_builder`'s SGK witness history, which named SGK's
     tables, was rewritten under U21. Their SGK references outside the pattern ("store-fingerprint
     prompt 01/02", "S1/S2/S4", `var/`, SGK's witness file names) are listed in log 04a §7 item 4.
+  - **Measured by 04b (2026-10-08):** **155 lines in 40 files.** 04a's figure, 146 in 35, was first
+    reproduced at `7ceed25` by log 03a §8's method (which also gives 102 in 19 at `8bc60a5`, 114 in
+    23 at `72cf34a` and 124 in 28 at `ae94aaa`). The five ported modules add 9 lines:
+    - `tests/test_layer_registry.py` 3 (`:2`, `:75`, `:176`);
+    - `tests/test_drop_refuses_dangling_references.py` 2 (`:2`, `:10`);
+    - `tests/test_layer_is_generic.py` 2 (`:71`, "repository root", SGK's docstring, true here;
+      `:200`, `tools/` in `KNOWN_HITS`' entry, the package's own path);
+    - `tests/test_inventory_declarations.py` 1 (`:2`);
+    - `tests/test_declared_facts.py` 1 (`:2`).
+
+    `test_layer_registry.py:75` is the new comment of `COMMAND_LINE_ORDER`, which names the
+    source's `main.py`; the rest is SGK's prose ported unchanged. `test_parent_set_members.py`
+    adds none. The guard pins the one comment U17 freezes (`tools/shard_key_audit.py:188`). Their
+    SGK references outside the pattern, and `test_inventory_declarations`' docstring that still
+    mentions the report U16 left in SGK, are in log 04b §7 and §8.
 - **[02-an-unsupplied-sharded-table-raises-keyerror]** *(opened 2026-10-07 by prompt 02)*
   - **The defect.** Reopening a store whose primary records a sharded table that the constructor's
     `sharded_tables` lacks raises a bare `KeyError('<table>')` from `_read_shard_data`
@@ -690,6 +705,8 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
   - **Impact.** The open is still refused; the refusal does not say why. Inherited from SGK
     unchanged.
   - **Next step.** Fix once rule 8 lifts (after 05), with a test that opens such a store. Unassigned.
+
+## 4. Resolved issues
 
 - **[04a-no-test-pins-a-second-parent-set-member]** *(opened 2026-10-08 by the orchestrator's
   review of 04a)*
@@ -710,8 +727,13 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     `test_the_full_store_resolves_no_absent_parent_as_unresolved` walks the member field `anchor`
     only. So 04b adds `datastorekit/tests/test_parent_set_members.py`, whose two tests the
     deletion must fail (04b §2.6).
-
-## 4. Resolved issues
+  - **Closed (2026-10-08) by prompt 04b** (this commit, log 04b §4). The new module
+    `datastorekit/tests/test_parent_set_members.py` requires that `Weave`'s
+    `parent_sets["strands"]` is `[("anchor", "Tessera"), ("origin", "Trace")]` in that order, and
+    that setting `Weave_members` row 702's `origin_serial` from 3 to 1 (`vary_row`, on
+    `build_full_store`) changes `Weave`'s records and no other class's, with no problem. Deleting
+    the `origin` member from `Weave_factory.inventory_spec` (`client/factories.py:1684`, breakage
+    (l)) fails both tests, and nothing else (`Ran 444 tests` / `FAILED (failures=2)`).
 
 - **[01-no-ported-test-pins-the-shard-key-assignment]** *(opened 2026-10-07 by the orchestrator's
   review of 01)*
