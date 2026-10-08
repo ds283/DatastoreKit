@@ -17,6 +17,11 @@ and its behaviour is easy to state:
 - an **association** table (``Gadget_tags``, ``Sample_tags``, ``Sample_members``) is written by its
   owner's ``store``, and has no ``build`` of its own.
 
+Prompt 04a (U15) adds the sharded family: ``Trace`` and ``Weave`` are computed classes, found by
+``build`` and inserted by ``store``; ``Trace_tags``, ``TraceStep``, ``Weave_tags`` and
+``Weave_members`` are written by their owner's ``store``. Of the sharded classes, the inventory
+reads a validated flag of ``Trace`` alone.
+
 This module imports only the standard library, ``sqlalchemy`` and ``datastorekit``.
 """
 
@@ -36,6 +41,9 @@ from datastorekit.tests.client.objects import (
     Sample,
     SerialHandle,
     Tessera,
+    Trace,
+    TraceStep,
+    Weave,
     dial_setting,
     ephemeral_probe,
     gauge_setting,
@@ -813,6 +821,16 @@ class Gadget_factory(SQLAFactoryBase):
             )
         ).scalar()
         validated = held == expected
+        if not validated:
+            # added by prompt 04a (U15): the warning SGK's factory prints when a model does not
+            # validate
+            label = conn.execute(
+                sqla.select(table.c.gadget_label).filter(table.c.serial == serial)
+            ).scalar_one()
+            print(
+                f'!! WARNING: Gadget "{label}" did not validate after serialization '
+                f"(expected parts={expected}, number stored={held})"
+            )
         conn.execute(
             sqla.update(table)
             .where(table.c.serial == serial)
@@ -1222,12 +1240,449 @@ class Sample_factory(SQLAFactoryBase):
                 ),
             },
             tags=("Sample_tags", "sample_serial"),
-            validated="sample_validated",
             parent_sets={
                 "members": ParentSet(
                     table="Sample_members",
                     owner="sample_serial",
                     members={"piece": Parent("tessera_serial", "Tessera")},
+                )
+            },
+        )
+
+
+# ------------------------------------------------------------------------------------------------
+# the sharded family (added by prompt 04a, U15): Trace, with its tag and value tables, and Weave,
+# with its tag and member tables
+# ------------------------------------------------------------------------------------------------
+
+
+class Trace_tags_factory(SQLAFactoryBase):
+    """The tag association of the sharded Trace (added by prompt 04a)."""
+
+    @staticmethod
+    def register():
+        return {
+            "serial": False,
+            "version": False,
+            "timestamp": True,
+            "columns": [
+                sqla.Column(
+                    "trace_serial",
+                    sqla.Integer,
+                    sqla.ForeignKey("Trace.serial"),
+                    index=True,
+                    nullable=False,
+                    primary_key=True,
+                ),
+                sqla.Column(
+                    TAG_SERIAL,
+                    sqla.Integer,
+                    sqla.ForeignKey(f"{TAG_TABLE}.serial"),
+                    index=True,
+                    nullable=False,
+                    primary_key=True,
+                ),
+            ],
+        }
+
+    @staticmethod
+    def build(payload, conn, table, inserter, tables, inserters):
+        raise NotImplementedError("Trace_tags rows are written by Trace's store")
+
+
+class TraceStep_factory(SQLAFactoryBase):
+    """The value rows of the sharded Trace, one per step (added by prompt 04a). It declares no
+    ``owner_column``, which the layer reads for replicated classes only."""
+
+    @staticmethod
+    def register():
+        return {
+            "version": False,
+            "timestamp": False,
+            "columns": [
+                sqla.Column(
+                    "trace_serial",
+                    sqla.Integer,
+                    sqla.ForeignKey("Trace.serial"),
+                    index=True,
+                    nullable=False,
+                ),
+                sqla.Column("step_index", sqla.Integer, nullable=False),
+                sqla.Column("step_value", sqla.Float(64), nullable=False),
+            ],
+        }
+
+    @staticmethod
+    def build(payload, conn, table, inserter, tables, inserters):
+        raise NotImplementedError("TraceStep rows are written by Trace's store")
+
+
+class Trace_factory(SQLAFactoryBase):
+    """
+    A sharded class, sharded on ``k`` (a keypoint), with a polymorphic parent (``frame``, through
+    the same ``FRAME_TYPES`` as ``Gadget``), tags and value rows (added by prompt 04a). A Trace is
+    validated when it holds as many ``TraceStep`` rows as its ``step_count`` says. It declares no
+    ``validate_on_startup``, so neither the pool's prune nor an actor's sees it.
+    """
+
+    @staticmethod
+    def register():
+        return {
+            "version": True,
+            "timestamp": True,
+            "columns": [
+                sqla.Column(
+                    "keypoint_serial",
+                    sqla.Integer,
+                    sqla.ForeignKey("keypoint.serial"),
+                    index=True,
+                    nullable=False,
+                ),
+                # the polymorphic parent, as Gadget's: no foreign key
+                sqla.Column("frame_kind", sqla.Integer, nullable=False),
+                sqla.Column("frame_serial", sqla.Integer, index=True, nullable=False),
+                sqla.Column(
+                    "trace_label", sqla.String(DEFAULT_STRING_LENGTH), nullable=False
+                ),
+                sqla.Column("step_count", sqla.Integer, nullable=False),
+                sqla.Column(
+                    "trace_validated", sqla.Boolean, default=False, nullable=False
+                ),
+            ],
+        }
+
+    @staticmethod
+    def _key(obj) -> dict:
+        return {
+            "keypoint_serial": obj.k.store_id,
+            "frame_kind": FRAME_KINDS[type(obj.frame).__name__],
+            "frame_serial": obj.frame.store_id,
+            "trace_label": obj.label,
+        }
+
+    @staticmethod
+    def build(payload, conn, table, inserter, tables, inserters):
+        obj = Trace(
+            None,
+            payload["k"],
+            payload["frame"],
+            payload["label"],
+            payload.get("tags", ()),
+        )
+        key = Trace_factory._key(obj)
+        wanted = _tag_serials(obj.tags)
+        steps = tables["TraceStep"]
+        for serial in (
+            conn.execute(
+                sqla.select(table.c.serial)
+                .filter(
+                    table.c.trace_validated == True,
+                    *[table.c[name] == value for name, value in key.items()],
+                )
+                .order_by(table.c.serial)
+            )
+            .scalars()
+            .all()
+        ):
+            held = _stored_tag_serials(
+                conn, tables["Trace_tags"], "trace_serial", serial
+            )
+            if held == wanted:
+                obj._my_id = serial
+                obj.steps = [
+                    TraceStep(row.serial, row.step_index, row.step_value)
+                    for row in conn.execute(
+                        sqla.select(
+                            steps.c.serial, steps.c.step_index, steps.c.step_value
+                        )
+                        .filter(steps.c.trace_serial == serial)
+                        .order_by(steps.c.step_index)
+                    )
+                ]
+                obj.validated = True
+                obj._deserialized = True
+                break
+        return obj
+
+    @staticmethod
+    def store(obj, conn, table, inserter, tables, inserters):
+        store_id = inserter(
+            conn,
+            {
+                **Trace_factory._key(obj),
+                "step_count": len(obj.steps),
+                "trace_validated": False,
+            },
+        )
+        obj._my_id = store_id
+        for tag in obj.tags:
+            inserters["Trace_tags"](
+                conn, {"trace_serial": store_id, TAG_SERIAL: tag.store_id}
+            )
+        for step in obj.steps:
+            step._my_id = inserters["TraceStep"](
+                conn,
+                {
+                    "trace_serial": store_id,
+                    "step_index": step.step_index,
+                    "step_value": step.step_value,
+                },
+            )
+        return obj
+
+    @staticmethod
+    def validate(obj, conn, table, tables):
+        if not obj.available:
+            raise RuntimeError("Trace.validate: the object has not been stored")
+        steps = tables["TraceStep"]
+        expected = conn.execute(
+            sqla.select(table.c.step_count).filter(table.c.serial == obj.store_id)
+        ).scalar_one()
+        held = conn.execute(
+            sqla.select(sqla.func.count(steps.c.serial)).filter(
+                steps.c.trace_serial == obj.store_id
+            )
+        ).scalar()
+        validated = held == expected
+        conn.execute(
+            sqla.update(table)
+            .where(table.c.serial == obj.store_id)
+            .values(trace_validated=validated)
+        )
+        return validated
+
+    @staticmethod
+    def inventory_spec():
+        return InventorySpec(
+            leaves=("trace_label", "frame_kind"),
+            parents={
+                "k": Parent("keypoint_serial", "keypoint"),
+                # the same type map Gadget declares, the very object
+                "frame": Parent(
+                    "frame_serial", type_column="frame_kind", types=FRAME_TYPES
+                ),
+            },
+            tags=("Trace_tags", "trace_serial"),
+            values=("TraceStep", "trace_serial"),
+            validated="trace_validated",
+        )
+
+
+class Weave_tags_factory(SQLAFactoryBase):
+    """The tag association of the sharded Weave (added by prompt 04a)."""
+
+    @staticmethod
+    def register():
+        return {
+            "serial": False,
+            "version": False,
+            "timestamp": True,
+            "columns": [
+                sqla.Column(
+                    "weave_serial",
+                    sqla.Integer,
+                    sqla.ForeignKey("Weave.serial"),
+                    index=True,
+                    nullable=False,
+                    primary_key=True,
+                ),
+                sqla.Column(
+                    TAG_SERIAL,
+                    sqla.Integer,
+                    sqla.ForeignKey(f"{TAG_TABLE}.serial"),
+                    index=True,
+                    nullable=False,
+                    primary_key=True,
+                ),
+            ],
+        }
+
+    @staticmethod
+    def build(payload, conn, table, inserter, tables, inserters):
+        raise NotImplementedError("Weave_tags rows are written by Weave's store")
+
+
+class Weave_members_factory(SQLAFactoryBase):
+    """The member table of Weave's set of parents (``strands``): one row per strand, each naming
+    an optional ``Tessera`` and an optional ``Trace`` of the Weave's shard. Unlike
+    ``Sample_members`` it keeps its own serial (added by prompt 04a)."""
+
+    @staticmethod
+    def register():
+        return {
+            "version": False,
+            "timestamp": False,
+            "columns": [
+                sqla.Column(
+                    "weave_serial",
+                    sqla.Integer,
+                    sqla.ForeignKey("Weave.serial"),
+                    index=True,
+                    nullable=False,
+                ),
+                sqla.Column(
+                    "anchor_serial",
+                    sqla.Integer,
+                    sqla.ForeignKey("Tessera.serial"),
+                    index=True,
+                    nullable=True,
+                ),
+                sqla.Column(
+                    "origin_serial",
+                    sqla.Integer,
+                    sqla.ForeignKey("Trace.serial"),
+                    index=True,
+                    nullable=True,
+                ),
+            ],
+        }
+
+    @staticmethod
+    def build(payload, conn, table, inserter, tables, inserters):
+        raise NotImplementedError("Weave_members rows are written by Weave's store")
+
+
+class Weave_factory(SQLAFactoryBase):
+    """
+    A sharded class, sharded on ``k`` (a keypoint): tagged, keyed on a ``Trace`` of its own
+    shard, on an optional ``anchor`` (a ``Tessera``, with no foreign key, as ``Sample``'s) and on
+    a set of strands (``Weave_members``). It has no validated column and no value table (added by
+    prompt 04a).
+    """
+
+    @staticmethod
+    def register():
+        return {
+            "version": True,
+            "timestamp": True,
+            "columns": [
+                sqla.Column(
+                    "keypoint_serial",
+                    sqla.Integer,
+                    sqla.ForeignKey("keypoint.serial"),
+                    index=True,
+                    nullable=False,
+                ),
+                sqla.Column(
+                    "trace_serial",
+                    sqla.Integer,
+                    sqla.ForeignKey("Trace.serial"),
+                    index=True,
+                    nullable=False,
+                ),
+                sqla.Column("anchor_serial", sqla.Integer, index=True, nullable=True),
+                sqla.Column(
+                    "weave_label", sqla.String(DEFAULT_STRING_LENGTH), nullable=False
+                ),
+            ],
+        }
+
+    @staticmethod
+    def _serial_of(obj) -> Optional[int]:
+        return obj.store_id if obj is not None else None
+
+    @staticmethod
+    def build(payload, conn, table, inserter, tables, inserters):
+        k = payload["k"]
+        trace = payload["trace"]
+        label = payload["label"]
+        anchor = payload.get("anchor")
+        tags = payload.get("tags", ())
+        obj = Weave(None, k, trace, label, tags=tags, anchor=anchor)
+        anchor_serial = Weave_factory._serial_of(anchor)
+        wanted = _tag_serials(tags)
+        members = tables["Weave_members"]
+        for row in conn.execute(
+            sqla.select(table.c.serial)
+            .filter(
+                table.c.keypoint_serial == k.store_id,
+                table.c.trace_serial == trace.store_id,
+                table.c.weave_label == label,
+                (
+                    table.c.anchor_serial.is_(None)
+                    if anchor_serial is None
+                    else table.c.anchor_serial == anchor_serial
+                ),
+            )
+            .order_by(table.c.serial)
+        ).all():
+            held = _stored_tag_serials(
+                conn, tables["Weave_tags"], "weave_serial", row.serial
+            )
+            if held == wanted:
+                obj._my_id = row.serial
+                obj.tags = _stored_tags(
+                    conn, tables, tables["Weave_tags"], "weave_serial", row.serial
+                )
+                obj.strands = [
+                    (
+                        (
+                            SerialHandle(m.anchor_serial)
+                            if m.anchor_serial is not None
+                            else None
+                        ),
+                        (
+                            SerialHandle(m.origin_serial)
+                            if m.origin_serial is not None
+                            else None
+                        ),
+                    )
+                    for m in conn.execute(
+                        sqla.select(members.c.anchor_serial, members.c.origin_serial)
+                        .filter(members.c.weave_serial == row.serial)
+                        .order_by(members.c.serial)
+                    )
+                ]
+                obj._deserialized = True
+                break
+        return obj
+
+    @staticmethod
+    def store(obj, conn, table, inserter, tables, inserters):
+        store_id = inserter(
+            conn,
+            {
+                "keypoint_serial": obj.k.store_id,
+                "trace_serial": obj.trace.store_id,
+                "anchor_serial": Weave_factory._serial_of(obj.anchor),
+                "weave_label": obj.label,
+            },
+        )
+        obj._my_id = store_id
+        for tag in obj.tags:
+            inserters["Weave_tags"](
+                conn, {"weave_serial": store_id, TAG_SERIAL: tag.store_id}
+            )
+        for anchor, origin in obj.strands:
+            inserters["Weave_members"](
+                conn,
+                {
+                    "weave_serial": store_id,
+                    "anchor_serial": Weave_factory._serial_of(anchor),
+                    "origin_serial": Weave_factory._serial_of(origin),
+                },
+            )
+        return obj
+
+    @staticmethod
+    def inventory_spec():
+        return InventorySpec(
+            leaves=("weave_label",),
+            parents={
+                "k": Parent("keypoint_serial", "keypoint"),
+                "trace": Parent("trace_serial", "Trace"),
+                "anchor": Parent("anchor_serial", "Tessera", nullable=True),
+            },
+            tags=("Weave_tags", "weave_serial"),
+            # a member field shares its name, anchor, with a key parent
+            parent_sets={
+                "strands": ParentSet(
+                    "Weave_members",
+                    "weave_serial",
+                    {
+                        "anchor": Parent("anchor_serial", "Tessera", nullable=True),
+                        "origin": Parent("origin_serial", "Trace", nullable=True),
+                    },
                 )
             },
         )

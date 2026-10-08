@@ -22,6 +22,9 @@ from datastorekit.tests.client.objects import (
     Sample,
     SerialHandle,
     Tessera,
+    Trace,
+    TraceStep,
+    Weave,
     dial_setting,
     ephemeral_probe,
     gauge_setting,
@@ -55,6 +58,13 @@ GADGETS = {
     "gadget-two": ("knob", ("tag-north", "tag-south"), (4.0,), False),
 }
 UNVALIDATED_SAMPLE = "sample-unvalidated"
+# added by prompt 04a: the Traces and the Weave
+TRACES = {
+    # label: (keypoint index, frame, tags, step values, validated)
+    "trace-one": (0, "dial", ("tag-north",), (0.5, 1.5, 2.5), True),
+    "trace-two": (1, "knob", ("tag-north", "tag-south"), (3.0,), False),
+}
+WEAVE_LABEL = "weave-one"
 
 
 def resolve(refs):
@@ -250,7 +260,11 @@ def write_every_class(pool) -> Dict[str, list]:
     - one validated Sample per keypoint, keyed on the validated Gadget, on both Tesserae of its own
       keypoint's alias as members, and on an anchor: the first Tessera of the next keypoint's
       alias (on another shard when there are enough shards), or none for the first keypoint;
-      and one unvalidated Sample, keyed on the unvalidated Gadget.
+      and one unvalidated Sample, keyed on the unvalidated Gadget;
+    - two Traces, on the first two keypoints, one on each frame kind, with tags and steps: one
+      validated, one left unvalidated; and one Weave, on the first keypoint, with a tag, keyed on
+      that keypoint's Trace and on an anchor of its Tesserae, with two strands, one with no anchor
+      and one with no origin (added by prompt 04a).
     """
     written: Dict[str, list] = {}
 
@@ -306,6 +320,24 @@ def write_every_class(pool) -> Dict[str, list]:
     )
     samples.append(store_sample(pool, unvalidated, validate=False))
     written["Sample"] = samples
+
+    traces = {}
+    for label, (index, frame, tag_labels, values, validated) in TRACES.items():
+        trace = make_trace(
+            points[index], frames[frame], label, [tags[t] for t in tag_labels], values
+        )
+        traces[label] = store_trace(pool, trace, validate=validated)
+    written["Trace"] = list(traces.values())
+    first = traces["trace-one"]
+    weave = make_weave(
+        points[0],
+        first,
+        WEAVE_LABEL,
+        tags=[tags["tag-south"]],
+        strands=[(tesserae[0][0], None), (None, first)],
+        anchor=tesserae[0][1],
+    )
+    written["Weave"] = [store_weave(pool, weave)]
     return written
 
 
@@ -369,3 +401,76 @@ def make_sample_on(
     no foreign key across a store.
     """
     return make_sample(alias.keypoint, SerialHandle(gadget_serial), code)
+
+
+# ------------------------------------------------------------------------------------------------
+# the sharded family (added by prompt 04a, U15)
+# ------------------------------------------------------------------------------------------------
+
+
+def make_trace(
+    k: keypoint, frame, label: str, tags: Sequence[tag_entry], values: Sequence[float]
+) -> Trace:
+    """An unstored ``Trace`` on keypoint ``k`` and ``frame`` (a ``dial_setting`` or a
+    ``knob_setting``), with one unstored step per value, as a computation would leave it.
+    """
+    return Trace(
+        None,
+        k,
+        frame,
+        label,
+        tags=tags,
+        steps=[TraceStep(None, i, v) for i, v in enumerate(values)],
+    )
+
+
+def store_trace(pool, trace: Trace, validate: bool = True) -> Trace:
+    """Store ``trace`` on its keypoint's shard, then validate it unless ``validate`` is False."""
+    stored = resolve(pool.object_store(trace))
+    if validate:
+        if resolve(pool.object_validate(stored)) is not True:
+            raise RuntimeError(f'build: Trace "{stored.label}" did not validate')
+        stored.validated = True
+    return stored
+
+
+def get_trace(pool, k: keypoint, frame, label: str, tags: Sequence[tag_entry]) -> Trace:
+    """A sharded get that inserts nothing: the stored, validated Trace, or an unstored one."""
+    return resolve(
+        pool.object_get("Trace", k=k, frame=frame, label=label, tags=list(tags))
+    )
+
+
+def make_weave(
+    k: keypoint,
+    trace: Trace,
+    label: str,
+    tags: Sequence[tag_entry] = (),
+    strands: Sequence = (),
+    anchor: Optional[Tessera] = None,
+) -> Weave:
+    """An unstored ``Weave`` on keypoint ``k``, keyed on ``trace`` (of the same shard), with
+    ``strands``, each a pair ``(anchor, origin)`` of a ``Tessera`` or None and a ``Trace`` or
+    None."""
+    return Weave(None, k, trace, label, tags=tags, strands=strands, anchor=anchor)
+
+
+def store_weave(pool, weave: Weave) -> Weave:
+    """Store ``weave`` on its keypoint's shard. A Weave has no validated flag."""
+    return resolve(pool.object_store(weave))
+
+
+def get_weave(
+    pool,
+    k: keypoint,
+    trace: Trace,
+    label: str,
+    tags: Sequence[tag_entry] = (),
+    anchor: Optional[Tessera] = None,
+) -> Weave:
+    """A sharded get that inserts nothing: the stored Weave, or an unstored one."""
+    return resolve(
+        pool.object_get(
+            "Weave", k=k, trace=trace, label=label, tags=list(tags), anchor=anchor
+        )
+    )

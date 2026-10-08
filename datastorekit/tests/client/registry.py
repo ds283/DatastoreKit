@@ -32,6 +32,10 @@ it):
 | ``Sample`` | sharded on ``k`` | ``validate_on_startup`` (each actor's prune); ``read_batch``; a ``cross_shard`` and ``nullable`` ``Parent``; a ``ParentSet`` |
 | ``Sample_tags`` | neither | the sharded class's tag association |
 | ``Sample_members`` | neither | the ``ParentSet``'s member table, named by foreign key, with no ``inventory_spec`` |
+| ``Trace`` | sharded on ``k`` | tags, values (``TraceStep``) and the validated flag the inventory reads; the polymorphic ``frame``, through ``Gadget``'s type map (prompt 04a) |
+| ``Trace_tags``, ``TraceStep`` | neither | ``Trace``'s tag association and value table (prompt 04a) |
+| ``Weave`` | sharded on ``k`` | tagged, with no validated flag and no values; a ``Trace`` of its shard; a nullable ``anchor``; a ``ParentSet`` (``strands``) (prompt 04a) |
+| ``Weave_tags``, ``Weave_members`` | neither | ``Weave``'s tag association, and its ``ParentSet``'s member table, with serials and nullable members (prompt 04a) |
 
 **The drop groups.** Their union is every table a client would drop: all but the layer's two, the
 shard-key class and the two settings (which every Gadget, and so every Sample, may name), and
@@ -42,6 +46,8 @@ empty. Each group alone is not: ``samples`` is closed, but ``tesserae`` must be 
 replicated table (``aliases``; ``gadgets``).
 ``gauge_setting`` and ``routing_rule`` (added by prompt 03b) are in no group either, as leaves a
 client would keep.
+The sharded family added by prompt 04a is the group ``traces``, closed on its own; ``Weave`` and
+``Weave_members`` name a Tessera, so ``aliases`` and ``tesserae`` must be dropped with them too.
 
 Importing this module imports the factories, ``sqlalchemy`` and ``datastorekit``; it starts
 nothing.
@@ -82,6 +88,13 @@ factories = {
     "Sample": _f.Sample_factory,
     "Sample_tags": _f.Sample_tags_factory,
     "Sample_members": _f.Sample_members_factory,
+    # added by prompt 04a (U15)
+    "Trace": _f.Trace_factory,
+    "Trace_tags": _f.Trace_tags_factory,
+    "TraceStep": _f.TraceStep_factory,
+    "Weave": _f.Weave_factory,
+    "Weave_tags": _f.Weave_tags_factory,
+    "Weave_members": _f.Weave_members_factory,
 }
 
 replicated_tables = [
@@ -101,6 +114,8 @@ replicated_tables = [
 sharded_tables = {
     "Tessera": "k",
     "Sample": "k",
+    "Trace": "k",
+    "Weave": "k",
 }
 
 read_table_config = {
@@ -134,6 +149,15 @@ drop_groups = {
     "tesserae": ["Tessera"],
     "samples": ["Sample", "Sample_tags", "Sample_members"],
     "gadgets": ["Gadget", "Gadget_tags", "GadgetPart"],
+    # added by prompt 04a (U15)
+    "traces": [
+        "Trace",
+        "Trace_tags",
+        "TraceStep",
+        "Weave",
+        "Weave_tags",
+        "Weave_members",
+    ],
 }
 
 

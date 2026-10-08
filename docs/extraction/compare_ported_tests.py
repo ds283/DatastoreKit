@@ -89,6 +89,34 @@ PORTED: List[Tuple[str, str]] = [
         "Datastore/tests/test_closed_store_refusals.py",
         "datastorekit/tests/test_closed_store_refusals.py",
     ),
+    (
+        "Datastore/tests/test_store_inventory.py",
+        "datastorekit/tests/test_store_inventory.py",
+    ),
+    (
+        "Datastore/tests/test_store_schema.py",
+        "datastorekit/tests/test_store_schema.py",
+    ),
+    (
+        "Datastore/tests/test_store_reader.py",
+        "datastorekit/tests/test_store_reader.py",
+    ),
+    (
+        "Datastore/tests/test_foreign_key_check.py",
+        "datastorekit/tests/test_foreign_key_check.py",
+    ),
+    (
+        "Datastore/tests/test_schema_builder.py",
+        "datastorekit/tests/test_schema_builder.py",
+    ),
+    (
+        "Datastore/tests/real_store_fixtures.py",
+        "datastorekit/tests/real_store_fixtures.py",
+    ),
+    (
+        "Datastore/tests/schema_description.py",
+        "datastorekit/tests/schema_description.py",
+    ),
 ]
 
 # R-name: package path -> {source class or method name: its name in the package}

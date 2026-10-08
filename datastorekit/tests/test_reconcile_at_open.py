@@ -1088,7 +1088,7 @@ class TestPruningAfterRepair(_ReconcileTestCase):
         """The copied model is unvalidated everywhere: pruned on every shard, or kept on every
         shard, and never on some. The drop actions include aliases, which drops
         the replicated keypoint_alias table: on every shard alike. They also name
-        aliases' dependents (tesserae and samples), because
+        aliases' dependents (tesserae, samples and traces), because
         a drop without them is refused (prompts/datastore-generic-followup, prompt 01).
         """
         for prune in (True, False):
@@ -1110,6 +1110,7 @@ class TestPruningAfterRepair(_ReconcileTestCase):
                                 "samples",
                                 "aliases",
                                 "tesserae",
+                                "traces",
                             ]
                         ),
                     )

@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-08 · **Status: IN PROGRESS — 5 of 9 prompts written (01, 02, 03a, 03b, 04a), 4 landed (01, 02, 03a, 03b).**
+**Last updated:** 2026-10-08 · **Status: IN PROGRESS — 5 of 9 prompts written (01, 02, 03a, 03b, 04a), 5 landed (01, 02, 03a, 03b, 04a).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 U8–U13 the same day, and U14–U21 on 2026-10-08 (README §6.2); U10 split 03 into 03a and 03b, and
 U14 split 04 into 04a and 04b.
@@ -60,7 +60,7 @@ U14 split 04 into 04a and 04b.
 | 02 | [The neutral test client](02-the-neutral-test-client.md) | `docs/client-contract.md`, the test client, the stand-in pool; 01's tests onto the client's names (U8) | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `e988e69` | [log](logs/02-the-neutral-test-client.md) |
 | 03a | [Port the replicated-write tests](03a-port-the-replicated-write-tests.md) | 76 tests (replicated write, check at open, prune at open); the port check; the `key_id` pin and `revalidate` | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `11247c7` | [log](logs/03a-port-the-replicated-write-tests.md) |
 | 03b | [Port the open and read-only tests](03b-port-the-open-and-read-only-tests.md) | 53 tests, 80 run (version row, read-only pool, one timestamp, shard records); the two client classes (U13); the neutral reader sequence (U11) | ✍️ yes, 2026-10-07 | ✅ 2026-10-08 | `0d5380c` | [log](logs/03b-port-the-open-and-read-only-tests.md) |
-| 04a | [Port the store and inventory tests](04a-port-the-store-and-inventory-tests.md) | 85 tests (inventory, store schema, reader, foreign keys, schema builder); `real_store_fixtures` and `schema_description` on neutral rows; the schema witness; the client's sharded family (U15) | ✍️ yes, 2026-10-08 | ⬜ | — | — |
+| 04a | [Port the store and inventory tests](04a-port-the-store-and-inventory-tests.md) | 85 tests (inventory, store schema, reader, foreign keys, schema builder); `real_store_fixtures` and `schema_description` on neutral rows; the schema witness; the client's sharded family (U15) | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | this commit | [log](logs/04a-port-the-store-and-inventory-tests.md) |
 | 04b | Port the declaration and registry tests | 90 tests (inventory declarations, declared facts, layer registry, drop refusal); the package guard (U16, U17) | ⬜ | ⬜ | — | — |
 | 05 | Supported versions and CI | `pyproject.toml` ranges, both ends, Actions; tag `v0.1.0` | ⬜ | ⬜ | — | — |
 | 06 | Version-keyed lookups | `key_on_version`; tag `v0.2.0` | ⬜ | ⬜ | — | — |
@@ -509,6 +509,22 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     client's other files add none. Their SGK references outside the pattern (`var/`, "audit
     R1/R2/V1", "QSI", `resolve_run_selection`, SGK's commit `b04671f`) are listed in log 03b §7
     item 1.
+  - **Measured by 04a (2026-10-08):** **146 lines in 35 files.** 03b's figure, 124 in 28, was first
+    reproduced at `ae94aaa` by log 03a §8's method (which also gives 114 in 23 at `72cf34a`). The
+    five ported modules and the two fixtures add 22 lines, all SGK's prose ported unchanged under
+    03a §2.1:
+    - `tests/schema_description.py` 9 (`:3`, `:6`, `:9`, `:12`, `:15`, `:16`, `:20`, `:183`,
+      `:184`);
+    - `tests/test_store_reader.py` 3 (`:2`, `:12`, `:182`);
+    - `tests/test_store_schema.py` 3 (`:2`, `:3`, `:411`);
+    - `tests/test_foreign_key_check.py` 2 (`:2`, `:4`);
+    - `tests/test_schema_builder.py` 2 (`:2`, `:9`);
+    - `tests/test_store_inventory.py` 2 (`:2`, `:702`);
+    - `tests/real_store_fixtures.py` 1 (`:29`).
+
+    The client's files add none. `test_schema_builder`'s SGK witness history, which named SGK's
+    tables, was rewritten under U21. Their SGK references outside the pattern ("store-fingerprint
+    prompt 01/02", "S1/S2/S4", `var/`, SGK's witness file names) are listed in log 04a §7 item 4.
 - **[02-an-unsupplied-sharded-table-raises-keyerror]** *(opened 2026-10-07 by prompt 02)*
   - **The defect.** Reopening a store whose primary records a sharded table that the constructor's
     `sharded_tables` lacks raises a bare `KeyError('<table>')` from `_read_shard_data`

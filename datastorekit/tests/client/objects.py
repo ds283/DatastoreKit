@@ -188,3 +188,72 @@ class Sample(DatastoreObject):
         self.members = list(members)
         self.anchor = anchor
         self.validated = validated
+
+
+# ------------------------------------------------------------------------------------------------
+# the sharded family (added by prompt 04a, U15)
+# ------------------------------------------------------------------------------------------------
+
+
+class TraceStep(DatastoreObject):
+    """One value row of a ``Trace``: a sharded class's value table (added by prompt 04a)."""
+
+    def __init__(self, store_id: Optional[int], step_index: int, step_value: float):
+        super().__init__(store_id)
+        self.step_index = step_index
+        self.step_value = step_value
+
+
+class Trace(DatastoreObject):
+    """
+    A sharded class, sharded on ``k`` (a ``keypoint``): tagged (``Trace_tags``), with value rows
+    (``TraceStep``) and a validated flag, and a polymorphic parent (``frame``, a ``dial_setting``
+    or a ``knob_setting``), as ``Gadget`` has. Unstored (``store_id`` None) until stored (added by
+    prompt 04a).
+    """
+
+    def __init__(
+        self,
+        store_id: Optional[int],
+        k,
+        frame,
+        label: str,
+        tags: Sequence[tag_entry] = (),
+        steps: Optional[List[TraceStep]] = None,
+        validated: bool = False,
+    ):
+        super().__init__(store_id)
+        self.k = k
+        self.frame = frame
+        self.label = label
+        self.tags = list(tags)
+        self.steps = list(steps) if steps is not None else []
+        self.validated = validated
+
+
+class Weave(DatastoreObject):
+    """
+    A sharded class, sharded on ``k`` (a ``keypoint``): tagged (``Weave_tags``), keyed on a
+    ``Trace`` of its own shard, on an optional ``anchor`` (a ``Tessera``), and on a set of
+    ``strands`` (``Weave_members``), each a pair ``(anchor, origin)`` of an optional ``Tessera``
+    and an optional ``Trace``. It has no validated flag and no value table. Unstored (``store_id``
+    None) until stored (added by prompt 04a).
+    """
+
+    def __init__(
+        self,
+        store_id: Optional[int],
+        k,
+        trace,
+        label: str,
+        tags: Sequence[tag_entry] = (),
+        strands: Sequence = (),
+        anchor=None,
+    ):
+        super().__init__(store_id)
+        self.k = k
+        self.trace = trace
+        self.label = label
+        self.tags = list(tags)
+        self.strands = list(strands)
+        self.anchor = anchor

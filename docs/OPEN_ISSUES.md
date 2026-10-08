@@ -11,7 +11,7 @@ disagree. See `CLAUDE.md` for the maintenance rule.
 
 | Issue | Hook |
 |---|---|
-| `[01-package-prose-names-sgks-layout]` | 124 prose lines in 28 files of the package name SGK's paths and campaigns (02: the stand-in pool's, and one comment naming SGK's table; 03a and 03b: the eight ported modules' docstrings); two describe the removed `sys.path` bootstrap |
+| `[01-package-prose-names-sgks-layout]` | 146 prose lines in 35 files of the package name SGK's paths and campaigns (02: the stand-in pool's, and one comment naming SGK's table; 03a, 03b and 04a: the fifteen ported modules' and two fixtures' docstrings); two describe the removed `sys.path` bootstrap |
 | `[02-an-unsupplied-sharded-table-raises-keyerror]` | Reopening with a recorded sharded table the constructor lacks raises a bare `KeyError` before the intended message |
 
 ### 1.2 Inherited from SecondaryGWKit, on SGK's boards

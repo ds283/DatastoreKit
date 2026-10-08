@@ -78,10 +78,26 @@ NINE = {
 
 # the tables each drop group alone must be dropped with, in registry order
 MEASURED_DEPENDENTS = {
-    "aliases": ["Tessera", "Sample", "Sample_tags", "Sample_members"],
-    "tesserae": ["Sample", "Sample_tags", "Sample_members"],
+    "aliases": [
+        "Tessera",
+        "Sample",
+        "Sample_tags",
+        "Sample_members",
+        "Weave",
+        "Weave_tags",
+        "Weave_members",
+    ],
+    "tesserae": [
+        "Sample",
+        "Sample_tags",
+        "Sample_members",
+        "Weave",
+        "Weave_tags",
+        "Weave_members",
+    ],
     "samples": [],
     "gadgets": ["Sample", "Sample_tags", "Sample_members"],
+    "traces": [],
 }
 # the tables no drop group names
 KEPT = [
@@ -172,7 +188,16 @@ class TestCoverageByDeclaration(unittest.TestCase):
         self.assertTrue(all(len(r["columns"]) > 0 for r in with_table))
         # a class with no serial is keyed by its declared primary key
         no_serial = [n for n, r in records.items() if r.get("use_serial") is False]
-        self.assertEqual(no_serial, ["Gadget_tags", "Sample_tags", "Sample_members"])
+        self.assertEqual(
+            no_serial,
+            [
+                "Gadget_tags",
+                "Sample_tags",
+                "Sample_members",
+                "Trace_tags",
+                "Weave_tags",
+            ],
+        )
 
     def test_the_replicated_only_declarations_are_where_the_pool_reads_them(self):
         built = _built()
@@ -295,7 +320,7 @@ class TestCoverageByDeclaration(unittest.TestCase):
         ]
         self.assertTrue(any(p.of is not None for p in parents))
         polymorphic = [p for p in parents if p.types is not None]
-        self.assertEqual(len(polymorphic), 1)
+        self.assertEqual(len(polymorphic), 2)
         self.assertEqual(polymorphic[0].type_column, "frame_kind")
         self.assertEqual(
             set(polymorphic[0].types.values()), {"dial_setting", "knob_setting"}
@@ -331,7 +356,10 @@ class TestCoverageByDeclaration(unittest.TestCase):
         self.assertIn("keypoint", registry.replicated_tables)
         self.assertIn("keypoint", _built().tables)
         self.assertIn("keypoint_alias", registry.replicated_tables)
-        self.assertEqual(registry.sharded_tables, {"Tessera": "k", "Sample": "k"})
+        self.assertEqual(
+            registry.sharded_tables,
+            {"Tessera": "k", "Sample": "k", "Trace": "k", "Weave": "k"},
+        )
 
         point = keypoint(7, 0.5)
         self.assertEqual(registry.shard_key_store_id(point), 7)
@@ -540,6 +568,8 @@ class TestRoundTrip(unittest.TestCase):
                 "Gadget": 2,
                 "Tessera": 6,
                 "Sample": 4,
+                "Trace": 2,
+                "Weave": 1,
             },
         )
         gadgets = {r.key["gadget_label"]: r for r in inventory["Gadget"].records}
@@ -561,10 +591,10 @@ class TestRoundTrip(unittest.TestCase):
         self.assertEqual(
             {k: r.validated for k, r in samples.items()},
             {
-                "sample-0": True,
-                "sample-1": True,
-                "sample-2": True,
-                build.UNVALIDATED_SAMPLE: False,
+                "sample-0": None,
+                "sample-1": None,
+                "sample-2": None,
+                build.UNVALIDATED_SAMPLE: None,
             },
         )
         self.assertIsNone(samples["sample-0"].key["anchor"])

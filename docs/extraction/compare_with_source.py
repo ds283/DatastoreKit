@@ -165,6 +165,19 @@ FILES: List[Tuple[str, str, str]] = (
             "test_closed_store_refusals",
         )
     ]
+    # prompt 04a: the same, with the two fixtures the five modules import
+    + [
+        (f"Datastore/tests/{name}.py", f"datastorekit/tests/{name}.py", PORTED)
+        for name in (
+            "test_store_inventory",
+            "test_store_schema",
+            "test_store_reader",
+            "test_foreign_key_check",
+            "test_schema_builder",
+            "real_store_fixtures",
+            "schema_description",
+        )
+    ]
 )
 
 # Files in the package that have no source, and are not compared: the import guard (prompt 01),
