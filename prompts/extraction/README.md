@@ -7,8 +7,9 @@ G1 held and the user took U2–U5 as recommended. Its import commit is SGK `6f7f
 `e988e69` and was reviewed. The user took U9–U12 the same day, splitting 03 into 03a and 03b;
 **prompt 03a is written** (2026-10-07), and landed as `11247c7` and was reviewed. The user took U13
 the same day; **prompt 03b is written** (2026-10-07), and landed as `0d5380c` (2026-10-08) and
-was reviewed. Each later prompt is written after the one before it has landed and been reviewed,
-against the tree it left.
+was reviewed. The user took U14–U17 on 2026-10-08, splitting 04 into 04a and 04b; **prompt 04a is
+written** (2026-10-08). Each later prompt is written after the one before it has landed and been
+reviewed, against the tree it left.
 
 ## 0. Why this campaign exists
 
@@ -170,14 +171,16 @@ measures the survey again before doing so.
 | 02 | `02-the-neutral-test-client.md` | `docs/client-contract.md`, re-measured: every constructor argument, `register()` key, hook, declaration and layer-owned table, saying which are required, optional or defaulted. A neutral test client under `datastorekit/tests/client/` that exercises each item at least once, with abstract names: <br>• a shard-key class; <br>• replicated leaf tables, one with `monotone_flags`; <br>• a sharded parent with `validate_on_startup`; <br>• a replicated owner with `validated_column`, `revalidate` and `owned_serials`, and its replicated value table (`owner_column`) *(amended at 02's review: the layer reads these, and `monotone_flags`, for replicated classes only)*; <br>• a tag association; <br>• a polymorphic `Parent`; <br>• `read_table`, `read_batch` and `stepping`. <br>The generic part of `standin_pool.py` is ported with its defaults pointed at that client. The 88 tests of 01 move onto the client's names (U8), and the equivalence check gains the two classes this needs and fails on an unaccounted file. **Acceptance:** the log's table maps each contract item to the fixture that exercises it, and every item is covered. | **landed** 2026-10-07 (`e988e69`), reviewed |
 | 03a | [`03a-port-the-replicated-write-tests.md`](03a-port-the-replicated-write-tests.md) | U10's first half of §0.2's 129 write-path tests: `test_replicated_write` (25), `test_reconcile_at_open` (41) and `test_prune_at_open` (10), re-fixtured onto the neutral client. Each test keeps its module, class and method name and its assertions; the changes allowed are R-imp, R-map, R-help, R-value, R-count and R-name (03a §2.1). `docs/extraction/compare_ported_tests.py` checks the names and each test's assertion skeleton against SGK's (U9), and `compare_with_source.py` gains a `PORTED` kind. A new test pins `_assign_shard_keys` against the `key_id` binding, and a ported test reaches `revalidate`. **Acceptance:** the port check passes; `[02-no-test-reaches-revalidate]` and `[01-no-ported-test-pins-the-shard-key-assignment]` close, each by a test a named breakage fails. | **landed** 2026-10-07 (`11247c7`), reviewed |
 | 03b | [`03b-port-the-open-and-read-only-tests.md`](03b-port-the-open-and-read-only-tests.md) | The other half: `test_version_row_at_open` (12), `test_read_only_pool` (23, onto `build_store` and a neutral reader sequence, U11; four test names change by the table map, U12), `test_one_timestamp_per_write` (1 defined, 28 run, by inheritance from 03a's modules and `test_version_row_at_open`), `test_absolute_shard_record_refused` (12) and `test_closed_store_refusals` (5): 53 defined, 80 run. Checked the same way. A test that cannot be expressed on the neutral client is a stop, not a silent drop. Two replicated classes are added to the neutral client for it (U13). | **landed** 2026-10-08 (`0d5380c`), reviewed |
-| 04 | `04-port-the-schema-and-inventory-tests.md` | The 175 tests of §0.2 for the schema builder, the schema refusal, the reader, the registry, drop refusal and the inventory, re-fixtured the same way. SGK's `test_layer_is_generic` becomes the package's guard. Its forbidden vocabulary is drawn from all three clients' registries, measured read-only and written into the test as data; the test never imports a client. | not written |
+| 04a | [`04a-port-the-store-and-inventory-tests.md`](04a-port-the-store-and-inventory-tests.md) | U14's first half of §0.2's 175: `test_store_inventory` (42), `test_store_schema` (13), `test_store_reader` (15), `test_foreign_key_check` (8) and `test_schema_builder` (7), 85 tests, re-fixtured as 03a's were. SGK's `real_store_fixtures` and `schema_description` are ported, the first with neutral row data on a hand-built store with fixed serials, and a neutral schema witness is captured. The neutral client gains a small sharded family for the roles it lacks (U15). **Acceptance:** the port check passes over 15 modules; the suite is 353. | **written** 2026-10-08 |
+| 04b | `04b-port-the-declaration-and-registry-tests.md` | The other half: `test_inventory_declarations` (26, of which one stays in SGK, U16), `test_declared_facts` (25), `test_layer_registry` (20) and `test_drop_refuses_dangling_references` (11), on 04a's fixture. SGK's `test_layer_is_generic` (8) becomes the package's guard. Its forbidden vocabulary is drawn from all three clients' registries, measured read-only and written into the test as data; the test never imports a client, and the hits rule 8 freezes in the layer are pinned (U17). | not written |
 | 05 | `05-supported-versions-and-ci.md` | Dependency ranges in `pyproject.toml`. The whole suite runs at both ends of §0.2's version table (Python 3.12 / Ray 2.43 / SQLAlchemy 2.0.39, and Python 3.13 / Ray 2.55 / SQLAlchemy 2.0.46). A GitHub Actions workflow runs the suite on both. `README.md` gains usage. **Tag `v0.1.0`**, the release SGK adopts (G2). | not written |
 | 06 | `06-version-keyed-lookups.md` | CPBH's version-keyed lookups (`Datastore.py:329-338`, `:500-555`; `config/version.py:55-71` at CPBH `9b3db51`), as the optional `register()` key `key_on_version`. A lookup of a class that declares it receives the store's version serial under `datastorekit.contract.VERSION_SERIAL_KEY`. A caller that supplies that key itself is refused. `key_on_version` without `version` is refused at schema build. `require_version_serial` is exported for factories. Tests on the neutral client carry over the semantics of CPBH's `test_version_keyed_lookups`. Nothing the layer writes changes. **Tag `v0.2.0`.** | not written |
 | 07 | `07-close-out-and-adoption-handover.md` | `docs/adoption/` holds one checklist per client (SGK, CPBH, SI), each saying: <br>• which imports to rewrite; <br>• where its factories move to; <br>• what its factories must change; <br>• what its call sites and test harness must change; <br>• which of its stores the new layer will refuse, and why. <br>SGK's checklist also names every import of the layer from outside `Datastore/`. In particular, `RunRegistry/` imports `Datastore.SQL.ShardedPool.ShardedPool` three times, `Datastore.store_inventory.canonical_json` twice and `Datastore.store_inventory.read_inventory` once (counted at `21ee420`), and G2's rehearsal fingerprint runs through `RunRegistry/stores.py::fingerprint_store`. Also: SGK's `docs/` scripts that import the layer, and `RayTools/RayWorkPool.py`'s type-hint import. 07 re-counts them. <br>Also a verification document for the campaign, and the campaign closed. | not written |
 
-**Order.** 01 → 02 → 03a → 03b and 04 → 05 → 06 → 07. 03b and 04 may run in either order, but
-never concurrently, since both extend `compare_ported_tests.py`'s table and
-`tests/client/build.py`. 06 needs only 02. It is placed after 05 so that `v0.1.0`
+**Order.** 01 → 02 → 03a → 03b → 04a → 04b → 05 → 06 → 07. (03b and 04 could have run in either
+order, but never concurrently, since both extend `compare_ported_tests.py`'s table and
+`tests/client/build.py`; 03b ran first, and U14 split 04.) 04b needs 04a's fixture and client
+classes. 06 needs only 02. It is placed after 05 so that `v0.1.0`
 contains exactly SGK's behaviour.
 
 ## 3. Datastores
@@ -218,6 +221,12 @@ person under SGK's rules.
 - **After 03b:** the neutral client's `gauge_setting` and `routing_rule` (U13), with
   `build.get_gauge` and `build.get_rule`; `datastorekit/tests/client/reader.py`, the neutral
   store, reader sequence and instrument (U11); `PORTED` and `NAME_MAP` over eight modules.
+- **After 04a:** the neutral client's sharded family (U15); `datastorekit/tests/real_store_fixtures.py`
+  (`build_real_store`, `build_full_store`, `full_rows`, `relabel_serials`, `find_row`, `vary_row`,
+  `file_state` and the rest of SGK's public names, on neutral rows); `datastorekit/tests/schema_description.py`
+  and the neutral witness under `datastorekit/tests/data/`; `PORTED` over fifteen modules.
+- **After 04b:** the package's guard, `datastorekit/tests/test_layer_is_generic.py`, with its
+  vocabulary as data and its pinned hits (U17); `NOT_PORTED` in `compare_ported_tests.py` (U16).
 - **After 06:** `register()["key_on_version"]`; `datastorekit.contract.VERSION_SERIAL_KEY` and
   `datastorekit.contract.require_version_serial`.
 
@@ -364,6 +373,46 @@ open until 05 is written.
   - a separate prompt to extend the client first, which adds a prompt and a review for a change
     03b alone uses;
   - leaving those tests in SGK, which drops most of `test_read_only_pool`, against U11.
+
+- **U14: splitting 04. (taken 2026-10-08, as recommended)** 04's planner measured 175 tests in
+  4,837 lines, and two fixtures of 1,561 lines, one of which (`real_store_fixtures`, 1,350 lines)
+  must be rebuilt with neutral row data. That is more than 03a and 03b together. **Recommended:**
+  two prompts. 04a ports the fixtures, captures the schema witness, extends the client (U15) and
+  ports the five modules that build stores: `test_store_inventory`, `test_store_schema`,
+  `test_store_reader`, `test_foreign_key_check` and `test_schema_builder` (85 tests). The fixture's
+  rows are designed with `test_store_inventory`, which addresses them. 04b ports the other five
+  (90 tests), the guard among them. **Rejected:**
+  - three prompts (the fixture and the four small modules; `test_store_inventory` alone; the
+    rest), which designs the fixture's rows before their main consumer is ported;
+  - one prompt, the largest unit of work by far, and the hardest to review or revert.
+- **U15: the roles the neutral client lacks for 04. (taken 2026-10-08, as recommended)** 04's
+  planner found roles no class of the client can play: a second factory referencing the
+  polymorphic frame parent through the same type map; a sharded class with a value table; a
+  tagged sharded class with no validated column, one record and no dependents; a parent-set member
+  table with serials and nullable members; and a sharded tagged parent of a sharded child. Also,
+  SGK's `TestRevalidate` asserts the warning SGK's factory prints when a model does not validate,
+  and the neutral `Gadget_factory` prints none. **Recommended:** 04a adds a small sharded family to
+  the client by addition (`Trace`, with its tag and value tables, and `Weave`, with its tag and
+  member tables), written by `build_store`, and `Gadget_factory`'s validate prints a warning when
+  a Gadget does not validate. 02's and 03's tests change only in measured literals. **Rejected:**
+  - weakening the ports: about ten tests would loop over one class, count zero, or assert what
+    holds vacuously;
+  - leaving those tests in SGK, against rule 6.
+- **U16: the test about SGK's report. (taken 2026-10-08, as recommended)**
+  `test_inventory_declarations.TestResolve.test_the_report_renders_both_cosmology_types` asserts
+  on SGK's `tools.inventory_report`, which stays in SGK (§1). **Recommended:** it is not ported.
+  04b records it in its log with the reason, and `compare_ported_tests.py` gains a `NOT_PORTED`
+  list (test and reason), so that the omission is declared and checked. 04b adds 25 of that
+  module's 26. **Rejected:** a neutral report formatter in the test client, written only to keep
+  one test.
+- **U17: the guard and the layer's frozen prose. (taken 2026-10-08, as recommended)** A guard
+  built from the three clients' vocabulary finds one hit in the layer at `2992945`: the comment
+  `e.g. "wavenumber"` at `datastorekit/tools/shard_key_audit.py:188`, which rule 8 freezes until
+  after 05. **Recommended:** the guard holds an exact list of known hits (file, line, word, and
+  reason), and fails if the hits differ from it in either direction. The list is emptied when the
+  prose is rewritten after 05, under `[01-package-prose-names-sgks-layout]`. **Rejected:**
+  - adding the comment scan only once rule 8 lifts;
+  - rewriting the comment in 04b as an exception to rule 8.
 
 ## 7. Gates outside this repository
 

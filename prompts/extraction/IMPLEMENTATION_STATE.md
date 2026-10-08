@@ -1,8 +1,9 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-08 · **Status: IN PROGRESS — 4 of 8 prompts written (01, 02, 03a, 03b), 4 landed (01, 02, 03a, 03b).**
+**Last updated:** 2026-10-08 · **Status: IN PROGRESS — 5 of 9 prompts written (01, 02, 03a, 03b, 04a), 4 landed (01, 02, 03a, 03b).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
-and U8–U13 the same day (README §6.2); U10 split 03 into 03a and 03b.
+U8–U13 the same day, and U14–U17 on 2026-10-08 (README §6.2); U10 split 03 into 03a and 03b, and
+U14 split 04 into 04a and 04b.
 
 **Campaign:** [`README.md`](README.md) ·
 **Source:** SecondaryGWKit's `Datastore/` layer at the import commit `6f7f291` (G1) ·
@@ -40,6 +41,10 @@ and U8–U13 the same day (README §6.2); U10 split 03 into 03a and 03b.
 | **U11** `test_read_only_pool`'s SGK probe | `build_store` and a neutral reader sequence | **taken** 2026-10-07 |
 | **U12** test names that are client table names | renamed by the table map | **taken** 2026-10-07 |
 | **U13** roles the neutral client lacks for 03b | 03b adds two replicated classes to the client | **taken** 2026-10-07 |
+| **U14** splitting 04 | 04a (85 tests, the fixtures, the client additions) and 04b (90 tests, the guard) | **taken** 2026-10-08 |
+| **U15** roles the neutral client lacks for 04 | 04a adds a sharded family (`Trace`, `Weave` and their tables), and `Gadget`'s validate prints a warning | **taken** 2026-10-08 |
+| **U16** the test about SGK's report | not ported; declared in a `NOT_PORTED` list of the port check (04b) | **taken** 2026-10-08 |
+| **U17** the guard and the layer's frozen prose | a pinned list of known hits, exact in both directions (04b) | **taken** 2026-10-08 |
 
 ---
 
@@ -51,7 +56,8 @@ and U8–U13 the same day (README §6.2); U10 split 03 into 03a and 03b.
 | 02 | [The neutral test client](02-the-neutral-test-client.md) | `docs/client-contract.md`, the test client, the stand-in pool; 01's tests onto the client's names (U8) | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `e988e69` | [log](logs/02-the-neutral-test-client.md) |
 | 03a | [Port the replicated-write tests](03a-port-the-replicated-write-tests.md) | 76 tests (replicated write, check at open, prune at open); the port check; the `key_id` pin and `revalidate` | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `11247c7` | [log](logs/03a-port-the-replicated-write-tests.md) |
 | 03b | [Port the open and read-only tests](03b-port-the-open-and-read-only-tests.md) | 53 tests, 80 run (version row, read-only pool, one timestamp, shard records); the two client classes (U13); the neutral reader sequence (U11) | ✍️ yes, 2026-10-07 | ✅ 2026-10-08 | `0d5380c` | [log](logs/03b-port-the-open-and-read-only-tests.md) |
-| 04 | Port the schema and inventory tests | 175 tests; the package guard | ⬜ | ⬜ | — | — |
+| 04a | [Port the store and inventory tests](04a-port-the-store-and-inventory-tests.md) | 85 tests (inventory, store schema, reader, foreign keys, schema builder); `real_store_fixtures` and `schema_description` on neutral rows; the schema witness; the client's sharded family (U15) | ✍️ yes, 2026-10-08 | ⬜ | — | — |
+| 04b | Port the declaration and registry tests | 90 tests (inventory declarations, declared facts, layer registry, drop refusal); the package guard (U16, U17) | ⬜ | ⬜ | — | — |
 | 05 | Supported versions and CI | `pyproject.toml` ranges, both ends, Actions; tag `v0.1.0` | ⬜ | ⬜ | — | — |
 | 06 | Version-keyed lookups | `key_on_version`; tag `v0.2.0` | ⬜ | ⬜ | — | — |
 | 07 | Close-out and adoption handover | `docs/adoption/` checklists; verification document | ⬜ | ⬜ | — | — |
