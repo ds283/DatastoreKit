@@ -84,7 +84,15 @@ MEASURED_DEPENDENTS = {
     "gadgets": ["Sample", "Sample_tags", "Sample_members"],
 }
 # the tables no drop group names
-KEPT = ["version", "store_tag", "keypoint", "dial_setting", "knob_setting"]
+KEPT = [
+    "version",
+    "store_tag",
+    "keypoint",
+    "dial_setting",
+    "knob_setting",
+    "gauge_setting",
+    "routing_rule",
+]
 
 
 def tearDownModule():
@@ -526,6 +534,8 @@ class TestRoundTrip(unittest.TestCase):
                 "keypoint": 3,
                 "dial_setting": 2,
                 "knob_setting": 1,
+                "gauge_setting": 2,
+                "routing_rule": 2,
                 "keypoint_alias": 3,
                 "Gadget": 2,
                 "Tessera": 6,

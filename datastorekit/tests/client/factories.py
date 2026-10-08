@@ -38,9 +38,11 @@ from datastorekit.tests.client.objects import (
     Tessera,
     dial_setting,
     ephemeral_probe,
+    gauge_setting,
     keypoint,
     keypoint_alias,
     knob_setting,
+    routing_rule,
     tag_entry,
     version_entry,
 )
@@ -321,6 +323,84 @@ class knob_setting_factory(SQLAFactoryBase):
     @staticmethod
     def inventory_spec():
         return InventorySpec(leaves=("knob_turns", "stepping"))
+
+
+class gauge_setting_factory(SQLAFactoryBase):
+    """A leaf with no ``version`` column, got or inserted by its exponent (added by prompt
+    03b)."""
+
+    @staticmethod
+    def register():
+        return {
+            "version": False,
+            "timestamp": True,
+            "columns": [sqla.Column("gauge_exponent", sqla.Integer, nullable=False)],
+        }
+
+    @staticmethod
+    def build(payload, conn, table, inserter, tables, inserters):
+        exponent = payload["exponent"]
+        store_id = conn.execute(
+            sqla.select(table.c.serial).filter(table.c.gauge_exponent == exponent)
+        ).scalar_one_or_none()
+        attributes = {"_deserialized": True}
+        if store_id is None:
+            data = {"gauge_exponent": exponent}
+            if "serial" in payload:
+                data["serial"] = payload["serial"]
+            store_id = inserter(conn, data)
+            attributes = {"_new_insert": True}
+        return _new(gauge_setting(store_id, exponent), attributes)
+
+    @staticmethod
+    def inventory_spec():
+        return InventorySpec(leaves=("gauge_exponent",))
+
+
+class routing_rule_factory(SQLAFactoryBase):
+    """A leaf with a ``version`` column, got or inserted by its label, threshold and mode together
+    (added by prompt 03b)."""
+
+    @staticmethod
+    def register():
+        return {
+            "version": True,
+            "timestamp": True,
+            "columns": [
+                sqla.Column(
+                    "rule_label", sqla.String(DEFAULT_STRING_LENGTH), nullable=False
+                ),
+                sqla.Column("rule_threshold", sqla.Float(64), nullable=False),
+                sqla.Column(
+                    "rule_mode", sqla.String(DEFAULT_STRING_LENGTH), nullable=False
+                ),
+            ],
+        }
+
+    @staticmethod
+    def build(payload, conn, table, inserter, tables, inserters):
+        label = payload["label"]
+        threshold = payload["threshold"]
+        mode = payload["mode"]
+        store_id = conn.execute(
+            sqla.select(table.c.serial).filter(
+                table.c.rule_label == label,
+                table.c.rule_threshold == threshold,
+                table.c.rule_mode == mode,
+            )
+        ).scalar_one_or_none()
+        attributes = {"_deserialized": True}
+        if store_id is None:
+            data = {"rule_label": label, "rule_threshold": threshold, "rule_mode": mode}
+            if "serial" in payload:
+                data["serial"] = payload["serial"]
+            store_id = inserter(conn, data)
+            attributes = {"_new_insert": True}
+        return _new(routing_rule(store_id, label, threshold, mode), attributes)
+
+    @staticmethod
+    def inventory_spec():
+        return InventorySpec(leaves=("rule_label", "rule_threshold", "rule_mode"))
 
 
 class ephemeral_probe_factory(SQLAFactoryBase):

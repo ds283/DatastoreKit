@@ -69,10 +69,38 @@ PORTED: List[Tuple[str, str]] = [
         "Datastore/tests/test_prune_at_open.py",
         "datastorekit/tests/test_prune_at_open.py",
     ),
+    (
+        "Datastore/tests/test_version_row_at_open.py",
+        "datastorekit/tests/test_version_row_at_open.py",
+    ),
+    (
+        "Datastore/tests/test_read_only_pool.py",
+        "datastorekit/tests/test_read_only_pool.py",
+    ),
+    (
+        "Datastore/tests/test_one_timestamp_per_write.py",
+        "datastorekit/tests/test_one_timestamp_per_write.py",
+    ),
+    (
+        "Datastore/tests/test_absolute_shard_record_refused.py",
+        "datastorekit/tests/test_absolute_shard_record_refused.py",
+    ),
+    (
+        "Datastore/tests/test_closed_store_refusals.py",
+        "datastorekit/tests/test_closed_store_refusals.py",
+    ),
 ]
 
 # R-name: package path -> {source class or method name: its name in the package}
-NAME_MAP: Dict[str, Dict[str, str]] = {}
+NAME_MAP: Dict[str, Dict[str, str]] = {
+    # prompt 03b, U12: four test names that are the source's table names, by the table map
+    "datastorekit/tests/test_read_only_pool.py": {
+        "test_LambdaCDM": "test_dial_setting",
+        "test_QCD_Cosmology": "test_knob_setting",
+        "test_tolerance": "test_gauge_setting",
+        "test_GkSourcePolicy": "test_routing_rule",
+    },
+}
 
 
 class CannotRun(Exception):

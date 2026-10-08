@@ -90,6 +90,28 @@ class knob_setting(DatastoreObject):
         self.stepping = stepping
 
 
+class gauge_setting(DatastoreObject):
+    """A replicated leaf with no ``version`` column, got or inserted by its exponent (added by
+    prompt 03b)."""
+
+    def __init__(self, store_id: Optional[int], exponent: int):
+        super().__init__(store_id)
+        self.exponent = exponent
+
+
+class routing_rule(DatastoreObject):
+    """A replicated leaf with a ``version`` column, got or inserted by its label, threshold and
+    mode together (added by prompt 03b)."""
+
+    def __init__(
+        self, store_id: Optional[int], label: str, threshold: float, mode: str
+    ):
+        super().__init__(store_id)
+        self.label = label
+        self.threshold = threshold
+        self.mode = mode
+
+
 class ephemeral_probe:
     """The class whose ``register()`` returns ``None``: it has no table, and is never stored."""
 

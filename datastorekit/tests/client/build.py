@@ -24,9 +24,11 @@ from datastorekit.tests.client.objects import (
     Tessera,
     dial_setting,
     ephemeral_probe,
+    gauge_setting,
     keypoint,
     keypoint_alias,
     knob_setting,
+    routing_rule,
     tag_entry,
     version_entry,
 )
@@ -41,6 +43,12 @@ ALIAS_STEPPING = 1
 TESSERA_WEIGHTS = (0.5, 0.75)
 DIAL_LEVELS = ((3, 1), (5, 0))  # (level, stepping)
 KNOB_TURNS = (7, 2)  # (turns, stepping)
+# added by prompt 03b: the gauge settings and routing rules
+GAUGE_EXPONENTS = (4, 8)
+ROUTING_RULES = (  # (label, threshold, mode)
+    ("rule-low", 1.5, "prefer-direct"),
+    ("rule-high", 5.0, "prefer-direct"),
+)
 GADGETS = {
     # label: (frame, tags, part values, validated)
     "gadget-one": ("dial", ("tag-north",), (1.5, 2.5, 3.5), True),
@@ -108,6 +116,18 @@ def get_knob(pool, turns: int, stepping: int = 0) -> knob_setting:
 
 def get_probe(pool, note: str) -> ephemeral_probe:
     return resolve(pool.object_get("ephemeral_probe", note=note))
+
+
+def get_gauge(pool, exponent: int) -> gauge_setting:
+    """Added by prompt 03b: a replicated get of an unversioned leaf."""
+    return resolve(pool.object_get("gauge_setting", exponent=exponent))
+
+
+def get_rule(pool, label: str, threshold: float, mode: str) -> routing_rule:
+    """Added by prompt 03b: a replicated get of a versioned leaf."""
+    return resolve(
+        pool.object_get("routing_rule", label=label, threshold=threshold, mode=mode)
+    )
 
 
 def make_alias(k: keypoint, offset: float, stepping: int = 0) -> keypoint_alias:
@@ -223,6 +243,7 @@ def write_every_class(pool) -> Dict[str, list]:
     - three keypoints, by one vectorized get; then one of them got again with its flag on, which
       updates it on every shard;
     - two dial settings and one knob setting (the two frame classes), and one probe;
+    - two gauge settings and two routing rules (added by prompt 03b);
     - one alias per keypoint, each stored on a miss;
     - two Gadgets, with tags and parts: one validated, one left unvalidated;
     - two Tesserae per alias;
@@ -245,6 +266,8 @@ def write_every_class(pool) -> Dict[str, list]:
     knob = get_knob(pool, *KNOB_TURNS)
     written["dial_setting"] = dials
     written["knob_setting"] = [knob]
+    written["gauge_setting"] = [get_gauge(pool, e) for e in GAUGE_EXPONENTS]
+    written["routing_rule"] = [get_rule(pool, *rule) for rule in ROUTING_RULES]
     written["ephemeral_probe"] = [get_probe(pool, "standin")]
 
     aliases = [get_alias(pool, p, ALIAS_OFFSET, ALIAS_STEPPING) for p in points]

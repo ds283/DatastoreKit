@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-07 · **Status: IN PROGRESS — 4 of 8 prompts written (01, 02, 03a, 03b), 3 landed (01, 02, 03a).**
+**Last updated:** 2026-10-08 · **Status: IN PROGRESS — 4 of 8 prompts written (01, 02, 03a, 03b), 4 landed (01, 02, 03a, 03b).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 and U8–U13 the same day (README §6.2); U10 split 03 into 03a and 03b.
 
@@ -50,7 +50,7 @@ and U8–U13 the same day (README §6.2); U10 split 03 into 03a and 03b.
 | 01 | [Import the layer](01-import-the-layer.md) | package, 15 files and 2 tools, the two internalised dependencies, 88 tests, import guard | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `8bc60a5` | [log](logs/01-import-the-layer.md) |
 | 02 | [The neutral test client](02-the-neutral-test-client.md) | `docs/client-contract.md`, the test client, the stand-in pool; 01's tests onto the client's names (U8) | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `e988e69` | [log](logs/02-the-neutral-test-client.md) |
 | 03a | [Port the replicated-write tests](03a-port-the-replicated-write-tests.md) | 76 tests (replicated write, check at open, prune at open); the port check; the `key_id` pin and `revalidate` | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `11247c7` | [log](logs/03a-port-the-replicated-write-tests.md) |
-| 03b | [Port the open and read-only tests](03b-port-the-open-and-read-only-tests.md) | 53 tests, 80 run (version row, read-only pool, one timestamp, shard records); the two client classes (U13); the neutral reader sequence (U11) | ✍️ yes, 2026-10-07 | ⬜ | — | — |
+| 03b | [Port the open and read-only tests](03b-port-the-open-and-read-only-tests.md) | 53 tests, 80 run (version row, read-only pool, one timestamp, shard records); the two client classes (U13); the neutral reader sequence (U11) | ✍️ yes, 2026-10-07 | ✅ 2026-10-08 | this commit | [log](logs/03b-port-the-open-and-read-only-tests.md) |
 | 04 | Port the schema and inventory tests | 175 tests; the package guard | ⬜ | ⬜ | — | — |
 | 05 | Supported versions and CI | `pyproject.toml` ranges, both ends, Actions; tag `v0.1.0` | ⬜ | ⬜ | — | — |
 | 06 | Version-keyed lookups | `key_on_version`; tag `v0.2.0` | ⬜ | ⬜ | — | — |
@@ -385,6 +385,15 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     2 (`:2`, `:12`); `tests/test_shard_key_assignment.py` adds none. Their SGK references outside
     the pattern (`var/`, `utilities.WallclockTimer`, SGK's commit `e53f323`, "log 01", "the audit
     probe", `hot_journal_probe.py`) are listed in log 03a §7 item 2.
+  - **Measured by 03b (2026-10-08):** **124 lines in 28 files.** 03a's figure, 114 in 23, was first
+    reproduced at `72cf34a` by log 03a §8's method. The five ported modules add 10 lines, all SGK's
+    prose ported unchanged under 03a §2.1: `tests/test_read_only_pool.py` 5 (`:2`, `:5`, `:29`,
+    `:71`, `:816`), `tests/test_version_row_at_open.py` 2 (`:2`, `:10`),
+    `tests/test_absolute_shard_record_refused.py` 1 (`:4`), `tests/test_closed_store_refusals.py` 1
+    (`:3`), `tests/test_one_timestamp_per_write.py` 1 (`:3`); `tests/client/reader.py` and the
+    client's other files add none. Their SGK references outside the pattern (`var/`, "audit
+    R1/R2/V1", "QSI", `resolve_run_selection`, SGK's commit `b04671f`) are listed in log 03b §7
+    item 1.
 - **[02-an-unsupplied-sharded-table-raises-keyerror]** *(opened 2026-10-07 by prompt 02)*
   - **The defect.** Reopening a store whose primary records a sharded table that the constructor's
     `sharded_tables` lacks raises a bare `KeyError('<table>')` from `_read_shard_data`

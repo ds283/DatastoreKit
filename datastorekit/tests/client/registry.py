@@ -22,6 +22,8 @@ it):
 | ``keypoint_alias`` | replicated | the shard key's proxy; ``stepping: "exact"``; ``store`` of a replica, no owned rows |
 | ``dial_setting`` | replicated | ``stepping: "minimum"``; ``read_table`` (``tables_arg`` True) |
 | ``knob_setting`` | replicated | ``stepping: True``; ``timestamp: False`` |
+| ``gauge_setting`` | replicated | a leaf with no ``version`` column, got or inserted by its exponent (prompt 03b) |
+| ``routing_rule`` | replicated | a leaf with a ``version`` column, got or inserted by three columns (prompt 03b) |
 | ``ephemeral_probe`` | replicated | ``register()`` returns ``None`` |
 | ``Gadget`` | replicated | ``validate_on_startup`` (the pool's prune), ``validated_column`` with ``revalidate``, ``owned_serials``; a polymorphic ``Parent``; tags and values |
 | ``Gadget_tags`` | neither | a replicated class's tag table; ``serial: False`` |
@@ -38,6 +40,8 @@ empty. Each group alone is not: ``samples`` is closed, but ``tesserae`` must be 
 ``samples`` (a Sample names a Tessera by a declared parent and by its members' foreign key),
 ``aliases`` with ``tesserae`` and ``samples``, and ``gadgets`` with ``samples``. Two groups hold a
 replicated table (``aliases``; ``gadgets``).
+``gauge_setting`` and ``routing_rule`` (added by prompt 03b) are in no group either, as leaves a
+client would keep.
 
 Importing this module imports the factories, ``sqlalchemy`` and ``datastorekit``; it starts
 nothing.
@@ -68,6 +72,8 @@ factories = {
     "keypoint_alias": _f.keypoint_alias_factory,
     "dial_setting": _f.dial_setting_factory,
     "knob_setting": _f.knob_setting_factory,
+    "gauge_setting": _f.gauge_setting_factory,
+    "routing_rule": _f.routing_rule_factory,
     "ephemeral_probe": _f.ephemeral_probe_factory,
     "Gadget": _f.Gadget_factory,
     "Gadget_tags": _f.Gadget_tags_factory,
@@ -85,6 +91,8 @@ replicated_tables = [
     "keypoint_alias",
     "dial_setting",
     "knob_setting",
+    "gauge_setting",
+    "routing_rule",
     "ephemeral_probe",
     "Gadget",
     "GadgetPart",
