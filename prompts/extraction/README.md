@@ -8,7 +8,8 @@ G1 held and the user took U2–U5 as recommended. Its import commit is SGK `6f7f
 **prompt 03a is written** (2026-10-07), and landed as `11247c7` and was reviewed. The user took U13
 the same day; **prompt 03b is written** (2026-10-07), and landed as `0d5380c` (2026-10-08) and
 was reviewed. The user took U14–U17 on 2026-10-08, splitting 04 into 04a and 04b; **prompt 04a is
-written** (2026-10-08). Each later prompt is written after the one before it has landed and been
+written** (2026-10-08). Its orchestrator found a test the neutral client could not pass, and the
+user took U18 the same day. Each later prompt is written after the one before it has landed and been
 reviewed, against the tree it left.
 
 ## 0. Why this campaign exists
@@ -413,6 +414,22 @@ open until 05 is written.
   prose is rewritten after 05, under `[01-package-prose-names-sgks-layout]`. **Rejected:**
   - adding the comment scan only once rule 8 lifts;
   - rewriting the comment in 04b as an exception to rule 8.
+- **U18: the neutral `Sample`'s validated flag in the inventory. (taken 2026-10-08, as
+  recommended)** 04a's orchestrator found that
+  `test_store_inventory.TestTheFullStore.test_classes_with_tags_validated_and_values` requires, of
+  every record of every class, a validated flag and a value count, or neither, as every SGK class
+  has. The neutral `Sample` declares `validated` in its `inventory_spec` and has no value table,
+  so its records carry a flag and no count. No literal makes the test pass with `Sample` in the
+  store (measured on `build_store` at `86640bf`). **Recommended:** 04a deletes `validated` from
+  `Sample`'s `inventory_spec`. `Trace` (U15) is then the sharded class whose flag the inventory
+  reads, and `Sample` plays SGK's `QuadSourceIntegral` in that test: tagged, with no flag and no
+  values. Its column, `validate_on_startup` and the prune are unchanged. Probed: of the 268 tests,
+  only `test_neutral_client`'s expected Sample flags change (to `None`), and the contract's
+  inventory `validated` row names `Gadget` and `Trace`. **Rejected:**
+  - a value table for `Sample`, a seventh new table whose ripple reaches `build_store`, the drop
+    groups and the sharded prune;
+  - leaving the test in SGK, as U16 does for the report test, which drops the one test of that
+    rule.
 
 ## 7. Gates outside this repository
 
