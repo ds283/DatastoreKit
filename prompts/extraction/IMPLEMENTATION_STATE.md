@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-08 · **Status: IN PROGRESS — 5 of 9 prompts written (01, 02, 03a, 03b, 04a), 5 landed (01, 02, 03a, 03b, 04a).**
+**Last updated:** 2026-10-08 · **Status: IN PROGRESS — 6 of 9 prompts written (01, 02, 03a, 03b, 04a, 04b), 5 landed (01, 02, 03a, 03b, 04a).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 U8–U13 the same day, and U14–U21 on 2026-10-08 (README §6.2); U10 split 03 into 03a and 03b, and
 U14 split 04 into 04a and 04b.
@@ -61,7 +61,7 @@ U14 split 04 into 04a and 04b.
 | 03a | [Port the replicated-write tests](03a-port-the-replicated-write-tests.md) | 76 tests (replicated write, check at open, prune at open); the port check; the `key_id` pin and `revalidate` | ✍️ yes, 2026-10-07 | ✅ 2026-10-07 | `11247c7` | [log](logs/03a-port-the-replicated-write-tests.md) |
 | 03b | [Port the open and read-only tests](03b-port-the-open-and-read-only-tests.md) | 53 tests, 80 run (version row, read-only pool, one timestamp, shard records); the two client classes (U13); the neutral reader sequence (U11) | ✍️ yes, 2026-10-07 | ✅ 2026-10-08 | `0d5380c` | [log](logs/03b-port-the-open-and-read-only-tests.md) |
 | 04a | [Port the store and inventory tests](04a-port-the-store-and-inventory-tests.md) | 85 tests (inventory, store schema, reader, foreign keys, schema builder); `real_store_fixtures` and `schema_description` on neutral rows; the schema witness; the client's sharded family (U15) | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | `7ceed25` | [log](logs/04a-port-the-store-and-inventory-tests.md) |
-| 04b | Port the declaration and registry tests | 90 tests (inventory declarations, declared facts, layer registry, drop refusal); the package guard (U16, U17) | ⬜ | ⬜ | — | — |
+| 04b | [Port the declaration and registry tests](04b-port-the-declaration-and-registry-tests.md) | 89 of 90 tests (inventory declarations, declared facts, layer registry, drop refusal; U16's one not ported); the package guard with its vocabulary as data (U17); `test_parent_set_members` | ✍️ yes, 2026-10-08 | ⬜ | — | — |
 | 05 | Supported versions and CI | `pyproject.toml` ranges, both ends, Actions; tag `v0.1.0` | ⬜ | ⬜ | — | — |
 | 06 | Version-keyed lookups | `key_on_version`; tag `v0.2.0` | ⬜ | ⬜ | — | — |
 | 07 | Close-out and adoption handover | `docs/adoption/` checklists; verification document | ⬜ | ⬜ | — | — |
@@ -705,6 +705,10 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     declarations and resolution. Its author checks whether any of them fails under this deletion.
     If none does, 04b varies strand 702's `origin` in a test of its own, and makes the deletion one
     of its breakages. Unassigned until 04b is written.
+  - **Assigned (2026-10-08):** to prompt 04b. None of its five SGK modules varies a second member:
+    `test_the_full_store_resolves_no_absent_parent_as_unresolved` walks the member field `anchor`
+    only. So 04b adds `datastorekit/tests/test_parent_set_members.py`, whose two tests the
+    deletion must fail (04b §2.6).
 
 ## 4. Resolved issues
 
