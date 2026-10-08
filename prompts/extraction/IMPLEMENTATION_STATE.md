@@ -2,7 +2,7 @@
 
 **Last updated:** 2026-10-08 · **Status: IN PROGRESS — 6 of 9 prompts written (01, 02, 03a, 03b, 04a, 04b), 5 landed (01, 02, 03a, 03b, 04a).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
-U8–U13 the same day, and U14–U21 on 2026-10-08 (README §6.2); U10 split 03 into 03a and 03b, and
+U8–U13 the same day, and U14–U22 on 2026-10-08 (README §6.2); U10 split 03 into 03a and 03b, and
 U14 split 04 into 04a and 04b.
 
 **Campaign:** [`README.md`](README.md) ·
@@ -49,6 +49,7 @@ U14 split 04 into 04a and 04b.
 | **U19** a drop list of 03a's that the new client outgrows | 04a adds `traces` to `test_an_interrupted_store`'s `tables_to_drop` list (R-count) | **taken** 2026-10-08, at 04a's first stop |
 | **U20** the schema witness and a class with no table | `test_schema_builder` and `actor_with_built_schema` use the registry less `register() is None`; the witness is captured from it | **taken** 2026-10-08, at 04a's second stop |
 | **U21** `test_schema_builder`'s witness history | the docstring names the new witness, and says SGK's are SGK's history | **taken** 2026-10-08, at 04a's second stop |
+| **U22** the declared facts and a class with no table | two `TestTheRecords` tests give `build_schema` the registry less `register() is None` (R-help) | **taken** 2026-10-08, at 04b's stop |
 
 ---
 

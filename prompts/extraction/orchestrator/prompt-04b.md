@@ -126,6 +126,25 @@ so.
   The guard comes first because it is the part with no SGK precedent, and the rest of the work
   must not add a hit to it.
 
+**Addendum (2026-10-08), after the agent's stop.** Correction 6, STRUCTURALLY REQUIRED, the user's
+U22 (README §6.2), and a ruling on one choice of the agent's.
+
+6. **U22: two of `TestTheRecords`' tests build the schema of the classes with a table.** The note
+   checked `ephemeral_probe` against the inventory (it declares no spec) but not against
+   `build_schema`'s records, where it has a record with no table and none of the three declared
+   keys (reproduced by the orchestrator: `22 != 21`, and `KeyError: 'owner_column'`). Add a module
+   constant `WITH_A_TABLE = {n: f for n, f in factories.items() if f.register() is not None}` to
+   `test_declared_facts`, and give it to the `build_schema` calls of
+   `test_every_record_of_a_class_with_a_table_carries_the_three_keys` and
+   `test_exactly_the_four_declarations_are_not_default` only (R-help, as U20's filter). No
+   assertion, name or control flow changes; the port check's counts for the module stay 25, 26
+   and 64. Every other test keeps the whole registry. The log records the stop, both probes (the
+   module-wide filter that fails `TestTheVersionObject`, and this one), and U22. The review's
+   checks 5 and 6 read with it allowed.
+7. **`NOT_PORTED`'s fifth rule is kept**, at the user's direction (IMPLEMENTATION CHOICE): an entry
+   naming a module that `PORTED` does not hold is a difference. The log states it beside §2.5's
+   four, and the review's check 3 reads with it allowed.
+
 **The facts, checked by the orchestrator.** Pass them on.
 
 - **The prompt's survey holds** at SGK `6f7f291`, by the port check's own functions:

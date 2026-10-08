@@ -11,7 +11,8 @@ was reviewed. The user took U14–U17 on 2026-10-08, splitting 04 into 04a and 0
 written** (2026-10-08). Its orchestrator found a test the neutral client could not pass, and the
 user took U18 the same day; its agent stopped on a 03a test the new client breaks, and the user
 took U19, and on its second stop U20 and U21. 04a landed as `7ceed25` (2026-10-08) and was
-reviewed; **prompt 04b is written** (2026-10-08). Each later prompt is written after the one before it has landed and been reviewed,
+reviewed; **prompt 04b is written** (2026-10-08). Its agent stopped on two tests that cannot hold
+over a class that registers `None`, and the user took U22. Each later prompt is written after the one before it has landed and been reviewed,
 against the tree it left.
 
 ## 0. Why this campaign exists
@@ -467,6 +468,20 @@ open until 05 is written.
   witnesses are SGK's history and are not copied (§2.5); the rest of the docstring is ported
   unchanged. **Rejected:** removing only the table names, which keeps a false sentence; and
   mapping them by the table map, which describes changes the neutral client never had.
+- **U22: the declared facts and a class with no table. (taken 2026-10-08, as recommended)** 04b's
+  agent stopped (prompt §5, first condition) on two tests of `test_declared_facts.TestTheRecords`:
+  `test_every_record_of_a_class_with_a_table_carries_the_three_keys` (`22 != 21`) and
+  `test_exactly_the_four_declarations_are_not_default` (`KeyError: 'owner_column'`). Both call
+  `build_schema` on the whole registry, and the client's `ephemeral_probe` registers `None`, so its
+  record has no table and none of the three declared keys. No SGK class registers `None`. This is
+  U20's case. **Recommended:** a module constant `WITH_A_TABLE`, the registry less the classes whose
+  `register()` is `None` (U20's filter), is what those two `build_schema` calls are given (R-help);
+  the other 23 tests keep the whole registry. No assertion, name or control flow changes, and
+  `TestNoneRegistration` keeps the `None` case. Probed by the agent in a scratch copy: 25 OK. A
+  module-wide filter was probed and fails: `TestTheVersionObject`'s read-only open is refused,
+  since the store's `replicated_tables` still names `ephemeral_probe`. **Rejected:** removing
+  `ephemeral_probe` from the client (rejected at U20); and declaring the two tests in
+  `NOT_PORTED`, which drops the only pin on the declared keys of every record.
 
 ## 7. Gates outside this repository
 
