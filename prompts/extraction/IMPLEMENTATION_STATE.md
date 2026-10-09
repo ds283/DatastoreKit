@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-09 · **Status: IN PROGRESS — 8 of 9 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06), 8 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` ready to be tagged on `240028e` once CI passes there (U28), not tagged, nothing pushed.**
+**Last updated:** 2026-10-09 · **Status: IN PROGRESS — 8 of 9 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06), 8 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 U8–U13 the same day, U14–U22 on 2026-10-08, and U6, U23–U28 on 2026-10-09 (README §6.2); U10 split 03 into 03a and 03b, and
 U14 split 04 into 04a and 04b.
@@ -887,13 +887,22 @@ else is opened. The index is 8.
 - README's header, and its §2 status for 06;
 - this paragraph and the notes line.
 
+*`v0.2.0` (note §5, U28).* With the user's approval of each step, `240028e` was pushed alone as
+`main` (a fast-forward from `fe040b2`, carrying `1f9941f` and `0e524b4`), and the workflow ran on
+it, [run 37934881027](https://github.com/ds283/DatastoreKit/actions/runs/37934881027). Both ends passed: 3.12.15 / 2.43.0 / 2.0.39 and 3.13.16 /
+2.55.1 / 2.0.46, SQLite 3.45.1 at both, each `Ran 458 tests … OK`, with `black` leaving 65 files
+unchanged on `low`. CI installed exactly the pins and `datastorekit-0.2.0`. The high end printed
+184 `ResourceWarning` lines, `[05-a-refused-open-leaves-its-engines-undisposed]`'s. The annotated
+tag `v0.2.0` (object `9eaf542`) was then made on `240028e` and pushed; `git ls-remote` peels it to
+`240028e`. The rest of `main` is pushed after this record.
+
 ## 2. Gates outside this repository (README §7)
 
 | Gate | Status |
 |---|---|
 | **G1**: SGK `datastore-generic-followup` closed; the import commit fixed | ✅ 2026-10-07: closed at `6f7f291` (03 landed as `086c81a`); the import commit is `6f7f291` |
 | **G2**: SGK adopted `v0.1.0`, fingerprint reproduced | ⬜ *(2026-10-09: `v0.1.0` is made, annotated, on 05's commit `68db557` (tag object `0ece4aa`) and pushed, after CI passed there at both ends, [run 37922626418](https://github.com/ds283/DatastoreKit/actions/runs/37922626418): Python 3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39 and 3.13.16 / 2.55.1 / 2.0.46, SQLite 3.45.1 at both, each `Ran 444 tests … OK`. SGK may now adopt it.)* |
-| **G3**: CPBH adopted `v0.2.0` | ⬜ *(2026-10-09: 06 landed as `240028e`, at `version = "0.2.0"`, with 458 tests passing in `venv/` (3.12.15 / 2.43.0 / 2.0.39) and at the high end (3.13.16 / 2.55.1 / 2.0.46). `v0.2.0` is ready to be tagged on it once CI passes there at both ends (U28). No tag is made and nothing is pushed.)* |
+| **G3**: CPBH adopted `v0.2.0` | ⬜ *(2026-10-09: `v0.2.0` is made, annotated, on 06's commit `240028e` (tag object `9eaf542`) and pushed, after CI passed there at both ends, [run 37934881027](https://github.com/ds283/DatastoreKit/actions/runs/37934881027): Python 3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39 and 3.13.16 / 2.55.1 / 2.0.46, SQLite 3.45.1 at both, each `Ran 458 tests … OK`. CPBH may now adopt it.)* |
 | **G4**: SI adopted | ⬜ |
 
 ## 3. Active and unresolved issues
