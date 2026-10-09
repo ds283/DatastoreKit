@@ -1023,6 +1023,8 @@ class ShardedPool:
             for row in sharded_table_data:
                 if row.table not in missing_supplied_sharded:
                     missing_read_sharded.add(row.table)
+                if row.table not in self._sharded_tables:
+                    continue
                 attr = self._sharded_tables[row.table]
                 if row.key_attr != attr:
                     mismatching_key_attr[row.table] = {
@@ -3306,8 +3308,7 @@ class ShardedPool:
             self._ShardKeyStoreIdGetter(shard_key[shard_key_field])
         ]
 
-        for value in payload_data:
-            value.update(shard_key)
+        payload_data = [{**value, **shard_key} for value in payload_data]
         return self._shards[shard_id].object_get.remote(
             cls_name, payload_data=payload_data
         )

@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-09 · **Status: IN PROGRESS — 10 of 14 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a), 9 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28); 07a landed (`dd45243`) and reviewed; 07b withdrawn (U33): the four open issues are fixed in 08a, 08b and 09 and released as `v0.2.1` by 10 before 11 closes the campaign.**
+**Last updated:** 2026-10-10 · **Status: IN PROGRESS — 10 of 14 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a), 10 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28); 07a landed (`dd45243`) and reviewed; 07b withdrawn (U33): the four open issues are fixed in 08a, 08b and 09 and released as `v0.2.1` by 10 before 11 closes the campaign; 08a landed (this commit), awaiting review, closing two of the four.**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 U8–U13 the same day, U14–U22 on 2026-10-08, and U6, U23–U37 on 2026-10-09 (README §6.2); U10, U14 and U30 split 03, 04
 and 07, each into an a and a b prompt.
@@ -82,7 +82,7 @@ and 07, each into an a and a b prompt.
 | 06 | [Version-keyed lookups](06-version-keyed-lookups.md) | `key_on_version` on `Tessera` (U25); the lookup serial and `set_lookup_version` (U26); 14 tests carrying over CPBH's; the witness `schema_at_extraction-06.json`; `compare_with_source.py` retired (U27); `v0.2.0` tagged after green CI (U28) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | `240028e` | [log](logs/06-version-keyed-lookups.md) |
 | 07a | [The adoption checklists](07a-the-adoption-checklists.md) | `docs/adoption/`: a README and checklists for SGK, CPBH and SI against `v0.2.0` (U29), measured read-only; `measure_client_imports.py`; instances and abstract hooks (U32); SI's stores rebuilt (U31) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | `dd45243` | [log](logs/07a-the-adoption-checklists.md) |
 | ~~07b~~ | ~~Verification and close-out~~ | *withdrawn 2026-10-09, unwritten (U33); its work is 11's* | — | — | — | — |
-| 08a | [Two small fixes](08a-two-small-fixes.md) | `[02-an-unsupplied-sharded-table-raises-keyerror]` and `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]`, each with a test module; the contract's §9 | ✍️ yes, 2026-10-09 | ⬜ | — | — |
+| 08a | [Two small fixes](08a-two-small-fixes.md) | `[02-an-unsupplied-sharded-table-raises-keyerror]` and `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]`, each with a test module; the contract's §9 | ✍️ yes, 2026-10-09 | ✅ 2026-10-10 | this commit | [log](logs/08a-two-small-fixes.md) |
 | 08b | Dispose engines on a refused open | `[05-a-refused-open-leaves-its-engines-undisposed]` | ⬜ | ⬜ | — | — |
 | 09 | Rewrite the package prose | `[01-package-prose-names-sgks-layout]`; the guard's `KNOWN_HITS` emptied (U17) | ⬜ | ⬜ | — | — |
 | 10 | Release `v0.2.1` | `0.2.1`; both ends and CI; the tag after green CI; the adoption addenda (U37) | ⬜ | ⬜ | — | — |
@@ -1086,16 +1086,6 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
   - **Assigned (2026-10-09):** to prompt 09 of this campaign. U33 fixes the four open issues before
     the campaign closes; U35 gives the prose its own prompt, after the code fixes, since it rewrites
     comments in files 08a and 08b change.
-- **[02-an-unsupplied-sharded-table-raises-keyerror]** *(opened 2026-10-07 by prompt 02)*
-  - **The defect.** Reopening a store whose primary records a sharded table that the constructor's
-    `sharded_tables` lacks raises a bare `KeyError('<table>')` from `_read_shard_data`
-    (`datastorekit/SQL/ShardedPool.py:1015`, `attr = self._sharded_tables[row.table]`), before the
-    list it prints and the `RuntimeError` meant for that case (`:1022-1045`) are reached. Probed with
-    `shard_store_fixtures` (log 02 §5 item 1).
-  - **Impact.** The open is still refused; the refusal does not say why. Inherited from SGK
-    unchanged.
-  - **Next step.** Fix once rule 8 lifts (after 05), with a test that opens such a store. Unassigned.
-  - **Assigned (2026-10-09):** to prompt 08a of this campaign. U33, U35.
 - **[05-a-refused-open-leaves-its-engines-undisposed]** *(opened 2026-10-09 by prompt 05)*
   - **The defect.** When an open is refused or abandoned, the engines the pool and its actors made
     are never disposed, and each one's pooled SQLite connection is closed only when the garbage
@@ -1126,6 +1116,8 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
   - **Assigned (2026-10-09):** to prompt 08b of this campaign. U33; U35 gives it a prompt of its
     own, since it touches the pool's and actors' open and refusal paths.
 
+## 4. Resolved issues
+
 - **[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]** *(opened 2026-10-09 by
   prompt 06)*
   - **The defect.** `ShardedPool.object_get_vectorized` adds the shard key to each of the caller's
@@ -1147,8 +1139,37 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
   - **Next step.** Copy, as the actor's keyed lookup does: `payload_data = [{**value,
     **shard_key} for value in payload_data]`, with a test that passes a list twice. Unassigned.
   - **Assigned (2026-10-09):** to prompt 08a of this campaign. U33, U35.
+  - **Closed (2026-10-10, prompt 08a)** (this commit, log 08a §1, §4). `object_get_vectorized`
+    sends copies, `payload_data = [{**value, **shard_key} for value in payload_data]`
+    (`datastorekit/SQL/ShardedPool.py:3311` at 08a's tree), the key merged last as `update` did,
+    so the caller's list and dicts are not changed. The new module
+    `datastorekit/tests/test_vectorized_get_payloads.py` requires the caller's dicts to equal a
+    deep copy taken before the call, with one key and with a second key on another shard (tests
+    1 and 3, which the unfixed layer fails), and pins the rows found (tests 2, 4 and 5; test 4
+    fails under the merge order reversed, log 08a §5, breakage (d)). No client reads a payload list back
+    after a vectorized get (log 08a §3). `docs/client-contract.md` §9.1 records it.
 
-## 4. Resolved issues
+- **[02-an-unsupplied-sharded-table-raises-keyerror]** *(opened 2026-10-07 by prompt 02)*
+  - **The defect.** Reopening a store whose primary records a sharded table that the constructor's
+    `sharded_tables` lacks raises a bare `KeyError('<table>')` from `_read_shard_data`
+    (`datastorekit/SQL/ShardedPool.py:1015`, `attr = self._sharded_tables[row.table]`), before the
+    list it prints and the `RuntimeError` meant for that case (`:1022-1045`) are reached. Probed with
+    `shard_store_fixtures` (log 02 §5 item 1).
+  - **Impact.** The open is still refused; the refusal does not say why. Inherited from SGK
+    unchanged.
+  - **Next step.** Fix once rule 8 lifts (after 05), with a test that opens such a store. Unassigned.
+  - **Assigned (2026-10-09):** to prompt 08a of this campaign. U33, U35.
+  - **Closed (2026-10-10, prompt 08a)** (this commit, log 08a §1, §4). The loop of
+    `_read_shard_data` skips the key-attribute comparison of a table the constructor does not
+    supply (`datastorekit/SQL/ShardedPool.py:1026-1027` at 08a's tree), after the membership test
+    that records it as not supplied, which is unchanged. The open is refused by the intended
+    `RuntimeError` (`:1055-1058`), with the table printed under "configured in the existing
+    ShardedPool, but were not supplied to the constructor" (`:1035-1040`); no message changed. The
+    new module `datastorekit/tests/test_unsupplied_sharded_table.py` pins it through the fixture's
+    primary and through the constructor (each of the neutral client's four sharded classes left
+    out), and pins the comparison's other outcomes; the unfixed layer errors both refusal tests
+    with `KeyError` (log 08a §4.2; §5, breakage (a)). `docs/client-contract.md` §9.1 records it and
+    supersedes the clause of §1 row 6.
 
 - **[04a-no-test-pins-a-second-parent-set-member]** *(opened 2026-10-08 by the orchestrator's
   review of 04a)*
