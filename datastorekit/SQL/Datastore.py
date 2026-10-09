@@ -14,7 +14,7 @@ from datastorekit.SQL.ClientPool import SerialPoolManager, SerialLeaseManager
 from datastorekit.SQL.factory_base import SQLAFactoryBase
 from datastorekit.SQL.ProfileAgent import ProfileBatcher, ProfileBatchManager
 from datastorekit.SQL.schema import build_schema, drop_order
-from datastorekit.contract import VERSION_TABLE
+from datastorekit.contract import VERSION_SERIAL_KEY, VERSION_TABLE
 from datastorekit.replication import ReplicationMismatch
 from datastorekit.replication import ReadOnlyMiss, ReadOnlyWrite
 from datastorekit._timing import WallclockTimer
@@ -88,8 +88,12 @@ class Datastore:
         self._my_name = my_name
 
         self._version_label: str = version_label
-        # the version row's serial, set by ShardedPool through set_version once the row exists
+        # the version row's serial, set by ShardedPool through set_version once the row exists;
+        # it stamps every insert, and a read-only actor never holds it
         self._version_serial: Optional[int] = None
+        # the same serial as it keys the lookups of a class whose factory declares
+        # key_on_version: set by set_version, or alone by set_lookup_version (a read-only pool)
+        self._lookup_serial: Optional[int] = None
 
         self._replicated_tables = frozenset(replicated_tables)
 
@@ -149,6 +153,9 @@ class Datastore:
         (prompts/a3-v2-readiness, prompt 02). Every later insert into a class with a ``version``
         column carries it. Setting it again to the same serial is harmless; setting a different
         one raises, since rows already inserted carry the first.
+
+        It also sets the lookup serial, which keys the lookups of a class whose factory declares
+        ``key_on_version`` (``set_lookup_version``).
         """
         if isinstance(serial, bool) or not isinstance(serial, int):
             raise TypeError(
@@ -160,6 +167,27 @@ class Datastore:
                 f'(label "{self._version_label}"), and cannot be changed to {serial}'
             )
         self._version_serial = serial
+        self._lookup_serial = serial
+
+    def set_lookup_version(self, serial: int):
+        """
+        Set only the serial that keys the lookups of a class whose factory declares
+        ``key_on_version``: ``object_get`` hands it to that factory's ``build`` under
+        ``VERSION_SERIAL_KEY``. A read-only pool calls this on every actor, in place of
+        ``set_version``, so that its keyed lookups find the rows of its own label while the actor
+        still holds no insert serial (the third guard below). It never sets the insert serial.
+        Setting it again to the same serial is harmless; setting a different one raises.
+        """
+        if isinstance(serial, bool) or not isinstance(serial, int):
+            raise TypeError(
+                f"Datastore.set_lookup_version: the version serial must be an int, not {serial!r}"
+            )
+        if self._lookup_serial is not None and self._lookup_serial != serial:
+            raise RuntimeError(
+                f'Datastore "{self._my_name}": the lookup serial is already {self._lookup_serial} '
+                f'(label "{self._version_label}"), and cannot be changed to {serial}'
+            )
+        self._lookup_serial = serial
 
     # A READ-ONLY ACTOR (prompts/a3-v2-readiness, prompt 03)
     #
@@ -169,7 +197,8 @@ class Datastore:
     # and validates at startup in report-only form. It never receives the version serial
     # (set_version is not called), so even an insert that got past the refusing inserters would
     # be refused by _insert before a serial is leased; and the mode=ro file refuses any write that
-    # reaches SQLite, which _read_only_refusal re-raises as ReadOnlyWrite.
+    # reaches SQLite, which _read_only_refusal re-raises as ReadOnlyWrite. The pool gives it the
+    # lookup serial alone (set_lookup_version), which keys lookups and admits no insert.
 
     def _open_read_only(self, drop_tables):
         """The read-only constructor. Writes nothing; refuses before opening anything if asked
@@ -525,6 +554,12 @@ class Datastore:
             if num_items > 1:
                 mgr.update_num_items(num_items)
 
+            # a class whose factory declares key_on_version: its build is handed a copy of each
+            # payload carrying the lookup serial, so that it finds only rows made under this
+            # pool's label; the caller's payloads are not changed
+            if record.get("key_on_version", False):
+                payload_data = self._keyed_payloads(cls_name, payload_data)
+
             try:
                 with self._engine.begin() as conn:
                     objects = [
@@ -559,6 +594,35 @@ class Datastore:
             return objects[0]
 
         return objects
+
+    def _keyed_payloads(self, cls_name: str, payload_data) -> List[dict]:
+        """
+        The payloads of a get of a class whose factory declares ``key_on_version``: a copy of
+        each, carrying the lookup serial under ``VERSION_SERIAL_KEY``. The caller's payloads are
+        not changed. The serial is the actor's own, so a payload that already holds the key is
+        refused with ``KeyError``; and a lookup before the serial is set is refused with
+        ``RuntimeError``, so that a keyed lookup is never made unfiltered.
+
+        Only ``object_get`` is keyed. ``object_read_batch``, ``read_table``, ``object_store`` and
+        ``object_validate`` are not: they are handed what the caller gives.
+        """
+        if self._lookup_serial is None:
+            raise RuntimeError(
+                f'Datastore "{self._my_name}": cannot look up "{cls_name}", whose lookups are '
+                f"keyed on the version serial, before the serial of label "
+                f'"{self._version_label}" is set: the pool sets it with set_version, or with '
+                "set_lookup_version on a read-only pool. Nothing was looked up"
+            )
+        keyed = []
+        for p in payload_data:
+            if VERSION_SERIAL_KEY in p:
+                raise KeyError(
+                    f'Datastore "{self._my_name}": the object_get payload of "{cls_name}" holds '
+                    f'the reserved key "{VERSION_SERIAL_KEY}"; the version serial of a keyed '
+                    "lookup is set by the datastore, not by its caller"
+                )
+            keyed.append({**p, VERSION_SERIAL_KEY: self._lookup_serial})
+        return keyed
 
     def object_read_batch(self, ObjectClass, **payload):
         if isinstance(ObjectClass, str):

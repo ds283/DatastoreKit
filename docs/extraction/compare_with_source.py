@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 """
+**Retired at ``v0.1.0``.** This check describes the package as tagged ``v0.1.0``, the last tree
+whose every file equals its source up to the classes below. It was retired there (README §6.2,
+U27): prompt 06 ran it for the last time, before its change, and the package changes in its own
+right after it, so on a later tree it fails by design. If it is run again, run it on that tag, for
+example from a ``git worktree`` of ``v0.1.0``.
+
 The equivalence check of the extraction campaign (prompt 01 §2.5; README §5 rule 8).
 
 For each file the package took from its source repository at the import commit, it reads the

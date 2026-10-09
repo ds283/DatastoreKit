@@ -59,6 +59,7 @@ REGISTER_KEYS = (
     "owner_column",
     "monotone_flags",
     "validated_column",
+    "key_on_version",
 )
 ABSTRACT_HOOKS = ("register", "build", "store", "validate", "validate_on_startup")
 DEFAULTED_HOOKS = ("revalidate", "owned_serials", "inventory_spec")

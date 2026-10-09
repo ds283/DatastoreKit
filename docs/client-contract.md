@@ -4,6 +4,10 @@
 (`PROVENANCE.md`). Every line number below is that tree's; the files it names have not changed
 since.*
 
+*§8 is measured from the package at prompt 06's tree (`v0.2.0`). §1–§7 remain as measured at
+`8bc60a5`, so their line numbers into the files 06 changes (`contract.py`, `SQL/schema.py`,
+`SQL/Datastore.py`, `SQL/ShardedPool.py`) are that tree's.*
+
 A client of `datastorekit` gives the layer a fixed set of facts: the arguments of a pool's
 constructor, the keys a factory's `register()` returns, the hooks a factory defines, the
 inventory declarations, two tables the layer owns, and what its stored objects carry. This
@@ -197,3 +201,39 @@ primary's file; no client registers them.
 tools (`python -m datastorekit.tools.sharded_store`, `python -m datastorekit.tools.shard_key_audit`),
 take no client facts: they read only the primary's records. The audit reads the shard-key table's
 name from the primary's `shard_key_config`.
+
+---
+
+## 8. Version-keyed lookups (`v0.2.0`, prompt 06)
+
+A class may have its lookups **keyed on the version**: a get then finds only a row made under the
+label the pool was opened with, and a row made under another label is a miss. The class declares
+it in `register()`; the actor hands its factory's `build` the serial to filter on. Nothing the
+layer writes changes: an insert carries the version serial as it always has (§2, `version`).
+
+| Item | Kind (default) | What the layer does with it | When wrong or absent | Neutral client |
+|---|---|---|---|---|
+| `register()["key_on_version"]` | optional (`False`) | A tenth key of `register()`, read by `build_schema` through `_declared_key_on_version` (`SQL/schema.py:186-190`, `:299-319`). The record of a class **with a table** holds it, `True` or `False`; the record of a class with no table does not (`:104-110`, unchanged), so a reader uses `.get`. | Not a `bool`: `ValueError` "which is not a bool" (`:307-310`). `True` on a class that does not register `"version": True`: `ValueError` naming the class, the key and the value (`:311-318`). Both through `_refuse_declaration` (`:201-207`). | `Tessera` (`tests/client/factories.py:930`); no other class |
+| `datastorekit.contract.VERSION_SERIAL_KEY` | the layer's (`"_version_serial"`) | The reserved payload key under which the actor puts the lookup serial in a copy of each payload of a keyed get (`contract.py:39`). The actor sets it, so its name is the layer's, not a client's (`contract.py:15-20`). | A caller's payload that already holds it: `KeyError` naming the class and the key, and nothing is looked up (`SQL/Datastore.py:617-623`). | — |
+| `datastorekit.contract.require_version_serial(payload, cls_name) -> int` | for a keyed factory's `build` | Returns `payload[VERSION_SERIAL_KEY]` (`contract.py:42-56`). The factory filters its select on it (`table.c.version == require_version_serial(payload, ...)`). | The key absent or `None`: `RuntimeError` naming `cls_name` and the key, saying that a keyed lookup goes through `object_get` and is never made unfiltered (`:49-55`). So a `build` called other than through the actor raises rather than finding a row of any label. | `Tessera_factory.build` (`tests/client/factories.py:951`) |
+| The actor's two serials | the layer's | `_version_serial` stamps inserts; `_lookup_serial` keys lookups (`SQL/Datastore.py:91-96`). `set_version(serial)` sets both, with its checks unchanged (`:150-170`). `set_lookup_version(serial)` sets the lookup serial only: an `int` (`TypeError` otherwise), and a change to a different serial raises `RuntimeError` (`:172-190`). It never sets the insert serial. | A keyed get before either is called: `RuntimeError` naming the class and the label and saying that the pool sets the serial with `set_version` or `set_lookup_version`; nothing is built (`:609-615`). | — |
+| The keyed get | the layer's | In `object_get`, after the payloads are formed and before the transaction, a class whose record has `key_on_version` (read with `.get(..., False)`) has its payloads replaced by keyed copies (`SQL/Datastore.py:557-561`, `_keyed_payloads` at `:598-625`). The caller's payloads are not changed. Scalar and vectorized gets alike, and so `ShardedPool.object_get` and `object_get_vectorized`, which reach the actor's `object_get`. | §8's refusals above. | `Tessera`, scalar and vectorized |
+| A read-write pool | — | `set_version` on every actor once the version row exists (`SQL/ShardedPool.py:355-360`) gives each both serials. | — | `test_version_keyed_lookups.TestThroughThePool` |
+| A read-only pool | — | Its actors are never given the insert serial, the third guard against an insert (`SQL/Datastore.py:192-201`). After every actor's `read_only_state` has returned, the pool calls `set_lookup_version` on each with the version row's serial and waits for every call (`SQL/ShardedPool.py:567-574`; step 6 of the comment at `:467-470`). A keyed get then finds the rows of the pool's label. | A keyed miss reaches the inserter, which a read-only actor refuses: `ReadOnlyWrite` for a sharded class, `ReadOnlyMiss` for a replicated one (`SQL/Datastore.py:292-313`); `_insert`'s guard is behind it (`:779-787`). | `TestThroughThePool.test_a_read_only_*` |
+
+**What is not keyed.** Only `object_get`. `object_read_batch`, `read_table`, `object_store` and
+`object_validate` hand the factory what the caller gives (`SQL/Datastore.py:606-607`, the docstring
+of `_keyed_payloads`). A factory that needs its `read_batch` or `read_table` keyed takes the
+serial from its caller.
+
+**A replicated keyed class.** The keying is in the actor, so a replicated class may declare it:
+every shard's actor holds the same lookup serial, since the version row is replicated and every
+actor is given its one serial, so every shard keys alike. The neutral client keys no replicated
+class; this route is allowed and is not exercised by the suite.
+
+**The example.** `Tessera` (`tests/client/factories.py:920-967`) is sharded and registers
+`"version": True` and `"key_on_version": True`; its `build` adds `table.c.version ==
+require_version_serial(payload, "Tessera")` to its select, and its insert is unchanged, since
+`_insert` stamps the version. `test_version_keyed_lookups` holds 14 tests of the above, and the
+witness `tests/data/schema_at_extraction-06.json` differs from 04a's only by each record's
+`key_on_version`.

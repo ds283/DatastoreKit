@@ -466,13 +466,15 @@ class ShardedPool:
     #      never written, and set_version is not called: a read-only actor inserts nothing;
     #   6. no broker, no read_largest_store_ids, no notification: no serial is allocated. Every
     #      actor is built with read_only=True and serial_broker=None, and the pool waits for
-    #      every constructor through read_only_state;
+    #      every constructor through read_only_state. Each actor is then given the version row's
+    #      serial with set_lookup_version, which keys its lookups and never its inserts;
     #   7. the read_table_config check, as read-write.
     #
     # Afterwards a replicated object_get goes to one shard's actor, drawn as read_table draws it,
     # with no record and no replication (_get_impl_replicated_table_read_only); object_store,
     # object_validate and a new shard key raise ReadOnlyWrite; the actors' inserters raise
-    # ReadOnlyMiss.
+    # ReadOnlyMiss. A class whose factory declares key_on_version is looked up under the pool's
+    # label, through the lookup serial each actor was given in step 6.
 
     def _open_read_only(self, version_label: str, drop_tables, read_table_config):
         """The read-only constructor (the comment above). Writes nothing to any file."""
@@ -562,6 +564,15 @@ class ShardedPool:
             [shard.read_only_state.remote() for shard in self._shards.values()]
         )
         self.actor_states: Dict[int, dict] = dict(zip(self._shards.keys(), states))
+
+        # the version row's serial keys the lookups of a class whose factory declares
+        # key_on_version; it is given as the lookup serial alone, so no actor can insert
+        ray.get(
+            [
+                shard.set_lookup_version.remote(self._version.store_id)
+                for shard in self._shards.values()
+            ]
+        )
 
         # 7. the read_table_config check
         self._read_table_config: Optional[ReadTableConfigType] = read_table_config

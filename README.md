@@ -7,12 +7,16 @@ one shard by a shard key, and checks the store's integrity each time it is opene
 
 ## Status
 
+**`v0.2.0`** adds **version-keyed lookups**: a class whose factory declares the optional
+`register()` key `key_on_version` is looked up under the pool's version label only, so a row made
+under another label is a miss. A class that does not declare it behaves as in `v0.1.0`, and
+nothing the layer writes changes.
+
 **`v0.1.0`** is the `Datastore` / `ShardedPool` layer of
 [SecondaryGWKit](https://github.com/ds283/SecondaryGWKit) at its commit `6f7f291`, moved here with
 its behaviour unchanged ([`PROVENANCE.md`](PROVENANCE.md) gives the file map and the only
-differences allowed). Its tests were ported with it, onto a neutral test client, so that the suite
-needs no client project. The next release, `v0.2.0`, adds version-keyed lookups as an optional
-`register()` key.
+differences allowed, and where `v0.2.0`'s feature comes from). Its tests were ported with it, onto
+a neutral test client, so that the suite needs no client project.
 
 The plan for the package, and for its three client projects to depend on one copy of the layer, is
 [`prompts/extraction/README.md`](prompts/extraction/README.md); its status board is
@@ -43,8 +47,10 @@ separate unit of work.
 A client depends on a tagged release, pinned in its `requirements.txt`:
 
 ```text
-datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.1.0
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.0
 ```
+
+`v0.1.0` remains, for a client that has not adopted `key_on_version`.
 
 An editable install (`pip install -e`) is for developing this package, never for a client's
 production runs: a production run must be reproducible from its pin.
@@ -69,6 +75,11 @@ the layer does with it, and what happens when it is wrong or absent.
   `ParentSet`s (`datastorekit.store_inventory`) ([§4](docs/client-contract.md#4-the-inventorys-declarations)).
 - **The two tables the layer owns**: `version` and `store_tag`, named in `datastorekit.contract`,
   each registered by the client under that name ([§5](docs/client-contract.md#5-the-layers-own-tables)).
+- **Version-keyed lookups**, optional: a factory whose `register()` declares
+  `"key_on_version": True` (with `"version": True`) is handed the version serial in every
+  `object_get` payload, under `datastorekit.contract.VERSION_SERIAL_KEY`, and its `build` filters
+  on it through `datastorekit.contract.require_version_serial`
+  ([§8](docs/client-contract.md#8-version-keyed-lookups-v020-prompt-06)).
 
 The worked example is the neutral test client, [`datastorekit/tests/client/`](datastorekit/tests/client/).
 Its registry module, [`datastorekit/tests/client/registry.py`](datastorekit/tests/client/registry.py),
@@ -100,6 +111,8 @@ The two checks under [`docs/extraction/`](docs/extraction/), `compare_with_sourc
 `compare_ported_tests.py`, compare the package with its source repository, and
 `measure_client_vocabulary.py` beside them reads the client projects. They read those
 repositories through `git`, at the local paths they name, so they run locally only, not in CI.
+`compare_with_source.py` describes the package as tagged `v0.1.0`, and is run on that tag only
+(for example from a `git worktree` of it); it is retired for later trees.
 
 ## Licence
 

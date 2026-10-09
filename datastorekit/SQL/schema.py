@@ -78,6 +78,12 @@ def build_schema(metadata: sqla.MetaData, factories: Mapping[str, Any]) -> Built
     class, the key and what is wrong. A record of a class with no table does not hold them, so a
     reader uses ``.get``.
 
+    Beside the three, a record of a class with a table holds ``key_on_version`` (``False`` when not
+    declared): whether the actor keys the class's lookups on the version serial, handing its
+    ``build`` the serial under ``datastorekit.contract.VERSION_SERIAL_KEY``. It must be a ``bool``,
+    and ``True`` only for a table with a ``version`` column, or ``ValueError``. A record of a class
+    with no table does not hold it either.
+
     The records hold no inserter: the actor adds its own.
     """
     tables: Dict[str, sqla.Table] = {}
@@ -174,6 +180,12 @@ def build_schema(metadata: sqla.MetaData, factories: Mapping[str, Any]) -> Built
             cls_name, tab, registration_data
         )
         schema["validated_column"] = _declared_validated_column(
+            cls_name, tab, registration_data
+        )
+
+        # whether the class's lookups are keyed on the version serial (key_on_version): only a
+        # table with a version column can be
+        schema["key_on_version"] = _declared_key_on_version(
             cls_name, tab, registration_data
         )
 
@@ -282,6 +294,29 @@ def _declared_validated_column(
             f"a column of type {tab.c[column].type!r}, which is not Boolean",
         )
     return column
+
+
+def _declared_key_on_version(
+    cls_name: str, tab: sqla.Table, registration_data: Mapping[str, Any]
+) -> bool:
+    """``key_on_version``: whether the class's lookups are keyed on the version serial, which the
+    actor then hands its factory's ``build`` in every ``object_get`` payload; ``False`` when it is
+    not declared. Only a table with the prepended ``version`` column (``"version": True``) can be
+    keyed."""
+    declared = registration_data.get("key_on_version", False)
+    if not isinstance(declared, bool):
+        raise _refuse_declaration(
+            cls_name, "key_on_version", declared, tab, "which is not a bool"
+        )
+    if declared and not registration_data.get("version", False):
+        raise _refuse_declaration(
+            cls_name,
+            "key_on_version",
+            declared,
+            tab,
+            'but its table has no "version" column to key on (it does not register "version": True)',
+        )
+    return declared
 
 
 def drop_order(tables: Iterable[sqla.Table]) -> List[sqla.Table]:

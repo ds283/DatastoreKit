@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-09 · **Status: IN PROGRESS — 8 of 9 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06), 7 landed (01, 02, 03a, 03b, 04a, 04b, 05); `v0.1.0` tagged on `68db557` after green CI (U23).**
+**Last updated:** 2026-10-09 · **Status: IN PROGRESS — 8 of 9 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06), 8 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06); `v0.1.0` tagged on `68db557` after green CI (U23); `v0.2.0` ready to be tagged on 06's commit once CI passes there (U28), not tagged, nothing pushed.**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 U8–U13 the same day, U14–U22 on 2026-10-08, and U6, U23–U28 on 2026-10-09 (README §6.2); U10 split 03 into 03a and 03b, and
 U14 split 04 into 04a and 04b.
@@ -70,7 +70,7 @@ U14 split 04 into 04a and 04b.
 | 04a | [Port the store and inventory tests](04a-port-the-store-and-inventory-tests.md) | 85 tests (inventory, store schema, reader, foreign keys, schema builder); `real_store_fixtures` and `schema_description` on neutral rows; the schema witness; the client's sharded family (U15) | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | `7ceed25` | [log](logs/04a-port-the-store-and-inventory-tests.md) |
 | 04b | [Port the declaration and registry tests](04b-port-the-declaration-and-registry-tests.md) | 89 of 90 tests (inventory declarations, declared facts, layer registry, drop refusal; U16's one not ported); the package guard with its vocabulary as data (U17); `test_parent_set_members` | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | `0c66505` | [log](logs/04b-port-the-declaration-and-registry-tests.md) |
 | 05 | [Supported versions and CI](05-supported-versions-and-ci.md) | `pyproject.toml` at `0.1.0` with U6's range; the 444 in fresh venvs at both ends and from an installed wheel; the workflow; the README's usage; `v0.1.0` tagged after green CI (U23) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | `68db557` | [log](logs/05-supported-versions-and-ci.md) |
-| 06 | [Version-keyed lookups](06-version-keyed-lookups.md) | `key_on_version` on `Tessera` (U25); the lookup serial and `set_lookup_version` (U26); 14 tests carrying over CPBH's; the witness `schema_at_extraction-06.json`; `compare_with_source.py` retired (U27); `v0.2.0` tagged after green CI (U28) | ✍️ yes, 2026-10-09 | ⬜ | — | — |
+| 06 | [Version-keyed lookups](06-version-keyed-lookups.md) | `key_on_version` on `Tessera` (U25); the lookup serial and `set_lookup_version` (U26); 14 tests carrying over CPBH's; the witness `schema_at_extraction-06.json`; `compare_with_source.py` retired (U27); `v0.2.0` tagged after green CI (U28) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | this commit | [log](logs/06-version-keyed-lookups.md) |
 | 07 | Close-out and adoption handover | `docs/adoption/` checklists; verification document | ⬜ | ⬜ | — | — |
 
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
@@ -793,7 +793,7 @@ this record.
 |---|---|
 | **G1**: SGK `datastore-generic-followup` closed; the import commit fixed | ✅ 2026-10-07: closed at `6f7f291` (03 landed as `086c81a`); the import commit is `6f7f291` |
 | **G2**: SGK adopted `v0.1.0`, fingerprint reproduced | ⬜ *(2026-10-09: `v0.1.0` is made, annotated, on 05's commit `68db557` (tag object `0ece4aa`) and pushed, after CI passed there at both ends, [run 37922626418](https://github.com/ds283/DatastoreKit/actions/runs/37922626418): Python 3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39 and 3.13.16 / 2.55.1 / 2.0.46, SQLite 3.45.1 at both, each `Ran 444 tests … OK`. SGK may now adopt it.)* |
-| **G3**: CPBH adopted `v0.2.0` | ⬜ |
+| **G3**: CPBH adopted `v0.2.0` | ⬜ *(2026-10-09: 06 landed as this commit, at `version = "0.2.0"`, with 458 tests passing in `venv/` (3.12.15 / 2.43.0 / 2.0.39) and at the high end (3.13.16 / 2.55.1 / 2.0.46). `v0.2.0` is ready to be tagged on it once CI passes there at both ends (U28). No tag is made and nothing is pushed.)* |
 | **G4**: SI adopted | ⬜ |
 
 ## 3. Active and unresolved issues
@@ -918,6 +918,27 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     runs), whose count varies with the collector.
   - **Next step.** Dispose the engines on a refused or abandoned open, once rule 8 lifts (after
     05), with a test that counts unclosed connections across a refused open. Unassigned.
+
+- **[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]** *(opened 2026-10-09 by
+  prompt 06)*
+  - **The defect.** `ShardedPool.object_get_vectorized` adds the shard key to each of the caller's
+    payload dicts in place, `for value in payload_data: value.update(shard_key)`
+    (`datastorekit/SQL/ShardedPool.py:3309-3310` at this commit; `:3298-3299` at `v0.1.0`). It was
+    so before 06, and is inherited from SGK unchanged. It does not affect keying: the actor copies
+    each payload before it adds the version serial (`SQL/Datastore.py:598-625`).
+  - **Reproduction** (log 06 §4.2; the stand-in pool, `build.open_pool`, two aliases on two
+    keypoints). A list `[{"weight": 0.25}, {"weight": 0.75}]` passed to
+    `object_get_vectorized("Tessera", {"k": a1}, payload_data=…)` holds `"k": a1` in both dicts
+    afterwards. Passed a second time with the same key it returns the same serials. Passed with
+    `{"k": a2}` its dicts are overwritten to `a2`; passed then to `pool.object_get("Tessera",
+    payload_data=…)`, which routes each dict by its own key, they go to `a2`'s shard.
+  - **Impact.** A caller's dicts change under it. A caller that reuses them sees the key in them; a
+    later call that routes by each dict's own key (`object_get(..., payload_data=…)`) routes them
+    by whichever key was added last; and a caller that passes them to a get whose shard-key field
+    differs carries the first key's field into that payload as well (read from the code: every
+    sharded class of the neutral client is sharded on `k`, so this was not reproduced).
+  - **Next step.** Copy, as the actor's keyed lookup does: `payload_data = [{**value,
+    **shard_key} for value in payload_data]`, with a test that passes a list twice. Unassigned.
 
 ## 4. Resolved issues
 

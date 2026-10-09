@@ -74,3 +74,43 @@ every file exists on both sides. The rules are described in the script's docstri
 From `6f7f291` until SGK has adopted the package (gate G2), SGK's copies of the files above do not
 change. A defect found in them in that time is recorded on SGK's board and fixed here after G2. The
 freeze is in force from SGK `b510bc9` (a section of SGK's `CLAUDE.md` naming the frozen files).
+
+## After `v0.1.0`
+
+`v0.1.0` (tag on `68db557`) is the last tree the sections above describe: through it, every
+package file equals its SGK source at `6f7f291` up to the differences listed. From prompt 06 on,
+the package changes in its own right, and each change is recorded here.
+
+**`docs/extraction/compare_with_source.py` describes the tree at `v0.1.0`, and is retired there**
+(decision U27, `prompts/extraction/README.md` §6.2). It was run for the last time by prompt 06,
+before its change. To run it again, run it on that tag (for example from a `git worktree` of
+`v0.1.0`); on a later tree it fails by design. `compare_ported_tests.py` still runs.
+
+### Prompt 06: version-keyed lookups (`v0.2.0`)
+
+The optional `register()` key `key_on_version` comes from **ChamPBH** (CPBH),
+<https://github.com/ds283/ChamPBH>, checked out at `/Users/ds283/Documents/Code/ChamPBH`, at
+`52142d7` (`52142d75aebe00855804e2daff4f63aee50ffc3e`, 2026-10-07), read through `git show` only.
+The three files below are unchanged in CPBH from `9b3db51`, the commit the campaign's plan cites,
+to `52142d7`. What was carried over, and how:
+
+| CPBH at `52142d7` | Here |
+|---|---|
+| `Datastore/SQL/Datastore.py:328-338`: the key, read in the schema build, refused without a `version` column (`RuntimeError`) | `datastorekit/SQL/schema.py`: `_declared_key_on_version`, in `build_schema`, refusing with the package's `ValueError`, and refusing a value that is not a `bool` |
+| `:390`: `False` in the record of a class with no table | not carried over: that record is unchanged, and a reader uses `.get` |
+| `:500-509`: the keyed copy of each payload in `object_get` | `datastorekit/SQL/Datastore.py`: `object_get`, with `_keyed_payloads` |
+| `:544-555`: `_with_version_serial`, refusing a caller's key with `KeyError` | `_keyed_payloads`, keyed on the actor's lookup serial, and refusing a lookup before that serial is set |
+| `config/version.py:52-71`: `VERSION_SERIAL_KEY` and `require_version_serial` | `datastorekit/contract.py`, the same key `"_version_serial"`, so a CPBH factory moves by its import alone |
+| `Datastore/tests/test_version_keyed_lookups.py` (470 lines: ten tests in `TestVersionKeyedLookups`, one in `TestOneVersionLabel`) | `datastorekit/tests/test_version_keyed_lookups.py`: 14 tests on the neutral client's `Tessera`; tests (a), (c3), (d), (d2), (d3), (d4) and (e) are carried over by their semantics, (b), (c1), (c2) and (f) are not (log 06 §1.4) |
+
+What is new here, with no CPBH source: the actor's lookup serial apart from its insert serial, and
+`Datastore.set_lookup_version`, which a read-only pool calls (U26), since CPBH has no read-only pool
+and SGK's actor receives its serial late, through `set_version`.
+
+The files prompt 06 changes: `datastorekit/contract.py`, `datastorekit/SQL/schema.py`,
+`datastorekit/SQL/Datastore.py` and `datastorekit/SQL/ShardedPool.py`; in the test client,
+`datastorekit/tests/client/factories.py` (`Tessera_factory`) and `registry.py` (its roles table);
+`datastorekit/tests/test_neutral_client.py` (`REGISTER_KEYS`) and `test_schema_builder.py`
+(`WITNESS`); and the new `datastorekit/tests/test_version_keyed_lookups.py` and witness
+`datastorekit/tests/data/schema_at_extraction-06.json`. The log is
+`prompts/extraction/logs/06-version-keyed-lookups.md`.

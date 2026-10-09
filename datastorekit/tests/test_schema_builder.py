@@ -13,11 +13,12 @@ The one schema builder, ``Datastore/SQL/schema.py`` ``build_schema`` (store-fing
   witness beside it, ``schema_at_<campaign>-<NN>.json``, captured with ``schema_description.py``'s
   ``__main__``, and repoints ``WITNESS`` at it; the prompt's log carries the diff between the two
   witnesses as the reviewable statement of what changed. No witness is ever regenerated to make a
-  test pass. The current one is ``schema_at_extraction-04a.json``, the neutral test client's
-  schema, captured by prompt 04a of the extraction campaign from the registry's classes with a
-  table. The source repository's earlier witnesses, from ``schema_at_base.json`` to
-  ``schema_at_datastore-generic-07.json``, are that repository's history of its own schema, and
-  are not copied here.
+  test pass. The current one is ``schema_at_extraction-06.json``, the neutral test client's
+  schema, captured by prompt 06 of the extraction campaign from the registry's classes with a
+  table; it differs from the earlier ``schema_at_extraction-04a.json``, captured by prompt 04a in
+  the same way and kept, only by the ``key_on_version`` of each record. The source repository's
+  earlier witnesses, from ``schema_at_base.json`` to ``schema_at_datastore-generic-07.json``, are
+  that repository's history of its own schema, and are not copied here.
 - **The fix** of ``[00-build-schema-reads-registration-before-its-none-check]``: a factory whose
   ``register()`` returns ``None`` gets a record with no table, and no ``AttributeError``.
 
@@ -43,7 +44,7 @@ from datastorekit.tests.schema_description import (
 # table, and no inserter (prompt 04a, U20). TestNoneRegistration covers such a class
 _factories = {n: f for n, f in _registered.items() if f.register() is not None}
 
-WITNESS = Path(__file__).resolve().parent / "data" / "schema_at_extraction-04a.json"
+WITNESS = Path(__file__).resolve().parent / "data" / "schema_at_extraction-06.json"
 
 
 def _witness_text() -> str:

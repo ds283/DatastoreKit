@@ -32,6 +32,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from datastorekit.SQL.factory_base import SQLAFactoryBase
 from datastorekit.contract import TAG_LABEL, TAG_SERIAL, TAG_TABLE, VERSION_LABEL
+from datastorekit.contract import require_version_serial
 from datastorekit.defaults import DEFAULT_STRING_LENGTH
 from datastorekit.replication import ReplicationMismatch, differing_columns
 from datastorekit.store_inventory import InventorySpec, Parent, ParentSet
@@ -917,13 +918,16 @@ class Gadget_factory(SQLAFactoryBase):
 
 
 class Tessera_factory(SQLAFactoryBase):
-    """A sharded leaf, keyed on a keypoint_alias (the shard key's proxy)."""
+    """A sharded leaf, keyed on a keypoint_alias (the shard key's proxy). Its lookups are keyed on
+    the version serial too (``key_on_version``, prompt 06): ``build`` finds only a row made under
+    the pool's label, and inserts one on a miss."""
 
     @staticmethod
     def register():
         return {
             "version": True,
             "timestamp": True,
+            "key_on_version": True,
             "columns": [
                 sqla.Column(
                     "alias_serial",
@@ -944,6 +948,7 @@ class Tessera_factory(SQLAFactoryBase):
             sqla.select(table.c.serial).filter(
                 table.c.alias_serial == alias.store_id,
                 table.c.tessera_weight == weight,
+                table.c.version == require_version_serial(payload, "Tessera"),
             )
         ).scalar_one_or_none()
         attributes = {"_deserialized": True}

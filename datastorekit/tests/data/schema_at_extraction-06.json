@@ -1,0 +1,3260 @@
+{
+ "class_order": [
+  "version",
+  "store_tag",
+  "keypoint",
+  "keypoint_alias",
+  "dial_setting",
+  "knob_setting",
+  "gauge_setting",
+  "routing_rule",
+  "Gadget",
+  "Gadget_tags",
+  "GadgetPart",
+  "Tessera",
+  "Sample",
+  "Sample_tags",
+  "Sample_members",
+  "Trace",
+  "Trace_tags",
+  "TraceStep",
+  "Weave",
+  "Weave_tags",
+  "Weave_members"
+ ],
+ "classes": {
+  "Gadget": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "gadget_label",
+      "of_table": "Gadget"
+     },
+     {
+      "column": "frame_kind",
+      "of_table": "Gadget"
+     },
+     {
+      "column": "frame_serial",
+      "of_table": "Gadget"
+     },
+     {
+      "column": "part_count",
+      "of_table": "Gadget"
+     },
+     {
+      "column": "gadget_validated",
+      "of_table": "Gadget"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [],
+    "name": "Gadget",
+    "owner_column": null,
+    "serial_col": {
+     "column": "serial",
+     "of_table": "Gadget"
+    },
+    "table": {
+     "table": "Gadget"
+    },
+    "timestamp_col": {
+     "column": "timestamp",
+     "of_table": "Gadget"
+    },
+    "use_serial": true,
+    "use_stepping": false,
+    "use_timestamp": true,
+    "use_version": true,
+    "validate_on_startup": true,
+    "validated_column": "gadget_validated",
+    "version_col": {
+     "column": "version",
+     "of_table": "Gadget"
+    }
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "version.serial"
+       }
+      ],
+      "index": true,
+      "name": "version",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "timestamp",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "DATETIME",
+      "type": "DateTime()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "gadget_label",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "VARCHAR(256)",
+      "type": "String(length=256)",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": true,
+      "name": "frame_kind",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": true,
+      "name": "frame_serial",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "part_count",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": "False",
+      "foreign_keys": [],
+      "index": null,
+      "name": "gadget_validated",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "BOOLEAN",
+      "type": "Boolean()",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     },
+     {
+      "columns": [
+       "version"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "version.serial"
+      ]
+     }
+    ],
+    "ddl": "CREATE TABLE \"Gadget\" (\n\tserial INTEGER NOT NULL, \n\tversion INTEGER, \n\ttimestamp DATETIME, \n\tgadget_label VARCHAR(256) NOT NULL, \n\tframe_kind INTEGER NOT NULL, \n\tframe_serial INTEGER NOT NULL, \n\tpart_count INTEGER NOT NULL, \n\tgadget_validated BOOLEAN NOT NULL, \n\tPRIMARY KEY (serial), \n\tFOREIGN KEY(version) REFERENCES version (serial)\n)",
+    "index_ddl": [
+     "CREATE INDEX \"ix_Gadget_frame_kind\" ON \"Gadget\" (frame_kind)",
+     "CREATE INDEX \"ix_Gadget_frame_serial\" ON \"Gadget\" (frame_serial)",
+     "CREATE INDEX \"ix_Gadget_version\" ON \"Gadget\" (version)"
+    ],
+    "indexes": [
+     {
+      "columns": [
+       "frame_kind"
+      ],
+      "name": "ix_Gadget_frame_kind",
+      "unique": false
+     },
+     {
+      "columns": [
+       "frame_serial"
+      ],
+      "name": "ix_Gadget_frame_serial",
+      "unique": false
+     },
+     {
+      "columns": [
+       "version"
+      ],
+      "name": "ix_Gadget_version",
+      "unique": false
+     }
+    ],
+    "name": "Gadget"
+   }
+  },
+  "GadgetPart": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "gadget_serial",
+      "of_table": "GadgetPart"
+     },
+     {
+      "column": "part_index",
+      "of_table": "GadgetPart"
+     },
+     {
+      "column": "part_value",
+      "of_table": "GadgetPart"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [],
+    "name": "GadgetPart",
+    "owner_column": "gadget_serial",
+    "serial_col": {
+     "column": "serial",
+     "of_table": "GadgetPart"
+    },
+    "table": {
+     "table": "GadgetPart"
+    },
+    "use_serial": true,
+    "use_stepping": false,
+    "use_timestamp": false,
+    "use_version": false,
+    "validate_on_startup": false,
+    "validated_column": null
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "Gadget.serial"
+       }
+      ],
+      "index": true,
+      "name": "gadget_serial",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "part_index",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "part_value",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "FLOAT",
+      "type": "Float(precision=64)",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "gadget_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "Gadget.serial"
+      ]
+     },
+     {
+      "columns": [
+       "serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     }
+    ],
+    "ddl": "CREATE TABLE \"GadgetPart\" (\n\tserial INTEGER NOT NULL, \n\tgadget_serial INTEGER NOT NULL, \n\tpart_index INTEGER NOT NULL, \n\tpart_value FLOAT NOT NULL, \n\tPRIMARY KEY (serial), \n\tFOREIGN KEY(gadget_serial) REFERENCES \"Gadget\" (serial)\n)",
+    "index_ddl": [
+     "CREATE INDEX \"ix_GadgetPart_gadget_serial\" ON \"GadgetPart\" (gadget_serial)"
+    ],
+    "indexes": [
+     {
+      "columns": [
+       "gadget_serial"
+      ],
+      "name": "ix_GadgetPart_gadget_serial",
+      "unique": false
+     }
+    ],
+    "name": "GadgetPart"
+   }
+  },
+  "Gadget_tags": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "gadget_serial",
+      "of_table": "Gadget_tags"
+     },
+     {
+      "column": "tag_serial",
+      "of_table": "Gadget_tags"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [],
+    "name": "Gadget_tags",
+    "owner_column": null,
+    "table": {
+     "table": "Gadget_tags"
+    },
+    "timestamp_col": {
+     "column": "timestamp",
+     "of_table": "Gadget_tags"
+    },
+    "use_serial": false,
+    "use_stepping": false,
+    "use_timestamp": true,
+    "use_version": false,
+    "validate_on_startup": false,
+    "validated_column": null
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "timestamp",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "DATETIME",
+      "type": "DateTime()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "Gadget.serial"
+       }
+      ],
+      "index": true,
+      "name": "gadget_serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "store_tag.serial"
+       }
+      ],
+      "index": true,
+      "name": "tag_serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "gadget_serial",
+       "tag_serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     },
+     {
+      "columns": [
+       "gadget_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "Gadget.serial"
+      ]
+     },
+     {
+      "columns": [
+       "tag_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "store_tag.serial"
+      ]
+     }
+    ],
+    "ddl": "CREATE TABLE \"Gadget_tags\" (\n\ttimestamp DATETIME, \n\tgadget_serial INTEGER NOT NULL, \n\ttag_serial INTEGER NOT NULL, \n\tPRIMARY KEY (gadget_serial, tag_serial), \n\tFOREIGN KEY(gadget_serial) REFERENCES \"Gadget\" (serial), \n\tFOREIGN KEY(tag_serial) REFERENCES store_tag (serial)\n)",
+    "index_ddl": [
+     "CREATE INDEX \"ix_Gadget_tags_gadget_serial\" ON \"Gadget_tags\" (gadget_serial)",
+     "CREATE INDEX \"ix_Gadget_tags_tag_serial\" ON \"Gadget_tags\" (tag_serial)"
+    ],
+    "indexes": [
+     {
+      "columns": [
+       "gadget_serial"
+      ],
+      "name": "ix_Gadget_tags_gadget_serial",
+      "unique": false
+     },
+     {
+      "columns": [
+       "tag_serial"
+      ],
+      "name": "ix_Gadget_tags_tag_serial",
+      "unique": false
+     }
+    ],
+    "name": "Gadget_tags"
+   }
+  },
+  "Sample": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "keypoint_serial",
+      "of_table": "Sample"
+     },
+     {
+      "column": "gadget_serial",
+      "of_table": "Sample"
+     },
+     {
+      "column": "anchor_serial",
+      "of_table": "Sample"
+     },
+     {
+      "column": "sample_code",
+      "of_table": "Sample"
+     },
+     {
+      "column": "member_count",
+      "of_table": "Sample"
+     },
+     {
+      "column": "sample_validated",
+      "of_table": "Sample"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [],
+    "name": "Sample",
+    "owner_column": null,
+    "serial_col": {
+     "column": "serial",
+     "of_table": "Sample"
+    },
+    "table": {
+     "table": "Sample"
+    },
+    "timestamp_col": {
+     "column": "timestamp",
+     "of_table": "Sample"
+    },
+    "use_serial": true,
+    "use_stepping": false,
+    "use_timestamp": true,
+    "use_version": true,
+    "validate_on_startup": true,
+    "validated_column": null,
+    "version_col": {
+     "column": "version",
+     "of_table": "Sample"
+    }
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "version.serial"
+       }
+      ],
+      "index": true,
+      "name": "version",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "timestamp",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "DATETIME",
+      "type": "DateTime()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "keypoint.serial"
+       }
+      ],
+      "index": true,
+      "name": "keypoint_serial",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "Gadget.serial"
+       }
+      ],
+      "index": true,
+      "name": "gadget_serial",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": true,
+      "name": "anchor_serial",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "sample_code",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "VARCHAR(256)",
+      "type": "String(length=256)",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "member_count",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": "False",
+      "foreign_keys": [],
+      "index": null,
+      "name": "sample_validated",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "BOOLEAN",
+      "type": "Boolean()",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "gadget_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "Gadget.serial"
+      ]
+     },
+     {
+      "columns": [
+       "keypoint_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "keypoint.serial"
+      ]
+     },
+     {
+      "columns": [
+       "serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     },
+     {
+      "columns": [
+       "version"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "version.serial"
+      ]
+     }
+    ],
+    "ddl": "CREATE TABLE \"Sample\" (\n\tserial INTEGER NOT NULL, \n\tversion INTEGER, \n\ttimestamp DATETIME, \n\tkeypoint_serial INTEGER NOT NULL, \n\tgadget_serial INTEGER NOT NULL, \n\tanchor_serial INTEGER, \n\tsample_code VARCHAR(256) NOT NULL, \n\tmember_count INTEGER NOT NULL, \n\tsample_validated BOOLEAN NOT NULL, \n\tPRIMARY KEY (serial), \n\tFOREIGN KEY(version) REFERENCES version (serial), \n\tFOREIGN KEY(keypoint_serial) REFERENCES keypoint (serial), \n\tFOREIGN KEY(gadget_serial) REFERENCES \"Gadget\" (serial)\n)",
+    "index_ddl": [
+     "CREATE INDEX \"ix_Sample_anchor_serial\" ON \"Sample\" (anchor_serial)",
+     "CREATE INDEX \"ix_Sample_gadget_serial\" ON \"Sample\" (gadget_serial)",
+     "CREATE INDEX \"ix_Sample_keypoint_serial\" ON \"Sample\" (keypoint_serial)",
+     "CREATE INDEX \"ix_Sample_version\" ON \"Sample\" (version)"
+    ],
+    "indexes": [
+     {
+      "columns": [
+       "anchor_serial"
+      ],
+      "name": "ix_Sample_anchor_serial",
+      "unique": false
+     },
+     {
+      "columns": [
+       "gadget_serial"
+      ],
+      "name": "ix_Sample_gadget_serial",
+      "unique": false
+     },
+     {
+      "columns": [
+       "keypoint_serial"
+      ],
+      "name": "ix_Sample_keypoint_serial",
+      "unique": false
+     },
+     {
+      "columns": [
+       "version"
+      ],
+      "name": "ix_Sample_version",
+      "unique": false
+     }
+    ],
+    "name": "Sample"
+   }
+  },
+  "Sample_members": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "sample_serial",
+      "of_table": "Sample_members"
+     },
+     {
+      "column": "tessera_serial",
+      "of_table": "Sample_members"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [],
+    "name": "Sample_members",
+    "owner_column": null,
+    "table": {
+     "table": "Sample_members"
+    },
+    "use_serial": false,
+    "use_stepping": false,
+    "use_timestamp": false,
+    "use_version": false,
+    "validate_on_startup": false,
+    "validated_column": null
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "Sample.serial"
+       }
+      ],
+      "index": true,
+      "name": "sample_serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "Tessera.serial"
+       }
+      ],
+      "index": true,
+      "name": "tessera_serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "sample_serial",
+       "tessera_serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     },
+     {
+      "columns": [
+       "sample_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "Sample.serial"
+      ]
+     },
+     {
+      "columns": [
+       "tessera_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "Tessera.serial"
+      ]
+     }
+    ],
+    "ddl": "CREATE TABLE \"Sample_members\" (\n\tsample_serial INTEGER NOT NULL, \n\ttessera_serial INTEGER NOT NULL, \n\tPRIMARY KEY (sample_serial, tessera_serial), \n\tFOREIGN KEY(sample_serial) REFERENCES \"Sample\" (serial), \n\tFOREIGN KEY(tessera_serial) REFERENCES \"Tessera\" (serial)\n)",
+    "index_ddl": [
+     "CREATE INDEX \"ix_Sample_members_sample_serial\" ON \"Sample_members\" (sample_serial)",
+     "CREATE INDEX \"ix_Sample_members_tessera_serial\" ON \"Sample_members\" (tessera_serial)"
+    ],
+    "indexes": [
+     {
+      "columns": [
+       "sample_serial"
+      ],
+      "name": "ix_Sample_members_sample_serial",
+      "unique": false
+     },
+     {
+      "columns": [
+       "tessera_serial"
+      ],
+      "name": "ix_Sample_members_tessera_serial",
+      "unique": false
+     }
+    ],
+    "name": "Sample_members"
+   }
+  },
+  "Sample_tags": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "sample_serial",
+      "of_table": "Sample_tags"
+     },
+     {
+      "column": "tag_serial",
+      "of_table": "Sample_tags"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [],
+    "name": "Sample_tags",
+    "owner_column": null,
+    "table": {
+     "table": "Sample_tags"
+    },
+    "timestamp_col": {
+     "column": "timestamp",
+     "of_table": "Sample_tags"
+    },
+    "use_serial": false,
+    "use_stepping": false,
+    "use_timestamp": true,
+    "use_version": false,
+    "validate_on_startup": false,
+    "validated_column": null
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "timestamp",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "DATETIME",
+      "type": "DateTime()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "Sample.serial"
+       }
+      ],
+      "index": true,
+      "name": "sample_serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "store_tag.serial"
+       }
+      ],
+      "index": true,
+      "name": "tag_serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "sample_serial",
+       "tag_serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     },
+     {
+      "columns": [
+       "sample_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "Sample.serial"
+      ]
+     },
+     {
+      "columns": [
+       "tag_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "store_tag.serial"
+      ]
+     }
+    ],
+    "ddl": "CREATE TABLE \"Sample_tags\" (\n\ttimestamp DATETIME, \n\tsample_serial INTEGER NOT NULL, \n\ttag_serial INTEGER NOT NULL, \n\tPRIMARY KEY (sample_serial, tag_serial), \n\tFOREIGN KEY(sample_serial) REFERENCES \"Sample\" (serial), \n\tFOREIGN KEY(tag_serial) REFERENCES store_tag (serial)\n)",
+    "index_ddl": [
+     "CREATE INDEX \"ix_Sample_tags_sample_serial\" ON \"Sample_tags\" (sample_serial)",
+     "CREATE INDEX \"ix_Sample_tags_tag_serial\" ON \"Sample_tags\" (tag_serial)"
+    ],
+    "indexes": [
+     {
+      "columns": [
+       "sample_serial"
+      ],
+      "name": "ix_Sample_tags_sample_serial",
+      "unique": false
+     },
+     {
+      "columns": [
+       "tag_serial"
+      ],
+      "name": "ix_Sample_tags_tag_serial",
+      "unique": false
+     }
+    ],
+    "name": "Sample_tags"
+   }
+  },
+  "Tessera": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "alias_serial",
+      "of_table": "Tessera"
+     },
+     {
+      "column": "tessera_weight",
+      "of_table": "Tessera"
+     }
+    ],
+    "key_on_version": true,
+    "monotone_flags": [],
+    "name": "Tessera",
+    "owner_column": null,
+    "serial_col": {
+     "column": "serial",
+     "of_table": "Tessera"
+    },
+    "table": {
+     "table": "Tessera"
+    },
+    "timestamp_col": {
+     "column": "timestamp",
+     "of_table": "Tessera"
+    },
+    "use_serial": true,
+    "use_stepping": false,
+    "use_timestamp": true,
+    "use_version": true,
+    "validate_on_startup": false,
+    "validated_column": null,
+    "version_col": {
+     "column": "version",
+     "of_table": "Tessera"
+    }
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "version.serial"
+       }
+      ],
+      "index": true,
+      "name": "version",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "timestamp",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "DATETIME",
+      "type": "DateTime()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "keypoint_alias.serial"
+       }
+      ],
+      "index": true,
+      "name": "alias_serial",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "tessera_weight",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "FLOAT",
+      "type": "Float(precision=64)",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "alias_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "keypoint_alias.serial"
+      ]
+     },
+     {
+      "columns": [
+       "serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     },
+     {
+      "columns": [
+       "version"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "version.serial"
+      ]
+     }
+    ],
+    "ddl": "CREATE TABLE \"Tessera\" (\n\tserial INTEGER NOT NULL, \n\tversion INTEGER, \n\ttimestamp DATETIME, \n\talias_serial INTEGER NOT NULL, \n\ttessera_weight FLOAT NOT NULL, \n\tPRIMARY KEY (serial), \n\tFOREIGN KEY(version) REFERENCES version (serial), \n\tFOREIGN KEY(alias_serial) REFERENCES keypoint_alias (serial)\n)",
+    "index_ddl": [
+     "CREATE INDEX \"ix_Tessera_alias_serial\" ON \"Tessera\" (alias_serial)",
+     "CREATE INDEX \"ix_Tessera_version\" ON \"Tessera\" (version)"
+    ],
+    "indexes": [
+     {
+      "columns": [
+       "alias_serial"
+      ],
+      "name": "ix_Tessera_alias_serial",
+      "unique": false
+     },
+     {
+      "columns": [
+       "version"
+      ],
+      "name": "ix_Tessera_version",
+      "unique": false
+     }
+    ],
+    "name": "Tessera"
+   }
+  },
+  "Trace": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "keypoint_serial",
+      "of_table": "Trace"
+     },
+     {
+      "column": "frame_kind",
+      "of_table": "Trace"
+     },
+     {
+      "column": "frame_serial",
+      "of_table": "Trace"
+     },
+     {
+      "column": "trace_label",
+      "of_table": "Trace"
+     },
+     {
+      "column": "step_count",
+      "of_table": "Trace"
+     },
+     {
+      "column": "trace_validated",
+      "of_table": "Trace"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [],
+    "name": "Trace",
+    "owner_column": null,
+    "serial_col": {
+     "column": "serial",
+     "of_table": "Trace"
+    },
+    "table": {
+     "table": "Trace"
+    },
+    "timestamp_col": {
+     "column": "timestamp",
+     "of_table": "Trace"
+    },
+    "use_serial": true,
+    "use_stepping": false,
+    "use_timestamp": true,
+    "use_version": true,
+    "validate_on_startup": false,
+    "validated_column": null,
+    "version_col": {
+     "column": "version",
+     "of_table": "Trace"
+    }
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "version.serial"
+       }
+      ],
+      "index": true,
+      "name": "version",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "timestamp",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "DATETIME",
+      "type": "DateTime()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "keypoint.serial"
+       }
+      ],
+      "index": true,
+      "name": "keypoint_serial",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "frame_kind",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": true,
+      "name": "frame_serial",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "trace_label",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "VARCHAR(256)",
+      "type": "String(length=256)",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "step_count",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": "False",
+      "foreign_keys": [],
+      "index": null,
+      "name": "trace_validated",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "BOOLEAN",
+      "type": "Boolean()",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "keypoint_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "keypoint.serial"
+      ]
+     },
+     {
+      "columns": [
+       "serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     },
+     {
+      "columns": [
+       "version"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "version.serial"
+      ]
+     }
+    ],
+    "ddl": "CREATE TABLE \"Trace\" (\n\tserial INTEGER NOT NULL, \n\tversion INTEGER, \n\ttimestamp DATETIME, \n\tkeypoint_serial INTEGER NOT NULL, \n\tframe_kind INTEGER NOT NULL, \n\tframe_serial INTEGER NOT NULL, \n\ttrace_label VARCHAR(256) NOT NULL, \n\tstep_count INTEGER NOT NULL, \n\ttrace_validated BOOLEAN NOT NULL, \n\tPRIMARY KEY (serial), \n\tFOREIGN KEY(version) REFERENCES version (serial), \n\tFOREIGN KEY(keypoint_serial) REFERENCES keypoint (serial)\n)",
+    "index_ddl": [
+     "CREATE INDEX \"ix_Trace_frame_serial\" ON \"Trace\" (frame_serial)",
+     "CREATE INDEX \"ix_Trace_keypoint_serial\" ON \"Trace\" (keypoint_serial)",
+     "CREATE INDEX \"ix_Trace_version\" ON \"Trace\" (version)"
+    ],
+    "indexes": [
+     {
+      "columns": [
+       "frame_serial"
+      ],
+      "name": "ix_Trace_frame_serial",
+      "unique": false
+     },
+     {
+      "columns": [
+       "keypoint_serial"
+      ],
+      "name": "ix_Trace_keypoint_serial",
+      "unique": false
+     },
+     {
+      "columns": [
+       "version"
+      ],
+      "name": "ix_Trace_version",
+      "unique": false
+     }
+    ],
+    "name": "Trace"
+   }
+  },
+  "TraceStep": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "trace_serial",
+      "of_table": "TraceStep"
+     },
+     {
+      "column": "step_index",
+      "of_table": "TraceStep"
+     },
+     {
+      "column": "step_value",
+      "of_table": "TraceStep"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [],
+    "name": "TraceStep",
+    "owner_column": null,
+    "serial_col": {
+     "column": "serial",
+     "of_table": "TraceStep"
+    },
+    "table": {
+     "table": "TraceStep"
+    },
+    "use_serial": true,
+    "use_stepping": false,
+    "use_timestamp": false,
+    "use_version": false,
+    "validate_on_startup": false,
+    "validated_column": null
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "Trace.serial"
+       }
+      ],
+      "index": true,
+      "name": "trace_serial",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "step_index",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "step_value",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "FLOAT",
+      "type": "Float(precision=64)",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     },
+     {
+      "columns": [
+       "trace_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "Trace.serial"
+      ]
+     }
+    ],
+    "ddl": "CREATE TABLE \"TraceStep\" (\n\tserial INTEGER NOT NULL, \n\ttrace_serial INTEGER NOT NULL, \n\tstep_index INTEGER NOT NULL, \n\tstep_value FLOAT NOT NULL, \n\tPRIMARY KEY (serial), \n\tFOREIGN KEY(trace_serial) REFERENCES \"Trace\" (serial)\n)",
+    "index_ddl": [
+     "CREATE INDEX \"ix_TraceStep_trace_serial\" ON \"TraceStep\" (trace_serial)"
+    ],
+    "indexes": [
+     {
+      "columns": [
+       "trace_serial"
+      ],
+      "name": "ix_TraceStep_trace_serial",
+      "unique": false
+     }
+    ],
+    "name": "TraceStep"
+   }
+  },
+  "Trace_tags": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "trace_serial",
+      "of_table": "Trace_tags"
+     },
+     {
+      "column": "tag_serial",
+      "of_table": "Trace_tags"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [],
+    "name": "Trace_tags",
+    "owner_column": null,
+    "table": {
+     "table": "Trace_tags"
+    },
+    "timestamp_col": {
+     "column": "timestamp",
+     "of_table": "Trace_tags"
+    },
+    "use_serial": false,
+    "use_stepping": false,
+    "use_timestamp": true,
+    "use_version": false,
+    "validate_on_startup": false,
+    "validated_column": null
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "timestamp",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "DATETIME",
+      "type": "DateTime()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "Trace.serial"
+       }
+      ],
+      "index": true,
+      "name": "trace_serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "store_tag.serial"
+       }
+      ],
+      "index": true,
+      "name": "tag_serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "tag_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "store_tag.serial"
+      ]
+     },
+     {
+      "columns": [
+       "trace_serial",
+       "tag_serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     },
+     {
+      "columns": [
+       "trace_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "Trace.serial"
+      ]
+     }
+    ],
+    "ddl": "CREATE TABLE \"Trace_tags\" (\n\ttimestamp DATETIME, \n\ttrace_serial INTEGER NOT NULL, \n\ttag_serial INTEGER NOT NULL, \n\tPRIMARY KEY (trace_serial, tag_serial), \n\tFOREIGN KEY(trace_serial) REFERENCES \"Trace\" (serial), \n\tFOREIGN KEY(tag_serial) REFERENCES store_tag (serial)\n)",
+    "index_ddl": [
+     "CREATE INDEX \"ix_Trace_tags_tag_serial\" ON \"Trace_tags\" (tag_serial)",
+     "CREATE INDEX \"ix_Trace_tags_trace_serial\" ON \"Trace_tags\" (trace_serial)"
+    ],
+    "indexes": [
+     {
+      "columns": [
+       "tag_serial"
+      ],
+      "name": "ix_Trace_tags_tag_serial",
+      "unique": false
+     },
+     {
+      "columns": [
+       "trace_serial"
+      ],
+      "name": "ix_Trace_tags_trace_serial",
+      "unique": false
+     }
+    ],
+    "name": "Trace_tags"
+   }
+  },
+  "Weave": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "keypoint_serial",
+      "of_table": "Weave"
+     },
+     {
+      "column": "trace_serial",
+      "of_table": "Weave"
+     },
+     {
+      "column": "anchor_serial",
+      "of_table": "Weave"
+     },
+     {
+      "column": "weave_label",
+      "of_table": "Weave"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [],
+    "name": "Weave",
+    "owner_column": null,
+    "serial_col": {
+     "column": "serial",
+     "of_table": "Weave"
+    },
+    "table": {
+     "table": "Weave"
+    },
+    "timestamp_col": {
+     "column": "timestamp",
+     "of_table": "Weave"
+    },
+    "use_serial": true,
+    "use_stepping": false,
+    "use_timestamp": true,
+    "use_version": true,
+    "validate_on_startup": false,
+    "validated_column": null,
+    "version_col": {
+     "column": "version",
+     "of_table": "Weave"
+    }
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "version.serial"
+       }
+      ],
+      "index": true,
+      "name": "version",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "timestamp",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "DATETIME",
+      "type": "DateTime()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "keypoint.serial"
+       }
+      ],
+      "index": true,
+      "name": "keypoint_serial",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "Trace.serial"
+       }
+      ],
+      "index": true,
+      "name": "trace_serial",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": true,
+      "name": "anchor_serial",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "weave_label",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "VARCHAR(256)",
+      "type": "String(length=256)",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "keypoint_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "keypoint.serial"
+      ]
+     },
+     {
+      "columns": [
+       "serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     },
+     {
+      "columns": [
+       "trace_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "Trace.serial"
+      ]
+     },
+     {
+      "columns": [
+       "version"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "version.serial"
+      ]
+     }
+    ],
+    "ddl": "CREATE TABLE \"Weave\" (\n\tserial INTEGER NOT NULL, \n\tversion INTEGER, \n\ttimestamp DATETIME, \n\tkeypoint_serial INTEGER NOT NULL, \n\ttrace_serial INTEGER NOT NULL, \n\tanchor_serial INTEGER, \n\tweave_label VARCHAR(256) NOT NULL, \n\tPRIMARY KEY (serial), \n\tFOREIGN KEY(version) REFERENCES version (serial), \n\tFOREIGN KEY(keypoint_serial) REFERENCES keypoint (serial), \n\tFOREIGN KEY(trace_serial) REFERENCES \"Trace\" (serial)\n)",
+    "index_ddl": [
+     "CREATE INDEX \"ix_Weave_anchor_serial\" ON \"Weave\" (anchor_serial)",
+     "CREATE INDEX \"ix_Weave_keypoint_serial\" ON \"Weave\" (keypoint_serial)",
+     "CREATE INDEX \"ix_Weave_trace_serial\" ON \"Weave\" (trace_serial)",
+     "CREATE INDEX \"ix_Weave_version\" ON \"Weave\" (version)"
+    ],
+    "indexes": [
+     {
+      "columns": [
+       "anchor_serial"
+      ],
+      "name": "ix_Weave_anchor_serial",
+      "unique": false
+     },
+     {
+      "columns": [
+       "keypoint_serial"
+      ],
+      "name": "ix_Weave_keypoint_serial",
+      "unique": false
+     },
+     {
+      "columns": [
+       "trace_serial"
+      ],
+      "name": "ix_Weave_trace_serial",
+      "unique": false
+     },
+     {
+      "columns": [
+       "version"
+      ],
+      "name": "ix_Weave_version",
+      "unique": false
+     }
+    ],
+    "name": "Weave"
+   }
+  },
+  "Weave_members": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "weave_serial",
+      "of_table": "Weave_members"
+     },
+     {
+      "column": "anchor_serial",
+      "of_table": "Weave_members"
+     },
+     {
+      "column": "origin_serial",
+      "of_table": "Weave_members"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [],
+    "name": "Weave_members",
+    "owner_column": null,
+    "serial_col": {
+     "column": "serial",
+     "of_table": "Weave_members"
+    },
+    "table": {
+     "table": "Weave_members"
+    },
+    "use_serial": true,
+    "use_stepping": false,
+    "use_timestamp": false,
+    "use_version": false,
+    "validate_on_startup": false,
+    "validated_column": null
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "Weave.serial"
+       }
+      ],
+      "index": true,
+      "name": "weave_serial",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "Tessera.serial"
+       }
+      ],
+      "index": true,
+      "name": "anchor_serial",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "Trace.serial"
+       }
+      ],
+      "index": true,
+      "name": "origin_serial",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "anchor_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "Tessera.serial"
+      ]
+     },
+     {
+      "columns": [
+       "origin_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "Trace.serial"
+      ]
+     },
+     {
+      "columns": [
+       "serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     },
+     {
+      "columns": [
+       "weave_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "Weave.serial"
+      ]
+     }
+    ],
+    "ddl": "CREATE TABLE \"Weave_members\" (\n\tserial INTEGER NOT NULL, \n\tweave_serial INTEGER NOT NULL, \n\tanchor_serial INTEGER, \n\torigin_serial INTEGER, \n\tPRIMARY KEY (serial), \n\tFOREIGN KEY(weave_serial) REFERENCES \"Weave\" (serial), \n\tFOREIGN KEY(anchor_serial) REFERENCES \"Tessera\" (serial), \n\tFOREIGN KEY(origin_serial) REFERENCES \"Trace\" (serial)\n)",
+    "index_ddl": [
+     "CREATE INDEX \"ix_Weave_members_anchor_serial\" ON \"Weave_members\" (anchor_serial)",
+     "CREATE INDEX \"ix_Weave_members_origin_serial\" ON \"Weave_members\" (origin_serial)",
+     "CREATE INDEX \"ix_Weave_members_weave_serial\" ON \"Weave_members\" (weave_serial)"
+    ],
+    "indexes": [
+     {
+      "columns": [
+       "anchor_serial"
+      ],
+      "name": "ix_Weave_members_anchor_serial",
+      "unique": false
+     },
+     {
+      "columns": [
+       "origin_serial"
+      ],
+      "name": "ix_Weave_members_origin_serial",
+      "unique": false
+     },
+     {
+      "columns": [
+       "weave_serial"
+      ],
+      "name": "ix_Weave_members_weave_serial",
+      "unique": false
+     }
+    ],
+    "name": "Weave_members"
+   }
+  },
+  "Weave_tags": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "weave_serial",
+      "of_table": "Weave_tags"
+     },
+     {
+      "column": "tag_serial",
+      "of_table": "Weave_tags"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [],
+    "name": "Weave_tags",
+    "owner_column": null,
+    "table": {
+     "table": "Weave_tags"
+    },
+    "timestamp_col": {
+     "column": "timestamp",
+     "of_table": "Weave_tags"
+    },
+    "use_serial": false,
+    "use_stepping": false,
+    "use_timestamp": true,
+    "use_version": false,
+    "validate_on_startup": false,
+    "validated_column": null
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "timestamp",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "DATETIME",
+      "type": "DateTime()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "Weave.serial"
+       }
+      ],
+      "index": true,
+      "name": "weave_serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "store_tag.serial"
+       }
+      ],
+      "index": true,
+      "name": "tag_serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "tag_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "store_tag.serial"
+      ]
+     },
+     {
+      "columns": [
+       "weave_serial",
+       "tag_serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     },
+     {
+      "columns": [
+       "weave_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "Weave.serial"
+      ]
+     }
+    ],
+    "ddl": "CREATE TABLE \"Weave_tags\" (\n\ttimestamp DATETIME, \n\tweave_serial INTEGER NOT NULL, \n\ttag_serial INTEGER NOT NULL, \n\tPRIMARY KEY (weave_serial, tag_serial), \n\tFOREIGN KEY(weave_serial) REFERENCES \"Weave\" (serial), \n\tFOREIGN KEY(tag_serial) REFERENCES store_tag (serial)\n)",
+    "index_ddl": [
+     "CREATE INDEX \"ix_Weave_tags_tag_serial\" ON \"Weave_tags\" (tag_serial)",
+     "CREATE INDEX \"ix_Weave_tags_weave_serial\" ON \"Weave_tags\" (weave_serial)"
+    ],
+    "indexes": [
+     {
+      "columns": [
+       "tag_serial"
+      ],
+      "name": "ix_Weave_tags_tag_serial",
+      "unique": false
+     },
+     {
+      "columns": [
+       "weave_serial"
+      ],
+      "name": "ix_Weave_tags_weave_serial",
+      "unique": false
+     }
+    ],
+    "name": "Weave_tags"
+   }
+  },
+  "dial_setting": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "dial_level",
+      "of_table": "dial_setting"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [],
+    "name": "dial_setting",
+    "owner_column": null,
+    "serial_col": {
+     "column": "serial",
+     "of_table": "dial_setting"
+    },
+    "stepping_col": {
+     "column": "stepping",
+     "of_table": "dial_setting"
+    },
+    "stepping_mode": "minimum",
+    "table": {
+     "table": "dial_setting"
+    },
+    "timestamp_col": {
+     "column": "timestamp",
+     "of_table": "dial_setting"
+    },
+    "use_serial": true,
+    "use_stepping": true,
+    "use_timestamp": true,
+    "use_version": false,
+    "validate_on_startup": false,
+    "validated_column": null
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "timestamp",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "DATETIME",
+      "type": "DateTime()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "stepping",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "dial_level",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     }
+    ],
+    "ddl": "CREATE TABLE dial_setting (\n\tserial INTEGER NOT NULL, \n\ttimestamp DATETIME, \n\tstepping INTEGER, \n\tdial_level INTEGER NOT NULL, \n\tPRIMARY KEY (serial)\n)",
+    "index_ddl": [],
+    "indexes": [],
+    "name": "dial_setting"
+   }
+  },
+  "gauge_setting": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "gauge_exponent",
+      "of_table": "gauge_setting"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [],
+    "name": "gauge_setting",
+    "owner_column": null,
+    "serial_col": {
+     "column": "serial",
+     "of_table": "gauge_setting"
+    },
+    "table": {
+     "table": "gauge_setting"
+    },
+    "timestamp_col": {
+     "column": "timestamp",
+     "of_table": "gauge_setting"
+    },
+    "use_serial": true,
+    "use_stepping": false,
+    "use_timestamp": true,
+    "use_version": false,
+    "validate_on_startup": false,
+    "validated_column": null
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "timestamp",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "DATETIME",
+      "type": "DateTime()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "gauge_exponent",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     }
+    ],
+    "ddl": "CREATE TABLE gauge_setting (\n\tserial INTEGER NOT NULL, \n\ttimestamp DATETIME, \n\tgauge_exponent INTEGER NOT NULL, \n\tPRIMARY KEY (serial)\n)",
+    "index_ddl": [],
+    "indexes": [],
+    "name": "gauge_setting"
+   }
+  },
+  "keypoint": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "kp_position",
+      "of_table": "keypoint"
+     },
+     {
+      "column": "kp_marked",
+      "of_table": "keypoint"
+     },
+     {
+      "column": "kp_flagged",
+      "of_table": "keypoint"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [
+     "kp_marked",
+     "kp_flagged"
+    ],
+    "name": "keypoint",
+    "owner_column": null,
+    "serial_col": {
+     "column": "serial",
+     "of_table": "keypoint"
+    },
+    "table": {
+     "table": "keypoint"
+    },
+    "timestamp_col": {
+     "column": "timestamp",
+     "of_table": "keypoint"
+    },
+    "use_serial": true,
+    "use_stepping": false,
+    "use_timestamp": true,
+    "use_version": false,
+    "validate_on_startup": false,
+    "validated_column": null
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "timestamp",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "DATETIME",
+      "type": "DateTime()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "kp_position",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "FLOAT",
+      "type": "Float(precision=64)",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": "False",
+      "foreign_keys": [],
+      "index": null,
+      "name": "kp_marked",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "BOOLEAN",
+      "type": "Boolean()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": "False",
+      "foreign_keys": [],
+      "index": null,
+      "name": "kp_flagged",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "BOOLEAN",
+      "type": "Boolean()",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     }
+    ],
+    "ddl": "CREATE TABLE keypoint (\n\tserial INTEGER NOT NULL, \n\ttimestamp DATETIME, \n\tkp_position FLOAT NOT NULL, \n\tkp_marked BOOLEAN NOT NULL, \n\tkp_flagged BOOLEAN NOT NULL, \n\tPRIMARY KEY (serial)\n)",
+    "index_ddl": [],
+    "indexes": [],
+    "name": "keypoint"
+   }
+  },
+  "keypoint_alias": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "keypoint_serial",
+      "of_table": "keypoint_alias"
+     },
+     {
+      "column": "ka_offset",
+      "of_table": "keypoint_alias"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [],
+    "name": "keypoint_alias",
+    "owner_column": null,
+    "serial_col": {
+     "column": "serial",
+     "of_table": "keypoint_alias"
+    },
+    "stepping_col": {
+     "column": "stepping",
+     "of_table": "keypoint_alias"
+    },
+    "stepping_mode": "exact",
+    "table": {
+     "table": "keypoint_alias"
+    },
+    "timestamp_col": {
+     "column": "timestamp",
+     "of_table": "keypoint_alias"
+    },
+    "use_serial": true,
+    "use_stepping": true,
+    "use_timestamp": true,
+    "use_version": true,
+    "validate_on_startup": false,
+    "validated_column": null,
+    "version_col": {
+     "column": "version",
+     "of_table": "keypoint_alias"
+    }
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "version.serial"
+       }
+      ],
+      "index": true,
+      "name": "version",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "timestamp",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "DATETIME",
+      "type": "DateTime()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "stepping",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "keypoint.serial"
+       }
+      ],
+      "index": true,
+      "name": "keypoint_serial",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "ka_offset",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "FLOAT",
+      "type": "Float(precision=64)",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "keypoint_serial"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "keypoint.serial"
+      ]
+     },
+     {
+      "columns": [
+       "serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     },
+     {
+      "columns": [
+       "version"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "version.serial"
+      ]
+     }
+    ],
+    "ddl": "CREATE TABLE keypoint_alias (\n\tserial INTEGER NOT NULL, \n\tversion INTEGER, \n\ttimestamp DATETIME, \n\tstepping INTEGER, \n\tkeypoint_serial INTEGER NOT NULL, \n\tka_offset FLOAT NOT NULL, \n\tPRIMARY KEY (serial), \n\tFOREIGN KEY(version) REFERENCES version (serial), \n\tFOREIGN KEY(keypoint_serial) REFERENCES keypoint (serial)\n)",
+    "index_ddl": [
+     "CREATE INDEX ix_keypoint_alias_keypoint_serial ON keypoint_alias (keypoint_serial)",
+     "CREATE INDEX ix_keypoint_alias_version ON keypoint_alias (version)"
+    ],
+    "indexes": [
+     {
+      "columns": [
+       "keypoint_serial"
+      ],
+      "name": "ix_keypoint_alias_keypoint_serial",
+      "unique": false
+     },
+     {
+      "columns": [
+       "version"
+      ],
+      "name": "ix_keypoint_alias_version",
+      "unique": false
+     }
+    ],
+    "name": "keypoint_alias"
+   }
+  },
+  "knob_setting": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "knob_turns",
+      "of_table": "knob_setting"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [],
+    "name": "knob_setting",
+    "owner_column": null,
+    "serial_col": {
+     "column": "serial",
+     "of_table": "knob_setting"
+    },
+    "stepping_col": {
+     "column": "stepping",
+     "of_table": "knob_setting"
+    },
+    "stepping_mode": null,
+    "table": {
+     "table": "knob_setting"
+    },
+    "use_serial": true,
+    "use_stepping": true,
+    "use_timestamp": false,
+    "use_version": false,
+    "validate_on_startup": false,
+    "validated_column": null
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "stepping",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "knob_turns",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     }
+    ],
+    "ddl": "CREATE TABLE knob_setting (\n\tserial INTEGER NOT NULL, \n\tstepping INTEGER, \n\tknob_turns INTEGER NOT NULL, \n\tPRIMARY KEY (serial)\n)",
+    "index_ddl": [],
+    "indexes": [],
+    "name": "knob_setting"
+   }
+  },
+  "routing_rule": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "rule_label",
+      "of_table": "routing_rule"
+     },
+     {
+      "column": "rule_threshold",
+      "of_table": "routing_rule"
+     },
+     {
+      "column": "rule_mode",
+      "of_table": "routing_rule"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [],
+    "name": "routing_rule",
+    "owner_column": null,
+    "serial_col": {
+     "column": "serial",
+     "of_table": "routing_rule"
+    },
+    "table": {
+     "table": "routing_rule"
+    },
+    "timestamp_col": {
+     "column": "timestamp",
+     "of_table": "routing_rule"
+    },
+    "use_serial": true,
+    "use_stepping": false,
+    "use_timestamp": true,
+    "use_version": true,
+    "validate_on_startup": false,
+    "validated_column": null,
+    "version_col": {
+     "column": "version",
+     "of_table": "routing_rule"
+    }
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [
+       {
+        "ondelete": null,
+        "onupdate": null,
+        "target": "version.serial"
+       }
+      ],
+      "index": true,
+      "name": "version",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "timestamp",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "DATETIME",
+      "type": "DateTime()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "rule_label",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "VARCHAR(256)",
+      "type": "String(length=256)",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "rule_threshold",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "FLOAT",
+      "type": "Float(precision=64)",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "rule_mode",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "VARCHAR(256)",
+      "type": "String(length=256)",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     },
+     {
+      "columns": [
+       "version"
+      ],
+      "kind": "ForeignKeyConstraint",
+      "name": null,
+      "targets": [
+       "version.serial"
+      ]
+     }
+    ],
+    "ddl": "CREATE TABLE routing_rule (\n\tserial INTEGER NOT NULL, \n\tversion INTEGER, \n\ttimestamp DATETIME, \n\trule_label VARCHAR(256) NOT NULL, \n\trule_threshold FLOAT NOT NULL, \n\trule_mode VARCHAR(256) NOT NULL, \n\tPRIMARY KEY (serial), \n\tFOREIGN KEY(version) REFERENCES version (serial)\n)",
+    "index_ddl": [
+     "CREATE INDEX ix_routing_rule_version ON routing_rule (version)"
+    ],
+    "indexes": [
+     {
+      "columns": [
+       "version"
+      ],
+      "name": "ix_routing_rule_version",
+      "unique": false
+     }
+    ],
+    "name": "routing_rule"
+   }
+  },
+  "store_tag": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "label",
+      "of_table": "store_tag"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [],
+    "name": "store_tag",
+    "owner_column": null,
+    "serial_col": {
+     "column": "serial",
+     "of_table": "store_tag"
+    },
+    "table": {
+     "table": "store_tag"
+    },
+    "timestamp_col": {
+     "column": "timestamp",
+     "of_table": "store_tag"
+    },
+    "use_serial": true,
+    "use_stepping": false,
+    "use_timestamp": true,
+    "use_version": false,
+    "validate_on_startup": false,
+    "validated_column": null
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "timestamp",
+      "nullable": true,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "DATETIME",
+      "type": "DateTime()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "label",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "VARCHAR(256)",
+      "type": "String(length=256)",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     }
+    ],
+    "ddl": "CREATE TABLE store_tag (\n\tserial INTEGER NOT NULL, \n\ttimestamp DATETIME, \n\tlabel VARCHAR(256) NOT NULL, \n\tPRIMARY KEY (serial)\n)",
+    "index_ddl": [],
+    "indexes": [],
+    "name": "store_tag"
+   }
+  },
+  "version": {
+   "has_table": true,
+   "record": {
+    "columns": [
+     {
+      "column": "label",
+      "of_table": "version"
+     }
+    ],
+    "key_on_version": false,
+    "monotone_flags": [],
+    "name": "version",
+    "owner_column": null,
+    "serial_col": {
+     "column": "serial",
+     "of_table": "version"
+    },
+    "table": {
+     "table": "version"
+    },
+    "use_serial": true,
+    "use_stepping": false,
+    "use_timestamp": false,
+    "use_version": false,
+    "validate_on_startup": false,
+    "validated_column": null
+   },
+   "table": {
+    "columns": [
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "serial",
+      "nullable": false,
+      "primary_key": true,
+      "server_default": null,
+      "sqlite_type": "INTEGER",
+      "type": "Integer()",
+      "unique": null
+     },
+     {
+      "autoincrement": "'auto'",
+      "default": null,
+      "foreign_keys": [],
+      "index": null,
+      "name": "label",
+      "nullable": false,
+      "primary_key": false,
+      "server_default": null,
+      "sqlite_type": "VARCHAR(256)",
+      "type": "String(length=256)",
+      "unique": null
+     }
+    ],
+    "constraints": [
+     {
+      "columns": [
+       "serial"
+      ],
+      "kind": "PrimaryKeyConstraint",
+      "name": null
+     }
+    ],
+    "ddl": "CREATE TABLE version (\n\tserial INTEGER NOT NULL, \n\tlabel VARCHAR(256) NOT NULL, \n\tPRIMARY KEY (serial)\n)",
+    "index_ddl": [],
+    "indexes": [],
+    "name": "version"
+   }
+  }
+ },
+ "format": 1,
+ "metadata_tables": [
+  "Gadget",
+  "GadgetPart",
+  "Gadget_tags",
+  "Sample",
+  "Sample_members",
+  "Sample_tags",
+  "Tessera",
+  "Trace",
+  "TraceStep",
+  "Trace_tags",
+  "Weave",
+  "Weave_members",
+  "Weave_tags",
+  "dial_setting",
+  "gauge_setting",
+  "keypoint",
+  "keypoint_alias",
+  "knob_setting",
+  "routing_rule",
+  "store_tag",
+  "version"
+ ],
+ "table_order": [
+  "version",
+  "store_tag",
+  "keypoint",
+  "keypoint_alias",
+  "dial_setting",
+  "knob_setting",
+  "gauge_setting",
+  "routing_rule",
+  "Gadget",
+  "Gadget_tags",
+  "GadgetPart",
+  "Tessera",
+  "Sample",
+  "Sample_tags",
+  "Sample_members",
+  "Trace",
+  "Trace_tags",
+  "TraceStep",
+  "Weave",
+  "Weave_tags",
+  "Weave_members"
+ ]
+}

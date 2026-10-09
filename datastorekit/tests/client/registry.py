@@ -28,7 +28,7 @@ it):
 | ``Gadget`` | replicated | ``validate_on_startup`` (the pool's prune), ``validated_column`` with ``revalidate``, ``owned_serials``; a polymorphic ``Parent``; tags and values |
 | ``Gadget_tags`` | neither | a replicated class's tag table; ``serial: False`` |
 | ``GadgetPart`` | replicated | ``owner_column`` |
-| ``Tessera`` | sharded on ``k`` | keyed on the proxy |
+| ``Tessera`` | sharded on ``k`` | keyed on the proxy; ``key_on_version`` (prompt 06) |
 | ``Sample`` | sharded on ``k`` | ``validate_on_startup`` (each actor's prune); ``read_batch``; a ``cross_shard`` and ``nullable`` ``Parent``; a ``ParentSet`` |
 | ``Sample_tags`` | neither | the sharded class's tag association |
 | ``Sample_members`` | neither | the ``ParentSet``'s member table, named by foreign key, with no ``inventory_spec`` |
