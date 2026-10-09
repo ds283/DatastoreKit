@@ -1,9 +1,9 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-09 · **Status: IN PROGRESS — 8 of 9 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06), 8 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28).**
+**Last updated:** 2026-10-09 · **Status: IN PROGRESS — 9 of 10 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a), 8 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
-U8–U13 the same day, U14–U22 on 2026-10-08, and U6, U23–U28 on 2026-10-09 (README §6.2); U10 split 03 into 03a and 03b, and
-U14 split 04 into 04a and 04b.
+U8–U13 the same day, U14–U22 on 2026-10-08, and U6, U23–U32 on 2026-10-09 (README §6.2); U10, U14 and U30 split 03, 04
+and 07, each into an a and a b prompt.
 
 **Campaign:** [`README.md`](README.md) ·
 **Source:** SecondaryGWKit's `Datastore/` layer at the import commit `6f7f291` (G1) ·
@@ -56,6 +56,10 @@ U14 split 04 into 04a and 04b.
 | **U26** keyed lookups on a read-only pool | a lookup serial apart from the insert serial; `set_lookup_version` | **taken** 2026-10-09, at 06's writing |
 | **U27** the equivalence check after rule 8 lifts | *(recommended: a declared amended-since-release kind)* | **taken** 2026-10-09, otherwise: `compare_with_source.py` retired at `v0.1.0` |
 | **U28** how `v0.2.0` is reached | as U23: no tag or push by 06; tagged on its commit after green CI | **taken** 2026-10-09, at 06's writing |
+| **U29** the release SGK adopts | `v0.2.0` directly; G2 reads `v0.2.0` | **taken** 2026-10-09, by the user |
+| **U30** splitting 07 | 07a the adoption checklists; 07b verification and close-out | **taken** 2026-10-09, at 07a's writing |
+| **U31** SI's stores | rebuilt, not migrated, as D4; SI tags its last commit on the old layer | **taken** 2026-10-09, at 07a's writing |
+| **U32** clients that register factory instances | client-side: define the three abstract hooks, or register the class | **taken** 2026-10-09, at 07a's writing |
 
 ---
 
@@ -71,7 +75,8 @@ U14 split 04 into 04a and 04b.
 | 04b | [Port the declaration and registry tests](04b-port-the-declaration-and-registry-tests.md) | 89 of 90 tests (inventory declarations, declared facts, layer registry, drop refusal; U16's one not ported); the package guard with its vocabulary as data (U17); `test_parent_set_members` | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | `0c66505` | [log](logs/04b-port-the-declaration-and-registry-tests.md) |
 | 05 | [Supported versions and CI](05-supported-versions-and-ci.md) | `pyproject.toml` at `0.1.0` with U6's range; the 444 in fresh venvs at both ends and from an installed wheel; the workflow; the README's usage; `v0.1.0` tagged after green CI (U23) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | `68db557` | [log](logs/05-supported-versions-and-ci.md) |
 | 06 | [Version-keyed lookups](06-version-keyed-lookups.md) | `key_on_version` on `Tessera` (U25); the lookup serial and `set_lookup_version` (U26); 14 tests carrying over CPBH's; the witness `schema_at_extraction-06.json`; `compare_with_source.py` retired (U27); `v0.2.0` tagged after green CI (U28) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | `240028e` | [log](logs/06-version-keyed-lookups.md) |
-| 07 | Close-out and adoption handover | `docs/adoption/` checklists; verification document | ⬜ | ⬜ | — | — |
+| 07a | [The adoption checklists](07a-the-adoption-checklists.md) | `docs/adoption/`: a README and checklists for SGK, CPBH and SI against `v0.2.0` (U29), measured read-only; `measure_client_imports.py`; instances and abstract hooks (U32); SI's stores rebuilt (U31) | ✍️ yes, 2026-10-09 | ⬜ | — | — |
+| 07b | Verification and close-out | the campaign's verification document; the campaign closed (U30) | ⬜ | ⬜ | — | — |
 
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
@@ -901,7 +906,7 @@ tag `v0.2.0` (object `9eaf542`) was then made on `240028e` and pushed; `git ls-r
 | Gate | Status |
 |---|---|
 | **G1**: SGK `datastore-generic-followup` closed; the import commit fixed | ✅ 2026-10-07: closed at `6f7f291` (03 landed as `086c81a`); the import commit is `6f7f291` |
-| **G2**: SGK adopted `v0.1.0`, fingerprint reproduced | ⬜ *(2026-10-09: `v0.1.0` is made, annotated, on 05's commit `68db557` (tag object `0ece4aa`) and pushed, after CI passed there at both ends, [run 37922626418](https://github.com/ds283/DatastoreKit/actions/runs/37922626418): Python 3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39 and 3.13.16 / 2.55.1 / 2.0.46, SQLite 3.45.1 at both, each `Ran 444 tests … OK`. SGK may now adopt it.)* |
+| **G2**: SGK adopted `v0.2.0` (U29), fingerprint reproduced | ⬜ *(2026-10-09: `v0.1.0` is made, annotated, on 05's commit `68db557` (tag object `0ece4aa`) and pushed, after CI passed there at both ends, [run 37922626418](https://github.com/ds283/DatastoreKit/actions/runs/37922626418): Python 3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39 and 3.13.16 / 2.55.1 / 2.0.46, SQLite 3.45.1 at both, each `Ran 444 tests … OK`. SGK may now adopt it.)* |
 | **G3**: CPBH adopted `v0.2.0` | ⬜ *(2026-10-09: `v0.2.0` is made, annotated, on 06's commit `240028e` (tag object `9eaf542`) and pushed, after CI passed there at both ends, [run 37934881027](https://github.com/ds283/DatastoreKit/actions/runs/37934881027): Python 3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39 and 3.13.16 / 2.55.1 / 2.0.46, SQLite 3.45.1 at both, each `Ran 458 tests … OK`. CPBH may now adopt it.)* |
 | **G4**: SI adopted | ⬜ |
 
