@@ -3,7 +3,7 @@
 One line per open issue, pointing at the board that holds it. The board is right if the two
 disagree. See `CLAUDE.md` for the maintenance rule.
 
-**Last updated:** 2026-10-08 · **6 open**: 2 on this repository's boards, 4 inherited (§1.2).
+**Last updated:** 2026-10-09 · **7 open**: 3 on this repository's boards, 4 inherited (§1.2).
 
 ## 1. By campaign
 
@@ -13,6 +13,7 @@ disagree. See `CLAUDE.md` for the maintenance rule.
 |---|---|
 | `[01-package-prose-names-sgks-layout]` | 155 prose lines in 40 files of the package name SGK's paths and campaigns (02: the stand-in pool's, and one comment naming SGK's table, which the guard pins (U17); 03a–04b: the eighteen ported modules' and two fixtures' docstrings); two describe the removed `sys.path` bootstrap |
 | `[02-an-unsupplied-sharded-table-raises-keyerror]` | Reopening with a recorded sharded table the constructor lacks raises a bare `KeyError` before the intended message |
+| `[05-a-refused-open-leaves-its-engines-undisposed]` | A refused or abandoned open never disposes its engines: 105 connections in the 444 are closed only by the collector (Python 3.13 warns) |
 
 ### 1.2 Inherited from SecondaryGWKit, on SGK's boards
 

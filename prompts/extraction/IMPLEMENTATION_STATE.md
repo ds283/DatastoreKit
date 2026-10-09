@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-09 · **Status: IN PROGRESS — 7 of 9 prompts written (01, 02, 03a, 03b, 04a, 04b, 05), 6 landed (01, 02, 03a, 03b, 04a, 04b).**
+**Last updated:** 2026-10-09 · **Status: IN PROGRESS — 7 of 9 prompts written (01, 02, 03a, 03b, 04a, 04b, 05), 7 landed (01, 02, 03a, 03b, 04a, 04b, 05); `v0.1.0` not yet tagged (U23).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 U8–U13 the same day, U14–U22 on 2026-10-08, and U6, U23 and U24 on 2026-10-09 (README §6.2); U10 split 03 into 03a and 03b, and
 U14 split 04 into 04a and 04b.
@@ -65,7 +65,7 @@ U14 split 04 into 04a and 04b.
 | 03b | [Port the open and read-only tests](03b-port-the-open-and-read-only-tests.md) | 53 tests, 80 run (version row, read-only pool, one timestamp, shard records); the two client classes (U13); the neutral reader sequence (U11) | ✍️ yes, 2026-10-07 | ✅ 2026-10-08 | `0d5380c` | [log](logs/03b-port-the-open-and-read-only-tests.md) |
 | 04a | [Port the store and inventory tests](04a-port-the-store-and-inventory-tests.md) | 85 tests (inventory, store schema, reader, foreign keys, schema builder); `real_store_fixtures` and `schema_description` on neutral rows; the schema witness; the client's sharded family (U15) | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | `7ceed25` | [log](logs/04a-port-the-store-and-inventory-tests.md) |
 | 04b | [Port the declaration and registry tests](04b-port-the-declaration-and-registry-tests.md) | 89 of 90 tests (inventory declarations, declared facts, layer registry, drop refusal; U16's one not ported); the package guard with its vocabulary as data (U17); `test_parent_set_members` | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | `0c66505` | [log](logs/04b-port-the-declaration-and-registry-tests.md) |
-| 05 | [Supported versions and CI](05-supported-versions-and-ci.md) | `pyproject.toml` at `0.1.0` with U6's range; the 444 in fresh venvs at both ends and from an installed wheel; the workflow; the README's usage; `v0.1.0` tagged after green CI (U23) | ✍️ yes, 2026-10-09 | ⬜ | — | — |
+| 05 | [Supported versions and CI](05-supported-versions-and-ci.md) | `pyproject.toml` at `0.1.0` with U6's range; the 444 in fresh venvs at both ends and from an installed wheel; the workflow; the README's usage; `v0.1.0` tagged after green CI (U23) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | this commit | [log](logs/05-supported-versions-and-ci.md) |
 | 06 | Version-keyed lookups | `key_on_version`; tag `v0.2.0` | ⬜ | ⬜ | — | — |
 | 07 | Close-out and adoption handover | `docs/adoption/` checklists; verification document | ⬜ | ⬜ | — | — |
 
@@ -707,7 +707,7 @@ index is 6.
 | Gate | Status |
 |---|---|
 | **G1**: SGK `datastore-generic-followup` closed; the import commit fixed | ✅ 2026-10-07: closed at `6f7f291` (03 landed as `086c81a`); the import commit is `6f7f291` |
-| **G2**: SGK adopted `v0.1.0`, fingerprint reproduced | ⬜ |
+| **G2**: SGK adopted `v0.1.0`, fingerprint reproduced | ⬜ *(2026-10-09: `v0.1.0` is ready to be tagged on 05's commit (this commit) once CI passes there at both ends (U23); no tag is made, and nothing is pushed. Log 05 §9.)* |
 | **G3**: CPBH adopted `v0.2.0` | ⬜ |
 | **G4**: SI adopted | ⬜ |
 
@@ -806,6 +806,33 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
   - **Impact.** The open is still refused; the refusal does not say why. Inherited from SGK
     unchanged.
   - **Next step.** Fix once rule 8 lifts (after 05), with a test that opens such a store. Unassigned.
+- **[05-a-refused-open-leaves-its-engines-undisposed]** *(opened 2026-10-09 by prompt 05)*
+  - **The defect.** When an open is refused or abandoned, the engines the pool and its actors made
+    are never disposed, and each one's pooled SQLite connection is closed only when the garbage
+    collector reaches it. Python 3.13 reports each as a `ResourceWarning` ("unclosed database");
+    3.12 reports nothing, but the behaviour is the same. Inherited from SGK unchanged.
+  - **Measured** (2026-10-09, by prompt 05, log 05 §4). A scratch wrapper of `sqlite3.connect` and
+    `sqlite3.dbapi2.connect` with a `factory=` subclass that records its creation stack and counts,
+    on `__del__`, the connections never closed. Over the 444, at both ends (Python 3.12.15 / Ray
+    2.43.0 / SQLAlchemy 2.0.39, and 3.13.16 / 2.55.1 / 2.0.46), identically: **105 of 40,874**
+    connections are never closed, all opened by the layer's engines, none by the tests' own code:
+    - `datastorekit/SQL/ShardedPool.py:858` (`with self._engine.connect() as conn:`, the primary's
+      schema check): 58, in tests of `test_reconcile_at_open` 23, `test_prune_at_open` 13,
+      `test_store_schema` 9, `test_version_row_at_open` 8, `test_read_only_pool` 4,
+      `test_declared_facts` 1;
+    - `datastorekit/SQL/Datastore.py:349` (`self._inspector = sqla.inspect(self._engine)`, an
+      actor's constructor): 41, in `test_version_row_at_open`;
+    - `datastorekit/SQL/ShardedPool.py:870` (`self._shard_file_table.create(self._engine)`): 6, in
+      `test_version_row_at_open`.
+
+    Each is in a test whose open is refused or abandoned. A test run by inheritance is counted under
+    the module that defines it.
+  - **Impact.** A long-lived process that retries refused opens holds one file descriptor, and one
+    SQLite connection, per refused engine until the collector runs. No data is affected. Under
+    Python 3.13 the suite prints about 170–200 `ResourceWarning` lines (172, 188 and 194 in three
+    runs), whose count varies with the collector.
+  - **Next step.** Dispose the engines on a refused or abandoned open, once rule 8 lifts (after
+    05), with a test that counts unclosed connections across a refused open. Unassigned.
 
 ## 4. Resolved issues
 
