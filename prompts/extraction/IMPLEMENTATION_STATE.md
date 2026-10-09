@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-09 · **Status: IN PROGRESS — 7 of 9 prompts written (01, 02, 03a, 03b, 04a, 04b, 05), 7 landed (01, 02, 03a, 03b, 04a, 04b, 05); `v0.1.0` not yet tagged (U23).**
+**Last updated:** 2026-10-09 · **Status: IN PROGRESS — 7 of 9 prompts written (01, 02, 03a, 03b, 04a, 04b, 05), 7 landed (01, 02, 03a, 03b, 04a, 04b, 05); `v0.1.0` tagged on `68db557` after green CI (U23).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 U8–U13 the same day, U14–U22 on 2026-10-08, and U6, U23 and U24 on 2026-10-09 (README §6.2); U10 split 03 into 03a and 03b, and
 U14 split 04 into 04a and 04b.
@@ -771,16 +771,24 @@ opened. The index is 7.
 - README's header, and its §2 status for 05;
 - this paragraph and the notes line.
 
-*Next (note §5, U23).* With the user's approval of each step: push `68db557` alone as `main`, so
-that CI runs on it; if both ends pass, tag `v0.1.0` there, annotated, and push the tag; then push
-the rest of `main` and record the run on the G2 line.
+*`v0.1.0` (note §5, U23).* With the user's approval of each step, `68db557` was pushed alone as
+`main` (a fast-forward from `47d3ab1`), and the workflow ran on it,
+[run 37922626418](https://github.com/ds283/DatastoreKit/actions/runs/37922626418). Both ends passed:
+3.12.15 / 2.43.0 / 2.0.39 and 3.13.16 / 2.55.1 / 2.0.46, each `Ran 444 tests … OK`, with `black`
+leaving 64 files unchanged on `low`. CI installed exactly the pins and `datastorekit-0.1.0`.
+**Hazard 2's answer:** Ubuntu 24.04's Python links SQLite 3.45.1 at both ends, older than this
+machine's 3.53.4 but past 3.35, so `ALTER TABLE … DROP COLUMN` is available, and the five tests
+that use it pass. **Hazard 3's:** the suite passes on Linux. The high end printed 194
+`ResourceWarning` lines, the issue's. The annotated tag `v0.1.0` (object `0ece4aa`) was then made
+on `68db557` and pushed; `git ls-remote` peels it to `68db557`. The rest of `main` is pushed after
+this record.
 
 ## 2. Gates outside this repository (README §7)
 
 | Gate | Status |
 |---|---|
 | **G1**: SGK `datastore-generic-followup` closed; the import commit fixed | ✅ 2026-10-07: closed at `6f7f291` (03 landed as `086c81a`); the import commit is `6f7f291` |
-| **G2**: SGK adopted `v0.1.0`, fingerprint reproduced | ⬜ *(2026-10-09: `v0.1.0` is ready to be tagged on 05's commit (`68db557`) once CI passes there at both ends (U23); no tag is made, and nothing is pushed. Log 05 §9.)* |
+| **G2**: SGK adopted `v0.1.0`, fingerprint reproduced | ⬜ *(2026-10-09: `v0.1.0` is made, annotated, on 05's commit `68db557` (tag object `0ece4aa`) and pushed, after CI passed there at both ends, [run 37922626418](https://github.com/ds283/DatastoreKit/actions/runs/37922626418): Python 3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39 and 3.13.16 / 2.55.1 / 2.0.46, SQLite 3.45.1 at both, each `Ran 444 tests … OK`. SGK may now adopt it.)* |
 | **G3**: CPBH adopted `v0.2.0` | ⬜ |
 | **G4**: SI adopted | ⬜ |
 
