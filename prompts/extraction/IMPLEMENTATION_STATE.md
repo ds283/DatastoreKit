@@ -65,7 +65,7 @@ U14 split 04 into 04a and 04b.
 | 03b | [Port the open and read-only tests](03b-port-the-open-and-read-only-tests.md) | 53 tests, 80 run (version row, read-only pool, one timestamp, shard records); the two client classes (U13); the neutral reader sequence (U11) | ✍️ yes, 2026-10-07 | ✅ 2026-10-08 | `0d5380c` | [log](logs/03b-port-the-open-and-read-only-tests.md) |
 | 04a | [Port the store and inventory tests](04a-port-the-store-and-inventory-tests.md) | 85 tests (inventory, store schema, reader, foreign keys, schema builder); `real_store_fixtures` and `schema_description` on neutral rows; the schema witness; the client's sharded family (U15) | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | `7ceed25` | [log](logs/04a-port-the-store-and-inventory-tests.md) |
 | 04b | [Port the declaration and registry tests](04b-port-the-declaration-and-registry-tests.md) | 89 of 90 tests (inventory declarations, declared facts, layer registry, drop refusal; U16's one not ported); the package guard with its vocabulary as data (U17); `test_parent_set_members` | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | `0c66505` | [log](logs/04b-port-the-declaration-and-registry-tests.md) |
-| 05 | [Supported versions and CI](05-supported-versions-and-ci.md) | `pyproject.toml` at `0.1.0` with U6's range; the 444 in fresh venvs at both ends and from an installed wheel; the workflow; the README's usage; `v0.1.0` tagged after green CI (U23) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | this commit | [log](logs/05-supported-versions-and-ci.md) |
+| 05 | [Supported versions and CI](05-supported-versions-and-ci.md) | `pyproject.toml` at `0.1.0` with U6's range; the 444 in fresh venvs at both ends and from an installed wheel; the workflow; the README's usage; `v0.1.0` tagged after green CI (U23) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | `68db557` | [log](logs/05-supported-versions-and-ci.md) |
 | 06 | Version-keyed lookups | `key_on_version`; tag `v0.2.0` | ⬜ | ⬜ | — | — |
 | 07 | Close-out and adoption handover | `docs/adoption/` checklists; verification document | ⬜ | ⬜ | — | — |
 
@@ -78,7 +78,8 @@ used for 01; [`orchestrator/prompt-02.md`](orchestrator/prompt-02.md) (`737ad6e`
 [`orchestrator/prompt-03b.md`](orchestrator/prompt-03b.md) (`72cf34a`), used for 03b;
 [`orchestrator/prompt-04a.md`](orchestrator/prompt-04a.md) (`ae94aaa`, with addenda at `66535b2` and
 `74c6343`), used for 04a; [`orchestrator/prompt-04b.md`](orchestrator/prompt-04b.md) (`f79f254`,
-with an addendum at `7ee9b6e`), used for 04b.
+with an addendum at `7ee9b6e`), used for 04b; [`orchestrator/prompt-05.md`](orchestrator/prompt-05.md)
+(`f69921b`), used for 05.
 
 **Orchestrator review of prompt 01 (2026-10-07).** Dispatched from `bd9f461` to one Opus
 subagent, with the note's §0 corrections and additions. Reviewed against its commit `8bc60a5`,
@@ -702,12 +703,84 @@ index is 6.
 - README's header, and its §2 status for 04b;
 - this paragraph and the notes line.
 
+**Orchestrator review of prompt 05 (2026-10-09).** Dispatched from `f69921b` to one Opus
+subagent, with the note's five corrections and five additions. Reviewed against its commit
+`68db557`, with nothing landed after it. **Every check of the note's §3 passed**, and acceptance
+1–6 are met. No stop condition fired. Nothing was pushed and no tag exists.
+
+*At dispatch.* The note's gate held at `f69921b`. The tree was clean, and the only worktree was
+this checkout. The suite gave `Ran 444 tests … OK`, and both checks exited 0 (31, 20 and 10;
+twenty modules, one test declared not ported). SGK's layer was unchanged from `6f7f291` to
+`b510bc9`, `origin/main` was `47d3ab1`, and no Ray process was up. While writing the note the
+orchestrator:
+- ran the 444 at both ends in scratch venvs, with 05's `pyproject.toml` applied to a copy of the
+  tree, and counted the 105 unclosed connections at both ends with a wrapper of its own;
+- found that the checkout's ignored `build/` and `datastorekit.egg-info/` each put the 41 test
+  files into a wheel built in place (correction 1), and that `shard_key_audit` has no `--help`
+  (correction 2);
+- probed (a)–(f), and the Linux and macOS resolves at both ends.
+
+*Mid-run.* At the user's direction the orchestrator deleted the checkout's `build/` and
+`datastorekit.egg-info/` (both ignored and untracked; `venv/`'s editable install keeps its own
+metadata). The agent was told, and its log records the deletion as the user's and quotes the
+ignored listing before and after.
+
+*The checks.*
+1. **Scope.** `68db557` touches exactly `pyproject.toml`, `.github/workflows/tests.yml`,
+   `README.md`, the log, the board, `docs/OPEN_ISSUES.md` and `prompts/INDEX.md`. The ignored
+   entries are `.idea/`, `venv/` and the five `__pycache__/` directories, with no `build/`,
+   `dist/` or `*.egg-info`.
+2. **E1.** `pyproject.toml` changes in the version, the two dependencies and the `exclude` line
+   only.
+3. **E2, `venv/`.** `pip show` says `0.1.0`; both checks exit 0 with 04b's counts; `black --check
+   datastorekit docs` leaves 64 files unchanged.
+4. **E2, both ends.** The orchestrator's own venvs, made by the workflow's install from
+   `git archive 68db557`: 3.12.15 / 2.43.0 / 2.0.39 and 3.13.16 / 2.55.1 / 2.0.46, SQLite 3.53.4
+   at both, each `Ran 444 tests … OK`.
+5. **E3, the release.** A wheel built from `git archive 68db557`: 96,304 bytes, 25 entries, none
+   under `tests/`; `RECORD` SHA-256 `a689847e…652330a` with `Generator: setuptools (84.0.0)`, the
+   log's and the note's. Installed at the high pins and run from outside the repository with
+   `PYTHONPATH` unset, the 20 modules import from `site-packages`, `datastorekit.tests` does not,
+   `sharded_store --help` exits 0, and `shard_key_audit` exits 2 with its usage line naming
+   `site-packages`.
+6. **E4, the workflow.** It is §2.5's with the patch Pythons: one job, `suite`, on
+   `ubuntu-24.04`, `fail-fast: false`, the matrix `low` / `high` read back from `yaml.safe_load`
+   equal to the table, `permissions: contents: read`, black on `low` only, and no secrets, cache,
+   artefacts, other actions or warning filters.
+7. **E5, the issue.** The orchestrator's wrapper on `68db557` gives 105 of 40,874 at both ends, as
+   58 / 41 / 6. The board's §3 entry and the index row hold it.
+8. **E6, the README.** Every name it mentions imports (`ShardedPool`, `SQLAFactoryBase` and its
+   seven hooks, `InventorySpec`, `Parent`, `ParentSet`, `datastorekit.contract`'s two table
+   names), every relative link and anchor resolves, and its versions equal `pyproject.toml` and
+   the matrix. It shows no code beyond the install pin and the development commands.
+9. **E7, the breakages.** (a) in a throwaway venv: `FAILED (failures=19)`, 21 lines of `No module
+   named 'datastorekit'`. (b) and (c) dry runs exit 1 naming `sqlalchemy>=2.0.39,<2.1`. The log's
+   three diffs apply both ways to an export, and (d) exits 1; (e) builds 90,695 bytes, 22 entries,
+   and `sharded_store --help` exits 1 with `No module named 'datastorekit.tools'`; (f) builds
+   283,617 bytes, 66 entries, 41 under `tests/`, and `import datastorekit.tests` succeeds.
+10. **E8, the records.** The log has every section of README §5.1 and §4.6's additions, the five
+    corrections and the additions. The index has 7 rows and says 7.
+11. **Nothing left behind.** No Ray process; `git tag -l` is empty; `origin` has `main` at
+    `47d3ab1` and no tag.
+
+*Issues.* `[05-a-refused-open-leaves-its-engines-undisposed]` is open (§3). Nothing else is
+opened. The index is 7.
+
+*Residue fixed in this follow-up:*
+- "this commit" → `68db557` in the log, the board and `prompts/INDEX.md`;
+- README's header, and its §2 status for 05;
+- this paragraph and the notes line.
+
+*Next (note §5, U23).* With the user's approval of each step: push `68db557` alone as `main`, so
+that CI runs on it; if both ends pass, tag `v0.1.0` there, annotated, and push the tag; then push
+the rest of `main` and record the run on the G2 line.
+
 ## 2. Gates outside this repository (README §7)
 
 | Gate | Status |
 |---|---|
 | **G1**: SGK `datastore-generic-followup` closed; the import commit fixed | ✅ 2026-10-07: closed at `6f7f291` (03 landed as `086c81a`); the import commit is `6f7f291` |
-| **G2**: SGK adopted `v0.1.0`, fingerprint reproduced | ⬜ *(2026-10-09: `v0.1.0` is ready to be tagged on 05's commit (this commit) once CI passes there at both ends (U23); no tag is made, and nothing is pushed. Log 05 §9.)* |
+| **G2**: SGK adopted `v0.1.0`, fingerprint reproduced | ⬜ *(2026-10-09: `v0.1.0` is ready to be tagged on 05's commit (`68db557`) once CI passes there at both ends (U23); no tag is made, and nothing is pushed. Log 05 §9.)* |
 | **G3**: CPBH adopted `v0.2.0` | ⬜ |
 | **G4**: SI adopted | ⬜ |
 

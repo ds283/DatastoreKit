@@ -1,6 +1,6 @@
 # Log 05 — supported versions and CI, ready for `v0.1.0`
 
-**Subject:** Declare the supported range and add CI for v0.1.0 · **Commit:** this commit ·
+**Subject:** Declare the supported range and add CI for v0.1.0 · **Commit:** `68db557` ·
 **Date:** 2026-10-09 · **Model:** Claude Opus 5.5 · **Result:** landed, untagged and unpushed
 (U23).
 
@@ -17,7 +17,7 @@ venv and run from outside the repository, it imports every layer module and runs
 `[05-a-refused-open-leaves-its-engines-undisposed]` is opened with §2.6's measurement, the same at
 both ends. No file under `datastorekit/` changed. Both checks give 04b's results.
 
-**No tag was made and nothing was pushed (U23).** `v0.1.0` is made on this commit once CI has
+**No tag was made and nothing was pushed (U23).** `v0.1.0` is made on `68db557` once CI has
 passed at both ends here (README §6.2 U23; the board's §2).
 
 Prompt: [`../05-supported-versions-and-ci.md`](../05-supported-versions-and-ci.md), with the
@@ -106,7 +106,7 @@ Nothing under `datastorekit/` changed, and nothing under `docs/` but `OPEN_ISSUE
    measurement: 105 never closed, as the prompt and the orchestrator found. Recorded as found.
    **STRUCTURALLY REQUIRED** (an expectation corrected).
 5. **Correction 5: `origin/main` (`47d3ab1`) is 28 commits behind `f69921b`**, the `HEAD` at
-   dispatch (`git rev-list --count origin/main..HEAD`), and so 29 behind this commit. This changes
+   dispatch (`git rev-list --count origin/main..HEAD`), and so 29 behind `68db557`. This changes
    nothing done here. **STRUCTURALLY REQUIRED** (an expectation corrected).
 6. **The matrix pins the patch releases** `"3.12.15"` and `"3.13.16"`, the interpreters tested
    here. `actions/python-versions`' `versions-manifest.json` (read with `gh api`, 2026-10-09)
@@ -522,7 +522,7 @@ M  pyproject.toml
 ```
 
 No `build/`, `dist/` or `*.egg-info` (no editable install was made after the deletion). The
-records of this commit add no ignored entry. No Ray process was up at any point
+records of `68db557` add no ignored entry. No Ray process was up at any point
 (`pgrep -lf 'gcs_server|raylet|ray::'` empty, before and after). Every store the suite made was in
 a `tempfile` directory.
 
@@ -541,7 +541,7 @@ a `tempfile` directory.
   checkout was never broken; `git status` was the staged three files after each.
 - The diffs below are the files applied, byte for byte, trailing context lines included. They
   were extracted from this log after it was written and checked again both ways, in a fresh
-  export (§6.3). Their `index` line names the staged blob `5bca032`, which is this commit's
+  export (§6.3). Their `index` line names the staged blob `5bca032`, which is `68db557`'s
   `pyproject.toml`.
 
 ### 6.2 The breakages
@@ -690,14 +690,14 @@ The index goes from **6 to 7 open**: 3 on this board, 4 inherited.
 
 ## 9. State handed to the next prompt
 
-- `HEAD` is this commit. The tree is clean. `venv/` has `datastorekit 0.1.0` installed editable
+- `HEAD` is `68db557`. The tree is clean. `venv/` has `datastorekit 0.1.0` installed editable
   (with its own pip), and is otherwise unchanged. The checkout has no `build/` and no
   `datastorekit.egg-info/` (deleted at the user's direction mid-run, §2 item 1); a later editable
   install may recreate the second.
-- **Not pushed, not tagged (U23).** `origin/main` is `47d3ab1`, 29 commits behind this commit.
+- **Not pushed, not tagged (U23).** `origin/main` is `47d3ab1`, 29 commits behind `68db557`.
   Next, after the review: the user pushes `main` (or approves the orchestrator's doing so); the
-  workflow runs at both ends on this commit; **only if both pass** is `v0.1.0` made here,
-  annotated, and pushed. A red end means a fix prompt first, and no tag on this commit.
+  workflow runs at both ends on `68db557`; **only if both pass** is `v0.1.0` made here,
+  annotated, and pushed. A red end means a fix prompt first, and no tag on `68db557`.
 - **What the CI log must be read for:** each end's step 4 (the Linux SQLite version, hazard 2) and
   each end's `Ran 444 tests … OK`.
 - **The suite is 444** at both ends and in `venv/`. 06 records 444 as its "before".
