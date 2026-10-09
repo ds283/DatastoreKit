@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-09 · **Status: IN PROGRESS — 9 of 10 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a), 9 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28); 07a landed (this commit), awaiting review.**
+**Last updated:** 2026-10-09 · **Status: IN PROGRESS — 9 of 10 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a), 9 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28); 07a landed (`dd45243`) and reviewed; 07b is not written.**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 U8–U13 the same day, U14–U22 on 2026-10-08, and U6, U23–U32 on 2026-10-09 (README §6.2); U10, U14 and U30 split 03, 04
 and 07, each into an a and a b prompt.
@@ -59,7 +59,7 @@ and 07, each into an a and a b prompt.
 | **U29** the release SGK adopts | `v0.2.0` directly; G2 reads `v0.2.0` | **taken** 2026-10-09, by the user |
 | **U30** splitting 07 | 07a the adoption checklists; 07b verification and close-out | **taken** 2026-10-09, at 07a's writing |
 | **U31** SI's stores | rebuilt, not migrated, as D4; SI tags its last commit on the old layer | **taken** 2026-10-09, at 07a's writing |
-| **U32** clients that register factory instances | client-side: define the three abstract hooks, or register the class | **taken** 2026-10-09, at 07a's writing |
+| **U32** clients that register factory instances | client-side: define the three abstract hooks (CPBH 20 classes, 24 entries; SI 16, 18), or register the class once its hooks need no instance | **taken** 2026-10-09, at 07a's writing |
 
 ---
 
@@ -75,7 +75,7 @@ and 07, each into an a and a b prompt.
 | 04b | [Port the declaration and registry tests](04b-port-the-declaration-and-registry-tests.md) | 89 of 90 tests (inventory declarations, declared facts, layer registry, drop refusal; U16's one not ported); the package guard with its vocabulary as data (U17); `test_parent_set_members` | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | `0c66505` | [log](logs/04b-port-the-declaration-and-registry-tests.md) |
 | 05 | [Supported versions and CI](05-supported-versions-and-ci.md) | `pyproject.toml` at `0.1.0` with U6's range; the 444 in fresh venvs at both ends and from an installed wheel; the workflow; the README's usage; `v0.1.0` tagged after green CI (U23) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | `68db557` | [log](logs/05-supported-versions-and-ci.md) |
 | 06 | [Version-keyed lookups](06-version-keyed-lookups.md) | `key_on_version` on `Tessera` (U25); the lookup serial and `set_lookup_version` (U26); 14 tests carrying over CPBH's; the witness `schema_at_extraction-06.json`; `compare_with_source.py` retired (U27); `v0.2.0` tagged after green CI (U28) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | `240028e` | [log](logs/06-version-keyed-lookups.md) |
-| 07a | [The adoption checklists](07a-the-adoption-checklists.md) | `docs/adoption/`: a README and checklists for SGK, CPBH and SI against `v0.2.0` (U29), measured read-only; `measure_client_imports.py`; instances and abstract hooks (U32); SI's stores rebuilt (U31) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | this commit | [log](logs/07a-the-adoption-checklists.md) |
+| 07a | [The adoption checklists](07a-the-adoption-checklists.md) | `docs/adoption/`: a README and checklists for SGK, CPBH and SI against `v0.2.0` (U29), measured read-only; `measure_client_imports.py`; instances and abstract hooks (U32); SI's stores rebuilt (U31) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | `dd45243` | [log](logs/07a-the-adoption-checklists.md) |
 | 07b | Verification and close-out | the campaign's verification document; the campaign closed (U30) | ⬜ | ⬜ | — | — |
 
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
@@ -89,7 +89,7 @@ used for 01; [`orchestrator/prompt-02.md`](orchestrator/prompt-02.md) (`737ad6e`
 `74c6343`), used for 04a; [`orchestrator/prompt-04b.md`](orchestrator/prompt-04b.md) (`f79f254`,
 with an addendum at `7ee9b6e`), used for 04b; [`orchestrator/prompt-05.md`](orchestrator/prompt-05.md)
 (`f69921b`), used for 05; [`orchestrator/prompt-06.md`](orchestrator/prompt-06.md) (`0e524b4`),
-used for 06.
+used for 06; [`orchestrator/prompt-07a.md`](orchestrator/prompt-07a.md) (`a816632`), used for 07a.
 
 **Orchestrator review of prompt 01 (2026-10-07).** Dispatched from `bd9f461` to one Opus
 subagent, with the note's §0 corrections and additions. Reviewed against its commit `8bc60a5`,
@@ -900,6 +900,83 @@ unchanged on `low`. CI installed exactly the pins and `datastorekit-0.2.0`. The 
 184 `ResourceWarning` lines, `[05-a-refused-open-leaves-its-engines-undisposed]`'s. The annotated
 tag `v0.2.0` (object `9eaf542`) was then made on `240028e` and pushed; `git ls-remote` peels it to
 `240028e`. The rest of `main` is pushed after this record.
+
+**Orchestrator review of prompt 07a (2026-10-09).** Dispatched from `a816632` to one Opus
+subagent, with the note's eight corrections and three additions. The run was cut off once by an
+API usage limit, with nothing committed and the clients unchanged; the same agent was resumed with
+its context, re-read what it had written, and finished. Reviewed against its commit `dd45243`, with
+nothing landed after it. **Every check of the note's §3 passed**, and acceptance 1–4 are met. No
+stop condition fired. Nothing was pushed, and the tags are `v0.1.0` and `v0.2.0` only.
+
+*At dispatch.* The note's gate held at `a816632`. The tree was clean, and the only worktree was
+this checkout. The suite gave `Ran 458 tests … OK` in `venv/`, the port check exited 0, and
+`black --check docs` left 3 files unchanged. The clients were at SGK `b510bc9` (clean), CPBH
+`52142d7` (23 untracked entries) and SI `7bb3efd` (clean). `origin/main` was `102f225`, and no Ray
+process was up. While writing the note, the orchestrator measured each client's layer imports with
+an `ast` probe of its own (SGK 233, CPBH 41, SI 48; CPBH 40 at `9b3db51`), and had three read-only
+fact-checks, one per client, test the prompt's citations, which gave the note's corrections.
+
+*The checks.*
+1. **Scope.** `dd45243` touches exactly the prompt's §7 list, 8 files: the four `docs/adoption/`
+   files, `measure_client_imports.py`, the log, the board and `prompts/INDEX.md`. Nothing under
+   `datastorekit/`, and `docs/OPEN_ISSUES.md` is untouched. The ignored entries are dispatch's.
+   Each client's `HEAD` and `git status --short` are as at dispatch.
+2. **The suite.** `Ran 458 tests … OK` in `venv/`; the port check exits 0 with 04b's counts;
+   `black --check datastorekit docs` leaves 66 files unchanged.
+3. **E2, the script.** It imports only the standard library and reaches a client only through
+   `git rev-parse`, `show` and `ls-tree`. Run from `git archive dd45243`, twice per client, its
+   Markdown and JSON are byte-identical. Totals 233, 41 and 48, and 40 at CPBH `9b3db51`. An
+   unknown commit exits 2. **Its 322 import hits equal the orchestrator's probe file by file and
+   line by line, nested flags included.**
+4. **E3, the citations.** The review's own check extracted 121 citations from SGK's checklist,
+   178 from CPBH's, 201 from SI's and 11 from the README (appendices excluded). All resolve at their
+   commits: SI's factory table cites short names under `Datastore/SQL/ObjectFactories/`, CPBH's two
+   run scripts are untracked and were read as text, and the README's `requirements.txt` lines are
+   per client. Twelve per checklist were read by eye against the cited lines, and hold.
+5. **E3, the checklists.** Each has §2.6's head and the ten items, in order and named alike, and
+   its appendix is the script's Markdown output at its commit, byte for byte, with its command.
+   Advice is marked **Advice:**, and choices are named as the client's. Corrections 1 and 5–7 are
+   reflected: CPBH 20 classes over 24 entries and SI 16 over 18, with both routes and what each
+   needs; SGK's tracked `.gitignore`, 18 staying modules and `HELPER_MODULE`; CPBH's two
+   `VERSION_LABEL`s; SI's five `.timestamp` readers, its read-write plot opens and its closeout at
+   `:69-72`.
+6. **E4, the README.** The `v0.2.0` pin; the version table, SI's interpreter given as 3.13.16 with
+   its `pyvenv.cfg`'s 3.13.13 explained; the module map against `PROVENANCE.md`, and each client's
+   `Datastore/SQL/__init__.py` rebinding the actor as the package's does; U32 with its second
+   route's precondition; the drop refusals at `ShardedPool.py:716-728` and `:730-749`. Every
+   relative link in the four files resolves.
+7. **E5, the breakages.** The three diffs, extracted from the log, apply both ways to fresh copies
+   of the committed script. (a) gives 192, 41 and 47; (b) 212, 28 and 36; (c) gives 41 against 40
+   at CPBH `9b3db51`, and equal counts on SGK and SI at `HEAD~1`, as correction 2 says.
+8. **E6, the records.** The log has every section of README §5.1 and §5.4's additions: both
+   clients' commit and status listings, the cross-check tables, the citations, (a)–(c), the
+   differences from the planner's numbers and from the note's, and the untracked files read. The
+   board's row, header and G2–G4 rows point at their checklists. The index has 8 rows and says 8.
+9. **Nothing left behind.** No Ray process; no client changed; `origin` unchanged.
+
+*Findings beyond the prompt*, recorded and not acted on:
+- Two of the note's numbers were wrong, and the agent's are right. Of CPBH's 20 U32 classes,
+  **three** define `read_table` (`redshift` and the two quantity factories), not two. Under (b),
+  SGK falls by 21, not 22, because `from Datastore import contract` still names the layer module
+  `Datastore.contract` (a difference of definition).
+- `docs/client-contract.md` §8 cites the read-only pool's `set_lookup_version` calls as
+  `SQL/ShardedPool.py:567-574`; at `v0.2.0` they are `:568-575`. One line wide; left for 07b's
+  author, whose verification document cites the contract (log §7 item 2).
+- CPBH's and SI's own `SQLAFactoryBase` is not an ABC (`base.py:16-30`): its hooks raise
+  `NotImplementedError`. This is why their 20 and 16 classes instantiate today (log §2).
+- SI's `plot_InstantonSolutions.py:697-702` passes one payload list to two vectorized gets, a
+  concrete case of `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]` (log §7
+  item 4).
+
+*Issues.* None opened, closed or narrowed. The index is 8.
+
+*Residue fixed in this follow-up:*
+- "this commit" → `dd45243` in the log, the board and `prompts/INDEX.md`;
+- README's header, and its §2 status for 07a;
+- **U32's count**, in README §6.2 and the board's U32 row, with the user's approval: CPBH 20
+  classes over 24 entries, SI 16 over 18 (README §6.2 had "16" for both), and the precondition of
+  registering the class;
+- this paragraph and the notes line.
 
 ## 2. Gates outside this repository (README §7)
 

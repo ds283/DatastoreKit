@@ -1,7 +1,7 @@
 # Log 07a — the adoption checklists
 
-**Subject:** Write the adoption checklists and the client import measure · **Commit:** this
-commit · **Date:** 2026-10-09 · **Model:** Claude Opus 5.5 · **Result:** landed, no tag, nothing
+**Subject:** Write the adoption checklists and the client import measure · **Commit:**
+`dd45243` · **Date:** 2026-10-09 · **Model:** Claude Opus 5.5 · **Result:** landed, no tag, nothing
 pushed.
 
 `docs/adoption/` now holds a README of what the three clients share and one checklist per client,
@@ -429,7 +429,7 @@ the recorded diff removes the root module only, so `from Datastore import contra
 
 ## 9. State handed to the next prompt
 
-- `HEAD` is this commit. Nothing pushed; no tag (`v0.1.0`, `v0.2.0` only). The suite is 458.
+- `HEAD` is `dd45243`. Nothing pushed; no tag (`v0.1.0`, `v0.2.0` only). The suite is 458.
 - `docs/adoption/` and `docs/extraction/measure_client_imports.py` are what 07b's verification
   document cites. The script re-measures any client commit.
 - The clients are unchanged: SGK `b510bc9`, CPBH `52142d7` (23 untracked), SI `7bb3efd`.

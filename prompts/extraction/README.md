@@ -18,7 +18,7 @@ and was reviewed. The user took U6, U23 and U24 on 2026-10-09; **prompt 05 is wr
 tagged on it (U23). The user took U25–U28 the same day; **prompt 06 is written** (2026-10-09),
 and landed as `240028e` and was reviewed; CI passed there at both ends, and `v0.2.0` is tagged
 on it (U28). The user took U29–U32 the same day, splitting 07 into 07a and 07b; **prompt 07a is
-written** (2026-10-09).
+written** (2026-10-09), and landed as `dd45243` and was reviewed.
 Each later prompt is written after the one before it has landed and been
 reviewed, against the tree it left.
 
@@ -186,7 +186,7 @@ measures the survey again before doing so.
 | 04b | [`04b-port-the-declaration-and-registry-tests.md`](04b-port-the-declaration-and-registry-tests.md) | The other half: `test_inventory_declarations` (26, of which one stays in SGK, U16), `test_declared_facts` (25), `test_layer_registry` (20) and `test_drop_refuses_dangling_references` (11), on 04a's fixture. SGK's `test_layer_is_generic` (8) becomes the package's guard. Its forbidden vocabulary is drawn from all three clients' registries, measured read-only and written into the test as data; the test never imports a client, and the hits rule 8 freezes in the layer are pinned (U17). *(At writing: the vocabulary is held in `tests/data/client_vocabulary.json`, written by `docs/extraction/measure_client_vocabulary.py`, and a new `test_parent_set_members` closes `[04a-no-test-pins-a-second-parent-set-member]`.)* **Acceptance:** the port check passes over 20 modules with one test declared not ported; the guard pins exactly one hit; the suite is 444. | **landed** 2026-10-08 (`0c66505`), reviewed |
 | 05 | [`05-supported-versions-and-ci.md`](05-supported-versions-and-ci.md) | Dependency ranges in `pyproject.toml`. The whole suite runs at both ends of §0.2's version table (Python 3.12 / Ray 2.43 / SQLAlchemy 2.0.39, and Python 3.13 / Ray 2.55 / SQLAlchemy 2.0.46). A GitHub Actions workflow runs the suite on both. `README.md` gains usage. **Tag `v0.1.0`**, the release SGK adopts (G2). *(At writing: the range is U6's; both ends run locally in fresh scratch venvs (U24) and from an installed wheel, which no longer carries the test package; 05 makes no tag and pushes nothing, and `v0.1.0` is made on 05's commit once CI passes there (U23); 05 opens `[05-a-refused-open-leaves-its-engines-undisposed]`.)* | **landed** 2026-10-09 (`68db557`), reviewed; CI green at both ends; **tagged `v0.1.0`** |
 | 06 | [`06-version-keyed-lookups.md`](06-version-keyed-lookups.md) | CPBH's version-keyed lookups (`Datastore.py:329-338`, `:500-555`; `config/version.py:55-71` at CPBH `9b3db51`), as the optional `register()` key `key_on_version`. A lookup of a class that declares it receives the store's version serial under `datastorekit.contract.VERSION_SERIAL_KEY`. A caller that supplies that key itself is refused. `key_on_version` without `version` is refused at schema build. `require_version_serial` is exported for factories. Tests on the neutral client carry over the semantics of CPBH's `test_version_keyed_lookups`. Nothing the layer writes changes. **Tag `v0.2.0`.** *(At writing: the neutral `Tessera` is the keyed class (U25); an actor holds a lookup serial apart from its insert serial, and a read-only pool gives it with `set_lookup_version` (U26); `compare_with_source.py` is retired at `v0.1.0` (U27); 06 makes no tag and pushes nothing, and `v0.2.0` is made on its commit once CI passes there (U28); the suite goes from 444 to 458, the schema witness gains one key, and 06 opens `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]`.)* | **landed** 2026-10-09 (`240028e`), reviewed; CI green at both ends; **tagged `v0.2.0`** |
-| 07a | [`07a-the-adoption-checklists.md`](07a-the-adoption-checklists.md) | `docs/adoption/` holds a README and one checklist per client (SGK, CPBH, SI), each measured read-only at a named client commit and against `v0.2.0` (U29), each under the same ten items: <br>• the client and its versions; <br>• what it deletes; <br>• which imports it rewrites; <br>• what leaves the layer, and where it may go; <br>• what its factories must change (U32: a registered instance needs every abstract hook); <br>• its call sites and pool construction (`drop_actions`, `inventory_config`, bare shard keys); <br>• its tests and fixtures; <br>• which of its stores the package refuses, and why (CPBH: D4; SI: U31); <br>• its acceptance (G2–G4); <br>• what goes stale in it. <br>SGK's names every import of the layer from outside `Datastore/`, `RunRegistry/`'s and G2's `fingerprint_store` among them. A script, `docs/extraction/measure_client_imports.py`, counts every client's imports through `git` and `ast`, and each checklist carries its output. *(At writing: three read-only surveys measured SGK at `b510bc9`, CPBH at `52142d7` and SI at `7bb3efd`; 07a measures again.)* | **written** 2026-10-09 |
+| 07a | [`07a-the-adoption-checklists.md`](07a-the-adoption-checklists.md) | `docs/adoption/` holds a README and one checklist per client (SGK, CPBH, SI), each measured read-only at a named client commit and against `v0.2.0` (U29), each under the same ten items: <br>• the client and its versions; <br>• what it deletes; <br>• which imports it rewrites; <br>• what leaves the layer, and where it may go; <br>• what its factories must change (U32: a registered instance needs every abstract hook); <br>• its call sites and pool construction (`drop_actions`, `inventory_config`, bare shard keys); <br>• its tests and fixtures; <br>• which of its stores the package refuses, and why (CPBH: D4; SI: U31); <br>• its acceptance (G2–G4); <br>• what goes stale in it. <br>SGK's names every import of the layer from outside `Datastore/`, `RunRegistry/`'s and G2's `fingerprint_store` among them. A script, `docs/extraction/measure_client_imports.py`, counts every client's imports through `git` and `ast`, and each checklist carries its output. *(At writing: three read-only surveys measured SGK at `b510bc9`, CPBH at `52142d7` and SI at `7bb3efd`; 07a measures again.)* | **landed** 2026-10-09 (`dd45243`), reviewed |
 | 07b | `07b-verification-and-close-out.md` | A verification document for the campaign, from the package at `v0.2.0` and the records of 01–07a, and the campaign closed (U30). | not written |
 
 **Order.** 01 → 02 → 03a → 03b → 04a → 04b → 05 → 06 → 07a → 07b. (03b and 04 could have run in either
@@ -555,12 +555,17 @@ taken on 2026-10-09, when 05 was written.
   checkout. **Rejected:** a migration tool here, a unit of work for stores that SI is re-running
   anyway; and leaving the checklist silent on it.
 - **U32: clients that register factory instances. (taken 2026-10-09, as recommended)** CPBH and SI
-  register instances, and `SQLAFactoryBase` is an ABC, so each of their 16 factory classes that
-  defines only `register` and `build` raises `TypeError` when instantiated. **Recommended:** a
-  client-side change, which the checklists list class by class: define `store`, `validate` and
-  `validate_on_startup`, or register the class. The package is unchanged. **Rejected:** making
-  those hooks defaulted in a release before CPBH adopts, which changes the contract that SGK's
-  factories and the neutral client satisfy, for a fix a client makes in a few lines.
+  register instances, and `SQLAFactoryBase` is an ABC, so each of their factory classes that defines
+  only `register` and `build` raises `TypeError` when instantiated: 20 classes over 24 registry
+  entries in CPBH, 16 over 18 in SI. *(Corrected at 07a's review from "16" for both, which mixed
+  SI's class count with CPBH's entry count; measured by 07a's orchestrator and agent.)*
+  **Recommended:** a client-side change, which the checklists list class by class: define `store`,
+  `validate` and `validate_on_startup`, or register the class. *(07a found that every hook of every
+  CPBH and SI factory takes `self`, and the quantity factories hold `ObjectType` on the instance, so
+  registering the class works only once its hooks can be called without an instance; the checklists
+  state both routes.)* The package is unchanged. **Rejected:** making those hooks defaulted in a
+  release before CPBH adopts, which changes the contract that SGK's factories and the neutral client
+  satisfy, for a fix a client makes in a few lines.
 
 ## 7. Gates outside this repository
 
