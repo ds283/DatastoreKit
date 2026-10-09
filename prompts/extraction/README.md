@@ -18,7 +18,10 @@ and was reviewed. The user took U6, U23 and U24 on 2026-10-09; **prompt 05 is wr
 tagged on it (U23). The user took U25–U28 the same day; **prompt 06 is written** (2026-10-09),
 and landed as `240028e` and was reviewed; CI passed there at both ends, and `v0.2.0` is tagged
 on it (U28). The user took U29–U32 the same day, splitting 07 into 07a and 07b; **prompt 07a is
-written** (2026-10-09), and landed as `dd45243` and was reviewed.
+written** (2026-10-09), and landed as `dd45243` and was reviewed. The user took U33–U37 the
+same day: the four issues the board holds open are fixed before the campaign closes, in 08a, 08b
+and 09, and released by 10 as **`v0.2.1`**, which the clients adopt in place of `v0.2.0`; 07b is
+withdrawn, and its verification and close-out are 11's. **Prompt 08a is written** (2026-10-09).
 Each later prompt is written after the one before it has landed and been
 reviewed, against the tree it left.
 
@@ -156,7 +159,9 @@ measures the survey again before doing so.
 - the package's guard test; the supported-version statement and CI;
 - version-keyed lookups (`key_on_version`), ported from CPBH as an optional `register()` key;
 - `docs/client-contract.md`, and the per-client adoption checklists;
-- the releases `v0.1.0` (05) and `v0.2.0` (06).
+- the releases `v0.1.0` (05) and `v0.2.0` (06);
+- *(U33, 2026-10-09)* the fixes of the four issues the board's §3 holds open (08a, 08b, 09), the
+  release `v0.2.1` (10), and the adoption checklists' addenda for it (U37).
 
 **Out of scope:**
 - **any edit to SGK, CPBH or SI.** Each adopts in its own campaign (§7);
@@ -165,7 +170,8 @@ measures the survey again before doing so.
   for the adoption campaigns to rewrite;
 - **any change to what the layer writes or how it behaves** before 06 (§5 rule 8). This includes
   fixing an inherited issue (`docs/OPEN_ISSUES.md` §1.2) or anything a prompt finds: it is
-  recorded, not fixed;
+  recorded, not fixed *(U33 takes the four issues of the board's §3 into scope for 08a–09; the
+  issues of `docs/OPEN_ISSUES.md` §1.2 stay out)*;
 - **renaming the layer's modules to PEP 8 names** (U5);
 - `RunRegistry/`, sidecars, fingerprints and `tools/inventory_report.py`, which are SGK's.
   **The fingerprint function** (`RunRegistry/stores.py`) stays in SGK, and so do its tests. The
@@ -187,14 +193,21 @@ measures the survey again before doing so.
 | 05 | [`05-supported-versions-and-ci.md`](05-supported-versions-and-ci.md) | Dependency ranges in `pyproject.toml`. The whole suite runs at both ends of §0.2's version table (Python 3.12 / Ray 2.43 / SQLAlchemy 2.0.39, and Python 3.13 / Ray 2.55 / SQLAlchemy 2.0.46). A GitHub Actions workflow runs the suite on both. `README.md` gains usage. **Tag `v0.1.0`**, the release SGK adopts (G2). *(At writing: the range is U6's; both ends run locally in fresh scratch venvs (U24) and from an installed wheel, which no longer carries the test package; 05 makes no tag and pushes nothing, and `v0.1.0` is made on 05's commit once CI passes there (U23); 05 opens `[05-a-refused-open-leaves-its-engines-undisposed]`.)* | **landed** 2026-10-09 (`68db557`), reviewed; CI green at both ends; **tagged `v0.1.0`** |
 | 06 | [`06-version-keyed-lookups.md`](06-version-keyed-lookups.md) | CPBH's version-keyed lookups (`Datastore.py:329-338`, `:500-555`; `config/version.py:55-71` at CPBH `9b3db51`), as the optional `register()` key `key_on_version`. A lookup of a class that declares it receives the store's version serial under `datastorekit.contract.VERSION_SERIAL_KEY`. A caller that supplies that key itself is refused. `key_on_version` without `version` is refused at schema build. `require_version_serial` is exported for factories. Tests on the neutral client carry over the semantics of CPBH's `test_version_keyed_lookups`. Nothing the layer writes changes. **Tag `v0.2.0`.** *(At writing: the neutral `Tessera` is the keyed class (U25); an actor holds a lookup serial apart from its insert serial, and a read-only pool gives it with `set_lookup_version` (U26); `compare_with_source.py` is retired at `v0.1.0` (U27); 06 makes no tag and pushes nothing, and `v0.2.0` is made on its commit once CI passes there (U28); the suite goes from 444 to 458, the schema witness gains one key, and 06 opens `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]`.)* | **landed** 2026-10-09 (`240028e`), reviewed; CI green at both ends; **tagged `v0.2.0`** |
 | 07a | [`07a-the-adoption-checklists.md`](07a-the-adoption-checklists.md) | `docs/adoption/` holds a README and one checklist per client (SGK, CPBH, SI), each measured read-only at a named client commit and against `v0.2.0` (U29), each under the same ten items: <br>• the client and its versions; <br>• what it deletes; <br>• which imports it rewrites; <br>• what leaves the layer, and where it may go; <br>• what its factories must change (U32: a registered instance needs every abstract hook); <br>• its call sites and pool construction (`drop_actions`, `inventory_config`, bare shard keys); <br>• its tests and fixtures; <br>• which of its stores the package refuses, and why (CPBH: D4; SI: U31); <br>• its acceptance (G2–G4); <br>• what goes stale in it. <br>SGK's names every import of the layer from outside `Datastore/`, `RunRegistry/`'s and G2's `fingerprint_store` among them. A script, `docs/extraction/measure_client_imports.py`, counts every client's imports through `git` and `ast`, and each checklist carries its output. *(At writing: three read-only surveys measured SGK at `b510bc9`, CPBH at `52142d7` and SI at `7bb3efd`; 07a measures again.)* | **landed** 2026-10-09 (`dd45243`), reviewed |
-| 07b | `07b-verification-and-close-out.md` | A verification document for the campaign, from the package at `v0.2.0` and the records of 01–07a, and the campaign closed (U30). | not written |
+| ~~07b~~ | ~~`07b-verification-and-close-out.md`~~ | *Withdrawn 2026-10-09, unwritten (U33, U35): its work is 11's, after the fixes and `v0.2.1`.* | withdrawn |
+| 08a | [`08a-two-small-fixes.md`](08a-two-small-fixes.md) | `[02-an-unsupplied-sharded-table-raises-keyerror]`: a reopen whose primary records a sharded table the constructor lacks is refused with the intended `RuntimeError`, not a bare `KeyError`. `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]`: `object_get_vectorized` copies the caller's payloads. A test for each that the unfixed code fails. Nothing the layer writes changes. | **written** 2026-10-09 |
+| 08b | `08b-dispose-engines-on-a-refused-open.md` | `[05-a-refused-open-leaves-its-engines-undisposed]`: a refused or abandoned open disposes the engines the pool and its actors made, with a test that counts unclosed connections across a refused open (05's measurement: 105 over the 444, at three sites). | not written |
+| 09 | `09-rewrite-the-package-prose.md` | `[01-package-prose-names-sgks-layout]`: the package's comments and docstrings that name SGK's layout, campaigns or tables are rewritten for this repository (155 lines in 40 files at 04b), and the guard's `KNOWN_HITS` is emptied (U17). No code changes. | not written |
+| 10 | `10-release-v0.2.1.md` | `pyproject.toml` at `0.2.1`, `PROVENANCE.md` and `README.md`; both ends locally and in CI; **tag `v0.2.1`** on its commit after green CI (as U23, U28). Dated addenda to `docs/adoption/` for the new pin and what changed since `v0.2.0` (U37). | not written |
+| 11 | `11-verification-and-close-out.md` | A verification document for the campaign, from the package at `v0.2.1` and the records of 01–10; the contract §8 citation corrected (U34); the campaign closed (U30, U33). | not written |
 
-**Order.** 01 → 02 → 03a → 03b → 04a → 04b → 05 → 06 → 07a → 07b. (03b and 04 could have run in either
+**Order.** 01 → 02 → 03a → 03b → 04a → 04b → 05 → 06 → 07a → 08a → 08b → 09 → 10 → 11. (03b and 04 could have run in either
 order, but never concurrently, since both extend `compare_ported_tests.py`'s table and
 `tests/client/build.py`; 03b ran first, and U14 split 04.) 04b needs 04a's fixture and client
 classes. 06 needs only 02. It is placed after 05 so that `v0.1.0`
-contains exactly SGK's behaviour. 07b verifies and closes after 07a's checklists have landed
-and been reviewed (U30).
+contains exactly SGK's behaviour. 07b was to verify and close after 07a's checklists (U30); U33
+put the fixes first. 08a and 08b both change `ShardedPool.py`, so they run in order, never
+concurrently. 09 rewrites prose in files 08a and 08b touch, so it follows them. 10 releases what
+08a–09 leave, and 11 verifies and closes once `v0.2.1` is tagged.
 
 ## 3. Datastores
 
@@ -249,7 +262,12 @@ person under SGK's rules.
   `Tessera` keyed (U25); the witness `schema_at_extraction-06.json`; `pyproject.toml` at `0.2.0`.
   After its CI passes, the tag `v0.2.0` on 06's commit (U28).
 - **After 07a:** `docs/adoption/` (a README and three checklists) and
-  `docs/extraction/measure_client_imports.py`, which 07b's verification document cites.
+  `docs/extraction/measure_client_imports.py`, which 11's verification document cites.
+- **After 08a–09** (planned, U35): the layer's three fixes with their tests; the package's prose
+  rewritten, and the guard's `KNOWN_HITS` empty. Each prompt names its own interfaces when it is
+  written.
+- **After 10** (planned): `pyproject.toml` at `0.2.1`; the adoption addenda (U37). After its CI
+  passes, the tag `v0.2.1` on 10's commit.
 
 ## 5. The rules this campaign runs under
 
@@ -276,8 +294,8 @@ The project-wide ones in `CLAUDE.md`, plus:
 9. **Deliberate breakage.** Each prompt names mutations its tests must catch. The log records each
    as a diff, exactly as applied, so the orchestrator can replay it with `git apply`. Mutations are
    never committed.
-10. **No tag except where a prompt says so** (05: `v0.1.0`; 06: `v0.2.0`), and none is moved or
-    deleted.
+10. **No tag except where a prompt says so** (05: `v0.1.0`; 06: `v0.2.0`; 10: `v0.2.1`), and none
+    is moved or deleted.
 
 ### 5.1 The log template
 
@@ -542,6 +560,7 @@ taken on 2026-10-09, when 05 was written.
   directly, not `v0.1.0`. The two differ only behind `key_on_version`, which no SGK factory
   declares, and in nothing the layer writes, so G2's rehearsal fingerprint is unaffected. G2 now
   reads `v0.2.0`. **Rejected:** `v0.1.0` first, which would make SGK move its pin twice.
+  *(Amended 2026-10-09 by U37: every client, SGK included, adopts `v0.2.1`.)*
 - **U30: splitting 07. (taken 2026-10-09, as recommended)** The checklists need three client
   repositories measured, read-only and exactly; the verification document and the close-out need
   only this repository. **Recommended:** 07a writes `docs/adoption/`; 07b, after 07a is reviewed,
@@ -566,17 +585,50 @@ taken on 2026-10-09, when 05 was written.
   state both routes.)* The package is unchanged. **Rejected:** making those hooks defaulted in a
   release before CPBH adopts, which changes the contract that SGK's factories and the neutral client
   satisfy, for a fix a client makes in a few lines.
+- **U33: the open issues at close. (taken 2026-10-09, by the user)** When 07b was to be written,
+  the board held four issues open on this repository:
+  `[01-package-prose-names-sgks-layout]`, `[02-an-unsupplied-sharded-table-raises-keyerror]`,
+  `[05-a-refused-open-leaves-its-engines-undisposed]` and
+  `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]`. **Recommended at the time:**
+  close with them open and unassigned, as SGK's closed campaigns left theirs. **Taken instead:**
+  fix all four before the campaign closes, and cut a release, which the clients adopt in place of
+  `v0.2.0`. 07b is withdrawn unwritten. The four inherited issues of `docs/OPEN_ISSUES.md` §1.2 stay
+  out of scope. **Also offered:** seeding a follow-up campaign for the four.
+- **U34: the contract's §8 citation. (taken 2026-10-09, as recommended)** 07a's review found that
+  `docs/client-contract.md` §8 cites the read-only pool's `set_lookup_version` calls as
+  `SQL/ShardedPool.py:567-574`; at `v0.2.0` they are `:568-575`. **Recommended:** the close-out
+  prompt corrects it in place, with a dated correction note in §8, and the verification document
+  records it. It was wrong when written, so this is a correction, not a superseded measurement
+  (`CLAUDE.md` rule 6). Prompts 08a–10 may move these lines again, so the close-out cites the tree
+  it verifies. **Rejected:** a §3 issue left for a later campaign.
+- **U35: how the fixes are split. (taken 2026-10-09, as recommended)** **Recommended:** 08a the two
+  small fixes (the bare `KeyError`; the vectorized get's in-place update); 08b the engine disposal
+  alone, since it touches the pool's and actors' open and refusal paths; 09 the prose rewrite; 10
+  the release with the adoption addenda; 11 the verification and close-out. Each landed and
+  reviewed on its own. **Rejected:** one prompt for the three code fixes, which puts the disposal's
+  risk in the same diff as two one-line fixes; and one prompt for all four issues, the hardest to
+  review or revert.
+- **U36: the fix release's version. (taken 2026-10-09, as recommended)** **Recommended:**
+  **`v0.2.1`**. The fixes add no API and change nothing the layer writes; a refused open still
+  refuses, with a `RuntimeError` where it raised a `KeyError`. **Rejected:** `v0.3.0`, treating the
+  changed exception type and the no-longer-updated payloads as a change of behaviour.
+- **U37: how the clients and the checklists follow. (taken 2026-10-09, as recommended)** This
+  amends U29 and G2–G4: all three clients adopt `v0.2.1`. **Recommended:** 10 adds a dated section
+  to `docs/adoption/README.md` and to each checklist, giving the new pin and what changed since
+  `v0.2.0`, for example CPBH's and SI's vectorized-payload hazard gone. 07a's measurements stay as
+  written (`CLAUDE.md` rule 6). **Rejected:** re-measuring all three clients against `v0.2.1` in a
+  prompt of its own, a 07a-sized run for a release that changes no call a client makes.
 
 ## 7. Gates outside this repository
 
 | Gate | Holds when | Needed by |
 |---|---|---|
 | **G1** | SGK's `datastore-generic-followup` has closed: its prompt 03 landed and was reviewed. The commit that closes it is the **import commit**. SGK's tree is clean at it, and SGK's suites pass there. **Holds (2026-10-07):** 03 landed as `086c81a` and its review `6f7f291` closed the campaign, so the import commit is **`6f7f291`**. The next commit, `99456d8`, adds only a `.tex` status note. | 01 |
-| **G2** | SGK has adopted `v0.2.0` (U29; it was `v0.1.0` until 2026-10-09) in a campaign of its own: its 15 layer files and two tools are deleted, it imports `datastorekit` at a pinned tag, its remaining suites pass, and a rehearsal rebuild through the package reproduces its reference fingerprint (run by a person, under SGK's rules). | CPBH's adoption; the end of U3's freeze |
-| **G3** | CPBH has adopted `v0.2.0` in a campaign of its own (07a's checklist; its stores rebuilt, D4). | — |
-| **G4** | SI has adopted `v0.2.0`, when it is next active (07a's checklist; its stores rebuilt, U31). | — |
+| **G2** | SGK has adopted `v0.2.1` (U37; it was `v0.1.0` until U29, then `v0.2.0`, both 2026-10-09) in a campaign of its own: its 15 layer files and two tools are deleted, it imports `datastorekit` at a pinned tag, its remaining suites pass, and a rehearsal rebuild through the package reproduces its reference fingerprint (run by a person, under SGK's rules). | CPBH's adoption; the end of U3's freeze |
+| **G3** | CPBH has adopted `v0.2.1` (U37) in a campaign of its own (07a's checklist and 10's addendum; its stores rebuilt, D4). | — |
+| **G4** | SI has adopted `v0.2.1` (U37), when it is next active (07a's checklist and 10's addendum; its stores rebuilt, U31). | — |
 
-The campaign closes at 07b. G2–G4 are recorded on this board as they hold, but this campaign does
+The campaign closes at 11 (U33; it was 07b). G2–G4 are recorded on this board as they hold, but this campaign does
 not wait for them.
 
 **CPBH in the meantime.** The shard-key bug was fixed in CPBH's own copy on 2026-10-07, outside

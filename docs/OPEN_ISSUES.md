@@ -11,10 +11,10 @@ disagree. See `CLAUDE.md` for the maintenance rule.
 
 | Issue | Hook |
 |---|---|
-| `[01-package-prose-names-sgks-layout]` | 155 prose lines in 40 files of the package name SGK's paths and campaigns (02: the stand-in pool's, and one comment naming SGK's table, which the guard pins (U17); 03a–04b: the eighteen ported modules' and two fixtures' docstrings); two describe the removed `sys.path` bootstrap |
-| `[02-an-unsupplied-sharded-table-raises-keyerror]` | Reopening with a recorded sharded table the constructor lacks raises a bare `KeyError` before the intended message |
-| `[05-a-refused-open-leaves-its-engines-undisposed]` | A refused or abandoned open never disposes its engines: 105 connections in the 444 are closed only by the collector (Python 3.13 warns) |
-| `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]` | `object_get_vectorized` adds the shard key to the caller's payload dicts in place, so a caller that reuses them sees it |
+| `[01-package-prose-names-sgks-layout]` | 155 prose lines in 40 files of the package name SGK's paths and campaigns (02: the stand-in pool's, and one comment naming SGK's table, which the guard pins (U17); 03a–04b: the eighteen ported modules' and two fixtures' docstrings); two describe the removed `sys.path` bootstrap *(assigned to 09, U33)* |
+| `[02-an-unsupplied-sharded-table-raises-keyerror]` | Reopening with a recorded sharded table the constructor lacks raises a bare `KeyError` before the intended message *(assigned to 08a, U33)* |
+| `[05-a-refused-open-leaves-its-engines-undisposed]` | A refused or abandoned open never disposes its engines: 105 connections in the 444 are closed only by the collector (Python 3.13 warns) *(assigned to 08b, U33)* |
+| `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]` | `object_get_vectorized` adds the shard key to the caller's payload dicts in place, so a caller that reuses them sees it *(assigned to 08a, U33)* |
 
 ### 1.2 Inherited from SecondaryGWKit, on SGK's boards
 
