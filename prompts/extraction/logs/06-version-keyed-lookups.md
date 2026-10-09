@@ -1,6 +1,6 @@
 # Log 06 — version-keyed lookups, ready for `v0.2.0`
 
-**Subject:** Add version-keyed lookups, ready for v0.2.0 · **Commit:** this commit ·
+**Subject:** Add version-keyed lookups, ready for v0.2.0 · **Commit:** `240028e` ·
 **Date:** 2026-10-09 · **Model:** Claude Opus 5.5 · **Result:** landed, untagged and unpushed
 (U28).
 
@@ -22,7 +22,7 @@ tests hazard 4 names moved, and only until the witness and `REGISTER_KEYS` were 
 `compare_ported_tests.py` passes after. `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]`
 is opened, not fixed.
 
-**No tag was made and nothing was pushed (U28).** `v0.2.0` is made on this commit once CI has
+**No tag was made and nothing was pushed (U28).** `v0.2.0` is made on `240028e` once CI has
 passed at both ends here, after the review.
 
 Prompt: [`../06-version-keyed-lookups.md`](../06-version-keyed-lookups.md), with the orchestrator's
@@ -134,7 +134,7 @@ starts Ray, and `tearDownModule` checks it. The module docstring names no client
   tree; §1–§7 remain as at `8bc60a5`, so their line numbers into the four files 06 changes are that
   tree's), and **§8 "Version-keyed lookups (`v0.2.0`, prompt 06)"**: the key, the reserved payload
   key, `require_version_serial`, the two serials, the keyed get, the read-write and read-only
-  pools, each with its lines at this commit; what is not keyed; a replicated keyed class (allowed,
+  pools, each with its lines at `240028e`; what is not keyed; a replicated keyed class (allowed,
   not exercised); and `Tessera` as the example. Nothing else changed.
 - **`PROVENANCE.md`**: a section "After `v0.1.0`": `compare_with_source.py` describes `v0.1.0` and
   is retired there (U27); CPBH `52142d7` and the lines carried over (`Datastore/SQL/Datastore.py`
@@ -949,13 +949,13 @@ The index goes from **7 to 8 open**: 4 on this board, 4 inherited.
 
 ## 9. State handed to the next prompt
 
-- `HEAD` is this commit. The tree is clean but for the ignored entries of §5.8. `venv/` has
+- `HEAD` is `240028e`. The tree is clean but for the ignored entries of §5.8. `venv/` has
   `datastorekit 0.2.0` installed editable (with its own pip), and is otherwise unchanged.
 - **Not pushed, not tagged (U28).** `origin/main` is `fe040b2`; local `main` is ahead by
-  `1f9941f`, `0e524b4` and this commit. Next, after the review, and each step with the user's
-  approval: this commit is pushed as `main`; the workflow runs at both ends on it; **only if both
+  `1f9941f`, `0e524b4` and `240028e`. Next, after the review, and each step with the user's
+  approval: `240028e` is pushed as `main`; the workflow runs at both ends on it; **only if both
   pass** is `v0.2.0` made here, annotated, and pushed. A red end means a fix prompt first, and no
-  tag on this commit.
+  tag on `240028e`.
 - **What the CI log must be read for:** each end's `Ran 458 tests … OK`, and `black` leaving 65
   files unchanged on `low`.
 - **The suite is 458** in `venv/` and at the high end.

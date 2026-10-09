@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-09 · **Status: IN PROGRESS — 8 of 9 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06), 8 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06); `v0.1.0` tagged on `68db557` after green CI (U23); `v0.2.0` ready to be tagged on 06's commit once CI passes there (U28), not tagged, nothing pushed.**
+**Last updated:** 2026-10-09 · **Status: IN PROGRESS — 8 of 9 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06), 8 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` ready to be tagged on `240028e` once CI passes there (U28), not tagged, nothing pushed.**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 U8–U13 the same day, U14–U22 on 2026-10-08, and U6, U23–U28 on 2026-10-09 (README §6.2); U10 split 03 into 03a and 03b, and
 U14 split 04 into 04a and 04b.
@@ -70,7 +70,7 @@ U14 split 04 into 04a and 04b.
 | 04a | [Port the store and inventory tests](04a-port-the-store-and-inventory-tests.md) | 85 tests (inventory, store schema, reader, foreign keys, schema builder); `real_store_fixtures` and `schema_description` on neutral rows; the schema witness; the client's sharded family (U15) | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | `7ceed25` | [log](logs/04a-port-the-store-and-inventory-tests.md) |
 | 04b | [Port the declaration and registry tests](04b-port-the-declaration-and-registry-tests.md) | 89 of 90 tests (inventory declarations, declared facts, layer registry, drop refusal; U16's one not ported); the package guard with its vocabulary as data (U17); `test_parent_set_members` | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | `0c66505` | [log](logs/04b-port-the-declaration-and-registry-tests.md) |
 | 05 | [Supported versions and CI](05-supported-versions-and-ci.md) | `pyproject.toml` at `0.1.0` with U6's range; the 444 in fresh venvs at both ends and from an installed wheel; the workflow; the README's usage; `v0.1.0` tagged after green CI (U23) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | `68db557` | [log](logs/05-supported-versions-and-ci.md) |
-| 06 | [Version-keyed lookups](06-version-keyed-lookups.md) | `key_on_version` on `Tessera` (U25); the lookup serial and `set_lookup_version` (U26); 14 tests carrying over CPBH's; the witness `schema_at_extraction-06.json`; `compare_with_source.py` retired (U27); `v0.2.0` tagged after green CI (U28) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | this commit | [log](logs/06-version-keyed-lookups.md) |
+| 06 | [Version-keyed lookups](06-version-keyed-lookups.md) | `key_on_version` on `Tessera` (U25); the lookup serial and `set_lookup_version` (U26); 14 tests carrying over CPBH's; the witness `schema_at_extraction-06.json`; `compare_with_source.py` retired (U27); `v0.2.0` tagged after green CI (U28) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | `240028e` | [log](logs/06-version-keyed-lookups.md) |
 | 07 | Close-out and adoption handover | `docs/adoption/` checklists; verification document | ⬜ | ⬜ | — | — |
 
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
@@ -83,7 +83,8 @@ used for 01; [`orchestrator/prompt-02.md`](orchestrator/prompt-02.md) (`737ad6e`
 [`orchestrator/prompt-04a.md`](orchestrator/prompt-04a.md) (`ae94aaa`, with addenda at `66535b2` and
 `74c6343`), used for 04a; [`orchestrator/prompt-04b.md`](orchestrator/prompt-04b.md) (`f79f254`,
 with an addendum at `7ee9b6e`), used for 04b; [`orchestrator/prompt-05.md`](orchestrator/prompt-05.md)
-(`f69921b`), used for 05.
+(`f69921b`), used for 05; [`orchestrator/prompt-06.md`](orchestrator/prompt-06.md) (`0e524b4`),
+used for 06.
 
 **Orchestrator review of prompt 01 (2026-10-07).** Dispatched from `bd9f461` to one Opus
 subagent, with the note's §0 corrections and additions. Reviewed against its commit `8bc60a5`,
@@ -787,13 +788,112 @@ that use it pass. **Hazard 3's:** the suite passes on Linux. The high end printe
 on `68db557` and pushed; `git ls-remote` peels it to `68db557`. The rest of `main` is pushed after
 this record.
 
+**Orchestrator review of prompt 06 (2026-10-09).** Dispatched from `0e524b4` to one Opus
+subagent, with the note's five corrections and three additions. Reviewed against its commit
+`240028e`, with nothing landed after it. **Every check of the note's §3 passed**, and acceptance
+1–6 are met. No stop condition fired. Nothing was pushed, and `v0.1.0` is the only tag.
+
+*At dispatch.* The note's gate held at `0e524b4`. The tree was clean, and the only worktree was
+this checkout. The suite gave `Ran 444 tests … OK` in `venv/`, and both checks exited 0 (31, 20
+and 10; twenty modules, one test declared not ported). CPBH's `HEAD` was `52142d7`, `origin/main`
+was `fe040b2`, and no Ray process was up. While writing the note the orchestrator applied the
+change to a scratch copy and, at the high end in a venv made offline from 05's cache:
+- found that only hazard 4's three tests move (45 failures), and that the 444 pass once the
+  witness and `REGISTER_KEYS` are updated;
+- captured the new witness twice (74,450 bytes, one key on 21 records, no `ephemeral_probe`
+  record: correction 3);
+- probed tests 1, 3, 4, 5, 8 and 9, and found that an actor with no broker cannot insert
+  (correction 2);
+- probed (a), (c), (h) and (i) over the 444 (correction 5).
+
+*The checks.*
+1. **Scope.** `240028e` touches exactly the prompt's §7 list, 19 files. The ignored entries are
+   dispatch's, with `datastorekit.egg-info/` again, written by `venv/`'s reinstall at `0.2.0`
+   (log §5.8). No wheel, `dist/`, `build/` or scratch file.
+2. **E1, the layer, by reading.** `contract.py` gains `VERSION_SERIAL_KEY` and
+   `require_version_serial`, and imports nothing new. `schema.py` gains `_declared_key_on_version`,
+   refusing through `_refuse_declaration`, on every record with a table only. `Datastore.py` holds
+   `_lookup_serial` beside `_version_serial`. `set_version` sets both, and `set_lookup_version` sets
+   only the lookup serial, with the same type check and change refusal. `_keyed_payloads` copies,
+   refuses a caller's key and an unset serial, and is reached only for a record that declares the
+   key. `_insert`'s guard and the four unkeyed methods are unchanged. `ShardedPool.py` calls
+   `set_lookup_version` on every read-only actor after `read_only_state`, waits for every call, and
+   gains the two comments; `object_get_vectorized` is unchanged. No new comment or string names a
+   client. The refusal reads `registration_data["version"]`, not the table's columns, as CPBH's
+   does (the agent's IMPLEMENTATION CHOICE, logged).
+3. **E2, the witness.** Captured again from `git archive 240028e` in two fresh interpreters at the
+   high end: byte-identical to the committed file, 74,450 bytes, SHA-256 `643128…bcddb8`. Against
+   04a's: 21 additions of `key_on_version`, `true` on `Tessera` only, and nothing else. 04a's
+   witness, `client_vocabulary.json` and `standin_pool.py` are unchanged from `68db557`.
+4. **E3, the 444.** Of the existing test files, only `REGISTER_KEYS`, `WITNESS` with its docstring
+   sentence, `Tessera`'s roles row, and `Tessera_factory`'s `register()` and select change, with
+   one import line added to `factories.py` (logged, STRUCTURALLY REQUIRED). `compare_ported_tests.py`
+   exits 0 with 04b's counts.
+5. **E3, the 14, by reading.** Each row of the prompt's §2.7 table is there under its class and
+   name. Pools are opened in the labelled form, and actors are `sp.DatastoreClass` with a stand-in
+   broker. Everything is in `tempfile` directories, with stdout redirected. The docstring names no
+   client.
+6. **E4, both ends.** In `venv/`: `pip show` says `0.2.0`; `Ran 458 tests … OK`; the loader gives
+   14 for the new module; `black --check datastorekit docs` leaves 65 files unchanged; the layer
+   guard passes. In the orchestrator's own offline venvs, with `git archive 240028e` installed
+   editable: 3.13.16 / 2.55.1 / 2.0.46 and 3.12.15 / 2.43.0 / 2.0.39, SQLite 3.53.4 at both, each
+   `Ran 458 tests … OK`.
+7. **E5, the release.** A wheel built offline from `git archive 240028e`: 98,194 bytes, 25 entries,
+   none under `tests/`; `Version: 0.2.0` and 05's two `Requires-Dist` lines; `RECORD` SHA-256
+   `c12e23bb…ec82355`, the log's, with `Generator: setuptools (84.0.0)`. Installed offline at the
+   high pins and run from outside the repository with `PYTHONPATH` unset:
+   - `VERSION_SERIAL_KEY` and `require_version_serial` import from `site-packages`;
+   - `datastorekit.tests` does not import;
+   - `sharded_store --help` exits 0;
+   - `shard_key_audit`'s usage line names `site-packages`.
+8. **E6, the documents.**
+   - `client-contract.md` gains the header line and §8 only, and every line reference in §8 holds
+     at `240028e`.
+   - `PROVENANCE.md` gains "After `v0.1.0`", naming the changed files, CPBH `52142d7` and its
+     lines, and U27.
+   - `compare_with_source.py` gains its one paragraph. `pyproject.toml` changes in its version
+     only.
+   - The README's four changes are there, and its new anchor and links resolve.
+9. **E7, the breakages.** The ten diffs, extracted from the log, apply both ways in their own
+   exports of `240028e`, and each fails exactly the tests the log names:
+   - (a) `Ran 435`, failures 2, errors 12;
+   - (b) errors 5, the fifth being `test_a_vectorized_get_that_reaches_an_inserter`;
+   - (c) `Ran 435`, errors 13;
+   - (d)–(g) and (j) one each;
+   - (h) errors 4;
+   - (i) failures 4, test 10 among them.
+
+   Each export was reverted.
+10. **E8, the records.** The log has every section of README §5.1 and §5.6's additions, the five
+    corrections and three additions, `compare_with_source.py`'s last output and both ignored
+    listings. The index has 8 rows and says 8.
+11. **Nothing left behind.** No Ray process; `git tag -l` is `v0.1.0`; `origin` has `main` at
+    `fe040b2` and `v0.1.0` only.
+
+*Findings beyond the prompt*, recorded and not acted on:
+- (b) and (i) each fail one test more than the prompt expected, and both are pinned. Under (i) the
+  read-write pool under B also finds A's row, so test 4, which compares the read-only results with
+  the read-write ones, passes, and test 1 catches it.
+- The agent corrected the prompt's impact statement for §2.8's issue by reproduction: a second
+  key on the same field overwrites the first.
+- Log §7 item 1: `set_version` after `set_lookup_version` moves the lookup serial, a sequence no
+  pool makes.
+
+*Issues.* `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]` is open (§3). Nothing
+else is opened. The index is 8.
+
+*Residue fixed in this follow-up:*
+- "this commit" → `240028e` in the log, the board and `prompts/INDEX.md`;
+- README's header, and its §2 status for 06;
+- this paragraph and the notes line.
+
 ## 2. Gates outside this repository (README §7)
 
 | Gate | Status |
 |---|---|
 | **G1**: SGK `datastore-generic-followup` closed; the import commit fixed | ✅ 2026-10-07: closed at `6f7f291` (03 landed as `086c81a`); the import commit is `6f7f291` |
 | **G2**: SGK adopted `v0.1.0`, fingerprint reproduced | ⬜ *(2026-10-09: `v0.1.0` is made, annotated, on 05's commit `68db557` (tag object `0ece4aa`) and pushed, after CI passed there at both ends, [run 37922626418](https://github.com/ds283/DatastoreKit/actions/runs/37922626418): Python 3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39 and 3.13.16 / 2.55.1 / 2.0.46, SQLite 3.45.1 at both, each `Ran 444 tests … OK`. SGK may now adopt it.)* |
-| **G3**: CPBH adopted `v0.2.0` | ⬜ *(2026-10-09: 06 landed as this commit, at `version = "0.2.0"`, with 458 tests passing in `venv/` (3.12.15 / 2.43.0 / 2.0.39) and at the high end (3.13.16 / 2.55.1 / 2.0.46). `v0.2.0` is ready to be tagged on it once CI passes there at both ends (U28). No tag is made and nothing is pushed.)* |
+| **G3**: CPBH adopted `v0.2.0` | ⬜ *(2026-10-09: 06 landed as `240028e`, at `version = "0.2.0"`, with 458 tests passing in `venv/` (3.12.15 / 2.43.0 / 2.0.39) and at the high end (3.13.16 / 2.55.1 / 2.0.46). `v0.2.0` is ready to be tagged on it once CI passes there at both ends (U28). No tag is made and nothing is pushed.)* |
 | **G4**: SI adopted | ⬜ |
 
 ## 3. Active and unresolved issues
@@ -923,7 +1023,7 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
   prompt 06)*
   - **The defect.** `ShardedPool.object_get_vectorized` adds the shard key to each of the caller's
     payload dicts in place, `for value in payload_data: value.update(shard_key)`
-    (`datastorekit/SQL/ShardedPool.py:3309-3310` at this commit; `:3298-3299` at `v0.1.0`). It was
+    (`datastorekit/SQL/ShardedPool.py:3309-3310` at `240028e`; `:3298-3299` at `v0.1.0`). It was
     so before 06, and is inherited from SGK unchanged. It does not affect keying: the actor copies
     each payload before it adds the version serial (`SQL/Datastore.py:598-625`).
   - **Reproduction** (log 06 §4.2; the stand-in pool, `build.open_pool`, two aliases on two
