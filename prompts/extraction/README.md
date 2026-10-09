@@ -13,7 +13,8 @@ user took U18 the same day; its agent stopped on a 03a test the new client break
 took U19, and on its second stop U20 and U21. 04a landed as `7ceed25` (2026-10-08) and was
 reviewed; **prompt 04b is written** (2026-10-08). Its agent stopped on two tests that cannot hold
 over a class that registers `None`, and the user took U22. 04b landed as `0c66505` (2026-10-08)
-and was reviewed. Each later prompt is written after the one before it has landed and been
+and was reviewed. The user took U6, U23 and U24 on 2026-10-09; **prompt 05 is written**
+(2026-10-09). Each later prompt is written after the one before it has landed and been
 reviewed, against the tree it left.
 
 ## 0. Why this campaign exists
@@ -178,7 +179,7 @@ measures the survey again before doing so.
 | 03b | [`03b-port-the-open-and-read-only-tests.md`](03b-port-the-open-and-read-only-tests.md) | The other half: `test_version_row_at_open` (12), `test_read_only_pool` (23, onto `build_store` and a neutral reader sequence, U11; four test names change by the table map, U12), `test_one_timestamp_per_write` (1 defined, 28 run, by inheritance from 03a's modules and `test_version_row_at_open`), `test_absolute_shard_record_refused` (12) and `test_closed_store_refusals` (5): 53 defined, 80 run. Checked the same way. A test that cannot be expressed on the neutral client is a stop, not a silent drop. Two replicated classes are added to the neutral client for it (U13). | **landed** 2026-10-08 (`0d5380c`), reviewed |
 | 04a | [`04a-port-the-store-and-inventory-tests.md`](04a-port-the-store-and-inventory-tests.md) | U14's first half of §0.2's 175: `test_store_inventory` (42), `test_store_schema` (13), `test_store_reader` (15), `test_foreign_key_check` (8) and `test_schema_builder` (7), 85 tests, re-fixtured as 03a's were. SGK's `real_store_fixtures` and `schema_description` are ported, the first with neutral row data on a hand-built store with fixed serials, and a neutral schema witness is captured. The neutral client gains a small sharded family for the roles it lacks (U15). **Acceptance:** the port check passes over 15 modules; the suite is 353. | **landed** 2026-10-08 (`7ceed25`), reviewed |
 | 04b | [`04b-port-the-declaration-and-registry-tests.md`](04b-port-the-declaration-and-registry-tests.md) | The other half: `test_inventory_declarations` (26, of which one stays in SGK, U16), `test_declared_facts` (25), `test_layer_registry` (20) and `test_drop_refuses_dangling_references` (11), on 04a's fixture. SGK's `test_layer_is_generic` (8) becomes the package's guard. Its forbidden vocabulary is drawn from all three clients' registries, measured read-only and written into the test as data; the test never imports a client, and the hits rule 8 freezes in the layer are pinned (U17). *(At writing: the vocabulary is held in `tests/data/client_vocabulary.json`, written by `docs/extraction/measure_client_vocabulary.py`, and a new `test_parent_set_members` closes `[04a-no-test-pins-a-second-parent-set-member]`.)* **Acceptance:** the port check passes over 20 modules with one test declared not ported; the guard pins exactly one hit; the suite is 444. | **landed** 2026-10-08 (`0c66505`), reviewed |
-| 05 | `05-supported-versions-and-ci.md` | Dependency ranges in `pyproject.toml`. The whole suite runs at both ends of §0.2's version table (Python 3.12 / Ray 2.43 / SQLAlchemy 2.0.39, and Python 3.13 / Ray 2.55 / SQLAlchemy 2.0.46). A GitHub Actions workflow runs the suite on both. `README.md` gains usage. **Tag `v0.1.0`**, the release SGK adopts (G2). | not written |
+| 05 | [`05-supported-versions-and-ci.md`](05-supported-versions-and-ci.md) | Dependency ranges in `pyproject.toml`. The whole suite runs at both ends of §0.2's version table (Python 3.12 / Ray 2.43 / SQLAlchemy 2.0.39, and Python 3.13 / Ray 2.55 / SQLAlchemy 2.0.46). A GitHub Actions workflow runs the suite on both. `README.md` gains usage. **Tag `v0.1.0`**, the release SGK adopts (G2). *(At writing: the range is U6's; both ends run locally in fresh scratch venvs (U24) and from an installed wheel, which no longer carries the test package; 05 makes no tag and pushes nothing, and `v0.1.0` is made on 05's commit once CI passes there (U23); 05 opens `[05-a-refused-open-leaves-its-engines-undisposed]`.)* | **written** 2026-10-09 |
 | 06 | `06-version-keyed-lookups.md` | CPBH's version-keyed lookups (`Datastore.py:329-338`, `:500-555`; `config/version.py:55-71` at CPBH `9b3db51`), as the optional `register()` key `key_on_version`. A lookup of a class that declares it receives the store's version serial under `datastorekit.contract.VERSION_SERIAL_KEY`. A caller that supplies that key itself is refused. `key_on_version` without `version` is refused at schema build. `require_version_serial` is exported for factories. Tests on the neutral client carry over the semantics of CPBH's `test_version_keyed_lookups`. Nothing the layer writes changes. **Tag `v0.2.0`.** | not written |
 | 07 | `07-close-out-and-adoption-handover.md` | `docs/adoption/` holds one checklist per client (SGK, CPBH, SI), each saying: <br>• which imports to rewrite; <br>• where its factories move to; <br>• what its factories must change; <br>• what its call sites and test harness must change; <br>• which of its stores the new layer will refuse, and why. <br>SGK's checklist also names every import of the layer from outside `Datastore/`. In particular, `RunRegistry/` imports `Datastore.SQL.ShardedPool.ShardedPool` three times, `Datastore.store_inventory.canonical_json` twice and `Datastore.store_inventory.read_inventory` once (counted at `21ee420`), and G2's rehearsal fingerprint runs through `RunRegistry/stores.py::fingerprint_store`. Also: SGK's `docs/` scripts that import the layer, and `RayTools/RayWorkPool.py`'s type-hint import. 07 re-counts them. <br>Also a verification document for the campaign, and the campaign closed. | not written |
 
@@ -234,6 +235,8 @@ person under SGK's rules.
   vocabulary as data (`datastorekit/tests/data/client_vocabulary.json`, written by
   `docs/extraction/measure_client_vocabulary.py`) and its pinned hits (U17); `NOT_PORTED` in
   `compare_ported_tests.py` (U16); `PORTED` over twenty modules.
+- **After 05:** `pyproject.toml` at `0.1.0` with U6's range; `.github/workflows/tests.yml`; the
+  README's usage. After its CI passes, the tag `v0.1.0` on 05's commit (U23).
 - **After 06:** `register()["key_on_version"]`; `datastorekit.contract.VERSION_SERIAL_KEY` and
   `datastorekit.contract.require_version_serial`.
 
@@ -292,8 +295,8 @@ The project-wide ones in `CLAUDE.md`, plus:
 ### 6.2 Decisions this campaign needs
 
 Each is put with a recommendation. **U2–U5 were taken by the user on 2026-10-07, each as
-recommended**; the recommendation below is the decision. U1 and U7 were applied at set-up. U6 is
-open until 05 is written.
+recommended**; the recommendation below is the decision. U1 and U7 were applied at set-up. U6 was
+taken on 2026-10-09, when 05 was written.
 
 - **U1: the name.** *Taken at set-up, changeable until 01 lands:* the repository is
   **DatastoreKit**, the package `datastorekit`. "DataKit" names many unrelated tools, and
@@ -321,10 +324,13 @@ open until 05 is written.
   this campaign, so that rule 8's check stays mechanical and every client's rewrite is a prefix
   substitution. **Rejected for now:** PEP 8 names (`datastorekit.sql.sharded_pool`). They are a
   later, separate change, once the clients are on the package.
-- **U6: the supported range and CI.** **Recommended:** Python ≥ 3.12, Ray and SQLAlchemy ranges
-  covering §0.2's table, and a GitHub Actions matrix at the two ends (05). **Rejected:** testing
-  only on the developer's machine. SGK's code has never run on Python 3.13 or Ray 2.5x, and two of
-  the three clients run them.
+- **U6: the supported range and CI. (taken 2026-10-09, as recommended)** **Recommended:** Python
+  ≥ 3.12, Ray and SQLAlchemy ranges covering §0.2's table, and a GitHub Actions matrix at the two
+  ends (05). **Rejected:** testing only on the developer's machine. SGK's code has never run on
+  Python 3.13 or Ray 2.5x, and two of the three clients run them. *At 05's writing the ranges were
+  put as* `ray>=2.43` (no ceiling, so a client can move Ray without a release here) and
+  `sqlalchemy>=2.0.39,<2.1` (2.1 is a minor series with breaking changes, and exists). The user
+  took them, rejecting a ceiling at the tested ends and floors alone.
 - **U7: the licence.** *Applied at set-up, changeable:* Apache 2.0, as CPBH and SI use. SGK has no
   licence file, and a public repository needs one.
 - **U8: SGK's table names in the 88 tests 01 ported. (taken 2026-10-07, as recommended)** 01
@@ -483,6 +489,19 @@ open until 05 is written.
   since the store's `replicated_tables` still names `ephemeral_probe`. **Rejected:** removing
   `ephemeral_probe` from the client (rejected at U20); and declaring the two tests in
   `NOT_PORTED`, which drops the only pin on the declared keys of every record.
+- **U23: how `v0.1.0` is reached. (taken 2026-10-09, as recommended)** CI runs only on GitHub,
+  where `origin/main` is 26 commits behind, and rule 10 forbids moving a tag. **Recommended:** 05's
+  agent verifies both ends locally and makes one commit, with no push and no tag. After the review
+  the user pushes `main`, or approves the orchestrator's doing so. Once CI passes at both ends on
+  05's commit, `v0.1.0` is made there, annotated, and pushed. If CI fails, a fix prompt lands
+  first, and no tag is made on a commit whose CI is red. **Rejected:** the agent tagging in its own
+  run, before CI, which would leave a broken `v0.1.0` that cannot be moved.
+- **U24: measuring the high end locally. (taken 2026-10-09, as recommended)** The package had never
+  run on Python 3.13, Ray 2.5x or SQLAlchemy 2.0.46, and no wheel of them was cached.
+  **Recommended:** a throwaway Python 3.13 venv built by `uv` from PyPI with those pins, outside the
+  repository, for the planner and for 05's agent. 05 may download PyPI packages into the
+  scratchpad, and nothing else. **Rejected:** borrowing SI's venv, which has exactly those versions
+  but is a client's environment (§5 rule 5); and leaving the first high-end run to CI.
 
 ## 7. Gates outside this repository
 

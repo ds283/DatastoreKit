@@ -1,8 +1,8 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-08 · **Status: IN PROGRESS — 6 of 9 prompts written (01, 02, 03a, 03b, 04a, 04b), 6 landed (01, 02, 03a, 03b, 04a, 04b).**
+**Last updated:** 2026-10-09 · **Status: IN PROGRESS — 7 of 9 prompts written (01, 02, 03a, 03b, 04a, 04b, 05), 6 landed (01, 02, 03a, 03b, 04a, 04b).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
-U8–U13 the same day, and U14–U22 on 2026-10-08 (README §6.2); U10 split 03 into 03a and 03b, and
+U8–U13 the same day, U14–U22 on 2026-10-08, and U6, U23 and U24 on 2026-10-09 (README §6.2); U10 split 03 into 03a and 03b, and
 U14 split 04 into 04a and 04b.
 
 **Campaign:** [`README.md`](README.md) ·
@@ -33,7 +33,7 @@ U14 split 04 into 04a and 04b.
 | **U3** SGK layer freeze from G1 to G2 | freeze | **taken** 2026-10-07; in force from SGK `b510bc9` (its `CLAUDE.md`, "The datastore layer is frozen") |
 | **U4** distribution | pinned git tag in each client's `requirements.txt` | **taken** 2026-10-07 |
 | **U5** module names | keep SGK's through this campaign | **taken** 2026-10-07 |
-| **U6** supported range and CI | Python ≥ 3.12; GitHub Actions at both ends | open |
+| **U6** supported range and CI | Python ≥ 3.12, `ray>=2.43`, `sqlalchemy>=2.0.39,<2.1`; GitHub Actions at both ends | **taken** 2026-10-09, at 05's writing |
 | **U7** licence | Apache 2.0 | applied at set-up; changeable |
 | **U8** SGK's table names in 01's 88 tests | re-fixture onto the neutral client's names in 02 | **taken** 2026-10-07 |
 | **U9** checking a re-fixtured test | a port-check script: names and assertion skeletons | **taken** 2026-10-07 |
@@ -50,6 +50,8 @@ U14 split 04 into 04a and 04b.
 | **U20** the schema witness and a class with no table | `test_schema_builder` and `actor_with_built_schema` use the registry less `register() is None`; the witness is captured from it | **taken** 2026-10-08, at 04a's second stop |
 | **U21** `test_schema_builder`'s witness history | the docstring names the new witness, and says SGK's are SGK's history | **taken** 2026-10-08, at 04a's second stop |
 | **U22** the declared facts and a class with no table | two `TestTheRecords` tests give `build_schema` the registry less `register() is None` (R-help) | **taken** 2026-10-08, at 04b's stop |
+| **U23** how `v0.1.0` is reached | 05 makes no tag and pushes nothing; the tag is made on 05's commit once CI passes there | **taken** 2026-10-09, at 05's writing |
+| **U24** measuring the high end locally | a scratch Python 3.13 venv from PyPI, for the planner and 05's agent | **taken** 2026-10-09, at 05's writing |
 
 ---
 
@@ -63,7 +65,7 @@ U14 split 04 into 04a and 04b.
 | 03b | [Port the open and read-only tests](03b-port-the-open-and-read-only-tests.md) | 53 tests, 80 run (version row, read-only pool, one timestamp, shard records); the two client classes (U13); the neutral reader sequence (U11) | ✍️ yes, 2026-10-07 | ✅ 2026-10-08 | `0d5380c` | [log](logs/03b-port-the-open-and-read-only-tests.md) |
 | 04a | [Port the store and inventory tests](04a-port-the-store-and-inventory-tests.md) | 85 tests (inventory, store schema, reader, foreign keys, schema builder); `real_store_fixtures` and `schema_description` on neutral rows; the schema witness; the client's sharded family (U15) | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | `7ceed25` | [log](logs/04a-port-the-store-and-inventory-tests.md) |
 | 04b | [Port the declaration and registry tests](04b-port-the-declaration-and-registry-tests.md) | 89 of 90 tests (inventory declarations, declared facts, layer registry, drop refusal; U16's one not ported); the package guard with its vocabulary as data (U17); `test_parent_set_members` | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | `0c66505` | [log](logs/04b-port-the-declaration-and-registry-tests.md) |
-| 05 | Supported versions and CI | `pyproject.toml` ranges, both ends, Actions; tag `v0.1.0` | ⬜ | ⬜ | — | — |
+| 05 | [Supported versions and CI](05-supported-versions-and-ci.md) | `pyproject.toml` at `0.1.0` with U6's range; the 444 in fresh venvs at both ends and from an installed wheel; the workflow; the README's usage; `v0.1.0` tagged after green CI (U23) | ✍️ yes, 2026-10-09 | ⬜ | — | — |
 | 06 | Version-keyed lookups | `key_on_version`; tag `v0.2.0` | ⬜ | ⬜ | — | — |
 | 07 | Close-out and adoption handover | `docs/adoption/` checklists; verification document | ⬜ | ⬜ | — | — |
 
