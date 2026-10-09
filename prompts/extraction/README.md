@@ -15,7 +15,8 @@ reviewed; **prompt 04b is written** (2026-10-08). Its agent stopped on two tests
 over a class that registers `None`, and the user took U22. 04b landed as `0c66505` (2026-10-08)
 and was reviewed. The user took U6, U23 and U24 on 2026-10-09; **prompt 05 is written**
 (2026-10-09), and landed as `68db557` and was reviewed; CI passed there at both ends, and `v0.1.0` is
-tagged on it (U23). Each later prompt is written after the one before it has landed and been
+tagged on it (U23). The user took U25–U28 the same day; **prompt 06 is written** (2026-10-09).
+Each later prompt is written after the one before it has landed and been
 reviewed, against the tree it left.
 
 ## 0. Why this campaign exists
@@ -181,7 +182,7 @@ measures the survey again before doing so.
 | 04a | [`04a-port-the-store-and-inventory-tests.md`](04a-port-the-store-and-inventory-tests.md) | U14's first half of §0.2's 175: `test_store_inventory` (42), `test_store_schema` (13), `test_store_reader` (15), `test_foreign_key_check` (8) and `test_schema_builder` (7), 85 tests, re-fixtured as 03a's were. SGK's `real_store_fixtures` and `schema_description` are ported, the first with neutral row data on a hand-built store with fixed serials, and a neutral schema witness is captured. The neutral client gains a small sharded family for the roles it lacks (U15). **Acceptance:** the port check passes over 15 modules; the suite is 353. | **landed** 2026-10-08 (`7ceed25`), reviewed |
 | 04b | [`04b-port-the-declaration-and-registry-tests.md`](04b-port-the-declaration-and-registry-tests.md) | The other half: `test_inventory_declarations` (26, of which one stays in SGK, U16), `test_declared_facts` (25), `test_layer_registry` (20) and `test_drop_refuses_dangling_references` (11), on 04a's fixture. SGK's `test_layer_is_generic` (8) becomes the package's guard. Its forbidden vocabulary is drawn from all three clients' registries, measured read-only and written into the test as data; the test never imports a client, and the hits rule 8 freezes in the layer are pinned (U17). *(At writing: the vocabulary is held in `tests/data/client_vocabulary.json`, written by `docs/extraction/measure_client_vocabulary.py`, and a new `test_parent_set_members` closes `[04a-no-test-pins-a-second-parent-set-member]`.)* **Acceptance:** the port check passes over 20 modules with one test declared not ported; the guard pins exactly one hit; the suite is 444. | **landed** 2026-10-08 (`0c66505`), reviewed |
 | 05 | [`05-supported-versions-and-ci.md`](05-supported-versions-and-ci.md) | Dependency ranges in `pyproject.toml`. The whole suite runs at both ends of §0.2's version table (Python 3.12 / Ray 2.43 / SQLAlchemy 2.0.39, and Python 3.13 / Ray 2.55 / SQLAlchemy 2.0.46). A GitHub Actions workflow runs the suite on both. `README.md` gains usage. **Tag `v0.1.0`**, the release SGK adopts (G2). *(At writing: the range is U6's; both ends run locally in fresh scratch venvs (U24) and from an installed wheel, which no longer carries the test package; 05 makes no tag and pushes nothing, and `v0.1.0` is made on 05's commit once CI passes there (U23); 05 opens `[05-a-refused-open-leaves-its-engines-undisposed]`.)* | **landed** 2026-10-09 (`68db557`), reviewed; CI green at both ends; **tagged `v0.1.0`** |
-| 06 | `06-version-keyed-lookups.md` | CPBH's version-keyed lookups (`Datastore.py:329-338`, `:500-555`; `config/version.py:55-71` at CPBH `9b3db51`), as the optional `register()` key `key_on_version`. A lookup of a class that declares it receives the store's version serial under `datastorekit.contract.VERSION_SERIAL_KEY`. A caller that supplies that key itself is refused. `key_on_version` without `version` is refused at schema build. `require_version_serial` is exported for factories. Tests on the neutral client carry over the semantics of CPBH's `test_version_keyed_lookups`. Nothing the layer writes changes. **Tag `v0.2.0`.** | not written |
+| 06 | [`06-version-keyed-lookups.md`](06-version-keyed-lookups.md) | CPBH's version-keyed lookups (`Datastore.py:329-338`, `:500-555`; `config/version.py:55-71` at CPBH `9b3db51`), as the optional `register()` key `key_on_version`. A lookup of a class that declares it receives the store's version serial under `datastorekit.contract.VERSION_SERIAL_KEY`. A caller that supplies that key itself is refused. `key_on_version` without `version` is refused at schema build. `require_version_serial` is exported for factories. Tests on the neutral client carry over the semantics of CPBH's `test_version_keyed_lookups`. Nothing the layer writes changes. **Tag `v0.2.0`.** *(At writing: the neutral `Tessera` is the keyed class (U25); an actor holds a lookup serial apart from its insert serial, and a read-only pool gives it with `set_lookup_version` (U26); `compare_with_source.py` is retired at `v0.1.0` (U27); 06 makes no tag and pushes nothing, and `v0.2.0` is made on its commit once CI passes there (U28); the suite goes from 444 to 458, the schema witness gains one key, and 06 opens `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]`.)* | **written** 2026-10-09 |
 | 07 | `07-close-out-and-adoption-handover.md` | `docs/adoption/` holds one checklist per client (SGK, CPBH, SI), each saying: <br>• which imports to rewrite; <br>• where its factories move to; <br>• what its factories must change; <br>• what its call sites and test harness must change; <br>• which of its stores the new layer will refuse, and why. <br>SGK's checklist also names every import of the layer from outside `Datastore/`. In particular, `RunRegistry/` imports `Datastore.SQL.ShardedPool.ShardedPool` three times, `Datastore.store_inventory.canonical_json` twice and `Datastore.store_inventory.read_inventory` once (counted at `21ee420`), and G2's rehearsal fingerprint runs through `RunRegistry/stores.py::fingerprint_store`. Also: SGK's `docs/` scripts that import the layer, and `RayTools/RayWorkPool.py`'s type-hint import. 07 re-counts them. <br>Also a verification document for the campaign, and the campaign closed. | not written |
 
 **Order.** 01 → 02 → 03a → 03b → 04a → 04b → 05 → 06 → 07. (03b and 04 could have run in either
@@ -239,7 +240,9 @@ person under SGK's rules.
 - **After 05:** `pyproject.toml` at `0.1.0` with U6's range; `.github/workflows/tests.yml`; the
   README's usage. After its CI passes, the tag `v0.1.0` on 05's commit (U23).
 - **After 06:** `register()["key_on_version"]`; `datastorekit.contract.VERSION_SERIAL_KEY` and
-  `datastorekit.contract.require_version_serial`.
+  `datastorekit.contract.require_version_serial`; `Datastore.set_lookup_version` (U26); the neutral
+  `Tessera` keyed (U25); the witness `schema_at_extraction-06.json`; `pyproject.toml` at `0.2.0`.
+  After its CI passes, the tag `v0.2.0` on 06's commit (U28).
 
 ## 5. The rules this campaign runs under
 
@@ -503,6 +506,31 @@ taken on 2026-10-09, when 05 was written.
   repository, for the planner and for 05's agent. 05 may download PyPI packages into the
   scratchpad, and nothing else. **Rejected:** borrowing SI's venv, which has exactly those versions
   but is a client's environment (§5 rule 5); and leaving the first high-end run to CI.
+- **U25: the neutral client's keyed class. (taken 2026-10-09, as recommended)** 02's coverage
+  rule (`test_neutral_client.TestCoverageByDeclaration`) requires a factory of the shared client
+  to declare every `register()` key the schema builder reads, in both directions, so a test-local
+  registry cannot cover `key_on_version`. **Recommended:** the existing `Tessera` (sharded,
+  versioned) declares it, and its `build` filters on the serial. Probed by the planner at
+  `fe040b2`, with the keying and U26 in a scratch copy: of the 444, only the two witness tests and
+  `REGISTER_KEYS`'s test move. **Rejected:** a new keyed class, which moved 16 tests in 6 modules
+  (drop groups, round trip, witness) before `build_store` wrote any of its rows.
+- **U26: keyed lookups on a read-only pool. (taken 2026-10-09, as recommended)** A read-only
+  actor is never given the version serial, as a third guard against inserts (`SQL/Datastore.py`'s
+  read-only comment), so it could not key a lookup. **Recommended:** an actor holds a lookup serial
+  apart from its insert serial; `set_version` sets both, and a read-only pool calls a new
+  `set_lookup_version`, which sets the lookup serial only. All three guards stay. Probed: the
+  read-only tests pass, and a keyed `Tessera` is found under its own label read-only.
+  **Rejected:** `set_version` on read-only actors too, which drops the third guard; and refusing
+  keyed lookups read-only, which changes what a ported read-only test raises.
+- **U27: the equivalence check after rule 8 lifts. (taken 2026-10-09)** 06 is the first prompt to
+  change the layer, which `compare_with_source.py` compares line by line with SGK. **Recommended
+  at writing:** a declared kind for files amended after `v0.1.0`, checked through the tag.
+  **Taken instead:** the check is retired at `v0.1.0`. 06 runs it once more, before its change, and
+  records that it describes the tagged tree; `compare_ported_tests.py` still runs.
+- **U28: how `v0.2.0` is reached. (taken 2026-10-09, as recommended)** As `v0.1.0` was (U23): 06
+  makes no tag and pushes nothing; after its review its commit is pushed alone as `main`, and
+  `v0.2.0` is made there, annotated, only once CI passes at both ends, each step with the user's
+  approval. **Rejected:** the agent tagging in its own run, before CI.
 
 ## 7. Gates outside this repository
 

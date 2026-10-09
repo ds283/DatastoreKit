@@ -1,8 +1,8 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-09 · **Status: IN PROGRESS — 7 of 9 prompts written (01, 02, 03a, 03b, 04a, 04b, 05), 7 landed (01, 02, 03a, 03b, 04a, 04b, 05); `v0.1.0` tagged on `68db557` after green CI (U23).**
+**Last updated:** 2026-10-09 · **Status: IN PROGRESS — 8 of 9 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06), 7 landed (01, 02, 03a, 03b, 04a, 04b, 05); `v0.1.0` tagged on `68db557` after green CI (U23).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
-U8–U13 the same day, U14–U22 on 2026-10-08, and U6, U23 and U24 on 2026-10-09 (README §6.2); U10 split 03 into 03a and 03b, and
+U8–U13 the same day, U14–U22 on 2026-10-08, and U6, U23–U28 on 2026-10-09 (README §6.2); U10 split 03 into 03a and 03b, and
 U14 split 04 into 04a and 04b.
 
 **Campaign:** [`README.md`](README.md) ·
@@ -52,6 +52,10 @@ U14 split 04 into 04a and 04b.
 | **U22** the declared facts and a class with no table | two `TestTheRecords` tests give `build_schema` the registry less `register() is None` (R-help) | **taken** 2026-10-08, at 04b's stop |
 | **U23** how `v0.1.0` is reached | 05 makes no tag and pushes nothing; the tag is made on 05's commit once CI passes there | **taken** 2026-10-09, at 05's writing |
 | **U24** measuring the high end locally | a scratch Python 3.13 venv from PyPI, for the planner and 05's agent | **taken** 2026-10-09, at 05's writing |
+| **U25** the neutral client's keyed class | `Tessera` declares `key_on_version` | **taken** 2026-10-09, at 06's writing |
+| **U26** keyed lookups on a read-only pool | a lookup serial apart from the insert serial; `set_lookup_version` | **taken** 2026-10-09, at 06's writing |
+| **U27** the equivalence check after rule 8 lifts | *(recommended: a declared amended-since-release kind)* | **taken** 2026-10-09, otherwise: `compare_with_source.py` retired at `v0.1.0` |
+| **U28** how `v0.2.0` is reached | as U23: no tag or push by 06; tagged on its commit after green CI | **taken** 2026-10-09, at 06's writing |
 
 ---
 
@@ -66,7 +70,7 @@ U14 split 04 into 04a and 04b.
 | 04a | [Port the store and inventory tests](04a-port-the-store-and-inventory-tests.md) | 85 tests (inventory, store schema, reader, foreign keys, schema builder); `real_store_fixtures` and `schema_description` on neutral rows; the schema witness; the client's sharded family (U15) | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | `7ceed25` | [log](logs/04a-port-the-store-and-inventory-tests.md) |
 | 04b | [Port the declaration and registry tests](04b-port-the-declaration-and-registry-tests.md) | 89 of 90 tests (inventory declarations, declared facts, layer registry, drop refusal; U16's one not ported); the package guard with its vocabulary as data (U17); `test_parent_set_members` | ✍️ yes, 2026-10-08 | ✅ 2026-10-08 | `0c66505` | [log](logs/04b-port-the-declaration-and-registry-tests.md) |
 | 05 | [Supported versions and CI](05-supported-versions-and-ci.md) | `pyproject.toml` at `0.1.0` with U6's range; the 444 in fresh venvs at both ends and from an installed wheel; the workflow; the README's usage; `v0.1.0` tagged after green CI (U23) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | `68db557` | [log](logs/05-supported-versions-and-ci.md) |
-| 06 | Version-keyed lookups | `key_on_version`; tag `v0.2.0` | ⬜ | ⬜ | — | — |
+| 06 | [Version-keyed lookups](06-version-keyed-lookups.md) | `key_on_version` on `Tessera` (U25); the lookup serial and `set_lookup_version` (U26); 14 tests carrying over CPBH's; the witness `schema_at_extraction-06.json`; `compare_with_source.py` retired (U27); `v0.2.0` tagged after green CI (U28) | ✍️ yes, 2026-10-09 | ⬜ | — | — |
 | 07 | Close-out and adoption handover | `docs/adoption/` checklists; verification document | ⬜ | ⬜ | — | — |
 
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
