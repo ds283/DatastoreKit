@@ -1,7 +1,7 @@
 # Log 08a — two small fixes
 
-**Subject:** Fix the unsupplied-table refusal and the vectorized get's payloads · **Commit:** this
-commit · **Date:** 2026-10-10 (started 2026-10-09) · **Model:** Claude Opus 5.5 · **Result:**
+**Subject:** Fix the unsupplied-table refusal and the vectorized get's payloads · **Commit:**
+`f938844` · **Date:** 2026-10-10 (started 2026-10-09) · **Model:** Claude Opus 5.5 · **Result:**
 landed; unpushed and untagged.
 
 Two defects inherited from SGK, held open since 02 and 06, are fixed (U33, U35):
@@ -480,7 +480,7 @@ The index goes from **8 to 6 open**: 2 on this board (`[01-package-prose-names-s
 
 ## 8. State handed to the next prompt
 
-- `HEAD` is this commit. The tree is clean but for the ignored entries of dispatch (`.idea/`, the
+- `HEAD` is `f938844`. The tree is clean but for the ignored entries of dispatch (`.idea/`, the
   `__pycache__/` directories, `venv/`). `venv/` is unchanged.
 - **Not pushed, not tagged.** `origin/main` is `102f225`; the tags are `v0.1.0` and `v0.2.0`. The
   version stays `0.2.0`; 10 releases `v0.2.1`.

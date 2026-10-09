@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-10 · **Status: IN PROGRESS — 10 of 14 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a), 10 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28); 07a landed (`dd45243`) and reviewed; 07b withdrawn (U33): the four open issues are fixed in 08a, 08b and 09 and released as `v0.2.1` by 10 before 11 closes the campaign; 08a landed (this commit), awaiting review, closing two of the four.**
+**Last updated:** 2026-10-10 · **Status: IN PROGRESS — 10 of 14 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a), 10 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28); 07a landed (`dd45243`) and reviewed; 07b withdrawn (U33): the four open issues are fixed in 08a, 08b and 09 and released as `v0.2.1` by 10 before 11 closes the campaign; 08a landed (`f938844`) and reviewed, closing two of the four.**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 U8–U13 the same day, U14–U22 on 2026-10-08, and U6, U23–U37 on 2026-10-09 (README §6.2); U10, U14 and U30 split 03, 04
 and 07, each into an a and a b prompt.
@@ -82,7 +82,7 @@ and 07, each into an a and a b prompt.
 | 06 | [Version-keyed lookups](06-version-keyed-lookups.md) | `key_on_version` on `Tessera` (U25); the lookup serial and `set_lookup_version` (U26); 14 tests carrying over CPBH's; the witness `schema_at_extraction-06.json`; `compare_with_source.py` retired (U27); `v0.2.0` tagged after green CI (U28) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | `240028e` | [log](logs/06-version-keyed-lookups.md) |
 | 07a | [The adoption checklists](07a-the-adoption-checklists.md) | `docs/adoption/`: a README and checklists for SGK, CPBH and SI against `v0.2.0` (U29), measured read-only; `measure_client_imports.py`; instances and abstract hooks (U32); SI's stores rebuilt (U31) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | `dd45243` | [log](logs/07a-the-adoption-checklists.md) |
 | ~~07b~~ | ~~Verification and close-out~~ | *withdrawn 2026-10-09, unwritten (U33); its work is 11's* | — | — | — | — |
-| 08a | [Two small fixes](08a-two-small-fixes.md) | `[02-an-unsupplied-sharded-table-raises-keyerror]` and `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]`, each with a test module; the contract's §9 | ✍️ yes, 2026-10-09 | ✅ 2026-10-10 | this commit | [log](logs/08a-two-small-fixes.md) |
+| 08a | [Two small fixes](08a-two-small-fixes.md) | `[02-an-unsupplied-sharded-table-raises-keyerror]` and `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]`, each with a test module; the contract's §9 | ✍️ yes, 2026-10-09 | ✅ 2026-10-10 | `f938844` | [log](logs/08a-two-small-fixes.md) |
 | 08b | Dispose engines on a refused open | `[05-a-refused-open-leaves-its-engines-undisposed]` | ⬜ | ⬜ | — | — |
 | 09 | Rewrite the package prose | `[01-package-prose-names-sgks-layout]`; the guard's `KNOWN_HITS` emptied (U17) | ⬜ | ⬜ | — | — |
 | 10 | Release `v0.2.1` | `0.2.1`; both ends and CI; the tag after green CI; the adoption addenda (U37) | ⬜ | ⬜ | — | — |
@@ -99,7 +99,8 @@ used for 01; [`orchestrator/prompt-02.md`](orchestrator/prompt-02.md) (`737ad6e`
 `74c6343`), used for 04a; [`orchestrator/prompt-04b.md`](orchestrator/prompt-04b.md) (`f79f254`,
 with an addendum at `7ee9b6e`), used for 04b; [`orchestrator/prompt-05.md`](orchestrator/prompt-05.md)
 (`f69921b`), used for 05; [`orchestrator/prompt-06.md`](orchestrator/prompt-06.md) (`0e524b4`),
-used for 06; [`orchestrator/prompt-07a.md`](orchestrator/prompt-07a.md) (`a816632`), used for 07a.
+used for 06; [`orchestrator/prompt-07a.md`](orchestrator/prompt-07a.md) (`a816632`), used for 07a;
+[`orchestrator/prompt-08a.md`](orchestrator/prompt-08a.md) (`484ad41`), used for 08a.
 
 **Orchestrator review of prompt 01 (2026-10-07).** Dispatched from `bd9f461` to one Opus
 subagent, with the note's §0 corrections and additions. Reviewed against its commit `8bc60a5`,
@@ -988,6 +989,96 @@ fact-checks, one per client, test the prompt's citations, which gave the note's 
   registering the class;
 - this paragraph and the notes line.
 
+**Orchestrator review of prompt 08a (2026-10-10).** Dispatched from `484ad41` to one Opus
+subagent, with the note's eight corrections and three additions. The run crossed midnight, so its
+records carry 2026-10-10. Reviewed against its commit `f938844`, with nothing landed after it.
+**Every check of the note's §3 passed**, and acceptance 1–5 are met. No stop condition fired.
+Nothing was pushed, and the tags are `v0.1.0` and `v0.2.0` only.
+
+*At dispatch.* The note's gate held at `484ad41`. The tree was clean, and the only worktree was
+this checkout. The suite gave `Ran 458 tests … OK` in `venv/`, the port check exited 0, and
+`black --check datastorekit docs` left 66 files unchanged. The clients were at SGK `b510bc9`
+(clean), CPBH `52142d7` (23 untracked entries) and SI `7bb3efd` (clean). `origin/main` was
+`102f225`, and no Ray process was up. While writing the note, the orchestrator applied both fixes
+to scratch exports of `8a1cae9` and probed them:
+- the prompt's refusals reproduced through the fixture and through the constructor;
+- the 458 passed at both ends;
+- the 458 also passed under (b), (d) and (e);
+- (d) inserts a new row on the pool key's shard (correction 1);
+- SI's vectorized gets pass a bare key (correction 4);
+- serials vary with the random controller (correction 5).
+
+*The checks.*
+1. **Scope.** `f938844` touches exactly the prompt's §7 list, 8 files. The ignored entries are
+   dispatch's. Each client's `HEAD` and `git status --short` are as at dispatch.
+2. **E1, the layer.** `git diff 8a1cae9 f938844 -- datastorekit/SQL/ShardedPool.py` is two hunks:
+   the guard at `:1026-1027`, after the unchanged membership test, and `{**value, **shard_key}` at
+   `:3311`. No message, comment or other line changes.
+3. **E2, by reading.** The 11 tests are §2.3's, plus a sixth pin in the first module (a matching
+   mapping, the agent's IMPLEMENTATION CHOICE). Each module stays in `tempfile` directories,
+   captures stdout, and checks that Ray was never initialised. Neither names a client.
+   - Test 4 compares the row found with the pool key's by serial, by its alias's serial, and as
+     not a new insert (correction 1).
+   - The constructor test calls `ShardedPool(...)` inside `cluster.active()`, once for each of the
+     four sharded classes left out (correction 3).
+   - No serial is a literal (correction 5).
+   - The vectorized module's `setUp` requires its two keys on different shards. That holds every
+     run: `_assign_shard_keys` gives each new key the least-loaded shard
+     (`ShardedPool.py:3556-3566`), not a random one.
+4. **E2, by running.** In exports of `f938844` with `ShardedPool.py` from `8a1cae9`:
+   - unfixed, the two modules give `FAILED (failures=2, errors=5)`. The first module's tests 1 and 2
+     error with `KeyError` (test 2 for each of its four classes), and the second's tests 1 and 3 fail
+     on the changed dicts;
+   - with the first fix alone, only the second module's two fail;
+   - with the second fix alone, only the first module's five error.
+5. **E3, both ends.** In `venv/`, `Ran 469 tests … OK`; the loader gives 11 for the two modules. In
+   the review's own offline venv (3.13.16 / 2.55.1 / 2.0.46, SQLite 3.53.4) with `git archive
+   f938844` installed editable, `Ran 469 tests … OK`, with 214 `ResourceWarning` lines against the
+   log's 188. The count moves with the collector (`[05-a-refused-open-leaves-its-engines-undisposed]`
+   records 172–194 over three runs of the 444), and these seven suites ran at once.
+6. **The checks.** The port check exits 0 with 04b's counts. `black --check datastorekit docs`
+   leaves 68 files unchanged. The layer guard passes with `KNOWN_HITS` at its one entry.
+7. **E4, the contract.** The diff is the header line, §9 with §9.1, and the marker at the end of
+   §1 row 6's superseded clause, and nothing else. Every line reference in §9.1 holds at
+   `f938844`. Its vectorized row supersedes no row, as correction 2 says.
+8. **E5, the breakages.** The five diffs, extracted from the log, apply both ways to their own
+   exports of `f938844`. Over the 469:
+   - (a): `FAILED (errors=5)`, the first module's tests 1 and 2;
+   - (b): `FAILED (failures=5)`, the same two;
+   - (c): `FAILED (failures=2)`, the second module's tests 1 and 3;
+   - (d): `FAILED (failures=1)`, test 4;
+   - (e): `FAILED (failures=2)`, tests 1 and 3.
+
+   Each is exactly as the log records it, and no other test fails.
+9. **E6, the clients.** The log's counts are correction 4's: SGK 17, CPBH 7, SI 15. No client
+   reads a payload list back, and no client changed.
+10. **E7, the records.**
+    - The log has every section of README §5.1, the port check's output, the test-by-test record,
+      the clients' commits and statuses, and the duplicate row under "Observations not acted on".
+    - The board's §3 holds two issues, and the two closed ones head §4, each with its "Closed"
+      line.
+    - The index has 2 rows on this repository and says 6.
+    - `prompts/INDEX.md` says 2.
+11. **Nothing left behind.** No Ray process. `origin` has `main` at `102f225` and the two tags.
+
+*Findings beyond the prompt*, recorded and not acted on:
+- (e) fails test 3 as well as test 1, since test 3 also requires the dicts unchanged (log §2 item
+  13). The prompt expected test 1 only.
+- The agent wrote the tests in the checkout and ran them there before applying the fixes, rather
+  than in a scratch export. No `git stash` was used, and nothing was committed in between (log
+  §2 item 10).
+- `docs/adoption/stochasticinstantons.md:255-256` still describes the in-place update, which was
+  true at `v0.2.0`. 10's addendum covers it (U37; log §6 item 4).
+
+*Issues.* `[02-an-unsupplied-sharded-table-raises-keyerror]` and
+`[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]` are closed (§4). Nothing is
+opened. The index is 6.
+
+*Residue fixed in this follow-up:*
+- "this commit" → `f938844` in the log, the board and `prompts/INDEX.md`;
+- README's header, and its §2 status for 08a;
+- this paragraph and the notes line.
+
 ## 2. Gates outside this repository (README §7)
 
 | Gate | Status |
@@ -1139,7 +1230,7 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
   - **Next step.** Copy, as the actor's keyed lookup does: `payload_data = [{**value,
     **shard_key} for value in payload_data]`, with a test that passes a list twice. Unassigned.
   - **Assigned (2026-10-09):** to prompt 08a of this campaign. U33, U35.
-  - **Closed (2026-10-10, prompt 08a)** (this commit, log 08a §1, §4). `object_get_vectorized`
+  - **Closed (2026-10-10, prompt 08a)** (`f938844`, log 08a §1, §4). `object_get_vectorized`
     sends copies, `payload_data = [{**value, **shard_key} for value in payload_data]`
     (`datastorekit/SQL/ShardedPool.py:3311` at 08a's tree), the key merged last as `update` did,
     so the caller's list and dicts are not changed. The new module
@@ -1159,7 +1250,7 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     unchanged.
   - **Next step.** Fix once rule 8 lifts (after 05), with a test that opens such a store. Unassigned.
   - **Assigned (2026-10-09):** to prompt 08a of this campaign. U33, U35.
-  - **Closed (2026-10-10, prompt 08a)** (this commit, log 08a §1, §4). The loop of
+  - **Closed (2026-10-10, prompt 08a)** (`f938844`, log 08a §1, §4). The loop of
     `_read_shard_data` skips the key-attribute comparison of a table the constructor does not
     supply (`datastorekit/SQL/ShardedPool.py:1026-1027` at 08a's tree), after the membership test
     that records it as not supplied, which is unchanged. The open is refused by the intended
