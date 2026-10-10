@@ -1,5 +1,5 @@
 """
-The inventory's declarations (prompts/datastore-generic, prompt 08; audit C1 rows 12 and 13).
+The inventory's declarations.
 
 Each factory declares how the inventory reads its class, as data (``inventory_spec()``); the layer
 derives which classes it reads and in what order (``inventory_classes``), and resolves a
@@ -9,12 +9,12 @@ polymorphic parent through the type map its referencing factory declares. These 
    not a plain dependency sort;
 2. on hand-built registries: a cycle and a parent with no spec are refused, by name; a polymorphic
    parent's classes are built before it; a malformed ``Parent`` is refused;
-3. ``resolve()`` and the report go through the declared type map;
+3. ``resolve()`` goes through the declared type map;
 4. ``store_inventory`` loads no project module when it runs (the fresh-interpreter tests of
    section 4). That it names no project package or table is checked, with the rest of the layer,
    by ``test_layer_is_generic``.
 
-No Ray; stores are built in temporary directories; nothing under ``var/``.
+No Ray; stores are built in temporary directories.
 """
 
 import json
@@ -44,8 +44,8 @@ from datastorekit.tests.client.registry import factories as _factories
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # the order the inventory reads the neutral client's classes in, measured on its registry
-# (extraction prompt 04b §2.2); the source's literal was its own inventory's order before its
-# prompt 08, when that was a hand-kept list
+# (extraction prompt 04b §2.2); the source's literal was its own inventory's order, from when that
+# was a hand-kept list
 ORDER = (
     "version",
     "store_tag",

@@ -1,6 +1,5 @@
 """
-One timestamp per replicated write, on every path that writes a replicated row
-(prompts/datastore-generic, prompt 03, R2).
+One timestamp per replicated write, on every path that writes a replicated row.
 
 The check at open compares every column of every replicated table, ``timestamp`` included. That is
 sound only if every path that writes a replicated row gives every shard's copy the same timestamp.
@@ -13,9 +12,9 @@ that no replicated row on any shard carries a shard's tick.
 
 1. the clean write (get, store, validate): ``test_replicated_write.TestCleanWrite.
    test_every_copy_is_row_identical``, which already runs under the ticking clock; not repeated;
-2. the repair at open of an interrupted get, store or validate, at every point of the
-   commit-point table: ``test_reconcile_at_open.TestKillAndReopen``, and the same repair followed
-   by the prune at open, ``TestPruningAfterRepair``;
+2. the repair at open of an interrupted get, store or validate, at every commit point:
+   ``test_reconcile_at_open.TestKillAndReopen``, and the same repair followed by the prune at
+   open, ``TestPruningAfterRepair``;
 3. the completion at open of an interrupted prune: ``test_prune_at_open.TestInterruptedPrune``;
 4. the prune at open: ``test_prune_at_open.TestUninterruptedPrune``;
 5. the version row's write, on a new store, under a new label, and its repair after an
@@ -25,8 +24,7 @@ that no replicated row on any shard carries a shard's tick.
    Those tests compare only the version rows, so each also ends here by comparing every
    replicated table of the last store it opened, whole rows, on every shard.
 
-No Ray is initialised; every store is built in a temporary directory, and nothing under ``var/``
-is opened.
+No Ray is initialised; every store is built in a temporary directory.
 """
 
 import unittest

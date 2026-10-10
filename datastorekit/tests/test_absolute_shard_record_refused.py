@@ -1,15 +1,14 @@
 """
-A primary whose ``shards`` records are **absolute paths** is refused by every reader, and neither
-it nor the store it names is read, written, moved or deleted.
-`prompts/datastore-generic` prompt 04 §2 L3.
+A primary whose ``shards`` records are **absolute paths** is refused by every reader, and neither it
+nor the store it names is read, written, moved or deleted.
 
 This is the safety property that the legacy-record tests used to guard. A primary written before
-``b04671f`` (2026-09-24) recorded its shards by absolute path, and a copy of such a primary still
-named the **original's** shards. On 2026-09-23 a pool opened on such a copy read and wrote the
-original (54 rows into the A3 baseline store). Before prompt 04 the property held because an
-absolute record was read by its final component, as a sibling of the primary. Since prompt 04 it
-holds because the record is refused: ``resolve_shard_path`` raises ``ValueError`` on anything but a
-bare file name, and every reader reports "Shard #N ... has an unusable record".
+shard records were bare file names recorded its shards by absolute path, and a copy of such a
+primary still named the **original's** shards, so that a pool opened on such a copy read and wrote
+the original. The property once held because an absolute record was read by its final component, as
+a sibling of the primary. It now holds because the record is refused: ``resolve_shard_path`` raises
+``ValueError`` on anything but a bare file name, and every reader reports "Shard #N ... has an
+unusable record".
 
 Two stores are built in a temporary directory, each with stand-in shard files (small placeholders
 holding a marker, as in ``shard_store_fixtures``; everything here is refused before any shard is
@@ -17,15 +16,16 @@ opened as a database):
 
 * **A**, whose records are bare names;
 * **B**, whose records are the absolute paths of A's existing shard files. B has shard files of its
-  own beside its primary, under the same names. This is the shape of the 2026-09-23 failure.
+  own beside its primary, under the same names. This is the shape of a copy of such a primary.
 
 For each entry point, B is refused, the error names shard #0 and "unusable record", and the whole
 tree, both stores, is unchanged: every file's content, every mtime, every directory entry.
 
 A third store, **C**, records absolute paths naming **its own** siblings, the shape every store
-written before ``b04671f`` held. It was read by name before prompt 04; it is refused now, like B.
+written before shard records were bare file names held. It was once read by name; it is refused now,
+like B.
 
-No Ray, no datastore, nothing under ``var/``.
+No Ray, no datastore.
 """
 
 import tempfile
@@ -120,8 +120,8 @@ class TestEveryReader(_TwoStores):
         self.assertRefused(lambda: read_pool(self.b), self.b_records[0], self.b)
 
     def test_a_primary_naming_its_own_siblings_is_refused_the_same_way(self):
-        """What every store written before ``b04671f`` held. One reader is enough: the others
-        go through the same resolver."""
+        """What every store written before shard records were bare file names held. One reader is
+        enough: the others go through the same resolver."""
         self.assertRefused(lambda: read_pool(self.c), self.c_records[0], self.c)
 
     def test_copy_store(self):

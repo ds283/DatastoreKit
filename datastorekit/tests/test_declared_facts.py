@@ -1,6 +1,5 @@
 """
-The replication facts the factories declare, and the layer's contract (prompts/datastore-generic,
-prompt 07; README §6.2, U4 and the user's choice for 07).
+The replication facts the factories declare, and the layer's contract.
 
 1. **The records.** ``build_schema`` carries ``owner_column``, ``monotone_flags`` and
    ``validated_column`` into the record of every class with a table, with their defaults where a
@@ -24,7 +23,7 @@ prompt 07; README §6.2, U4 and the user's choice for 07).
 9. No project name in ``ShardedPool.py``: checked, with every other file of the layer, by
    ``test_layer_is_generic``.
 
-No Ray, nothing under ``var/``.
+No Ray; every store is in a temporary directory.
 """
 
 import contextlib

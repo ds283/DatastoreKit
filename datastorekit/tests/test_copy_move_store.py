@@ -1,13 +1,10 @@
 """
 Copying and moving a closed store through ``ShardedPool.copy_store`` / ``move_store``.
-`prompts/datastore-portability` prompt 02 §2 P6 and §3 tests 2-7.
-
-Since prompt 01 a store's ``shards`` table holds bare file names, so moving a store's directory or
-renaming its primary alone already works.
-Renaming its shards as well needs the new names written into the table. That is what these two
-static methods do: they copy or rename the primary and its shards to a new stem and rewrite the
-destination's ``shards`` rows, in an order chosen so that a process that dies after any step leaves
-nothing that opens wrongly (the interruption table in `logs/02-copy-and-move-a-store.md`).
+A store's ``shards`` table holds bare file names, so moving a store's directory or renaming its
+primary alone already works. Renaming its shards as well needs the new names written into the table.
+That is what these two static methods do: they copy or rename the primary and its shards to a new
+stem and rewrite the destination's ``shards`` rows, in an order chosen so that a process that dies
+after any step leaves nothing that opens wrongly.
 
 Stores are built with ``shard_store_fixtures`` in temporary directories: a primary with the real
 five tables, and placeholder shard files holding a marker. Every "does this store open, and
@@ -41,7 +38,7 @@ from datastorekit.tests.shard_store_fixtures import (
 
 N_SHARDS = 3
 
-# the three layouts prompt §2 P6 asks for: (destination directory, destination stem)
+# the three layouts: (destination directory, destination stem)
 LAYOUTS = {
     "same directory, new stem": ("SRC", "renamed"),
     "new directory, same stem": ("C", "store"),
@@ -112,7 +109,7 @@ class _StoreCase(unittest.TestCase):
 
 
 class TestCopy(_StoreCase):
-    """Test 2: copy to a new directory under a new stem."""
+    """Copy to a new directory under a new stem."""
 
     def test_copy_to_a_new_directory_and_stem_reads_its_own_files(self):
         src = self.new_source()
@@ -176,8 +173,8 @@ class TestCopy(_StoreCase):
 
 
 class TestMove(_StoreCase):
-    """Test 4: move in each of the three layouts. The source names are gone and the destination
-    reads its own files."""
+    """Move in each of the three layouts. The source names are gone and the destination reads
+    its own files."""
 
     def _move(self, layout: str):
         src = self.new_source("SRC")
@@ -208,9 +205,9 @@ class TestMove(_StoreCase):
 
 
 class TestRefusals(_StoreCase):
-    """Test 5: every refusal of P6, before anything is written. Each asserts that the error names
-    the offending file, and that nothing under the temporary root was created, changed or
-    removed (a full listing with hashes and mtimes, before and after)."""
+    """Every refusal, before anything is written. Each asserts that the error names the
+    offending file, and that nothing under the temporary root was created, changed or removed
+    (a full listing with hashes and mtimes, before and after)."""
 
     def assertRefusal(self, mode: str, src, dst, *fragments):
         """One refusal, as a subtest, so that every case of a test is reported."""
@@ -405,10 +402,10 @@ def _fail_on_call(n: int, real, partial: bool = False):
 
 
 class TestInterruption(_StoreCase):
-    """Test 6: for every step of each operation, the step after it fails, and the state left
-    behind is what the log's interruption table says. Every store a later opener could find
-    either opens against the right files, is refused by the read-and-check, or is a destination
-    with shards and no primary (the constructor's guard). Each layout."""
+    """For every step of each operation, the step after it fails, and the state left behind is
+    the one each failure point names. Every store a later opener could find either opens
+    against the right files, is refused by the read-and-check, or is a destination with shards
+    and no primary (the constructor's guard). Each layout."""
 
     def _run(self, mode, layout, fail):
         """Build a source, run ``mode`` with the failure ``fail`` injected, and return
@@ -434,7 +431,7 @@ class TestInterruption(_StoreCase):
             "_write_shard_records",
             side_effect=OSError(errno.EIO, "injected failure"),
         )
-        # (row of the table, the failure, what the destination must be afterwards)
+        # (the failure point, the failure, what the destination must be afterwards)
         points = [
             (
                 "C1 dies before shard #0 is copied",
@@ -626,7 +623,7 @@ def _abort_second_update(primary: Path) -> None:
 
 
 class TestNothingElseIsTouched(_StoreCase):
-    """Test 7: a <stem>.manifest.json and an unrelated file beside the source stay where they are,
+    """A <stem>.manifest.json and an unrelated file beside the source stay where they are,
     unchanged, after a copy and after a move, and nothing of that name appears at the
     destination. The interface handles the primary and its shards and nothing else."""
 

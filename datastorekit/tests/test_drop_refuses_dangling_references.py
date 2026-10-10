@@ -1,26 +1,25 @@
 """
-A drop that would leave references is refused (prompts/datastore-generic-followup, prompt 01;
-README §6.1, decision 1).
+A drop that would leave references is refused.
 
-``--drop`` drops exactly the tables of the groups named. Production runs with foreign-key
-enforcement off, so SQLite accepts a drop that leaves other tables' rows naming rows that are gone,
-and a re-created table can then lease a serial that a stale row still names. A read-write
-``ShardedPool`` therefore refuses ``drop_tables`` unless every table that names one of them is
-among them. A reference is a foreign key **or** a parent a factory's ``inventory_spec`` declares,
-followed transitively (``Datastore.SQL.schema.dependent_tables``).
+A drop removes exactly the tables of the groups named. Production runs with foreign-key enforcement
+off, so SQLite accepts a drop that leaves other tables' rows naming rows that are gone, and a
+re-created table can then lease a serial that a stale row still names. A read-write ``ShardedPool``
+therefore refuses ``drop_tables`` unless every table that names one of them is among them. A
+reference is a foreign key **or** a parent a factory's ``inventory_spec`` declares, followed
+transitively (``datastorekit.SQL.schema.dependent_tables``).
 
 1. ``TestDependentTables`` -- ``dependent_tables`` on the client's registry, through its drop
-   groups: each group alone needs exactly the tables README §0.2 measured, in registry order; each
-   group with those tables, and every group together, needs nothing more; a declared parent with no
-   foreign key counts, a foreign key with no declared parent counts, and a table behind the first
-   level counts; a name the registry does not declare raises ``ValueError``.
+   groups: each group alone needs exactly the tables ``MEASURED`` names, in registry order; each
+   group with those tables, and every group together, needs nothing more; a declared parent with
+   no foreign key counts, a foreign key with no declared parent counts, and a table behind the
+   first level counts; a name the registry does not declare raises ``ValueError``.
 2. ``TestThePoolRefuses`` -- through the stand-in pool: a drop that leaves references is refused
    before any actor or engine exists, naming the tables given and every table that must go with
    them, on an existing store (whose files are unchanged) and on an absent one (no file is
    created); the undeclared-table refusal still comes first; a drop that names its dependents is
    accepted, and empties every table it names.
 
-No Ray, nothing under ``var/``.
+No Ray; every store is in a temporary directory.
 """
 
 import contextlib
@@ -40,7 +39,7 @@ from datastorekit.tests.real_store_fixtures import build_full_store
 from datastorekit.tests.client.registry import drop_groups, factories, tables_to_drop
 
 # the tables each group must be dropped with, in registry order, measured on the neutral client's
-# registry (extraction prompt 04b §2.2); the source's were its README §0.2's table
+# registry (extraction prompt 04b §2.2); the source's were measured on its own
 MEASURED = {
     "aliases": [
         "Tessera",
@@ -245,7 +244,7 @@ class TestThePoolRefuses(unittest.TestCase):
         self.assertEqual(list(directory.iterdir()), [])
 
     def test_an_undeclared_name_is_refused_first(self):
-        # Gadget alone would meet this prompt's refusal; the undeclared name comes first
+        # Gadget alone would meet the dependents' refusal; the undeclared name comes first
         self.assertNotEqual(dependent_tables(["Gadget"], factories), [])
         directory = self.root / "absent"
         directory.mkdir()

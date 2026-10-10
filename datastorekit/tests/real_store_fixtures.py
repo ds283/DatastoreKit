@@ -1,6 +1,6 @@
 """
 A small **real** ShardedPool store on disk, for tests of the read-only reader and what is built on
-it. No Ray, no actor, nothing under ``var/``.
+it, in a directory the caller gives. No Ray, no actor.
 
 ``shard_store_fixtures`` makes a primary with placeholder shards, which are text files and cannot
 be read as databases. This module makes shards that are SQLite databases:
@@ -17,22 +17,20 @@ be read as databases. This module makes shards that are SQLite databases:
   ``Trace`` with ``Trace_tags`` rows and ``TraceStep`` rows.
 
 **Adding rows.** The row sets are plain data: table name -> list of column -> value dicts, with
-explicit serials. A test (or prompt 02's inventory tests) adds rows by passing its own
-``replicated`` / ``sharded`` mappings to ``build_real_store``, usually built with ``with_rows``
-from the defaults. A ``timestamp`` column that a row leaves out is filled with ``FIXED_TIMESTAMP``,
-as ``Datastore._insert`` fills it with the time; every other value is the row's own.
+explicit serials. A test adds rows by passing its own ``replicated`` / ``sharded`` mappings to
+``build_real_store``, usually built with ``with_rows`` from the defaults. A ``timestamp`` column
+that a row leaves out is filled with ``FIXED_TIMESTAMP``, as ``Datastore._insert`` fills it with the
+time; every other value is the row's own.
 
 **A store whose schema differs.** ``build_real_store`` and ``build_full_store`` take
-``missing_tables``, ``missing_columns`` and ``extra_sql``, which build a shard that lacks a
-declared table or column, or has a table or column the code does not declare. The current code
-writes no such shard; the refusal tests use them to show that every reader refuses one by name
-(prompts/datastore-generic, prompt 05).
+``missing_tables``, ``missing_columns`` and ``extra_sql``, which build a shard that lacks a declared
+table or column, or has a table or column the code does not declare. The current code writes no such
+shard; the refusal tests use them to show that every reader refuses one by name.
 
-**The full store** (store-fingerprint prompt 02). ``build_full_store`` builds a store holding at
-least one row of every class of the structured inventory, with tags, unvalidated rows and value
-rows (``FULL_REPLICATED_ROWS``, ``FULL_SHARDED_ROWS``). It leaves the defaults above as they are.
-``relabel_serials`` gives the same content under other serials, and ``vary_row`` changes one column
-of one row.
+**The full store.** ``build_full_store`` builds a store holding at least one row of every class of
+the structured inventory, with tags, unvalidated rows and value rows (``FULL_REPLICATED_ROWS``,
+``FULL_SHARDED_ROWS``). It leaves the defaults above as they are. ``relabel_serials`` gives the same
+content under other serials, and ``vary_row`` changes one column of one row.
 
 Ported by prompt 04a of the extraction campaign: the mechanics are the source's, and the rows are
 the neutral client's, designed with ``test_store_inventory``, which addresses them.
@@ -376,13 +374,13 @@ def file_state(directory: Path) -> Tuple[List[str], Dict[str, Tuple[str, int, in
 
 
 # ---------------------------------------------------------------------------------------------
-# a full store: every inventory class (store-fingerprint prompt 02)
+# a full store: every inventory class
 # ---------------------------------------------------------------------------------------------
 #
 # ``build_full_store`` builds a store holding at least one row of every class of the structured
 # inventory (datastorekit/store_inventory.py inventory_classes), with tags wherever the class has an
-# association table, unvalidated rows, and value rows. It adds to the defaults above and leaves
-# them as they are, so prompt 01's tests read the store they were written against.
+# association table, unvalidated rows, and value rows. It adds to the defaults above and leaves them
+# as they are, so a test written against the defaults reads the store it was written against.
 #
 # Every row states the columns of its key and its references explicitly. Any other non-nullable
 # column a row leaves out is filled by ``fill_required`` with a placeholder of its type.
@@ -390,8 +388,8 @@ def file_state(directory: Path) -> Tuple[List[str], Dict[str, Tuple[str, int, in
 # ``relabel_serials`` gives the same content under different serials, and ``vary_row`` changes one
 # column of one row, so that tests can build two stores that differ in exactly one respect.
 #
-# The neutral rows (prompt 04a). Every serial of a sharded table is unique across the shards, as a
-# store's are. The rows hold:
+# The neutral rows (extraction prompt 04a). Every serial of a sharded table is unique across the
+# shards, as a store's are. The rows hold:
 #
 # - two version rows; a run tag ("fixture-run") that every tagged record carries, and a tag no row
 #   carries ("unused-tag");

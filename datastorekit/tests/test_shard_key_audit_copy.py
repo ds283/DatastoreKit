@@ -1,18 +1,17 @@
 """
-``tools/shard_key_audit.py`` finds the shard it attaches exactly as ``ShardedPool`` does, so
-auditing a **copied** store checks the copy's shard 0 and not the original's.
-`prompts/datastore-portability` prompt 01 §2 P4 and §6 item 5.
+``datastorekit.tools.shard_key_audit`` finds the shard it attaches exactly as ``ShardedPool`` does,
+so auditing a **copied** store checks the copy's shard 0 and not the original's.
 
-Before prompt 01 the tool attached ``Path(shards.filename)`` as it stood. On a copied primary that
-is the original's shard, so the audit of the copy silently reported on the original. The tool now
-resolves the record through ``Datastore/shard_paths.py``, the same resolver ``ShardedPool`` uses.
+The tool once attached ``Path(shards.filename)`` as it stood. On a copied primary that is the
+original's shard, so the audit of the copy silently reported on the original. The tool now resolves
+the record through ``datastorekit/shard_paths.py``, the same resolver ``ShardedPool`` uses.
 
-The tool must also stay a standalone, read-only script: it is run here as
-``python tools/shard_key_audit.py <primary>`` from an unrelated working directory with no
-``PYTHONPATH``, and must not import ray or sqlalchemy.
+The tool must also stay read-only: it is run here as
+``python -m datastorekit.tools.shard_key_audit <primary>``, from an unrelated working directory
+with no ``PYTHONPATH``, and must not import ray or sqlalchemy.
 
 Everything is in a temporary directory; no Ray, no datastore. This module does not import
-``Datastore.shard_paths``, so that it can be run against the unfixed tool for the
+``datastorekit.shard_paths``, so that it can be run against the unfixed tool for the
 deliberate-breakage record.
 """
 

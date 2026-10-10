@@ -56,19 +56,18 @@ class Datastore:
         """
         Initialize an SQL datastore object.
 
-        ``factories`` is the registry of storable classes, name -> factory, that the client gives
-        (prompts/datastore-generic, prompt 06): the actor registers it and builds every table from
-        it, and imports none. ``serial_batch_sizes`` maps a table to how many serials the actor
-        leases from the broker at a time; a table it does not name leases ``SerialPoolManager``'s
-        default. ``drop_tables`` names the tables to drop when an existing file is opened
-        read-write, in any order: the actor drops them in ``schema.drop_order``'s order, and refuses
-        a name its registry does not declare as a table before dropping anything (``_drop_tables``).
+        ``factories`` is the registry of storable classes, name -> factory, that the client gives:
+        the actor registers it and builds every table from it, and imports none.
+        ``serial_batch_sizes`` maps a table to how many serials the actor leases from the broker at
+        a time; a table it does not name leases ``SerialPoolManager``'s default. ``drop_tables``
+        names the tables to drop when an existing file is opened read-write, in any order: the actor
+        drops them in ``schema.drop_order``'s order, and refuses a name its registry does not
+        declare as a table before dropping anything (``_drop_tables``).
 
-        The constructor neither looks up nor inserts the version row
-        (prompts/a3-v2-readiness, prompt 02). The version row is replicated, so ShardedPool
-        finds it, or writes it once through its recorded replicated write, after every actor
-        exists, and then gives each actor its serial with ``set_version``. Until then every
-        insert into a class whose rows carry a version serial is refused (``_insert``).
+        The constructor neither looks up nor inserts the version row. The version row is replicated,
+        so ShardedPool finds it, or writes it once through its recorded replicated write, after
+        every actor exists, and then gives each actor its serial with ``set_version``. Until then
+        every insert into a class whose rows carry a version serial is refused (``_insert``).
         ``version_label`` is kept only to name the label in that refusal.
 
         ``replicated_tables`` are the classes the pool replicates. The prune at startup of a
@@ -76,13 +75,12 @@ class Datastore:
         (``ShardedPool._prune_replicated_tables``); for those classes ``_validate_on_startup``
         here reports only, whatever ``prune_unvalidated`` is.
 
-        ``read_only`` (prompts/a3-v2-readiness, prompt 03; ShardedPool passes it) opens the file
-        ``mode=ro`` and writes nothing: no file is created, no table is dropped or created, and
-        ``_validate_on_startup`` only reports (``_open_read_only``). Every factory's ``build`` is
-        handed an inserter that raises ``ReadOnlyMiss`` instead of inserting
-        (``_refuse_insert``); ``object_store`` and ``object_validate`` raise ``ReadOnlyWrite``;
-        and a write that still reaches SQLite, which the ``mode=ro`` file refuses, is re-raised as
-        ``ReadOnlyWrite`` (``_read_only_refusal``).
+        ``read_only`` (ShardedPool passes it) opens the file ``mode=ro`` and writes nothing: no file
+        is created, no table is dropped or created, and ``_validate_on_startup`` only reports
+        (``_open_read_only``). Every factory's ``build`` is handed an inserter that raises
+        ``ReadOnlyMiss`` instead of inserting (``_refuse_insert``); ``object_store`` and
+        ``object_validate`` raise ``ReadOnlyWrite``; and a write that still reaches SQLite, which
+        the ``mode=ro`` file refuses, is re-raised as ``ReadOnlyWrite`` (``_read_only_refusal``).
         """
         self._timeout = timeout
         self._my_name = my_name
@@ -121,7 +119,7 @@ class Datastore:
         self._inserters: _InserterMappingType = {}
         self._schema = {}
 
-        # A READ-ONLY ACTOR (prompts/a3-v2-readiness, prompt 03): nothing below this block runs
+        # A READ-ONLY ACTOR: nothing below this block runs
         self._read_only: bool = bool(read_only)
         if self._read_only:
             self._open_read_only(drop_tables)
@@ -149,10 +147,10 @@ class Datastore:
 
     def set_version(self, serial: int):
         """
-        Set the serial of the version row, which ShardedPool has found or written on every shard
-        (prompts/a3-v2-readiness, prompt 02). Every later insert into a class with a ``version``
-        column carries it. Setting it again to the same serial is harmless; setting a different
-        one raises, since rows already inserted carry the first.
+        Set the serial of the version row, which ShardedPool has found or written on every shard.
+        Every later insert into a class with a ``version`` column carries it. Setting it again to
+        the same serial is harmless; setting a different one raises, since rows already inserted
+        carry the first.
 
         It also sets the lookup serial, which keys the lookups of a class whose factory declares
         ``key_on_version`` (``set_lookup_version``).
@@ -189,7 +187,7 @@ class Datastore:
             )
         self._lookup_serial = serial
 
-    # A READ-ONLY ACTOR (prompts/a3-v2-readiness, prompt 03)
+    # A READ-ONLY ACTOR
     #
     # Built by ShardedPool(read_only=True) after the pool has refused journals, compared the
     # replicated tables and found the version row, all on mode=ro files. The actor opens its own
@@ -406,8 +404,9 @@ class Datastore:
                     f"Duplicate registered factory for storable class '{cls_name}'"
                 )
 
-        # the tables and schema records come from the one schema builder (Datastore/SQL/schema.py);
-        # the actor adds only the inserters, which are bound to its own _insert
+        # the tables and schema records come from the one schema builder
+        # (datastorekit/SQL/schema.py); the actor adds only the inserters, which are bound to its
+        # own _insert
         built = build_schema(self._metadata, self._factories)
 
         for cls_name, schema in built.records.items():
@@ -438,7 +437,7 @@ class Datastore:
 
     def _drop_tables(self, tables):
         """
-        Drop the named tables that this shard holds (prompts/datastore-generic, prompt 06).
+        Drop the named tables that this shard holds.
 
         A name the registry does not declare as a table raises ``RuntimeError``, naming it, before
         anything is dropped. The declared tables are dropped in ``drop_order``'s order, derived
@@ -472,10 +471,10 @@ class Datastore:
     def _validate_on_startup(self):
         """
         Report the unvalidated rows of every class that validates at startup, and under
-        ``prune_unvalidated`` prune those of the sharded classes. A replicated class is never
-        pruned here: its prune is the pool's, under a record, made before this actor existed
-        (prompts/a3-v2-readiness, prompt 02), and an actor that deleted a replicated row from its
-        own shard would leave the shards different with no record to say which is right.
+        ``prune_unvalidated`` prune those of the sharded classes. A replicated class is never pruned
+        here: its prune is the pool's, under a record, made before this actor existed, and an actor
+        that deleted a replicated row from its own shard would leave the shards different with no
+        record to say which is right.
         """
         printed_header = False
 
@@ -512,10 +511,10 @@ class Datastore:
         Get-or-insert one object (keyword payload) or several (``payload_data``).
 
         ``insert_timestamp``, when given, is the timestamp every row this call inserts is stamped
-        with, in place of ``datetime.now()``. ShardedPool passes one per replicated write, the
-        same to every shard, so that copies of a replicated row are identical
-        (prompts/datastore-integrity, prompt 01). It is a per-call argument and never actor state.
-        Without it the call behaves exactly as before; no sharded write passes it.
+        with, in place of ``datetime.now()``. ShardedPool passes one per replicated write, the same
+        to every shard, so that copies of a replicated row are identical. It is a per-call argument
+        and never actor state. Without it the call behaves exactly as before; no sharded write
+        passes it.
         """
         if isinstance(ObjectClass, str):
             cls_name = ObjectClass
@@ -580,7 +579,7 @@ class Datastore:
                 )
                 print(f"|  payload data = {payload_data}")
                 print(f"|  {e}")
-                # a read-only actor: SQLite's refusal of a write is a ReadOnlyWrite (prompt 03)
+                # a read-only actor: SQLite's refusal of a write is a ReadOnlyWrite
                 self._read_only_refusal(e, "object_get", cls_name)
                 raise e
 
@@ -653,7 +652,7 @@ class Datastore:
                 )
                 print(f"|  payload data = {payload}")
                 print(f"|  {e}")
-                # a read-only actor: SQLite's refusal of a write is a ReadOnlyWrite (prompt 03)
+                # a read-only actor: SQLite's refusal of a write is a ReadOnlyWrite
                 self._read_only_refusal(e, "object_read_batch", cls_name)
                 raise e
 
@@ -668,7 +667,7 @@ class Datastore:
         nothing else. A replica's store() may raise ReplicationMismatch, which does not know its
         shard; it is re-raised here naming this actor.
         """
-        # a read-only actor stores nothing (prompts/a3-v2-readiness, prompt 03)
+        # a read-only actor stores nothing
         if getattr(self, "_read_only", False):
             items = objects if isinstance(objects, (list, tuple)) else [objects]
             raise ReadOnlyWrite(
@@ -742,7 +741,7 @@ class Datastore:
         override travels in the call's arguments and is never kept on the actor, so one call's
         timestamp cannot leak into the next.
         """
-        # a read-only actor's inserters all refuse, whatever the timestamp (prompt 03)
+        # a read-only actor's inserters all refuse, whatever the timestamp
         if getattr(self, "_read_only", False):
             return self._inserters
         if insert_timestamp is None:
@@ -844,7 +843,7 @@ class Datastore:
             return reported_serial
 
     def object_validate(self, objects):
-        # a read-only actor validates nothing (prompts/a3-v2-readiness, prompt 03)
+        # a read-only actor validates nothing
         if getattr(self, "_read_only", False):
             items = objects if isinstance(objects, (list, tuple)) else [objects]
             raise ReadOnlyWrite(

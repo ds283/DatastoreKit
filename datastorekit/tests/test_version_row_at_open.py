@@ -1,5 +1,5 @@
 """
-The version row, written through the recorded write (prompts/a3-v2-readiness, prompt 02, W1–W2).
+The version row, written through the recorded write.
 
 ``Datastore.__init__`` no longer looks up or inserts the version row. ``ShardedPool.__init__``,
 once every actor exists, reads the label's row from the shard files without writing anything,
@@ -7,12 +7,12 @@ writes it once through ``_get_impl_replicated_table`` (and so through ``_replica
 a ``replication_in_flight`` record) only when no shard holds it, and then calls ``set_version`` on
 every actor. Until then an actor refuses every insert into a class with a ``version`` column.
 These tests drive the real ``ShardedPool``, ``Datastore``, factories and broker on stand-in shards
-(``Datastore.tests.standin_pool``):
+(``datastorekit.tests.standin_pool``):
 
 1. a new store: the row is written once, through the recorded write, and no actor constructor
    inserts it; every versioned row stored afterwards carries its serial, on every shard;
-2. a new label on an existing store (audit V1 case 3), interrupted after the controlling shard's
-   get commits, before it commits, and on one replica only: the next open completes it;
+2. a new label on an existing store, interrupted after the controlling shard's get commits,
+   before it commits, and on one replica only: the next open completes it;
 3. a new store's first open interrupted at the version write, after every shard file exists: the
    next open succeeds and writes the row;
 4. ``_insert`` before ``set_version`` raises, names the class, takes no serial and writes nothing;
@@ -23,8 +23,7 @@ These tests drive the real ``ShardedPool``, ``Datastore``, factories and broker 
 
 A clean reopen under a label the store holds writes nothing: that is
 ``test_reconcile_at_open.TestCleanStoreUntouched`` and the second-reopen check of
-``TestKillAndReopen``, unchanged. Every store is built in a temporary directory; nothing under
-``var/`` is opened.
+``TestKillAndReopen``, unchanged. Every store is built in a temporary directory.
 """
 
 import contextlib
@@ -287,7 +286,7 @@ class TestNewStore(_VersionTestCase):
 
 
 # ------------------------------------------------------------------------------------------------
-# 2. a new label on an existing store (audit V1 case 3)
+# 2. a new label on an existing store
 # ------------------------------------------------------------------------------------------------
 
 

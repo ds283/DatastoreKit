@@ -1,7 +1,6 @@
 """
-A store whose files differ from what the code declares is refused (prompts/datastore-generic,
-prompt 05, S1–S3): one comparison, ``Datastore.SQL.schema.schema_differences``, and one refusal,
-``StoreSchemaMismatch``.
+A store whose files differ from what the code declares is refused: one comparison,
+``datastorekit.SQL.schema.schema_differences``, and one refusal, ``StoreSchemaMismatch``.
 
 1. ``schema_differences``: every shard and the primary of ``build_real_store`` and
    ``build_full_store``, and of a store a fresh ``ShardedPool`` created, have no difference; each of
@@ -10,12 +9,12 @@ prompt 05, S1–S3): one comparison, ``Datastore.SQL.schema.schema_differences``
    declaration or file order; the comparison issues no write.
 2. The reader: a refusal yields nothing and disposes every engine it made. (Each kind is refused
    by name in ``test_store_reader.TestADifferingSchemaIsRefused``.)
-3. ``read_inventory`` refuses a store missing a table, as ``store fingerprint`` does through it.
+3. ``read_inventory``, and so anything built on it, refuses a store missing a table.
 4. The read-write open, through ``standin_pool``: an absent column, an extra column and an extra
    table are each refused, naming the shard, before any actor is constructed and before the
    ``replication_in_flight`` record is read, with every file unchanged; a prune record left on the
    primary is not completed.
-5. U1: a read-write open of a shard that lacks tables opens, and the actors create them. The
+5. A read-write open of a shard that lacks tables opens, and the actors create them. The
    ``samples`` tables dropped from one shard (an interrupted drop of a sharded class), the
    replicated ``routing_rule`` dropped from one shard (an interrupted drop of a replicated
    class), and one shard lacking half its tables with no version row anywhere (an interrupted
@@ -26,7 +25,7 @@ prompt 05, S1–S3): one comparison, ``Datastore.SQL.schema.schema_differences``
    ``replication_in_flight`` table is
    ``test_reconcile_at_open.TestNoRecordRefuses.test_a_primary_without_the_record_table_is_refused``.)
 
-No Ray; every store is built in a temporary directory, and nothing under ``var/`` is opened.
+No Ray; every store is built in a temporary directory.
 """
 
 import contextlib
@@ -408,8 +407,7 @@ class TestTheReadWriteOpenRefuses(_PoolTestCase):
 
 
 class TestTheReadWriteOpenRecoversAnAbsentTable(_PoolTestCase):
-    """U1 (README §6.2 of prompts/datastore-generic): a read-write open reads a table a shard
-    lacks as empty, and the actors create it."""
+    """A read-write open reads a table a shard lacks as empty, and the actors create it."""
 
     def assert_opens_and_completes(self, primary, files):
         pool, _ = self.cluster.open_pool_output(primary)

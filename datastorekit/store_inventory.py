@@ -1,11 +1,11 @@
 """
 A structured inventory of a **closed** ShardedPool store: what it holds, named by physical labels.
 
-``read_inventory(primary, factories)`` opens the store with ``open_read_only`` (prompt 01) and
-returns a ``StoreInventory``. ``factories`` is the registry of storable classes, which the caller
-gives (prompts/datastore-generic, prompt 06). For each class it holds ``records``, their
-``count``, the earliest and latest ``timestamp`` (for display only: no timestamp is in any record)
-and ``problems``, a list of named strings. It reads; it never writes, and it needs no Ray.
+``read_inventory(primary, factories)`` opens the store with ``open_read_only`` and returns a
+``StoreInventory``. ``factories`` is the registry of storable classes, which the caller gives. For
+each class it holds ``records``, their ``count``, the earliest and latest ``timestamp`` (for display
+only: no timestamp is in any record) and ``problems``, a list of named strings. It reads; it never
+writes, and it needs no Ray.
 
 **A record** (``Record``) is a small JSON-safe object:
 
@@ -16,7 +16,7 @@ and ``problems``, a list of named strings. It reads; it never writes, and it nee
   identity;
 - ``tags``: the sorted tuple of the tag labels on the row's association rows, ``()`` where the
   class has no association table. The tag table and its columns are the layer's own
-  (``Datastore.contract``);
+  (``datastorekit.contract``);
 - ``validated``: the row's flag, or ``None`` where the class has no such column;
 - ``value_count``: the number of rows in the class's value table whose parent is this row, or
   ``None`` where the class has none. The value tables are counted, one ``GROUP BY`` per table per
@@ -27,9 +27,9 @@ without changing what they are.
 
 **Who defines identity.** Each factory declares its key, as data, in a static ``inventory_spec()``
 beside its existing ``inventory()``: an ``InventorySpec`` naming the leaf columns, the parent
-references and the association and value tables (prompts/datastore-generic, prompt 08). A factory
-whose class is not in the inventory declares none (``SQLAFactoryBase.inventory_spec`` returns
-``None``). This module does the reading, in ``read_records``.
+references and the association and value tables. A factory whose class is not in the inventory
+declares none (``SQLAFactoryBase.inventory_spec`` returns ``None``). This module does the reading,
+in ``read_records``.
 
 **Which classes, in which order.** The classes are those of the registry that declare a spec, and
 their order is derived from what the specs declare (``inventory_classes``): first the classes that
@@ -46,9 +46,9 @@ column: ``Parent(column, type_column=..., types={type value: class, ...})``. The
 factory declares the map; the layer knows only that one column names the class and another holds
 the serial.
 
-**Floats (decision D1).** ``canonical`` is the one function that turns a leaf into its canonical
-form. A float becomes ``float.hex`` of the value **as stored**; an integer, string, boolean or
-``None`` is kept as it is. The lookups match floats within 1e-7; the key records the stored bits.
+**Floats.** ``canonical`` is the one function that turns a leaf into its canonical form. A float
+becomes ``float.hex`` of the value **as stored**; an integer, string, boolean or ``None`` is kept as
+it is. The lookups match floats within 1e-7; the key records the stored bits.
 
 **Shards.** A sharded class is the union of every shard's records. A replicated class is read from
 every shard and compared on key, tags, validated flag and value count; its records are the
@@ -69,19 +69,18 @@ repaired.
   member rows. They are not records;
 - ``orphan-member``: member rows of a ``ParentSet`` table whose owning row is not on their shard.
 
-**A set of parents** (``ParentSet``, prompts/datastore-integrity prompt 09b). A row may be
-assembled from several parent rows, recorded in a member table with one member row per parent
-combination, each naming the row that owns it. Such a key field's value is the digest of its
-member fields' names and the sorted list of its resolved members, each member the tuple, in those
-fields' order, of the reference digests of the rows it names (``None`` for a nullable field that
-names none). Like every parent reference it is formed from the parents' own identities, never
-their serials; the members are kept beside the records, in ``ClassInventory.parent_sets``, so that
-a display can render the set by its physical labels. The member table is read once per shard,
-read-only, as the tag and value tables are.
+**A set of parents** (``ParentSet``). A row may be assembled from several parent rows, recorded in a
+member table with one member row per parent combination, each naming the row that owns it. Such a
+key field's value is the digest of its member fields' names and the sorted list of its resolved
+members, each member the tuple, in those fields' order, of the reference digests of the rows it
+names (``None`` for a nullable field that names none). Like every parent reference it is formed from
+the parents' own identities, never their serials; the members are kept beside the records, in
+``ClassInventory.parent_sets``, so that a display can render the set by its physical labels. The
+member table is read once per shard, read-only, as the tag and value tables are.
 
-This module imports only the standard library, ``sqlalchemy`` and ``Datastore.contract`` at module
-scope, so a factory can import it from inside its ``inventory_spec``. The reader is imported inside
-``read_inventory``, and the factory registry is given to it.
+This module imports only the standard library, ``sqlalchemy`` and ``datastorekit.contract`` at
+module scope, so a factory can import it from inside its ``inventory_spec``. The reader is imported
+inside ``read_inventory``, and the factory registry is given to it.
 """
 
 import contextlib
@@ -120,8 +119,7 @@ _EXAMPLES = 5
 
 def canonical(value: Any) -> Any:
     """
-    The canonical form of one leaf (decision D1). **This is the only code that formats a float for
-    a key.**
+    The canonical form of one leaf. **This is the only code that formats a float for a key.**
 
     A float becomes ``float.hex`` of the value as stored. An integer, string, boolean or ``None``
     is kept as it is. Anything else raises ``TypeError``: no other kind of leaf is expected, and a
@@ -218,14 +216,13 @@ class Parent:
       resolved. ``type_column`` is read with the reference, and must also be one of the class's
       leaves, so that a key carries the type its reference was resolved through.
 
-    ``nullable``: whether a NULL in ``column`` is a value of the key rather than a missing parent.
-    A NULL there gives the key field ``None`` (prompts/datastore-integrity prompt 07: a row
-    computed without the optional parent). On a parent that is not nullable a NULL is what it
-    always was, a parent that cannot be resolved.
+    ``nullable``: whether a NULL in ``column`` is a value of the key rather than a missing parent. A
+    NULL there gives the key field ``None`` (a row computed without the optional parent). On a
+    parent that is not nullable a NULL is what it always was, a parent that cannot be resolved.
 
-    ``cross_shard``: the parent row may be on another shard than the child's
-    (prompts/datastore-integrity prompt 09a). The serial is then resolved against the parent
-    class's records on **every** shard (``ShardContext.all_digests``), not this shard's alone.
+    ``cross_shard``: the parent row may be on another shard than the child's. The serial is then
+    resolved against the parent class's records on **every** shard (``ShardContext.all_digests``),
+    not this shard's alone.
     The resolved identity is the parent's own reference digest, as for a same-shard parent, never
     its serial. A serial that no shard holds, or that two shards hold with different records, is
     an unresolved parent."""
@@ -270,8 +267,7 @@ class Parent:
 @dataclass(frozen=True)
 class ParentSet:
     """A key field whose value is a **set** of parent references, one member per row of
-    ``table`` whose ``owner`` column holds the child's serial (prompts/datastore-integrity prompt
-    09b).
+    ``table`` whose ``owner`` column holds the child's serial.
 
     ``members`` maps each field of a member to a ``Parent``, resolved as a key parent is, within
     this shard or, for a ``cross_shard`` one, on every shard. A member names its class (``of``):

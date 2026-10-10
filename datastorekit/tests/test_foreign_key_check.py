@@ -1,15 +1,14 @@
 """
-Tests for prompt 06 of ``prompts/datastore-integrity`` (board item S4): every shard of a store
-written the way production writes it passes SQLite's own ``PRAGMA foreign_key_check`` with no row
-(docs/datastore-integrity-audit.md §1, §2.1, §2.2).
+Every shard of a store written the way production writes it passes SQLite's own ``PRAGMA
+foreign_key_check`` with no row.
 
 Nothing in production turns foreign-key enforcement on (``PRAGMA foreign_keys`` reads 0), so a
 declared foreign key is documentation, and a wrong one is a false statement nothing checks.
 ``foreign_key_check`` works whether or not enforcement is on, so this test changes nothing about
-production's connections. It would have caught ``[00-quadsource-tq-serial-has-the-wrong-foreign-key]``
-(a member's column declared into its owner's table but holding a serial of another table), given
-rows are ones the wrong key does not satisfy by coincidence (below). Here the member is
-``Sample_members.tessera_serial``, declared into ``Tessera``; the wrong key would name ``Sample``.
+production's connections. It catches a member's column declared into its owner's table but holding a
+serial of another table, given rows the wrong key does not satisfy by coincidence (below). Here the
+member is ``Sample_members.tessera_serial``, declared into ``Tessera``; the wrong key would name
+``Sample``.
 
 What is checked, and on which stores:
 
@@ -42,7 +41,7 @@ name a row on another shard:
 It also cannot see a *right-looking wrong* reference: a key that names a table that does hold the
 serial on that shard by coincidence passes (the reason for the added row above).
 
-No Ray, nothing under ``var/``: every store is in a temporary directory.
+No Ray: every store is in a temporary directory.
 """
 
 import sqlite3

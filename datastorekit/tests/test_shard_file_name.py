@@ -1,13 +1,12 @@
 """
-The one shard naming rule, ``Datastore/shard_paths.py`` ``shard_file_name``.
-`prompts/datastore-portability` prompt 02 §2 P5 and §3 test 1.
+The one shard naming rule, ``datastorekit/shard_paths.py`` ``shard_file_name``.
 
-Until prompt 02 the constructor named shard *i* of a new store inline, as
-``primary.with_stem(f"{stem}-shard{i:04d}")``, and ``shard_store_fixtures.write_new_store``
-repeated the pattern. Now both call ``shard_file_name``, and so does ``ShardedPool.copy_store`` /
-``move_store`` when it names a destination's shards. New stores must be named exactly as before:
-the expected names below are literals, spelled out on purpose, because they are what the function
-is tested against.
+The constructor once named shard *i* of a new store inline, as
+``primary.with_stem(f"{stem}-shard{i:04d}")``, and ``shard_store_fixtures.write_new_store`` repeated
+the pattern. Now both call ``shard_file_name``, and so does ``ShardedPool.copy_store`` /
+``move_store`` when it names a destination's shards. New stores must be named exactly as before: the
+expected names below are literals, spelled out on purpose, because they are what the function is
+tested against.
 
 No Ray, no datastore.
 """
@@ -47,7 +46,7 @@ class TestShardFileName(unittest.TestCase):
             with self.subTest(primary=primary, serial=serial):
                 self.assertEqual(shard_file_name(primary, serial), expected)
                 self.assertEqual(shard_file_name(Path(primary), serial), expected)
-                # and the expression the constructor used before prompt 02, verbatim
+                # and the expression the constructor once used, verbatim
                 p = Path(primary)
                 self.assertEqual(
                     p.with_stem(f"{p.stem}-shard{serial:04d}").name, expected

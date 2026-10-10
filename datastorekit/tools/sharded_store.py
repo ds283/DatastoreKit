@@ -19,11 +19,10 @@ Three limits, by design:
   journal, which leaves no file while the store is idle. Checking that nothing is running against
   the store is the caller's job.
 * A registry-level tool is the place that does both: carries the store's manifest with it, and
-  checks that no running job names the store (prompts/datastore-portability/README.md
-  sections 6.3-6.4). This script does not consult the registry.
+  checks that no running job names the store. This script does not consult the registry.
 
-It imports ShardedPool, and so ray, but never initialises Ray. It puts its own repository root on
-sys.path, so it runs from any directory with no PYTHONPATH.
+It imports ShardedPool, and so ray, but never initialises Ray. It is run as
+python -m datastorekit.tools.sharded_store with the package installed, and changes no sys.path.
 """
 
 import argparse

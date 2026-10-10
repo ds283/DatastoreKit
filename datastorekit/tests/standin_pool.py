@@ -1,10 +1,9 @@
 """
-A real ``ShardedPool`` on stand-in shards: no Ray, nothing under ``var/``.
+A real ``ShardedPool`` on stand-in shards, with no Ray.
 
-The pattern is ``docs/datastore-integrity-audit/replicated_write_fault_probe.py`` (campaign
-``prompts/datastore-integrity`` README §5 rule 9), made reusable so that later prompts import it
-rather than copy it. What is real: ``ShardedPool``, the ``Datastore`` actor code, every factory,
-the ``SerialPoolBroker`` and SQLite on disk. What is stood in:
+The pattern is the source repository's fault probe of the replicated write, made reusable so that
+test modules import it rather than copy it. What is real: ``ShardedPool``, the ``Datastore`` actor
+code, every factory, the ``SerialPoolBroker`` and SQLite on disk. What is stood in:
 
 - the actor classes. ``ShardedPool``'s references to ``Datastore`` and ``SerialPoolBroker`` are
   replaced by stand-ins whose ``.options(...).remote(...)`` builds the *undecorated* class
@@ -192,8 +191,8 @@ class _StandinRandom:
 
     def randrange(self, n):
         cluster = self._cluster
-        # added by a3-v2-readiness prompt 02: inside StandinCluster.pin_controller, the draw is
-        # resolved against the pool making the write, which may still be under construction
+        # inside StandinCluster.pin_controller, the draw is resolved against the pool making the
+        # write, which may still be under construction
         writing = getattr(cluster, "_writing_pool", None)
         if (
             getattr(cluster, "open_controller", None) is not None
@@ -222,8 +221,8 @@ class StandinCluster:
         # the shard id to make the controlling shard, or None for a random draw
         self.controller: Optional[int] = None
         self.pool = None
-        # added by a3-v2-readiness prompt 02 (pin_controller): the shard id pinned inside the
-        # block, and the pool whose replicated write is running
+        # pin_controller's state: the shard id pinned inside the block, and the pool whose
+        # replicated write is running
         self.open_controller: Optional[int] = None
         self._writing_pool = None
 
@@ -249,11 +248,11 @@ class StandinCluster:
     @contextlib.contextmanager
     def pin_controller(self, shard_id: int):
         """
-        Added by a3-v2-readiness prompt 02. Inside the block, the controlling shard of every
-        replicated write is ``shard_id``, resolved against the pool making the write rather than
-        against ``self.pool``. A write made inside ``ShardedPool``'s constructor (the version
-        row, since that prompt) has no ``self.pool`` to resolve against: ``open_pool`` sets it
-        only once the constructor returns. ``controller`` and its behaviour are unchanged.
+        Inside the block, the controlling shard of every replicated write is ``shard_id``, resolved
+        against the pool making the write rather than against ``self.pool``. A write made inside
+        ``ShardedPool``'s constructor (the version row) has no ``self.pool`` to resolve against:
+        ``open_pool`` sets it only once the constructor returns. ``controller`` and its behaviour
+        are unchanged.
         """
         original = sp_mod.ShardedPool._replicated_write
         cluster = self
@@ -283,7 +282,7 @@ class StandinCluster:
         self.faults.clear()
 
     def open_pool(self, primary: Path, shards: int = 3, **kwargs):
-        """Open (or create) a pool on ``primary`` with the production table lists."""
+        """Open (or create) a pool on ``primary`` with the neutral client's table lists."""
         from datastorekit.tests.client.registry import (
             factories,
             replicated_tables,
@@ -311,8 +310,8 @@ class StandinCluster:
     def open_pool_output(self, primary: Path, shards: int = 3, **kwargs):
         """
         As ``open_pool``, but return ``(pool, printed)``: what the constructor printed, which
-        ``open_pool`` discards (prompt 02: the check at open prints what it repaired). If the
-        constructor raises, what it printed before raising is kept as ``self.last_output``.
+        ``open_pool`` discards (the check at open prints what it repaired). If the constructor
+        raises, what it printed before raising is kept as ``self.last_output``.
         """
         from datastorekit.tests.client.registry import (
             factories,
@@ -394,9 +393,9 @@ def shard_snapshot(pool, tables) -> Dict[str, Dict[int, List[tuple]]]:
 def store_checksums(primary: Path) -> Dict[str, str]:
     """
     The SHA-256 of every file in the directory of the primary ``primary``, by file name: the
-    primary, its shards and any journal beside them (prompt 02: a check that writes nothing leaves
-    every one unchanged, and creates no file). A stand-in store is the only thing in its
-    directory; the caller makes sure of that.
+    primary, its shards and any journal beside them (a check that writes nothing leaves every one
+    unchanged, and creates no file). A stand-in store is the only thing in its directory; the caller
+    makes sure of that.
     """
     import hashlib
 

@@ -6,24 +6,25 @@ ShardedPool keeps a shard-key -> shard-id map in two places: in memory
 (self._shard_keys, rebuilt on every startup from disk) and on disk, in the
 `shard_keys` table of the primary SQLite file, whose primary key column is
 `key_serial`. If that column is ever populated with a value other than the
-corresponding shard-key object's `store_id` (see the B1 fix in
-ShardedPool._assign_shard_keys), the map rebuilt on the next startup diverges
-from the one used when records were written, and every record filed under a
-displaced key becomes permanently unreachable. This tool detects that
+corresponding shard-key object's `store_id` (the value
+ShardedPool._assign_shard_keys writes there), the map rebuilt on the next startup
+diverges from the one used when records were written, and every record filed
+under a displaced key becomes permanently unreachable. This tool detects that
 divergence after the fact; it does not prevent it.
 
 This script only ever opens databases read-only (sqlite3 `mode=ro` URIs). It
 is structurally incapable of modifying a datastore.
 
 The shard file it attaches for the cross-file check is found exactly as
-ShardedPool finds it, by the one resolver in Datastore/shard_paths.py: the
+ShardedPool finds it, by the one resolver in datastorekit/shard_paths.py: the
 `shards` record's file name, in the primary's own directory. A record that is
 not a bare file name, an absolute path included, is refused, so auditing a
 copied store can never check the original's shard in place of the copy's.
 That module imports only the standard library and is outside the
-Datastore.SQL package, so importing it does not pull in ray or sqlalchemy;
-the repository root is put on sys.path below so that the script still runs
-standalone, from any directory, with no PYTHONPATH.
+datastorekit.SQL package. The tool is run as
+`python -m datastorekit.tools.shard_key_audit` with the package installed, and
+changes no sys.path; it imports only the standard library and
+datastorekit.shard_paths, so it pulls in neither ray nor sqlalchemy.
 
 IMPORTANT -- there is no safe automated repair. Reconstructing the correct
 map requires knowing the order in which shard-key objects were originally
@@ -185,9 +186,9 @@ def main(argv: List[str]) -> int:
     print(f">> shard_keys row count: {len(key_serials)}")
     print(f">> per-shard key distribution: {distribution}")
 
-    # Cross-file check against the actual shard-key table (e.g. "wavenumber"),
-    # which lives in the replicated tables inside each shard database, not in
-    # the primary file. Best-effort: attach one shard file read-only.
+    # Cross-file check against the actual shard-key table, which lives in the
+    # replicated tables inside each shard database, not in the primary file.
+    # Best-effort: attach one shard file read-only.
     cross_file_done = False
     if key_type is not None and shard_files:
         shard_serial, shard_filename = shard_files[0]

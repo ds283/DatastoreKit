@@ -4,42 +4,40 @@ storable-class factories.
 
 ``Datastore._build_schema`` calls ``build_schema`` and adds only the inserters, which are bound to
 the actor's ``_insert`` and so stay in the actor. The read-only store reader
-(``Datastore/store_reader.py``) calls it too, with no actor. There is one definition of what the
+(``datastorekit/store_reader.py``) calls it too, with no actor. There is one definition of what the
 tables are; do not copy this loop.
 
 Building the schema writes nothing: the tables are declared into ``metadata`` and never created
 here. Creating missing tables is ``Datastore._ensure_tables``' job, on a read-write engine.
 
-**The one comparison** of a file against the declared tables is here too
-(prompts/datastore-generic, prompt 05). ``schema_differences`` compares one SQLite file's table
-and column names with a mapping of declared tables, reading only ``sqlite_master`` and ``PRAGMA
-table_info``, and ``StoreSchemaMismatch`` is the one refusal of a file that differs, naming the
-file and each table and column by kind. The store reader, the read-write check at open and both pool
-constructors' check of the primary use them; do not write a second comparison.
+**The one comparison** of a file against the declared tables is here too. ``schema_differences``
+compares one SQLite file's table and column names with a mapping of declared tables, reading only
+``sqlite_master`` and ``PRAGMA table_info``, and ``StoreSchemaMismatch`` is the one refusal of a
+file that differs, naming the file and each table and column by kind. The store reader, the
+read-write check at open and both pool constructors' check of the primary use them; do not write a
+second comparison.
 
-**The order of a drop** is here too (prompts/datastore-generic, prompt 06). ``drop_order`` puts a
-set of tables in an order in which each can be dropped while the others are present, derived from
-their foreign keys alone; the actor drops the tables it is given in that order. No order is kept by
-hand.
+**The order of a drop** is here too. ``drop_order`` puts a set of tables in an order in which each
+can be dropped while the others are present, derived from their foreign keys alone; the actor drops
+the tables it is given in that order. No order is kept by hand.
 
-**What a drop must take with it** is here too (prompts/datastore-generic-followup, prompt 01).
-``dependent_tables`` gives the tables that name a row of the dropped tables, by a foreign key or by
-a parent their factory's ``inventory_spec`` declares, followed transitively, so that a read-write
-pool can refuse a drop that would leave them naming rows that are gone. It is read from the
-registry, never from a store's rows.
+**What a drop must take with it** is here too. ``dependent_tables`` gives the tables that name a row
+of the dropped tables, by a foreign key or by a parent their factory's ``inventory_spec`` declares,
+followed transitively, so that a read-write pool can refuse a drop that would leave them naming rows
+that are gone. It is read from the registry, never from a store's rows.
 
-**The replication facts a factory declares** are carried here too (prompts/datastore-generic,
-prompt 07). Three keys of ``register()``, each checked against the class's own table and copied
-into the record of every class with a table: ``owner_column`` (the column whose one foreign key
-names the row this table's rows belong to), ``monotone_flags`` (the Boolean columns a get may turn
-on and nothing turns off) and ``validated_column`` (the Boolean column of the class's validated
-flag, which the factory's ``revalidate`` recomputes from stored rows). A declaration that does not
-fit its table raises ``ValueError``.
+**The replication facts a factory declares** are carried here too. Three keys of ``register()``,
+each checked against the class's own table and copied into the record of every class with a table:
+``owner_column`` (the column whose one foreign key names the row this table's rows belong to),
+``monotone_flags`` (the Boolean columns a get may turn on and nothing turns off) and
+``validated_column`` (the Boolean column of the class's validated flag, which the factory's
+``revalidate`` recomputes from stored rows). A declaration that does not fit its table raises
+``ValueError``.
 
-This module itself imports only ``sqlalchemy``, ``Datastore.contract``, which names the version
-table every prepended ``version`` column references, and ``Datastore.store_inventory``, for the
+This module itself imports only ``sqlalchemy``, ``datastorekit.contract``, which names the version
+table every prepended ``version`` column references, and ``datastorekit.store_inventory``, for the
 parents a factory declares; that module imports nothing of this package at module scope. Importing
-it runs ``Datastore/SQL/__init__.py``, which imports the actor module and so ``ray``; that
+it runs ``datastorekit/SQL/__init__.py``, which imports the actor module and so ``ray``; that
 initialises nothing.
 """
 
@@ -171,8 +169,7 @@ def build_schema(metadata: sqla.MetaData, factories: Mapping[str, Any]) -> Built
             tab.append_column(col)
         schema["columns"] = sqla_columns
 
-        # the replication facts the factory declares (prompts/datastore-generic, prompt 07), each
-        # checked against the table's own columns
+        # the replication facts the factory declares, each checked against the table's own columns
         schema["owner_column"] = _declared_owner_column(
             cls_name, tab, registration_data
         )
@@ -515,8 +512,8 @@ def schema_differences(conn, tables: Mapping[str, sqla.Table]) -> SchemaDifferen
 
 class StoreSchemaMismatch(RuntimeError):
     """
-    A file of a sharded store does not hold exactly the tables and columns the code declares, so
-    the store is refused before anything reads its tables (prompts/datastore-generic, prompt 05).
+    A file of a sharded store does not hold exactly the tables and columns the code declares, so the
+    store is refused before anything reads its tables.
 
     ``verb`` is the operation that refused ("read" from the read-only reader, "open" from a pool's
     constructor), ``primary`` the store's primary, ``file`` a description of the file that differs

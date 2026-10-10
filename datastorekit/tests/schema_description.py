@@ -1,23 +1,22 @@
 """
 A deterministic description of the schema ``Datastore._build_schema`` builds, for the witnesses in
-``Datastore/tests/data/``.
+``datastorekit/tests/data/``.
 
-The first witness, ``schema_at_base.json``, was captured from the code **before** the schema
-builder moved into ``Datastore/SQL/schema.py`` (store-fingerprint prompt 01; its log records the
-command and the SHA). It witnessed a refactor that changed nothing. Each deliberate schema change
-since adds a witness beside it, ``schema_at_<campaign>-<NN>.json``, captured by this module's
-``__main__``. ``Datastore/tests/test_schema_builder.py`` compares this description of what the code
-builds now against the one file its ``WITNESS`` constant names, the witness for the current schema
-design. No witness is ever overwritten, or regenerated to make a test pass: the file is the
-evidence of what the schema was when it was captured (``prompts/datastore-integrity`` README §6.2
-D5).
+Each deliberate schema change adds a witness, ``schema_at_<campaign>-<NN>.json``, captured by this
+module's ``__main__``. ``datastorekit/tests/test_schema_builder.py`` compares this description of
+what the code builds now against the one file its ``WITNESS`` constant names, the witness for the
+current schema design. No witness is ever overwritten, or regenerated to make a test pass: the file
+is the evidence of what the schema was when it was captured. The source repository's first witness
+was captured from its code before its schema builder moved into a module of its own, and witnessed a
+refactor that changed nothing; its witnesses are its history, and are not copied here.
 
-This module imports only the standard library and ``sqlalchemy``. It does not import ``Datastore/SQL/schema.py``
-or ``Datastore/SQL/Datastore.py`` at module scope, so that it can be run against a checkout of the
-code before the change existed, to re-capture the witness independently::
+This module imports only the standard library and ``sqlalchemy``. It does not import
+``datastorekit/SQL/schema.py`` or ``datastorekit/SQL/Datastore.py`` at module scope, so that it can
+be run against a checkout of the code before the change existed, to re-capture the witness
+independently::
 
     git archive <base sha> | tar -x -C <dir>
-    cd <dir> && PYTHONPATH=. <repo>/venv/bin/python <repo>/Datastore/tests/schema_description.py out.json
+    cd <dir> && PYTHONPATH=. <repo>/venv/bin/python <repo>/datastorekit/tests/schema_description.py out.json
 
 This module is not a test module (no ``test_`` prefix); the test modules import it.
 """
@@ -180,8 +179,9 @@ def actor_with_built_schema():
     fresh ``MetaData`` (as ``_create_engine`` makes it), and empty ``_tables``, ``_inserters`` and
     ``_schema``.
     """
-    # the module, by its full name: Datastore/SQL/__init__.py rebinds ``Datastore.SQL.Datastore``
-    # to the actor class, so ``from Datastore.SQL import Datastore`` would not give the module
+    # the module, by its full name: datastorekit/SQL/__init__.py rebinds
+    # ``datastorekit.SQL.Datastore`` to the actor class, so ``from datastorekit.SQL import
+    # Datastore`` would not give the module
     datastore_module = importlib.import_module("datastorekit.SQL.Datastore")
 
     cls = datastore_module.Datastore.__ray_metadata__.modified_class
@@ -189,8 +189,8 @@ def actor_with_built_schema():
     actor._factories = {}
     from datastorekit.tests.client.registry import factories as registered
 
-    # the classes with a table: a class whose register() is None has a record but no table, and
-    # no inserter (prompt 04a, U20)
+    # the classes with a table: a class whose register() is None has a record but no table, and no
+    # inserter (extraction prompt 04a, U20)
     factories = {n: f for n, f in registered.items() if f.register() is not None}
 
     actor.register_factories(factories)

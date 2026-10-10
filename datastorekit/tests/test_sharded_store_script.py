@@ -1,12 +1,13 @@
 """
-``tools/sharded_store.py``, the command-line client of ``ShardedPool.copy_store`` /
-``move_store``. `prompts/datastore-portability` prompt 02 §2 P7 and §3 test 8.
+``datastorekit.tools.sharded_store``, the command-line client of ``ShardedPool.copy_store`` /
+``move_store``.
 
-It is run here the way a person runs it: as a subprocess, from a directory other than the
-repository root, with ``PYTHONPATH`` removed from the environment. It imports ``ShardedPool`` and
-so ``ray``, and must never initialise Ray. That is checked by running the script through
-``runpy`` inside a child interpreter and asking that interpreter, after the script has finished,
-whether ``ray`` was imported and whether ``ray.is_initialized()``.
+It is run here the way a person runs it: as a subprocess,
+``python -m datastorekit.tools.sharded_store``, from an unrelated working directory, with
+``PYTHONPATH`` removed from the environment. It imports ``ShardedPool`` and so ``ray``, and must
+never initialise Ray. That is checked by running the script through ``runpy`` inside a child
+interpreter and asking that interpreter, after the script has finished, whether ``ray`` was
+imported and whether ``ray.is_initialized()``.
 
 Everything is in a temporary directory; no Ray, no datastore.
 """

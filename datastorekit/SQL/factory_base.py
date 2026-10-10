@@ -28,8 +28,8 @@ class SQLAFactoryBase(ABC):
     def validate_on_startup(conn, table, tables, prune=False):
         raise NotImplementedError
 
-    # Hooks the datastore layer calls (prompts/datastore-generic, prompt 07). They are not
-    # abstract, so a factory that has no use for one need not define it.
+    # Hooks the datastore layer calls. They are not abstract, so a factory that has no use for one
+    # need not define it.
 
     @staticmethod
     def revalidate(serial, conn, table, tables) -> bool:
@@ -53,10 +53,10 @@ class SQLAFactoryBase(ABC):
     @staticmethod
     def inventory_spec():
         """
-        How the inventory reads this factory's class (prompts/datastore-generic, prompt 08): an
-        ``InventorySpec`` (``Datastore/store_inventory.py``) naming the key's leaf columns, its
-        parent references and its association and value tables, or ``None`` where the class is not
-        a class of the inventory. It holds no connection and reads nothing; the inventory derives
-        which classes it reads, and in what order, from these declarations.
+        How the inventory reads this factory's class: an ``InventorySpec``
+        (``datastorekit/store_inventory.py``) naming the key's leaf columns, its parent references
+        and its association and value tables, or ``None`` where the class is not a class of the
+        inventory. It holds no connection and reads nothing; the inventory derives which classes it
+        reads, and in what order, from these declarations.
         """
         return None

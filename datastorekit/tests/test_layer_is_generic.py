@@ -28,11 +28,10 @@ never a client and never a registry, so it runs with no client present. Which of
 are forbidden is this module's rule (``registry_words``, ``project_packages``). A re-measure writes
 a new file, and ``VOCABULARY`` is pointed at it.
 
-**The known hits.** The layer's prose is frozen until after prompt 05 (README §5 rule 8), and one
-comment in it names a client's table. ``KNOWN_HITS`` lists it, by the scan that finds it, with its
-reason. Each scan must find exactly its known hits: a new hit fails, and so does a known hit that
-is no longer found. The list is emptied when the prose is rewritten, under
-``[01-package-prose-names-sgks-layout]``.
+**The known hits.** ``KNOWN_HITS`` lists, by the scan that finds it, each hit the layer is known to
+hold, with its reason. Each scan must find exactly its known hits: a new hit fails, and so does a
+known hit that is no longer found. The list has been empty since extraction prompt 09 rewrote the
+layer's prose (``[01-package-prose-names-sgks-layout]``), so any hit fails, by name.
 
 **What it allows.** ``test_every_import_is_allowed``: the standard library, ``ray`` and
 ``sqlalchemy``, and the package's own modules, except its tests (the neutral client among them).
@@ -68,7 +67,7 @@ VOCABULARY = Path(__file__).resolve().parent / "data" / "client_vocabulary.json"
 
 
 def layer_files() -> list:
-    """The layer's modules, relative to the repository root, sorted."""
+    """The layer's modules, relative to the top of this repository, sorted."""
     found = set()
     for path in (REPO_ROOT / "datastorekit").rglob("*.py"):
         rel = path.relative_to(REPO_ROOT)
@@ -175,8 +174,8 @@ def registry_words() -> tuple:
 
 
 def extra_names() -> set:
-    """The names SecondaryGWKit's prompt 08 removed from its inventory, which are not tables or
-    identifier columns: its guard's ``EXTRA_NAMES``, held under it in ``VOCABULARY``."""
+    """The names SecondaryGWKit once removed from its inventory, which are not tables or identifier
+    columns: its guard's ``EXTRA_NAMES``, held under it in ``VOCABULARY``."""
     return set(_clients()["SGK"]["extra_names"]["names"])
 
 
@@ -186,19 +185,15 @@ def forbidden_words() -> set:
 
 
 # ------------------------------------------------------------------------------------------------
-# the hits the layer's frozen prose holds
+# the hits the layer is known to hold: none, since extraction prompt 09
 # ------------------------------------------------------------------------------------------------
 
-# each scanning test's expected hits, exactly; each with its reason
+# each scanning test's expected hits, exactly, each with its reason; every list is empty, so any
+# hit fails, by name
 KNOWN_HITS = {
     "test_no_code_name": [],
     "test_no_string_or_docstring": [],
-    "test_no_comment": [
-        # 'e.g. "wavenumber"', a name of SecondaryGWKit's shard-key table, in a comment imported
-        # unchanged; README §5 rule 8 freezes it until after prompt 05, and
-        # [01-package-prose-names-sgks-layout] rewrites it (README §6.2, U17)
-        "datastorekit/tools/shard_key_audit.py:188 wavenumber",
-    ],
+    "test_no_comment": [],
     "test_every_import_is_allowed": [],
 }
 
@@ -209,7 +204,7 @@ KNOWN_HITS = {
 # the standard library, and the two third-party packages the layer is built on
 _ALLOWED_ROOTS = set(sys.stdlib_module_names) | {"ray", "sqlalchemy"}
 
-# empty: the source allowed two client modules, and prompt 01 internalised both
+# empty: the source allowed two client modules, and extraction prompt 01 internalised both
 # (datastorekit.defaults and datastorekit._timing), which are the package's own
 _ALLOWED_MODULES = set()
 

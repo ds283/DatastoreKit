@@ -1,6 +1,5 @@
 """
-The prune at open of a replicated class, by the pool, under a record (prompts/a3-v2-readiness,
-prompt 02, W3; the user's decision U1).
+The prune at open of a replicated class, by the pool, under a record.
 
 Under ``prune_unvalidated=True``, ``ShardedPool.__init__`` prunes every replicated class whose
 factory prunes at startup (``Gadget``, with its tags and values) after the check at open
@@ -9,7 +8,7 @@ shard is pruned by the factory's own ``validate_on_startup`` in its own transact
 and the record is cleared last. The check at open completes an interrupted prune by running it
 again on every shard, whatever the open's ``prune_unvalidated`` is. Actors prune sharded classes
 only. These tests drive the real ``ShardedPool``, ``Datastore``, factories and broker on stand-in
-shards (``Datastore.tests.standin_pool``):
+shards (``datastorekit.tests.standin_pool``):
 
 1. an uninterrupted prune: every shard identical, no record left, the record set while each shard
    was pruned; a validated model, and every sharded row, untouched; a prune with nothing to
@@ -25,7 +24,7 @@ shards (``Datastore.tests.standin_pool``):
 5. no actor deletes a replicated row, even when the pool's prune has not run;
 6. no Ray is initialised.
 
-Every store is built in a temporary directory; nothing under ``var/`` is opened.
+Every store is built in a temporary directory.
 """
 
 import contextlib

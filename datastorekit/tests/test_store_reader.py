@@ -1,6 +1,6 @@
 """
-The read-only store reader, ``Datastore/store_reader.py`` ``open_read_only`` (store-fingerprint
-prompt 01), on the real multi-shard stores of ``real_store_fixtures``.
+The read-only store reader, ``datastorekit/store_reader.py`` ``open_read_only``, on the real
+multi-shard stores of ``real_store_fixtures``.
 
 - it reads: every shard, with its serial and path, and row counts equal to an independent stdlib
   ``sqlite3`` ``mode=ro`` count of each file;
@@ -9,14 +9,15 @@ prompt 01), on the real multi-shard stores of ``real_store_fixtures``.
   through one of its engines raises;
 - a shard whose file differs from the declared tables is refused with ``StoreSchemaMismatch``,
   naming the shard and the table, or the table and column: a missing table, a missing column, an
-  extra column and an extra table (prompts/datastore-generic, prompt 05), writing nothing;
+  extra column and an extra table, writing nothing;
 - refusals, each naming the file and writing nothing: a journal beside the primary or a shard, a
   missing shard (the refusal coming from ``ShardedPool._read_closed_store``), a primary with no
   ``shards`` table;
 - no Ray: in a child interpreter, opening a store and reading every table leaves
   ``ray.is_initialized()`` false.
 
-No test here starts Ray or constructs a ``ShardedPool``, and nothing is opened under ``var/``.
+No test here starts Ray or constructs a ``ShardedPool``, and every store is in a temporary
+directory.
 """
 
 import json
@@ -179,8 +180,8 @@ class TestReaderNeverWrites(_TempStore):
 
 class TestADifferingSchemaIsRefused(_TempStore):
     """A shard whose file differs from the tables the code declares is refused before anything is
-    yielded, naming the shard, its path and each difference (prompts/datastore-generic, prompt
-    05). Each shape is built in its own directory, and no file in it changes."""
+    yielded, naming the shard, its path and each difference. Each shape is built in its own
+    directory, and no file in it changes."""
 
     def assert_refused(self, label, expected, fragments, **shape):
         directory = self.root / label

@@ -1,16 +1,15 @@
 """
-The tables and columns the datastore layer owns as its contract (prompts/datastore-generic, prompt
-07; README §6.2, U4). Each is named once, here.
+The tables and columns the datastore layer owns as its contract. Each is named once, here.
 
 **Why these are the layer's, not the project's.** Every storable row carries a foreign key to the
-version table's ``serial``, which ``Datastore/SQL/schema.py`` prepends; a pool is opened under a
+version table's ``serial``, which ``datastorekit/SQL/schema.py`` prepends; a pool is opened under a
 version label, finds or writes its row before any actor may insert, and gives every actor its
 serial. Every tagged class associates its rows with the tag table, through an association table
 whose column names a tag's serial, and the check at open and the inventory recognise those
-association tables by it. A project cannot choose other names for these without the layer
-changing, so they are not declared per project: the layer names them, and a client registers a
-factory under each name. The layer builds the objects of these tables through those factories,
-never by importing a client's classes.
+association tables by it. A project cannot choose other names for these without the layer changing,
+so they are not declared per project: the layer names them, and a client registers a factory under
+each name. The layer builds the objects of these tables through those factories, never by importing
+a client's classes.
 
 **Why the version-keyed lookup's payload key is the layer's.** A factory that declares
 ``key_on_version`` in its ``register()`` is handed, in every payload ``Datastore.object_get``

@@ -3,15 +3,13 @@
 One line per open issue, pointing at the board that holds it. The board is right if the two
 disagree. See `CLAUDE.md` for the maintenance rule.
 
-**Last updated:** 2026-10-10 · **5 open**: 1 on this repository's boards, 4 inherited (§1.2).
+**Last updated:** 2026-10-10 · **4 open**: 0 on this repository's boards, 4 inherited (§1.2).
 
 ## 1. By campaign
 
 ### 1.1 `extraction` ([board](../prompts/extraction/IMPLEMENTATION_STATE.md))
 
-| Issue | Hook |
-|---|---|
-| `[01-package-prose-names-sgks-layout]` | 248 comment and docstring lines in 42 files of the package cite SGK's paths, campaigns, logs, audits or commits (155 by the board's pattern; widened by U38 at 09's writing), one names SGK's table (the guard pins it, U17), and five are false *(assigned to 09, U33)* |
+None open (since prompt 09, 2026-10-10).
 
 ### 1.2 Inherited from SecondaryGWKit, on SGK's boards
 

@@ -1,7 +1,5 @@
 """
 Each refusal of a closed-store operation states its prefix **once**.
-`prompts/datastore-generic-followup` prompt 03, closing `datastore-generic`'s
-`[04-closed-store-refusals-repeat-their-prefix]`.
 
 ``ShardedPool._read_closed_store`` raises the bare reason, and takes no verb. Each of its four
 callers states the operation: ``closed_store_files`` and ``delete_store`` ("Cannot delete"),
@@ -14,8 +12,8 @@ this, the first three said "Cannot <verb> sharded datastore ..." twice.
 caught.
 
 Three broken stores: a shard record ``../outside.sqlite`` (the resolver's refusal), a dropped
-``shards`` table, and a missing shard file (the file-problem refusal). No Ray, no datastore,
-nothing under ``var/``.
+``shards`` table, and a missing shard file (the file-problem refusal), each in a temporary
+directory. No Ray, no datastore.
 """
 
 import sqlite3

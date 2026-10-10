@@ -16,18 +16,17 @@ It is also the one definition of what a shard is **called** (``shard_file_name``
 names a new store's shards with it, and ``ShardedPool.copy_store`` / ``move_store`` name a
 destination's shards with it. Do not write the pattern a second time.
 
-**A record that is not a bare file name is refused, an absolute path included.** An absolute
-record is never read, neither as a path nor as a sibling by its final component. A copied
-primary's absolute records name the original's shards, which do exist, and a pool that used them
-read and wrote the original (2026-09-23, 54 rows into the A3 baseline store). If a record is
-refused, or its file is missing, the caller fails closed (``resolve_shard_path`` and
-``shard_file_problem`` below; ``ShardedPool._check_shard_files``).
+**A record that is not a bare file name is refused, an absolute path included.** An absolute record
+is never read, neither as a path nor as a sibling by its final component. A copied primary's
+absolute records name the original's shards, which do exist, and a pool that used them would read
+and write the original. If a record is refused, or its file is missing, the caller fails closed
+(``resolve_shard_path`` and ``shard_file_problem`` below; ``ShardedPool._check_shard_files``).
 
 Nothing here rewrites a record.
 
-This module imports only the standard library, and lives outside the ``Datastore.SQL`` package
-on purpose: importing it must not pull in ``ray`` or ``sqlalchemy``, so that the read-only audit
-tool can use it and stay a standalone script.
+This module imports only the standard library, and lives outside the ``datastorekit.SQL`` package on
+purpose: importing it must not pull in ``ray`` or ``sqlalchemy``, so that the read-only audit tool
+(``datastorekit.tools.shard_key_audit``) can use it and pull in neither.
 """
 
 from pathlib import Path

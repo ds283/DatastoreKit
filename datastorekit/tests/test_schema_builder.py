@@ -1,28 +1,25 @@
 """
-The one schema builder, ``Datastore/SQL/schema.py`` ``build_schema`` (store-fingerprint prompt 01).
+The one schema builder, ``datastorekit/SQL/schema.py`` ``build_schema``.
 
 - **The witness is the one for the current schema design, named in one constant, ``WITNESS``.**
   Both ``build_schema`` and the actor's ``_build_schema`` reproduce that file exactly. The actor's
   method is called without Ray and without its ``__init__``
   (``schema_description.actor_with_built_schema``), so the second test shows that the actor
   delegates to the function and has not kept its own copy.
-- **Witnesses are never overwritten or regenerated** (``prompts/datastore-integrity`` README
-  §6.2 D5). ``schema_at_base.json`` witnessed a refactor that changed nothing: it was captured from
-  the code before the schema builder moved (store-fingerprint prompt 01; that prompt's log records
-  how, and at which SHA), and it is kept as the record of that. Each deliberate schema change adds a
-  witness beside it, ``schema_at_<campaign>-<NN>.json``, captured with ``schema_description.py``'s
+- **Witnesses are never overwritten or regenerated.** Each deliberate schema change adds a
+  witness, ``schema_at_<campaign>-<NN>.json``, captured with ``schema_description.py``'s
   ``__main__``, and repoints ``WITNESS`` at it; the prompt's log carries the diff between the two
   witnesses as the reviewable statement of what changed. No witness is ever regenerated to make a
-  test pass. The current one is ``schema_at_extraction-06.json``, the neutral test client's
-  schema, captured by prompt 06 of the extraction campaign from the registry's classes with a
-  table; it differs from the earlier ``schema_at_extraction-04a.json``, captured by prompt 04a in
-  the same way and kept, only by the ``key_on_version`` of each record. The source repository's
-  earlier witnesses, from ``schema_at_base.json`` to ``schema_at_datastore-generic-07.json``, are
-  that repository's history of its own schema, and are not copied here.
-- **The fix** of ``[00-build-schema-reads-registration-before-its-none-check]``: a factory whose
-  ``register()`` returns ``None`` gets a record with no table, and no ``AttributeError``.
+  test pass. The current one is ``schema_at_extraction-06.json``, the neutral test client's schema,
+  captured by prompt 06 of the extraction campaign from the registry's classes with a table; it
+  differs from the earlier ``schema_at_extraction-04a.json``, captured by prompt 04a in the same way
+  and kept, only by the ``key_on_version`` of each record. The source repository's witnesses, the
+  first of which was captured before its schema builder moved and witnessed a refactor that changed
+  nothing, are that repository's history of its own schema, and are not copied here.
+- **A registration of ``None``**: a factory whose ``register()`` returns ``None`` gets a record
+  with no table, and no ``AttributeError``.
 
-No Ray, no datastore, nothing under ``var/``.
+No Ray, no datastore.
 """
 
 import functools
@@ -40,8 +37,8 @@ from datastorekit.tests.schema_description import (
     dumps,
 )
 
-# the registry's classes with a table: a class whose register() is None has a record but no
-# table, and no inserter (prompt 04a, U20). TestNoneRegistration covers such a class
+# the registry's classes with a table: a class whose register() is None has a record but no table,
+# and no inserter (extraction prompt 04a, U20). TestNoneRegistration covers such a class
 _factories = {n: f for n, f in _registered.items() if f.register() is not None}
 
 WITNESS = Path(__file__).resolve().parent / "data" / "schema_at_extraction-06.json"

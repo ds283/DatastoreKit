@@ -1,14 +1,15 @@
 """
-The datastore layer is given its registries (prompts/datastore-generic, prompt 06).
+The datastore layer is given its registries.
 
 The generic layer -- ``ShardedPool``, the ``Datastore`` actor, ``ClientPool``, ``store_reader`` and
-``store_inventory`` -- imports none of the project's registries. The client keeps them in
-``config/datastore.py`` and gives them: the registry of storable classes (``factories``), the
-serial lease batch sizes, and the tables to drop. The replicated set is read from the store.
+``store_inventory`` -- imports none of the project's registries. The client keeps them (the neutral
+client in ``datastorekit/tests/client/registry.py``) and gives them: the registry of storable
+classes (``factories``), the serial lease batch sizes, and the tables to drop. The replicated set is
+read from the store.
 
-1. ``TestTheClientRegistries`` -- ``config.datastore``: ``tables_to_drop`` gives each table once
-   and names an unknown action; every table of every group is declared by ``factories``; the
-   groups are in the order the command line offers them.
+1. ``TestTheClientRegistries`` -- the client's registry module: ``tables_to_drop`` gives each
+   table once and names an unknown action; every table of every group is declared by
+   ``factories``; the groups are in the order ``COMMAND_LINE_ORDER`` gives.
 2. ``TestDropOrder`` -- ``schema.drop_order``: a referencing table comes before what it references;
    a cycle raises.
 3. ``TestTheDropOnAFullStore`` -- under ``PRAGMA foreign_keys = ON``, the real
@@ -28,7 +29,7 @@ serial lease batch sizes, and the tables to drop. The replicated set is read fro
 8. ``TestTheLayerImportsNoClient`` -- importing the layer in a fresh interpreter loads no client
    registry, no factory but the base, and no compute target; none of its five files imports one.
 
-No Ray, nothing under ``var/``.
+No Ray; every store is in a temporary directory.
 """
 
 import ast
@@ -71,8 +72,8 @@ datastore_module = importlib.import_module("datastorekit.SQL.Datastore")
 # the measured messages of the refusals, printed when the module is run as a script
 MESSAGES = {}
 
-# the neutral client has no command line: this is list(drop_groups) as its registry writes it, in
-# the source's place of its main.py's --drop choices, in the order its --help printed them
+# the neutral client has no command line: this is list(drop_groups) as its registry writes it, where
+# the source pinned the drop choices its command line offered, in the order its help printed them
 COMMAND_LINE_ORDER = [
     "aliases",
     "tesserae",
@@ -135,7 +136,7 @@ def _table_names(path: Path):
 
 
 # ------------------------------------------------------------------------------------------------
-# 1. config.datastore
+# 1. the client's registry
 # ------------------------------------------------------------------------------------------------
 
 
@@ -173,7 +174,8 @@ class TestTheClientRegistries(unittest.TestCase):
                     self.assertIn(table, declared)
 
     def test_the_groups_are_in_the_command_line_order(self):
-        # main.py offers list(drop_groups) as --drop's choices: this order is what --help prints
+        # a command line that offered list(drop_groups) as its drop choices would print them in this
+        # order
         self.assertEqual(list(drop_groups), COMMAND_LINE_ORDER)
 
 

@@ -4,9 +4,8 @@ A read-only reader over a **closed** ShardedPool store.
 ``open_read_only(primary, factories)`` is a context manager. It finds the store's shards through
 ``ShardedPool._read_closed_store`` (the one implementation of reading and checking a primary's
 ``shards`` table), opens every shard file read-only, and builds the tables once with the one schema
-builder, ``Datastore.SQL.schema.build_schema``, from the registry ``factories`` it is given: the
-reader imports no registry (prompts/datastore-generic, prompt 06). It yields a ``ReadOnlyStore``;
-on exit it disposes every engine it made.
+builder, ``datastorekit.SQL.schema.build_schema``, from the registry ``factories`` it is given: the
+reader imports no registry. It yields a ``ReadOnlyStore``; on exit it disposes every engine it made.
 
 **The replicated set is the store's.** Every primary records the classes its pool replicates, in
 its ``replicated_tables`` table, and a pool refuses to open a store whose record differs from what
@@ -31,12 +30,12 @@ and is not refused.
 initialises nothing.
 
 **A store whose files differ from the declared tables is refused.** Every shard file is compared
-with the tables ``build_schema`` declares by ``Datastore.SQL.schema.schema_differences``, before
-anything reads its tables. A table the file lacks, a table it has that the code does not declare,
-a declared column a table lacks, or a column the code does not declare refuses the store with
-``StoreSchemaMismatch``, naming the shard, its path and each table and column by kind
-(prompts/datastore-generic, prompt 05). Nothing is created here, and the reader has nothing to
-recover: a store written by older code is regenerated, not read.
+with the tables ``build_schema`` declares by ``datastorekit.SQL.schema.schema_differences``, before
+anything reads its tables. A table the file lacks, a table it has that the code does not declare, a
+declared column a table lacks, or a column the code does not declare refuses the store with
+``StoreSchemaMismatch``, naming the shard, its path and each table and column by kind. Nothing is
+created here, and the reader has nothing to recover: a store written by older code is regenerated,
+not read.
 """
 
 import contextlib
@@ -191,7 +190,7 @@ def open_read_only(primary: PathType, factories: Mapping) -> Iterator[ReadOnlySt
     Refuses with ``StoreSchemaMismatch`` (a ``RuntimeError``), naming the shard, before anything
     reads its tables and before anything is yielded, if a shard's file differs from the tables
     the code declares: a table it lacks, a table or column the code does not declare, or a
-    declared column it lacks (``Datastore.SQL.schema.schema_differences``).
+    declared column it lacks (``datastorekit.SQL.schema.schema_differences``).
 
     Every engine is disposed on exit, and on a refusal after any was made.
     """

@@ -87,11 +87,10 @@ def write_hand_built_primary(
 ) -> None:
     """Build a primary by hand, holding exactly the given ``shards.filename`` records.
 
-    It builds no ``replication_in_flight`` table, so the ``ShardedPool`` constructor refuses what
-    it builds (since prompt 03 of the datastore-generic campaign). Its users read it through
-    ``read_pool``, the closed-store operations (``copy_store``, ``move_store``,
-    ``closed_store_files``, ``delete_store``), the audit tool or the sweep script's check, none of
-    which reads that table."""
+    It builds no ``replication_in_flight`` table, so the ``ShardedPool`` constructor refuses what it
+    builds. Its users read it through ``read_pool``, the closed-store operations (``copy_store``,
+    ``move_store``, ``closed_store_files``, ``delete_store``) or the audit tool, none of which reads
+    that table."""
     primary.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(primary)
     try:

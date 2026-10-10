@@ -1,6 +1,5 @@
 """
-The shard-path resolver, ``Datastore/shard_paths.py``, as a pure function.
-`prompts/datastore-portability` prompt 01 §3, test 1.
+The shard-path resolver, ``datastorekit/shard_paths.py``, as a pure function.
 
 ``resolve_shard_path(primary, stored)`` is the one definition of where the shard that a
 ``shards.filename`` record names lives. It always returns a file in the primary's directory:
@@ -102,8 +101,8 @@ class TestShardFileProblem(unittest.TestCase):
 
 
 class TestModuleIsStandalone(unittest.TestCase):
-    """Prompt §2 P4: the audit tool imports this module and must stay a standalone script, so
-    importing it must not pull in ray, sqlalchemy or the Datastore.SQL package."""
+    """The audit tool imports this module, and imports neither ray nor sqlalchemy, so importing it
+    must not pull in ray, sqlalchemy or the ``datastorekit.SQL`` package."""
 
     def test_import_pulls_in_no_heavy_dependency(self):
         repo_root = Path(__file__).resolve().parents[2]

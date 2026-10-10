@@ -1,6 +1,6 @@
 """
-The structured inventory, ``Datastore/store_inventory.py`` ``read_inventory`` (store-fingerprint
-prompt 02), on the full real store of ``real_store_fixtures.build_full_store``.
+The structured inventory, ``datastorekit/store_inventory.py`` ``read_inventory``, on the full real
+store of ``real_store_fixtures.build_full_store``.
 
 1. the keys are physical: the same content under other serials, on other shards, gives an equal
    inventory;
@@ -15,7 +15,8 @@ prompt 02), on the full real store of ``real_store_fixtures.build_full_store``.
 9. duplicates are a named problem, and both are kept;
 10. read-only and no Ray.
 
-No test here starts Ray or constructs a ``ShardedPool``, and nothing is opened under ``var/``.
+No test here starts Ray or constructs a ``ShardedPool``, and every store is in a temporary
+directory.
 """
 
 import ast
@@ -391,7 +392,7 @@ def store_inventory_tables():
 
 
 class TestFloats(_Stores):
-    """Test 4: the stored bits, through ``canonical`` only (decision D1)."""
+    """Test 4: the stored bits, through ``canonical`` only."""
 
     def test_canonical(self):
         self.assertEqual(canonical(0.1), (0.1).hex())
@@ -614,7 +615,7 @@ class TestValueCounts(_Stores):
                 self.assertEqual(new.value_count, gone.value_count - 1)
 
     def test_value_tables_are_only_counted(self):
-        """No statement reads a *Value table except one GROUP BY count (F7)."""
+        """No statement reads a *Value table except one GROUP BY count."""
         statements = []
 
         def capture(conn, cursor, statement, parameters, context, executemany):
@@ -699,7 +700,7 @@ class TestOldStoresAndOrphans(_Stores):
 
     def check(self, name, kind, shard, expected=None, cascade=None, **kwargs):
         """
-        ``cascade`` (prompts/datastore-integrity prompt 09c): class -> how many of its records name
+        ``cascade``: class -> how many of its records name
         a row this case takes away, through a parent on another shard. Such a class's only
         problems are ``unresolved-parent``, and its records are the baseline's less exactly that
         many; nothing else about it changes.
@@ -867,7 +868,7 @@ class TestDuplicates(_Stores):
 
 
 class TestReadOnlyAndNoRay(_Stores):
-    """Test 10: prompt 01's never-writes check across a full read_inventory, and no Ray."""
+    """Test 10: the reader's never-writes check across a full read_inventory, and no Ray."""
 
     def test_read_inventory_writes_nothing(self):
         store = self.store()

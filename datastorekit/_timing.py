@@ -1,7 +1,7 @@
 """
-`WallclockTimer`, `format_time` and the three `SECONDS_PER_*` constants `format_time` uses, with
-the imports they need, from the source repository's `utilities.py` at the import commit 6f7f291,
-copied byte for byte. See `PROVENANCE.md`.
+`WallclockTimer`, `format_time` and the three `SECONDS_PER_*` constants `format_time` uses, with the
+imports they need, from the source repository at the import commit 6f7f291, copied byte for byte.
+See `PROVENANCE.md`.
 """
 
 import time

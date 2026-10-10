@@ -1,21 +1,18 @@
 """
 Deleting a closed store's own files through ``ShardedPool.closed_store_files`` / ``delete_store``.
-`prompts/store-retirement` prompt 01 §3 tests 1-6.
 
 A store is its primary and the shards its primary's ``shards`` table names, read through the one
 resolver (``_read_closed_store``), which accepts a bare file name only. A record that is anything
 else is refused before anything is deleted. The case that matters, a primary whose records are the
-absolute paths of **another populated store's** shards, as the backup of the A3 store was
-(``docs/store-retirement-audit.md`` §2.7), is pinned at every reader, this one included, by
-``test_absolute_shard_record_refused``. The shards go first, in ascending serial, and the primary last, so an
-interrupted deletion leaves a primary and a subset of its shards, which the constructor refuses to
-open and ``delete_store(primary, resume=True)`` completes (the interruption table in
-`logs/01-delete-a-closed-store.md`).
+absolute paths of **another populated store's** shards, as in a copy of a primary written before
+shard records were bare file names, is pinned at every reader, this one included, by
+``test_absolute_shard_record_refused``. The shards go first, in ascending serial, and the primary
+last, so an interrupted deletion leaves a primary and a subset of its shards, which the constructor
+refuses to open and ``delete_store(primary, resume=True)`` completes.
 
 Stores are built with ``shard_store_fixtures`` in temporary directories. Every deletion in this
-module happens inside a temporary directory the test itself built. Nothing under ``var/`` is
-opened. The constructor is never called; its check is exercised through ``read_pool`` +
-``_check_shard_files``. No Ray, no datastore.
+module happens inside a temporary directory the test itself built. The constructor is never called;
+its check is exercised through ``read_pool`` + ``_check_shard_files``. No Ray, no datastore.
 """
 
 import contextlib
@@ -129,7 +126,7 @@ class _StoreCase(unittest.TestCase):
 
 
 class TestNewStyleStore(_StoreCase):
-    """Test 1: a store whose records are bare names."""
+    """A store whose records are bare names."""
 
     def test_lists_its_shards_in_ascending_serial_then_its_primary(self):
         primary = self.new_store()
@@ -190,10 +187,11 @@ class TestNewStyleStore(_StoreCase):
 
 
 class TestRefusals(_StoreCase):
-    """Test 3, and the refusals test 5 requires under resume: every refusal of R1, before
-    anything is deleted. Each is made by both methods and, except the missing shard, under both
-    values of ``resume``. Each asserts that the error names the offending file and ends 'Nothing
-    was deleted', and that nothing under the temporary root was created, changed or removed.
+    """Every refusal, before anything is deleted, under ``resume`` too, as
+    ``TestResumeRelaxesOneThingOnly`` requires. Each is made by both methods and, except the
+    missing shard, under both values of ``resume``. Each asserts that the error names the
+    offending file and ends 'Nothing was deleted', and that nothing under the temporary root
+    was created, changed or removed.
     """
 
     def assertRefusal(self, primary, *fragments, resumes=(False, True)):
@@ -367,9 +365,10 @@ def _fail_on_unlink(n: int, after: bool = False):
 
 
 class TestInterruption(_StoreCase):
-    """Test 4: the n-th os.unlink fails, for each unlink, both before and after it takes effect. The state left behind is the interruption table's row: a primary and
-    a subset of its shards, or everything, or nothing. The constructor's check refuses every
-    partial state, delete_store refuses it, and delete_store(resume=True) completes it.
+    """The n-th os.unlink fails, for each unlink, both before and after it takes effect. The
+    state left behind is a primary and a subset of its shards, or everything, or nothing. The
+    constructor's check refuses every partial state, delete_store refuses it, and
+    delete_store(resume=True) completes it.
     """
 
     def test_every_point_of_interruption(self):
@@ -398,16 +397,16 @@ class TestInterruption(_StoreCase):
         self.assertIn("injected failure", message)
         self.assertIn(f'delete_store("{primary}", resume=True)', message)
 
-        # the file state is the table's row, and nothing else changed
+        # the files present are those not yet unlinked, and nothing else changed
         for path in files:
             self.assertEqual(os.path.lexists(path), path in present, str(path))
         self._assertOthersUntouched(primary, before)
 
         if done == 0:
-            # row D0: nothing was deleted. The store is whole and opens
+            # nothing was deleted. The store is whole and opens
             self.assertOpensAgainst(primary, self.shard_paths(primary))
         elif done <= N_SHARDS:
-            # rows D1-D4: the primary and some, or none, of its shards
+            # the primary and some, or none, of its shards
             self.assertConstructorRefuses(primary)
             state = tree_state(self.root)
             with self.assertRaises(RuntimeError) as ctx:
@@ -419,7 +418,7 @@ class TestInterruption(_StoreCase):
             self.assertTrue(refusal.endswith("Nothing was deleted"))
             self.assertEqual(tree_state(self.root), state)
         else:
-            # row D5: everything is gone. There is no primary, so nothing can be identified
+            # everything is gone. There is no primary, so nothing can be identified
             for resume in (False, True):
                 state = tree_state(self.root)
                 with self.assertRaises(RuntimeError) as ctx:
@@ -447,7 +446,7 @@ class TestInterruption(_StoreCase):
 
 
 class TestResumeRelaxesOneThingOnly(_StoreCase):
-    """Test 5: under resume=True only a missing shard is tolerated. A journal, a symbolic link and
+    """Under resume=True only a missing shard is tolerated. A journal, a symbolic link and
     a missing primary are still refused by both methods, with the tree unchanged, even when a
     shard is also missing (so that resume has something to relax). The duplicate, the unreadable
     table, the unusable record and the file outside the directory are refused under resume by
@@ -533,7 +532,7 @@ class TestResumeRelaxesOneThingOnly(_StoreCase):
 
 
 class TestRecheckBeforeEachUnlink(_StoreCase):
-    """R1: a file that changed between the plan and its unlink is a refusal at that step, not a
+    """A file that changed between the plan and its unlink is a refusal at that step, not a
     silent skip and not a deletion of whatever is there now. The change is made just after the
     real plan returns."""
 
@@ -611,7 +610,7 @@ class TestRecheckBeforeEachUnlink(_StoreCase):
 
 
 class TestNoRay(_StoreCase):
-    """Test 6: the module imports ShardedPool, so ray is imported. It is never initialised, by
+    """The module imports ShardedPool, so ray is imported. It is never initialised, by
     this test's own listing, refusal and deletion, or by any other test here (tearDownModule).
     """
 

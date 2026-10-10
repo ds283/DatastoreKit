@@ -1,10 +1,10 @@
 """
-The checked replicated write (prompts/datastore-integrity, prompt 01).
+The checked replicated write.
 
 A replicated object is written on a controlling shard, chosen at random per call, and copied to
 every other shard in separate transactions. These tests drive the real ``ShardedPool``,
-``Datastore``, factories and broker on stand-in shards (``Datastore.tests.standin_pool``), and
-check the invariant the prompt establishes: at every instant of every replicated write, either
+``Datastore``, factories and broker on stand-in shards (``datastorekit.tests.standin_pool``), and
+check the invariant the replicated write keeps: at every instant of every replicated write, either
 every shard holds the same replicated rows, or the primary's ``replication_in_flight`` table names
 the operation, the class and the controlling shard whose rows are right.
 
@@ -20,7 +20,7 @@ the operation, the class and the controlling shard whose rows are right.
 6. a sharded store still stamps ``datetime.now()``, and writes no record;
 7. no Ray is initialised.
 
-Every store is built in a temporary directory. Nothing under ``var/`` is opened.
+Every store is built in a temporary directory.
 """
 
 import contextlib
@@ -48,8 +48,8 @@ REPLICATED = [t for t in replicated_tables if factories[t].register() is not Non
 
 @contextlib.contextmanager
 def quiet():
-    """Swallow what the actor code prints when a store raises (utilities.WallclockTimer prints
-    the exception and its traceback on the way out)."""
+    """Swallow what the actor code prints when a store raises (datastorekit._timing.WallclockTimer
+    prints the exception and its traceback on the way out)."""
     with (
         contextlib.redirect_stdout(io.StringIO()),
         contextlib.redirect_stderr(io.StringIO()),
@@ -407,9 +407,9 @@ class TestRecordAcrossTheWindow(_PoolTestCase):
 class TestReplicaSerialMismatch(_PoolTestCase):
     def test_scalar_get(self):
         """
-        The split of the audit probe's step 4, by hand: one replica holds the key under a serial
-        of its own. The controller, which lacks it, inserts it under a new serial and the replica
-        answers with its own.
+        A serial split, by hand: one replica holds the key under a serial of its own. The
+        controller, which lacks it, inserts it under a new serial and the replica answers with its
+        own.
         """
         replica = self.replicas[0]
         own = ray.get(
@@ -612,10 +612,9 @@ class TestWriteOverASetRecord(_PoolTestCase):
 
     def test_a_reopened_pool_repairs_from_the_controller_and_the_write_succeeds(self):
         """
-        Rewritten by prompts/datastore-integrity prompt 02 (the user's decision, 2026-09-28),
-        on the same fixture: the interrupted dial_setting get left the controller holding a row that
+        On the same fixture: the interrupted dial_setting get left the controller holding a row that
         replica 0 lacks, with the record set. Reopened, the pool copies that row forward from the
-        record's controlling shard and clears the record, and the write that prompt 01 refused
+        record's controlling shard and clears the record, and the write that the set record refused
         now succeeds.
         """
         (serial,) = self.serials("dial_setting", "WHERE dial_level = 6")[

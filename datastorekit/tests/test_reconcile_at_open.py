@@ -1,14 +1,14 @@
 """
-The check at open (prompts/datastore-integrity, prompt 02).
+The check at open.
 
 ``ShardedPool``'s constructor, for an existing store, runs ``_reconcile_replicated_tables`` after
 ``_check_shard_files`` and before any actor exists. It rolls back hot journals, compares every
 replicated table across the shards, repairs an interrupted replication from the in-flight record's
 controlling shard, and refuses to open, with ``ReplicatedDivergence``, on any other difference.
 These tests drive the real ``ShardedPool``, ``Datastore``, factories and broker on stand-in shards
-(``Datastore.tests.standin_pool``):
+(``datastorekit.tests.standin_pool``):
 
-1. kill and reopen, at every point of prompt 01's commit-point table, on every replicated path:
+1. kill and reopen, at every commit point of the replicated write, on every replicated path:
    every shard identical afterwards, the record empty, what was copied listed; a second reopen
    repairs nothing;
 2. a serial split refuses, with and without a record, naming both serials, writing nothing; so
@@ -28,7 +28,7 @@ These tests drive the real ``ShardedPool``, ``Datastore``, factories and broker 
 7. a clean store is untouched: no shard file and not the primary changes;
 8. no Ray is initialised.
 
-Every store is built in a temporary directory. Nothing under ``var/`` is opened.
+Every store is built in a temporary directory.
 """
 
 import contextlib
@@ -221,16 +221,16 @@ class _ReconcileTestCase(unittest.TestCase):
 
 
 # ------------------------------------------------------------------------------------------------
-# 1. kill and reopen, at every point of the commit-point table
+# 1. kill and reopen, at every commit point of the replicated write
 # ------------------------------------------------------------------------------------------------
 
 
 class TestKillAndReopen(_ReconcileTestCase):
     """
-    Each case is a row of log 01's commit-point table ("After"): the faults that stop the write
-    at that point, and what the reopen must write, as (action, class, replica role). A fault
-    "before" on a replica means that replica's call never ran; "after" means it ran and
-    committed and then the actor, or the driver, died.
+    Each case is a commit point of the replicated write: the faults that stop the write at that
+    point, and what the reopen must write, as (action, class, replica role). A fault "before" on a
+    replica means that replica's call never ran; "after" means it ran and committed and then the
+    actor, or the driver, died.
     """
 
     def run_case(self, prepare, write, faults, expected, prune=False):
@@ -332,7 +332,7 @@ class TestKillAndReopen(_ReconcileTestCase):
 
     def test_scalar_get_of_the_shard_key(self):
         """A keypoint: after the repair the new key has no shard assignment, and the next get
-        assigns it (log 01: _assign_shard_keys self-heals)."""
+        assigns it (_assign_shard_keys self-heals)."""
         cls = "keypoint"
         write = lambda _: build.get_keypoint(self.pool, 0.25, marked=True)
         self.run_case(
@@ -576,9 +576,9 @@ class TestKillAndReopen(_ReconcileTestCase):
 
 
 class TestSerialSplit(_ReconcileTestCase):
-    """The audit probe's step 4, built as test_replicated_write builds it: replica r0 holds the
-    dial_setting under a serial of its own, and a replicated get then inserts it on the controller
-    under another, which r1 receives and r0 answers with its own."""
+    """A serial split, built as test_replicated_write builds it: replica r0 holds the dial_setting
+    under a serial of its own, and a replicated get then inserts it on the controller under another,
+    which r1 receives and r0 answers with its own."""
 
     def setUp(self):
         super().setUp()
@@ -729,8 +729,8 @@ class TestNoRecordRefuses(_ReconcileTestCase):
 
     def test_a_timestamp_difference(self):
         """Copies of one row that differ only in their timestamp refuse, and the difference is
-        named: every replicated write stamps every copy with its one timestamp, so the check at
-        open compares it (prompts/datastore-generic, prompt 03, R2)."""
+        named: every replicated write stamps every copy with its one timestamp, so the check at open
+        compares it."""
         e = self.refuse_after(
             "UPDATE dial_setting SET timestamp = '2001-01-01 00:00:00.000000' "
             "WHERE dial_level = 6",
@@ -743,9 +743,9 @@ class TestNoRecordRefuses(_ReconcileTestCase):
         self.assertNotIn(" | ", detail, "a column other than timestamp was named")
 
     def test_a_value_row_held_under_another_serial(self):
-        """GadgetPart is compared under its own serial (e53f323): a value row that r0
-        holds under another serial, its model, part_index and values the same, is a serial split,
-        named with both serials."""
+        """GadgetPart is compared under its own serial: a value row that r0 holds under another
+        serial, its model, part_index and values the same, is a serial split, named with both
+        serials."""
         ((serial,),) = sp._read(
             self.files[self.replicas[0]], "SELECT max(serial) FROM GadgetPart"
         )
@@ -906,10 +906,10 @@ class TestRecordDoesNotExplain(_ReconcileTestCase):
 
     def test_part_of_the_recorded_background_model(self):
         """A store of a model interrupted after its last replica committed (Rn-P3): every shard
-        holds the model, and the record names it. r0 then lacks one of that model's value rows.
-        r0 holds the model row, so the value row is not part of a Gadget r0 lacks, and
-        the unit check refuses to copy it: the row's model is the record's, found through the
-        row's foreign key to Gadget (e53f323)."""
+        holds the model, and the record names it. r0 then lacks one of that model's value rows. r0
+        holds the model row, so the value row is not part of a Gadget r0 lacks, and the unit check
+        refuses to copy it: the row's model is the record's, found through the row's foreign key to
+        Gadget."""
         model = self.background()
         self.interrupt(
             [("r1", "object_store", "Gadget", "after")],
@@ -982,8 +982,8 @@ class TestHotJournal(_ReconcileTestCase):
         shard = self.files[self.replicas[0]]
         journal = Path(str(shard) + "-journal")
 
-        # hot_journal_probe.py's method: a write transaction large enough to spill to the file,
-        # in a child killed before it commits
+        # a hot journal made by a write transaction large enough to spill to the file, in a child
+        # killed before it commits
         # the child only opens the shard, writes and exits: whatever threads this process has
         # are not touched, so fork()'s multi-threading DeprecationWarning is silenced here
         with warnings.catch_warnings():
@@ -1058,9 +1058,9 @@ class TestHotJournal(_ReconcileTestCase):
 
 class TestPruningAfterRepair(_ReconcileTestCase):
     """prune_unvalidated runs after the check: for a replicated class in the pool, under a prune
-    record, before any actor exists (prompts/a3-v2-readiness prompt 02), and for a sharded class
-    inside each actor; drop_tables are dropped inside each actor. Every shard is identical by
-    then, so they act identically."""
+    record, before any actor exists, and for a sharded class inside each actor; drop_tables are
+    dropped inside each actor. Every shard is identical by then, so they act identically.
+    """
 
     def test_an_interrupted_validate(self):
         for prune in (True, False):
@@ -1086,10 +1086,9 @@ class TestPruningAfterRepair(_ReconcileTestCase):
 
     def test_an_interrupted_store(self):
         """The copied model is unvalidated everywhere: pruned on every shard, or kept on every
-        shard, and never on some. The drop actions include aliases, which drops
-        the replicated keypoint_alias table: on every shard alike. They also name
-        aliases' dependents (tesserae, samples and traces), because
-        a drop without them is refused (prompts/datastore-generic-followup, prompt 01).
+        shard, and never on some. The drop actions include aliases, which drops the replicated
+        keypoint_alias table: on every shard alike. They also name aliases' dependents (tesserae,
+        samples and traces), because a drop without them is refused.
         """
         for prune in (True, False):
             with self.subTest(prune=prune):

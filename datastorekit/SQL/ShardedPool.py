@@ -119,7 +119,7 @@ class ShardedPool:
         :param ShardKeyStoreIdGetter:
         :param version_label:
         :param read_only: open an existing store read-only, writing nothing to any of its files
-            (prompts/a3-v2-readiness, prompt 03; _open_read_only)
+            (_open_read_only)
         :param drop_tables: the tables every actor drops when it opens an existing store, in
             any order: each actor drops them in the order ``schema.drop_order`` derives from their
             foreign keys. A read-only pool refuses any (``ReadOnlyWrite``); a read-write pool
@@ -129,8 +129,8 @@ class ShardedPool:
             factory's ``inventory_spec`` declares, transitively) must be among them. Both before
             anything is opened
         :param factories: the registry of storable classes, name -> factory, which the client owns
-            and gives (prompts/datastore-generic, prompt 06). The pool, its actors and the reader
-            build every table from it; the layer imports none. Required, by keyword
+            and gives. The pool, its actors and the reader build every table from it; the layer
+            imports none. Required, by keyword
         :param serial_batch_sizes: table name -> how many serials an actor leases from the broker
             at a time, given to every actor; a table it does not name leases
             ``SerialPoolManager``'s default
@@ -172,8 +172,8 @@ class ShardedPool:
         # this database file will be taken to be the primary database
         self._primary_file: PathType = Path(db_name).resolve()
 
-        # shard_db_files is a map from shard number -> path representing the database on disk.
-        # Every path in it is absolute and lies in the primary's directory (Datastore/shard_paths.py)
+        # shard_db_files is a map from shard number -> path representing the database on disk. Every
+        # path in it is absolute and lies in the primary's directory (datastorekit/shard_paths.py)
         self._shard_db_files: Dict[int, PathType] = {}
 
         # shard_records is a map from shard number -> the filename value stored for it in the
@@ -212,9 +212,9 @@ class ShardedPool:
         it raises, __init__ closes what it made (_close_refused_open), and the exception
         propagates.
         """
-        # A READ-ONLY POOL (prompts/a3-v2-readiness, prompt 03). It opens an existing store with
-        # every file mode=ro and writes nothing to any of them; _open_read_only is the whole of its
-        # construction, and nothing below this block runs for it
+        # A READ-ONLY POOL. It opens an existing store with every file mode=ro and writes nothing to
+        # any of them; _open_read_only is the whole of its construction, and nothing below this
+        # block runs for it
         self._read_only: bool = bool(read_only)
         if self._read_only:
             self._open_read_only(version_label, drop_tables, read_table_config)
@@ -236,7 +236,8 @@ class ShardedPool:
             self._primary_file.parents[0].mkdir(exist_ok=True, parents=True)
 
             for i in range(self._shards):
-                # the one naming rule, shared with copy_store/move_store (Datastore/shard_paths.py)
+                # the one naming rule, shared with copy_store/move_store
+                # (datastorekit/shard_paths.py)
                 shard_file = self._primary_file.parent / shard_file_name(
                     self._primary_file, i
                 )
@@ -350,13 +351,13 @@ class ShardedPool:
                         f'It is only possible to configure a read-table method for a replicated table (class name="{class_name}")'
                     )
 
-        # THE VERSION ROW, last (prompts/a3-v2-readiness, prompt 02). It is replicated, so it is
-        # written as every other replicated row is, through _replicated_write and under its
-        # record, and never by an actor's constructor. It is first looked for without writing
-        # anything: a replicated get commits and clears a record on the primary even when it
-        # finds the row, so a get here would write the primary on every open of a store that
-        # already holds the label. Only a label no shard holds is written. Then every actor is
-        # given the serial; until then an actor refuses every insert that carries it
+        # THE VERSION ROW, last. It is replicated, so it is written as every other replicated row
+        # is, through _replicated_write and under its record, and never by an actor's constructor.
+        # It is first looked for without writing anything: a replicated get commits and clears a
+        # record on the primary even when it finds the row, so a get here would write the primary on
+        # every open of a store that already holds the label. Only a label no shard holds is
+        # written. Then every actor is given the serial; until then an actor refuses every insert
+        # that carries it
         self._version = self._find_version_row(version_label)
         if self._version is None:
             self._version = ray.get(
@@ -415,10 +416,10 @@ class ShardedPool:
         disagreement raise rather than be resolved by whichever shard was read. A label held twice
         on a shard raises, as the factory's own lookup does.
 
-        The object returned is built by the version table's factory, as an actor's get builds it
-        (README §6.2 U4 of prompts/datastore-generic): on a ``mode=ro`` connection to the
-        lowest-serial shard that holds the row, with an inserter that raises, which is never
-        reached because the row exists, so the factory finds it and inserts nothing.
+        The object returned is built by the version table's factory, as an actor's get builds it: on
+        a ``mode=ro`` connection to the lowest-serial shard that holds the row, with an inserter
+        that raises, which is never reached because the row exists, so the factory finds it and
+        inserts nothing.
         """
         found = {}
         for sid, path in sorted(self._shard_db_files.items()):
@@ -481,12 +482,11 @@ class ShardedPool:
         finally:
             engine.dispose()
 
-    # THE READ-ONLY POOL (prompts/a3-v2-readiness, prompt 03)
+    # THE READ-ONLY POOL
     #
     # ShardedPool(read_only=True) opens an existing store and writes nothing to any of its files.
     # Its construction is _open_read_only, which replaces the whole of the read-write constructor
-    # after the attributes are set; the read-write path does not reach it. At open, in order (the
-    # audit's M1 table, row by row, is in the prompt's log):
+    # after the attributes are set; the read-write path does not reach it. At open, in order:
     #
     #   1. drop_tables or prune_unvalidated=True: ReadOnlyWrite, before anything is opened;
     #   2. store_reader.open_read_only, through a function-scope import (store_reader imports this
@@ -495,10 +495,9 @@ class ShardedPool:
     #      presence, an empty one included, before any engine is made; every shard is opened
     #      mode=ro, and a shard whose file differs from the declared tables (a table it lacks
     #      included) is refused with StoreSchemaMismatch, before anything reads its tables. The
-    #      reader also reads the primary's replicated_tables record (prompts/datastore-generic,
-    #      prompt 06), so a primary whose record cannot be read, or names a class the registry
-    #      does not declare, is refused here with the reader's RuntimeError, before step 3's check
-    #      of the primary;
+    #      reader also reads the primary's replicated_tables record, so a primary whose record
+    #      cannot be read, or names a class the registry does not declare, is refused here with
+    #      the reader's RuntimeError, before step 3's check of the primary;
     #   3. the pool's own engine is mode=ro; the primary is refused with StoreSchemaMismatch if it
     #      differs from the tables _create_engine declares, and then _read_shard_data and
     #      _check_shard_files run on it as they do read-write;
@@ -798,8 +797,8 @@ class ShardedPool:
     def primary(self) -> Path:
         """
         The primary database file of this pool, resolved. Read-only: it is what the structured
-        inventory (``Datastore.store_inventory.read_inventory``) is given, so that a caller holding
-        an open pool does not reach into ``_primary_file``.
+        inventory (``datastorekit.store_inventory.read_inventory``) is given, so that a caller
+        holding an open pool does not reach into ``_primary_file``.
         """
         return self._primary_file
 
@@ -873,14 +872,13 @@ class ShardedPool:
             sqla.Column("table", sqla.String(DEFAULT_STRING_LENGTH), nullable=False),
             sqla.Column("key_attr", sqla.String(DEFAULT_STRING_LENGTH), nullable=False),
         )
-        # at most one row, naming the replicated write in progress. For a get, store or validate
-        # it is committed before the controlling shard's call is submitted and deleted after the
-        # last replica's call has returned and been checked (_replicated_write); a row here means
-        # the shards may differ, and that the controlling shard's rows of this class are the
-        # right ones. For a prune (operation "prune", prompts/a3-v2-readiness prompt 02) it is
-        # committed before the first shard is pruned and deleted after the last
-        # (_prune_replicated_tables); a prune has no controlling shard, so controller_shard is
-        # NULL
+        # at most one row, naming the replicated write in progress. For a get, store or validate it
+        # is committed before the controlling shard's call is submitted and deleted after the last
+        # replica's call has returned and been checked (_replicated_write); a row here means the
+        # shards may differ, and that the controlling shard's rows of this class are the right ones.
+        # For a prune (operation "prune") it is committed before the first shard is pruned and
+        # deleted after the last (_prune_replicated_tables); a prune has no controlling shard, so
+        # controller_shard is NULL
         self._replication_in_flight_table = sqla.Table(
             "replication_in_flight",
             self._metadata,
@@ -934,7 +932,7 @@ class ShardedPool:
 
         # each shard is recorded relative to the primary's directory. Every shard is created as a
         # sibling of the primary, so this is its bare file name, and the store stays readable when
-        # its directory is moved or copied (Datastore/shard_paths.py)
+        # its directory is moved or copied (datastorekit/shard_paths.py)
         shard_file_values = []
         for key, db_name in self._shard_db_files.items():
             db_name = Path(db_name)
@@ -1143,18 +1141,17 @@ class ShardedPool:
     # THE REPLICATED TABLES, RECONCILED AT OPEN
     #
     # A replicated write interrupted after its controlling shard committed leaves the shards
-    # different and the primary's replication_in_flight record set (_replicated_write). Nothing
-    # in the write path deletes a replicated row, with one recorded exception: the prune at open
-    # of a replicated class (_prune_replicated_tables), which runs under a record of its own,
-    # operation "prune", and is completed below by running it again. The controller commits
-    # first and the replicas copy only what it committed, and a flag is only ever turned on, so
-    # after an interrupted replication the right state is exactly "every shard holds what the
-    # controller holds" (docs/datastore-integrity-audit.md §4.5). The version row is such a
-    # replicated row: since prompts/a3-v2-readiness prompt 02 it is written only through
-    # _replicated_write, by ShardedPool.__init__, and an interrupted write of it is repaired by
-    # the generic get repair below like any other. _reconcile_replicated_tables runs in the
-    # constructor after _check_shard_files and before the broker or any actor exists, on plain
-    # SQLAlchemy connections to the shard files through tables built by build_schema, with no Ray:
+    # different and the primary's replication_in_flight record set (_replicated_write). Nothing in
+    # the write path deletes a replicated row, with one recorded exception: the prune at open of a
+    # replicated class (_prune_replicated_tables), which runs under a record of its own, operation
+    # "prune", and is completed below by running it again. The controller commits first and the
+    # replicas copy only what it committed, and a flag is only ever turned on, so after an
+    # interrupted replication the right state is exactly "every shard holds what the controller
+    # holds". The version row is such a replicated row: it is written only through
+    # _replicated_write, by ShardedPool.__init__, and an interrupted write of it is repaired by the
+    # generic get repair below like any other. _reconcile_replicated_tables runs in the constructor
+    # after _check_shard_files and before the broker or any actor exists, on plain SQLAlchemy
+    # connections to the shard files through tables built by build_schema, with no Ray:
     #
     #   1. each shard is opened read-write once, so that SQLite rolls back a hot journal;
     #   2. a "prune" record is completed and nothing else is done (_complete_interrupted_prune):
@@ -1348,12 +1345,11 @@ class ShardedPool:
         shard, in serial order, that has a table or a column the code does not declare, or that
         lacks a declared column of a table it has. Writes nothing.
 
-        A table a shard lacks is allowed here, and only here (README U1 of
-        prompts/datastore-generic): it is what an interrupted first open leaves (each ``create``
-        of ``Datastore._ensure_tables`` commits on its own), or an interrupted drop action (an
-        actor drops a table and re-creates it). The comparison below reads such a table as empty,
-        and the actors complete the open by creating it. That is crash recovery of a store the
-        current code wrote, not the reading of an older one.
+        A table a shard lacks is allowed here, and only here: it is what an interrupted first open
+        leaves (each ``create`` of ``Datastore._ensure_tables`` commits on its own), or an
+        interrupted drop action (an actor drops a table and re-creates it). The comparison below
+        reads such a table as empty, and the actors complete the open by creating it. That is crash
+        recovery of a store the current code wrote, not the reading of an older one.
         """
         # store_reader imports this module at module scope, so it is imported here
         from datastorekit.store_reader import read_only_url
@@ -1477,12 +1473,11 @@ class ShardedPool:
 
     def _read_replicated_tables(self, conn, specs) -> Dict[str, dict]:
         """
-        One shard's replicated rows, table by table: the compared columns, and its rows keyed as
-        the spec says, each a tuple in the order of those columns. A table the shard lacks is
-        read as empty (an actor would create it empty: README U1 of prompts/datastore-generic).
-        The schema check at open (_refuse_shards_that_differ, or the reader for a read-only pool)
-        has already refused every other difference, so a table the shard has holds exactly the
-        compared columns.
+        One shard's replicated rows, table by table: the compared columns, and its rows keyed as the
+        spec says, each a tuple in the order of those columns. A table the shard lacks is read as
+        empty (an actor would create it empty). The schema check at open
+        (_refuse_shards_that_differ, or the reader for a read-only pool) has already refused every
+        other difference, so a table the shard has holds exactly the compared columns.
         """
         out = {}
         for spec in specs:
@@ -1719,12 +1714,11 @@ class ShardedPool:
         validate of the record's row, which is recomputed. Anything else is refused.
 
         Only a get, store or validate record is licensed. A prune record is completed by
-        _complete_interrupted_prune and never reaches this; were one passed here, it is refused
-        like any other operation. The version row, written since prompts/a3-v2-readiness prompt
-        02 only by the pool's recorded get, is admitted by the generic get branch unchanged: its
-        table has no timestamp column, so the timestamp test does not apply to it, and only the
-        controller's row under the record's store_id (or any, when an interruption before
-        _replicated_write's step 3 left store_id null) is copied.
+        _complete_interrupted_prune and never reaches this; were one passed here, it is refused like
+        any other operation. The version row, written only by the pool's recorded get, is admitted
+        by the generic get branch unchanged: its table has no timestamp column, so the timestamp
+        test does not apply to it, and only the controller's row under the record's store_id (or
+        any, when an interruption before _replicated_write's step 3 left store_id null) is copied.
         """
         by_name = {spec["name"]: spec for spec in specs}
         operation = record.get("operation")
@@ -2121,14 +2115,12 @@ class ShardedPool:
     # THE PRUNE AT OPEN OF A REPLICATED CLASS
     #
     # Under prune_unvalidated, the unvalidated rows of every replicated class whose factory
-    # validates at startup (with the rows of its unit, _unit_tables) are deleted by the pool, not
-    # by the actors (prompts/a3-v2-readiness prompt 02, the user's decision U1). An
-    # actor that pruned its own shard in its constructor did so outside any record, so an open
-    # interrupted between actors left shards that differ with nothing to say which is right
-    # (docs/a3-v2-readiness-audit.md V1, case 4). _prune_replicated_tables runs in the
-    # constructor after the check at open and after replication_in_flight exists, before the
-    # broker or any actor exists, on plain connections to the shard files, with no Ray. For each
-    # such class:
+    # validates at startup (with the rows of its unit, _unit_tables) are deleted by the pool, not by
+    # the actors. An actor that pruned its own shard in its constructor did so outside any record,
+    # so an open interrupted between actors left shards that differ with nothing to say which is
+    # right. _prune_replicated_tables runs in the constructor after the check at open and after
+    # replication_in_flight exists, before the broker or any actor exists, on plain connections to
+    # the shard files, with no Ray. For each such class:
     #
     #   1. every shard is read, writing nothing, by the factory's own validate_on_startup with
     #      prune=False. If no shard reports an unvalidated row, nothing is written and no record
@@ -2186,13 +2178,12 @@ class ShardedPool:
     @staticmethod
     def _unit_tables(cls_name: str, specs) -> List[str]:
         """
-        The compared tables of ``cls_name``'s unit, read from foreign keys: the class's own
-        table, then the compared tables that are its tag tables, then the compared tables whose
-        declared ``owner_column`` references it, each group in the specs' order. It is the unit
-        the check at open copies as a whole (``_plan_replicated_repair``) and the tables a prune of
-        the class may delete from (``_prune_shard``). A table with a foreign key to the class that
-        is not its tag table and does not declare it its owner is not in it (prompts/datastore-
-        generic README §6.2, the user's choice for prompt 07).
+        The compared tables of ``cls_name``'s unit, read from foreign keys: the class's own table,
+        then the compared tables that are its tag tables, then the compared tables whose declared
+        ``owner_column`` references it, each group in the specs' order. It is the unit the check at
+        open copies as a whole (``_plan_replicated_repair``) and the tables a prune of the class may
+        delete from (``_prune_shard``). A table with a foreign key to the class that is not its tag
+        table and does not declare it its owner is not in it.
         """
         unit = [cls_name]
         for spec in specs:
@@ -2518,7 +2509,7 @@ class ShardedPool:
         ``shard_db_files`` (serial -> absolute path) and ``shard_records`` (serial -> the stored
         value), which the caller supplies and which are filled in place.
 
-        Every record goes through the one resolver (Datastore/shard_paths.py), which accepts a
+        Every record goes through the one resolver (datastorekit/shard_paths.py), which accepts a
         bare file name only. A record that is anything else, an absolute path included, is refused
         as unusable. The rows are not rewritten.
         """
@@ -2546,9 +2537,9 @@ class ShardedPool:
         missing_ok: bool = False,
     ) -> List[str]:
         """
-        Return one message for each resolved shard that is not a usable file (missing, not a
-        regular file, a symbolic link: Datastore/shard_paths.py shard_file_problem), and for each
-        pair of serials that resolve to the same file. An empty list means every shard is usable.
+        Return one message for each resolved shard that is not a usable file (missing, not a regular
+        file, a symbolic link: shard_paths.shard_file_problem), and for each pair of serials that
+        resolve to the same file. An empty list means every shard is usable.
         """
         problems = []
         for serial, path in sorted(shard_db_files.items()):
@@ -2586,10 +2577,10 @@ class ShardedPool:
     #
     # copy_store and move_store never delete a file, never overwrite one, and never write the
     # source. delete_store deletes a closed store's own files, and those only: the shards its
-    # primary's `shards` table names, read through the one resolver, and then the primary. Its one
-    # intended caller is the registry's `store retire`, which keeps the store's sidecar behind as
-    # its record. On failure none of them cleans up: each raises, naming the step that failed and
-    # the store files that exist. Deleting any other file is for a person.
+    # primary's `shards` table names, read through the one resolver, and then the primary. Its
+    # intended caller is a registry-level tool that retires a store, which keeps its own record of
+    # it. On failure none of them cleans up: each raises, naming the step that failed and the store
+    # files that exist. Deleting any other file is for a person.
 
     @staticmethod
     def copy_store(src: PathType, dst: PathType) -> Dict[int, Path]:
@@ -3092,13 +3083,12 @@ class ShardedPool:
     # THE REPLICATED WRITE
     #
     # A replicated object is written on a controlling shard, chosen at random per call, and then
-    # sent to every other shard, each in its own transaction. _replicated_write is the one path
-    # the get, store and validate of a replicated class take, the version row's included
-    # (ShardedPool.__init__ writes it here, prompts/a3-v2-readiness prompt 02), and the one place
-    # that writes and clears the primary's replication_in_flight record for them
-    # (prompts/datastore-integrity, prompt 01). The one other writer of that record is the prune
-    # at open of a replicated class, whose "prune" record _prune_replicated_tables writes and
-    # clears, with no Ray, before any actor exists:
+    # sent to every other shard, each in its own transaction. _replicated_write is the one path the
+    # get, store and validate of a replicated class take, the version row's included
+    # (ShardedPool.__init__ writes it here), and the one place that writes and clears the primary's
+    # replication_in_flight record for them. The one other writer of that record is the prune at
+    # open of a replicated class, whose "prune" record _prune_replicated_tables writes and clears,
+    # with no Ray, before any actor exists:
     #
     #   1. the record is committed on the primary, in its own transaction, naming the operation,
     #      the class and the controlling shard. If one is already there, nothing is written;
@@ -3131,7 +3121,7 @@ class ShardedPool:
         when it is known before the controller's call (a validate).
         """
         if getattr(self, "_replication_active", False):
-            # replicated calls never overlap in the driver (audit §4.1); this makes it an assertion
+            # replicated calls never overlap in the driver; this makes it an assertion
             raise RuntimeError(
                 f'ShardedPool: a replicated {operation} of "{cls_name}" was started while another '
                 "replicated write was in progress. Replicated writes must not overlap"
@@ -3219,7 +3209,7 @@ class ShardedPool:
         )
 
     def _get_impl_replicated_table(self, cls_name, kwargs):
-        # a read-only pool answers from one shard, with no record and no replication (prompt 03)
+        # a read-only pool answers from one shard, with no record and no replication
         if getattr(self, "_read_only", False):
             return self._get_impl_replicated_table_read_only(cls_name, kwargs)
 
@@ -3385,7 +3375,7 @@ class ShardedPool:
         return self._shards[shard_id].object_read_batch.remote(cls_name, **payload)
 
     def object_store(self, objects):
-        # a read-only pool stores nothing (prompts/a3-v2-readiness, prompt 03)
+        # a read-only pool stores nothing
         if getattr(self, "_read_only", False):
             self._refuse_write("object_store", objects)
 
@@ -3477,7 +3467,7 @@ class ShardedPool:
         return [self._shards[shard_id].object_store.remote(item)]
 
     def object_validate(self, objects):
-        # a read-only pool validates nothing (prompts/a3-v2-readiness, prompt 03)
+        # a read-only pool validates nothing
         if getattr(self, "_read_only", False):
             self._refuse_write("object_validate", objects)
 
@@ -3588,9 +3578,9 @@ class ShardedPool:
         if len(missing_keys) == 0:
             return
 
-        # a read-only pool assigns no shard key (prompts/a3-v2-readiness, prompt 03): the check at
-        # open compared shard_keys with the rows of the shard-key class every shard holds, so a
-        # row with no key here is one the store's primary does not know
+        # a read-only pool assigns no shard key: the check at open compared shard_keys with the rows
+        # of the shard-key class every shard holds, so a row with no key here is one the store's
+        # primary does not know
         if getattr(self, "_read_only", False):
             raise ReadOnlyWrite(
                 self._primary_file,

@@ -1,21 +1,20 @@
 """
-``tools/shard_key_audit.py`` refuses, with exit code 2 and no verdict, a primary that is not a
-completely written current-generation ShardedPool primary, and one whose shard record is unusable.
-`prompts/datastore-generic` prompt 04 §2 L2.
+``datastorekit.tools.shard_key_audit`` refuses, with exit code 2 and no verdict, a primary that is
+not a completely written current-generation ShardedPool primary, and one whose shard record is
+unusable.
 
-Until prompt 04 the tool had a branch for a pre-``a2bd966`` primary (a ``shard_keys`` table keyed
-``keypoint_serial``), tolerated a primary with no ``shard_key_config``, and ended an unusable
-shard record in "VERDICT: OK" and exit code 0, however unusable it was. Now:
+The tool once had a branch for a primary from before ``shard_keys`` was keyed on ``key_serial`` (a
+``shard_keys`` table keyed ``keypoint_serial``), tolerated a primary with no ``shard_key_config``,
+and ended an unusable shard record in "VERDICT: OK" and exit code 0, however unusable it was. Now:
 
 * ``shard_keys`` without ``key_serial`` meets the one "Unrecognised shard_keys schema" refusal,
-  which does not mention ``a2bd966``;
+  which names no earlier shape;
 * ``shard_key_config`` is a required table, and must hold a row;
 * every ``shards`` record goes through the one resolver, and one that it refuses, an absolute
   path included, is a refusal naming the record and the resolver's reason.
 
-Since `[04-the-shard-key-audit-crashes-where-it-should-refuse]` was closed (2026-10-05), three more
-shapes are refusals with exit code 2, where the tool ended in a traceback (exit 1, its INCONSISTENT
-code) or skipped its cross-file check and could still say OK:
+Three more shapes are refusals with exit code 2, where the tool once ended in a traceback (exit 1,
+its INCONSISTENT code) or skipped its cross-file check and could still say OK:
 
 * a primary without a column the tool reads (``shard_key_config.key_type``, ``shards.serial`` or
   ``.filename``, ``shard_keys.shard_id``);
@@ -25,8 +24,9 @@ code) or skipped its cross-file check and could still say OK:
 A missing shard *file* is not a refusal: the cross-file check is skipped and said to be
 (``test_shard_key_audit_copy`` pins it).
 
-The tool is run as ``python tools/shard_key_audit.py <primary>`` from an unrelated working
-directory with no ``PYTHONPATH``. Everything is in a temporary directory; no Ray, no datastore.
+The tool is run as ``python -m datastorekit.tools.shard_key_audit <primary>``, from an unrelated
+working directory with no ``PYTHONPATH``. Everything is in a temporary directory; no Ray, no
+datastore.
 """
 
 import os
@@ -114,8 +114,9 @@ class TestTheAuditRefuses(unittest.TestCase):
         self.assertIn("VERDICT: OK", result.stdout)
 
     def test_a_primary_naming_another_stores_shards_by_absolute_path(self):
-        """B's records are the absolute paths of A's existing shard files: the 2026-09-23 shape.
-        Before prompt 04 the tool read them as B's siblings and said OK."""
+        """B's records are the absolute paths of A's existing shard files: the shape of a copy of a
+        primary that recorded its shards by absolute path. The tool once read them as B's siblings
+        and said OK."""
         a = self.a_current_store("A")
         b = self.root / "B" / "store.sqlite"
         records = {i: str(a.parent / n) for i, n in enumerate(NAMES)}
@@ -131,7 +132,7 @@ class TestTheAuditRefuses(unittest.TestCase):
         self.assertNotIn("cross-file check against shard", out)
 
     def test_a_primary_naming_its_own_siblings_by_absolute_path(self):
-        """The shape every store written before ``b04671f`` held."""
+        """The shape every store written before shard records were bare file names held."""
         b = self.root / "B" / "store.sqlite"
         records = {i: str(b.parent / n) for i, n in enumerate(NAMES)}
         write_hand_built_primary(b, records, shard_keys=[(1, 0)])
@@ -175,8 +176,8 @@ class TestTheAuditRefuses(unittest.TestCase):
         self.assertIn("holds no row", out)
 
     def test_a_shard_keys_table_without_key_serial(self):
-        """The pre-``a2bd966`` shape. It meets the one refusal, which says nothing of that
-        commit."""
+        """The shape from before ``shard_keys`` was keyed on ``key_serial``. It meets the one
+        refusal, which names neither that change nor an earlier generation."""
         primary = self.a_current_store("A")
         _execute(
             primary,
@@ -193,8 +194,8 @@ class TestTheAuditRefuses(unittest.TestCase):
         self.assertNotIn("a2bd966", out)
         self.assertNotIn("pre-", out)
 
-    # [04-the-shard-key-audit-crashes-where-it-should-refuse]: each of these ended in a traceback
-    # and exit code 1, or skipped the cross-file check and said OK
+    # each of these once ended in a traceback and exit code 1, or skipped the cross-file check and
+    # said OK
 
     def test_a_shard_key_config_without_key_type(self):
         primary = self.a_current_store("A")

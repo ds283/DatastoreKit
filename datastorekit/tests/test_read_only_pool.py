@@ -1,13 +1,12 @@
 """
-A read-only pool, ``ShardedPool(read_only=True)`` (prompts/a3-v2-readiness, prompt 03, O1–O2).
+A read-only pool, ``ShardedPool(read_only=True)``.
 
 The real ``ShardedPool``, ``Datastore`` actor code, factories and broker run on stand-in shards
-(``Datastore.tests.standin_pool``) in temporary directories, with no Ray and nothing under
-``var/``. The store is the neutral client's full store, and the lookup sequence is a reader's on
-the neutral client: both are **imported** from ``datastorekit.tests.client.reader``
-(``build_full_store``, ``reader_sequence``, ``other_sharded_lookups``), which stands in for the
-audit probe the source repository's test imported, and keeps that probe's instrument. Importing it
-runs nothing.
+(``datastorekit.tests.standin_pool``) in temporary directories, with no Ray. The store is the
+neutral client's full store, and the lookup sequence is a reader's on the neutral client: both are
+**imported** from ``datastorekit.tests.client.reader`` (``build_full_store``, ``reader_sequence``,
+``other_sharded_lookups``), which stands in for the audit probe the source repository's test
+imported, and keeps that probe's instrument. Importing it runs nothing.
 
 The instrument is the SHA-256 of every file in the store's directory
 (``standin_pool.store_checksums``), which also sees a file appear or go. Beside it, an engine
@@ -15,8 +14,8 @@ listener records every SQL statement any engine issues, so that "before any INSE
 and not inferred; and the connection test records what every connection is opened with.
 
 1. Nothing written on a full store: the instrument counts first, on a read-write pool (the
-   primary changes), and then QSI's whole sequence on a read-only pool changes no file, enters
-   ``_replicated_write`` never, and returns the hits R2 Run 1 recorded.
+   primary changes), and then the reader's whole sequence on a read-only pool changes no file,
+   enters ``_replicated_write`` never, and returns the read-write pool's hits.
 2. Each insert-on-miss raises ``ReadOnlyMiss`` naming class and payload, with no INSERT issued and
    no file changed: ``store_tag``, ``dial_setting``, ``knob_setting``, ``gauge_setting``,
    ``routing_rule``.
@@ -26,8 +25,8 @@ and not inferred; and the connection test records what every connection is opene
 4. At open: a missing primary; an empty and a hot journal beside a shard; a primary holding a
    record (a ``get`` and a ``prune``); an absent version label; diverged shards; a shard lacking a
    validating class's table, and one lacking a non-validating class's, each refused with
-   ``StoreSchemaMismatch`` naming the table (prompts/datastore-generic, prompt 05: only a
-   read-write open recovers a table a shard lacks); every connection ``mode=ro``.
+   ``StoreSchemaMismatch`` naming the table (only a read-write open recovers a table a shard
+   lacks); every connection ``mode=ro``.
 5. No Ray is initialised.
 """
 
@@ -61,14 +60,14 @@ from datastorekit.tests.client.registry import (
     shard_key_store_id,
 )
 
-# the pool module's names, as a reader imports them (O2: importable from the pool's module)
+# the pool module's names, as a reader imports them (importable from the pool's module)
 ShardedPool = sp.sp_mod.ShardedPool
 ReadOnlyMiss = sp.sp_mod.ReadOnlyMiss
 ReadOnlyWrite = sp.sp_mod.ReadOnlyWrite
 ReplicatedDivergence = sp.sp_mod.ReplicatedDivergence
 
-# a child that dies inside a write transaction on a shard after its page cache has spilled,
-# leaving a hot journal: transcribed from docs/a3-v2-readiness/readonly_open_probe.py (M2d)
+# a child that dies inside a write transaction on a shard after its page cache has spilled, leaving
+# a hot journal
 HOT_JOURNAL_CHILD = r"""
 import os, sqlite3, sys
 conn = sqlite3.connect(sys.argv[1], isolation_level=None)
@@ -85,7 +84,7 @@ _WRITE_VERBS = ("INSERT", "UPDATE", "DELETE", "REPLACE", "CREATE", "DROP", "ALTE
 
 _MODULE = {}
 
-# the text of every exception a test below raises on purpose, by case (for the prompt's log)
+# the text of every exception a test below raises on purpose, by case
 MESSAGES = {}
 
 
@@ -210,8 +209,9 @@ class _ReadOnlyTestCase(unittest.TestCase):
         self._open.remove(pool)
 
     def run_sequence(self, pool, directory: Path, others: bool = True):
-        """QSI's whole sequence (the probe's), then the other readers' sharded lookups. Returns
-        (the recorder's rows, the _replicated_write log, what stopped the sequence)."""
+        """The reader's whole sequence (``reader_sequence``), then the other readers' sharded
+        lookups. Returns (the recorder's rows, the _replicated_write log, what stopped the
+        sequence)."""
         log = rw.ReplicatedWriteLog()
         rec = rw.Recorder(directory, log)
         stopped = None
@@ -236,8 +236,8 @@ class TestNothingWrittenOnAFullStore(_ReadOnlyTestCase):
     def test_the_instrument_counts_a_read_write_pool_then_read_only_writes_nothing(
         self,
     ):
-        # the instrument, first (A2): the same sequence on a read-write pool changes the primary,
-        # through its in-flight commits, and enters _replicated_write 18 times (audit R2 Run 1)
+        # the instrument, first: the same sequence on a read-write pool changes the primary, through
+        # its in-flight commits, and enters _replicated_write 18 times
         rw_primary = self.copy()
         before = sp.store_checksums(rw_primary)
         pool, _ = self.open(rw_primary)
@@ -270,8 +270,8 @@ class TestNothingWrittenOnAFullStore(_ReadOnlyTestCase):
             [(name, outcome) for name, _, _, outcome in rw_rows],
         )
 
-        # the hits audit R2 Run 1 recorded, and the stop at knob_setting's background. The
-        # serials are the store's (stand-in serials vary between builds; R2 recorded 1 and 1, 6)
+        # the hits the sequence makes, and the stop at knob_setting's background. The serials are
+        # the store's (stand-in serials vary between builds)
         outcomes = dict((name, outcome) for name, _, _, outcome in ro_rows)
         self.assertEqual(
             outcomes["[dial] Gadget"],
@@ -301,7 +301,7 @@ class TestNothingWrittenOnAFullStore(_ReadOnlyTestCase):
             "Could not locate suitable gadget",
             outcomes["[knob] Gadget"],
         )
-        # stopped by the script's own RuntimeError, not by a ReadOnlyMiss (also a RuntimeError)
+        # stopped by the sequence's own RuntimeError, not by a ReadOnlyMiss (also a RuntimeError)
         self.assertIs(type(ro_stopped), RuntimeError)
         self.assertEqual(str(ro_stopped), str(rw_stopped))
 
@@ -347,15 +347,15 @@ class TestEachMissRaisesReadOnlyMiss(_ReadOnlyTestCase):
         return e
 
     def sequence(self, pool):
-        # not run_sequence, which stops at the RuntimeError the script raises for a model with no
+        # not run_sequence, which stops at the RuntimeError the sequence raises for a model with no
         # background: ReadOnlyMiss is a RuntimeError too, and must reach the test
         rec = rw.Recorder(Path(pool.primary).parent, rw.ReplicatedWriteLog())
         with quiet():
             rw.reader_sequence(pool, rec)
 
     def test_store_tag(self):
-        # with the run's store_tag deleted, resolve_run_selection finds no run and makes no
-        # store_tag lookup (audit R2 Run 2); the lookup is made directly, as it would be
+        # with the run's store_tag deleted, a reader that selects a run by its tag finds no run and
+        # makes no store_tag lookup; the lookup is made directly, as it would be
         from datastorekit.tests.client.reader import run_label_tag
 
         primary = self.copy()
@@ -622,8 +622,8 @@ class TestOtherWritesRaiseReadOnlyWrite(_ReadOnlyTestCase):
 
     def test_the_backstop_a_flag_update_on_a_hit(self):
         # the store's position = 0.5 is a marked keypoint only; asking for it as a flagged keypoint
-        # too makes the factory update its flag on a hit (audit R1). The UPDATE reaches SQLite,
-        # and the mode=ro file refuses it
+        # too makes the factory update its flag on a hit. The UPDATE reaches SQLite, and the mode=ro
+        # file refuses it
         primary = self.copy()
         before = sp.store_checksums(primary)
         pool, _ = self.open(primary, read_only=True)
@@ -811,10 +811,9 @@ class TestAtOpen(_ReadOnlyTestCase):
         self.assertEqual(sp.store_checksums(primary), before)
 
     def test_a_shard_lacking_a_table_is_refused_naming_it(self):
-        """A shard that lacks a table (what an interrupted drop leaves) is refused by the reader
-        the pool opens through, naming the shard and the table, before any actor is built; no
-        file changes. Only a read-write open recovers such a store (prompts/datastore-generic,
-        README U1)."""
+        """A shard that lacks a table (what an interrupted drop leaves) is refused by the reader the
+        pool opens through, naming the shard and the table, before any actor is built; no file
+        changes. Only a read-write open recovers such a store."""
         constructed = []
         original = sp._Options.remote
 

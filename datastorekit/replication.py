@@ -1,5 +1,5 @@
 """
-The exceptions of the replicated write (prompts/datastore-integrity, prompt 01).
+The exceptions of the replicated write.
 
 A replicated object is written on a controlling shard and then copied to every other shard, each
 in its own transaction (``ShardedPool._replicated_write``). Two things can go wrong that must be
@@ -14,18 +14,18 @@ loud rather than silent:
   names one. That is ``ReplicationInFlight``. The store is then in the state an interrupted write
   left it, and no write may proceed over it until the store has been reconciled.
 
-When a store is opened, ``ShardedPool`` compares its replicated tables across shards (prompt 02).
-An interrupted replication is repaired from the record's controlling shard; any other difference
-refuses the open with ``ReplicatedDivergence``.
+When a store is opened, ``ShardedPool`` compares its replicated tables across shards. An interrupted
+replication is repaired from the record's controlling shard; any other difference refuses the open
+with ``ReplicatedDivergence``.
 
-A store can also be opened read-only (``ShardedPool(read_only=True)``, prompts/a3-v2-readiness
-prompt 03). On it, a lookup that would insert raises ``ReadOnlyMiss``, and any other write raises
-``ReadOnlyWrite``, each before anything is written.
+A store can also be opened read-only (``ShardedPool(read_only=True)``). On it, a lookup that would
+insert raises ``ReadOnlyMiss``, and any other write raises ``ReadOnlyWrite``, each before anything
+is written.
 
-This module lives at the top of the ``Datastore`` package, and imports nothing from it, so that the
-factories (which raise ``ReplicationMismatch`` inside a Datastore actor), ``ShardedPool`` (which
-raises both in the driver) and the tests can all import it without importing Ray's actor classes
-or creating an import cycle through ``Datastore.SQL``.
+This module lives at the top of the ``datastorekit`` package, and imports nothing from it, so that
+the factories (which raise ``ReplicationMismatch`` inside a Datastore actor), ``ShardedPool`` (which
+raises both in the driver) and the tests can all import it without importing Ray's actor classes or
+creating an import cycle through ``datastorekit.SQL``.
 
 The exceptions pickle with their fields intact, because under Ray an exception raised inside an
 actor reaches the driver by pickling.
@@ -125,9 +125,8 @@ class ReplicationInFlight(RuntimeError):
 class ReplicatedDivergence(RuntimeError):
     """
     The replicated tables of a sharded store differ across its shards in a way that an interrupted
-    replication does not explain, so the store is not opened (prompts/datastore-integrity, prompt
-    02). Raised by ``ShardedPool._reconcile_replicated_tables`` in the constructor, before any
-    actor exists.
+    replication does not explain, so the store is not opened. Raised by
+    ``ShardedPool._reconcile_replicated_tables`` in the constructor, before any actor exists.
 
     ``differences`` is a list of dicts, one per difference, each naming ``class_name`` (the
     table), ``shard`` (the shard, or the shards, that deviate), ``key`` (the serial or key of the
@@ -193,11 +192,11 @@ class ReplicatedDivergence(RuntimeError):
 
 class ReadOnlyMiss(RuntimeError):
     """
-    A lookup on a store opened read-only (``ShardedPool(read_only=True)``, prompts/a3-v2-readiness
-    prompt 03) matched no row, where a read-write store would have inserted one. Raised before any
-    ``INSERT`` is issued: a read-only ``Datastore`` actor hands every factory's ``build`` an
-    inserter that raises this instead of inserting, for every replicated class. Also raised by the
-    pool when the version label it is opened under is held by no shard.
+    A lookup on a store opened read-only (``ShardedPool(read_only=True)``) matched no row, where a
+    read-write store would have inserted one. Raised before any ``INSERT`` is issued: a read-only
+    ``Datastore`` actor hands every factory's ``build`` an inserter that raises this instead of
+    inserting, for every replicated class. Also raised by the pool when the version label it is
+    opened under is held by no shard.
 
     ``class_name`` is the class whose row would have been inserted, ``payload`` the row as the
     factory would have inserted it (or the lookup's key), ``store`` the actor or primary that
@@ -240,11 +239,11 @@ class ReadOnlyMiss(RuntimeError):
 
 class ReadOnlyWrite(RuntimeError):
     """
-    A write was attempted on a store opened read-only (``ShardedPool(read_only=True)``,
-    prompts/a3-v2-readiness prompt 03): a store, a validate, a prune, a drop, a repair, a new shard
-    key, or an insert that is not a lookup's. Raised before anything is written. It is also the
-    backstop: a write that reaches SQLite through a read-only actor is refused by the file, opened
-    ``mode=ro``, and that refusal is re-raised as this exception, chained.
+    A write was attempted on a store opened read-only (``ShardedPool(read_only=True)``): a store, a
+    validate, a prune, a drop, a repair, a new shard key, or an insert that is not a lookup's.
+    Raised before anything is written. It is also the backstop: a write that reaches SQLite through
+    a read-only actor is refused by the file, opened ``mode=ro``, and that refusal is re-raised as
+    this exception, chained.
 
     ``store`` names the actor or primary that refused, ``operation`` what was attempted,
     ``class_name`` the class it was attempted on (if one), ``detail`` why it would write.
