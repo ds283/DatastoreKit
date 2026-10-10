@@ -1600,7 +1600,7 @@ closed `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]`, now at 
     freed at once, and the stand-in pool reserves names so that the suite sees a regression. The
     user asked for the campaign on 2026-10-10, after this campaign closed; the entry stays here,
     with its measurement, until that prompt closes it.
-  - **Closed (2026-10-10, by `actor-names` prompt 01, this commit)**
+  - **Closed (2026-10-10, by `actor-names` prompt 01, `ac50a8a`)**
     ([log 01](../actor-names/logs/01-a-closed-pool-releases-its-actor-names.md) §1, §4, §5).
     `ShardedPool.__exit__` runs its body unchanged, then kills each shard actor and the broker, if
     there is one, with `ray.kill(handle, no_restart=True)` (the new `_kill_actors`), and marks the

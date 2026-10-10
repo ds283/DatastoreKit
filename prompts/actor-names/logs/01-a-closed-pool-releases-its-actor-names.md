@@ -1,6 +1,6 @@
 # Log 01 — a closed pool releases its actor names
 
-**Subject:** Release a closed pool's actor names, and a refused open's · **Commit:** this commit ·
+**Subject:** Release a closed pool's actor names, and a refused open's · **Commit:** `ac50a8a` ·
 **Date:** 2026-10-10 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and untagged.
 
 `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]` is fixed and closed. A
@@ -576,7 +576,7 @@ raised`) and on its call log (`24 != 21`). 6 `ResourceWarning` lines (§2 item 8
 
 ## 8. State handed to the next prompt
 
-- **`HEAD`** is this commit, unpushed and untagged. `origin/main` is `d06b46a`, and the tags are
+- **`HEAD`** is this commit (`ac50a8a`), unpushed and untagged. `origin/main` is `d06b46a`, and the tags are
   `v0.1.0`, `v0.2.0` and `v0.2.1`, unchanged. `pyproject.toml` is at `0.2.1`.
 - **The suite** is 492, in `venv/` and at the high end. The port check passes over 20 modules with
   1 test declared not ported. `black` leaves 72 files unchanged.
