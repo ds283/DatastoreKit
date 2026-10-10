@@ -4,7 +4,8 @@
 `extraction` campaign left open on this repository (§0). **Prompt 01 is written** (2026-10-10), and
 the user took U1–U3 as recommended the same day (§6). Prompt 02 is written after 01 has landed and been reviewed, against the
 tree it leaves. **Prompt 01 landed** on 2026-10-10 (`ac50a8a`; [log](logs/01-a-closed-pool-releases-its-actor-names.md)),
-and closed the issue; it was reviewed the same day.
+and closed the issue; it was reviewed the same day. **Prompt 02 is written** (2026-10-10), against
+the tree 01 left (`168ecd0`).
 
 ## 0. Why this campaign exists
 
@@ -97,7 +98,7 @@ there; `test_refused_open_closes_engines` already uses it (`:45`, `:238`).
 | # | Prompt | Covers | Status |
 |---|---|---|---|
 | 01 | [`01-a-closed-pool-releases-its-actor-names.md`](01-a-closed-pool-releases-its-actor-names.md) | `ShardedPool.__exit__` kills its actors after closing them, and a second `__exit__` does nothing; a refused open kills what it made; the stand-in stands in `ray.kill`, reserves names and refuses calls to killed handles; a test module that a revert fails; the smoke script's step N reversed, and a step that two open pools still collide, run under real Ray at both ends; contract §9.3; a dated subsection of the verification document. **Closes** `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]`. | **written** 2026-10-10; U1, U2 taken; **landed** 2026-10-10 (`ac50a8a`), reviewed; closed the issue |
-| 02 | `02-release-v0.2.2.md` (planned) | `pyproject.toml` at `0.2.2`, `README.md`, `PROVENANCE.md`; dated addenda to `docs/adoption/` for the new pin; both ends locally and in CI; **tag `v0.2.2`** on its commit after green CI, not by the prompt. Shaped by U3. | planned |
+| 02 | [`02-release-v0.2.2.md`](02-release-v0.2.2.md) | `pyproject.toml` at `0.2.2`, `README.md`, `PROVENANCE.md`; dated addenda to `docs/adoption/` for the new pin; both ends locally and in CI; **tag `v0.2.2`** on its commit after green CI, not by the prompt. Shaped by U3. | **written** 2026-10-10 |
 
 **Order.** 01 → 02. 02 releases what 01 leaves, and is written after 01 is reviewed.
 

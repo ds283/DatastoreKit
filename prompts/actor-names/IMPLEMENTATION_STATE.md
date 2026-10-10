@@ -1,8 +1,7 @@
 # actor-names campaign — implementation state
 
-**Last updated:** 2026-10-10 · **Status: IN PROGRESS — 1 of 2 prompts written (01), 1 landed (01,
-`ac50a8a`, reviewed); U1–U3 taken 2026-10-10, as recommended; 02 is written after 01's
-review.**
+**Last updated:** 2026-10-10 · **Status: IN PROGRESS — 2 of 2 prompts written (01, 02), 1 landed (01,
+`ac50a8a`, reviewed); U1–U3 taken 2026-10-10, as recommended; 02 ready to dispatch.**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]`, closed by 01 on the
@@ -28,7 +27,7 @@ review.**
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [A closed pool releases its actor names](01-a-closed-pool-releases-its-actor-names.md) | the kill at `__exit__` and on a refused open, and the closed flag (U1); the stand-in's `ray.kill` and names (U2); a test module; the smoke script's step N reversed and a collision step; contract §9.3; a dated subsection of the verification document; closes the issue | ✍️ yes, 2026-10-10 | ✅ 2026-10-10; reviewed | `ac50a8a` | [log 01](logs/01-a-closed-pool-releases-its-actor-names.md) |
-| 02 | Release `v0.2.2` (planned) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the tag after green CI (U3) | ⬜ | ⬜ | — | — |
+| 02 | [Release `v0.2.2`](02-release-v0.2.2.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G2–G4; the tag after green CI (U3) | ✍️ yes, 2026-10-10 | ⬜ | — | — |
 
 **Orchestrator review of prompt 01 (2026-10-10).** Dispatched from `7c97125` to one Opus
 subagent, with the note's eight corrections and its additions. Reviewed against its commit
