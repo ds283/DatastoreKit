@@ -7,6 +7,15 @@ one shard by a shard key, and checks the store's integrity each time it is opene
 
 ## Status
 
+**`v0.2.1`** is a fix release. It fixes three defects: a reopen whose primary records a sharded
+table the constructor was not given is refused with the intended `RuntimeError`, not a bare
+`KeyError`; `object_get_vectorized` no longer adds the shard key to the caller's payload dicts; and
+an open that raises closes the actors it made and disposes its engine. The package's comments and
+docstrings are rewritten for this repository. No API is added or removed, nothing the layer writes
+changes, and no message changes. The one exception type that changes is that `KeyError`, now a
+`RuntimeError`. [`docs/client-contract.md`](docs/client-contract.md)
+[§9](docs/client-contract.md#9-changes-after-v020) gives the detail.
+
 **`v0.2.0`** adds **version-keyed lookups**: a class whose factory declares the optional
 `register()` key `key_on_version` is looked up under the pool's version label only, so a row made
 under another label is a miss. A class that does not declare it behaves as in `v0.1.0`, and
@@ -47,10 +56,11 @@ separate unit of work.
 A client depends on a tagged release, pinned in its `requirements.txt`:
 
 ```text
-datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.0
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.1
 ```
 
-`v0.1.0` remains, for a client that has not adopted `key_on_version`.
+`v0.2.0` and `v0.1.0` remain tagged, and no tag is moved or deleted. Every client adopts `v0.2.1`,
+which fixes defects that both earlier releases carry.
 
 An editable install (`pip install -e`) is for developing this package, never for a client's
 production runs: a production run must be reproducible from its pin.
@@ -80,6 +90,8 @@ the layer does with it, and what happens when it is wrong or absent.
   `object_get` payload, under `datastorekit.contract.VERSION_SERIAL_KEY`, and its `build` filters
   on it through `datastorekit.contract.require_version_serial`
   ([§8](docs/client-contract.md#8-version-keyed-lookups-v020-prompt-06)).
+- **What changed after `v0.2.0`**: the three fixes of `v0.2.1`, each with what the layer now does
+  and the test that pins it ([§9](docs/client-contract.md#9-changes-after-v020)).
 
 The worked example is the neutral test client, [`datastorekit/tests/client/`](datastorekit/tests/client/).
 Its registry module, [`datastorekit/tests/client/registry.py`](datastorekit/tests/client/registry.py),

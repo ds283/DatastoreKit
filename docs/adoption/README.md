@@ -4,6 +4,11 @@
 The three clients were read through `git` only, at the commits named below; nothing of a client
 was imported, run or opened, and no store was opened.*
 
+*Added by extraction prompt 10 on 2026-10-10: the section
+[Addendum: v0.2.1](#addendum-v021-extraction-prompt-10-2026-10-10) at the end gives the pin
+**`v0.2.1`** and what changed since `v0.2.0`, and supersedes the statements it names. 07a's
+text, before it, is unchanged and true of `v0.2.0`.*
+
 This directory holds one **adoption checklist** per client project, and what the three share.
 Each checklist says what its client must do to depend on `datastorekit` at `v0.2.0`: what it
 deletes, which imports it rewrites, what leaves its copy of the layer, what its factories, call
@@ -192,3 +197,72 @@ that move into `datastorekit.contract`. Its docstring gives the rules. It exits 
 when it cannot read the client, and two runs at one commit give the same bytes.
 
 At the checklists' commits it gives **SGK 233** import statements, **CPBH 41** and **SI 48**.
+
+---
+
+## Addendum: v0.2.1 (extraction prompt 10, 2026-10-10)
+
+*Written by extraction prompt 10 on 2026-10-10, and added to 07a's text, which stays as written
+and true of `v0.2.0` (`CLAUDE.md` rule 6). No client was re-measured (decision U37).*
+
+**The pin.** Every client adopts **`v0.2.1`** in place of `v0.2.0` (decision U37, which amends U29
+and G2–G4):
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.1
+```
+
+**What changed since `v0.2.0`.** Only `datastorekit/SQL/ShardedPool.py` changed in code. Twelve
+other layer files changed in their comments and docstrings only (extraction prompt 09), and seven
+are unchanged. Nothing a client supplies changes, no API is added or removed, nothing the layer
+writes changes, and no message changes. Three behaviours differ, each described in
+[`docs/client-contract.md` §9](../client-contract.md#9-changes-after-v020):
+
+| Behaviour | At `v0.2.0` | At `v0.2.1` | Contract row |
+|---|---|---|---|
+| A reopen whose primary records a sharded table that `sharded_tables` lacks | a bare `KeyError` | refused with the intended `RuntimeError` "Mismatch between sharded tables supplied to the constructor and read from the existing ShardedPool" (`datastorekit/SQL/ShardedPool.py:1071-1072`, `:1100-1103`) | [§9.1](../client-contract.md#91-prompt-08a), "A reopen whose primary records a sharded table that `sharded_tables` lacks" |
+| `object_get_vectorized` and the caller's payloads | the shard key added to each of the caller's dicts, in place | each shard is sent copies, `{**value, **shard_key}` (`datastorekit/SQL/ShardedPool.py:3348`); the caller's list and dicts are left as they were passed | [§9.1](../client-contract.md#91-prompt-08a), "What `object_get_vectorized` does to the caller's payloads" |
+| An open that raises | its engines left for the garbage collector | the actors built so far are closed and the pool's engine disposed, then the open's exception is re-raised unchanged (`datastorekit/SQL/ShardedPool.py:203-207`, `:375-408`) | [§9.2](../client-contract.md#92-prompt-08b), "An open that raises" |
+
+**Nothing any client supplies or stores changes.** A store that opened under `v0.2.0` opens under
+`v0.2.1`, and a store refused under `v0.2.0` is refused under `v0.2.1`, by the same exception but
+for the `KeyError` above.
+
+**What the clients do with the three**, from the records:
+- **Payloads.** No client reads a payload list back after a vectorized get (log 08a §3, at the
+  checklists' commits). CPBH and SI pass a bare shard key, which the package refuses before the
+  payload line in both releases (their checklists, item 6).
+- **The `KeyError`. No client's code depends on it.** Extraction prompt 10 measured the three
+  clients read-only through `git grep`, at the checklists' commits: `except KeyError` and `except
+  (…KeyError…)` outside each client's `Datastore/`, then a `try` within three lines before a
+  `ShardedPool(`. CPBH and SI catch `KeyError` nowhere. SGK catches it in two places,
+  `RunRegistry/__init__.py:606` (a manifest's `created` field) and
+  `RunRegistry/tests/test_run_registry.py:489` (a status file's JSON), neither around a pool. The
+  only `try` around a `ShardedPool(` outside SGK's layer is in two of SGK's archived measurement
+  scripts under `prompts/datastore-generic/orchestrator/`: one catches `ReadOnlyMiss` only, the
+  other any exception, recording its type.
+- **The refused open.** A client that retries refused opens no longer holds a file descriptor per
+  refused engine until the collector runs.
+
+**The checklists are not re-measured** (U37). Each has an addendum of its own, after its item 10:
+[SGK's](secondarygwkit.md#addendum-v021-extraction-prompt-10-2026-10-10),
+[CPBH's](champbh.md#addendum-v021-extraction-prompt-10-2026-10-10) and
+[SI's](stochasticinstantons.md#addendum-v021-extraction-prompt-10-2026-10-10).
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`). A `datastorekit/` line in an addendum is `v0.2.1`'s, whose `datastorekit/` is the tree
+of extraction prompt 09's commit `cad7bc1`.
+
+**What this addendum supersedes**, in this file. Each `path:line` is this file's as committed with
+this addendum. In 07a's file (`dd45243`) every line after `:5` is five lines earlier, since the
+italic line at the head adds five.
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/README.md:3` | written "against the package at **`v0.2.0`** (`240028e`)" | 07a's measurements stay true of `v0.2.0`; this addendum gives `v0.2.1` |
+| `docs/adoption/README.md:13` | each checklist says what its client must do "to depend on `datastorekit` at `v0.2.0`" | at `v0.2.1`: each checklist with its addendum |
+| `docs/adoption/README.md:29-31` | "All three adopt **`v0.2.0`**" | all three adopt `v0.2.1` (U37) |
+| `docs/adoption/README.md:40` | the pin `…@v0.2.0` | the pin `…@v0.2.1`, above |
+| `docs/adoption/README.md:159` | "G2 (SGK has adopted `v0.2.0`, U29)" | G2, G3 and G4 each hold when that client has adopted `v0.2.1` (U37) |
+| `docs/adoption/README.md:161` | "The campaign closes at 07b" | it closes at extraction prompt 11 (U33); 07b was withdrawn unwritten |
+| `docs/adoption/README.md:178-179` | "one under `datastorekit/` is at `v0.2.0` (`240028e`)" | still so for 07a's text; a `datastorekit/` line in an addendum is at `v0.2.1` |

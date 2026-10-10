@@ -114,3 +114,45 @@ The files prompt 06 changes: `datastorekit/contract.py`, `datastorekit/SQL/schem
 (`WITNESS`); and the new `datastorekit/tests/test_version_keyed_lookups.py` and witness
 `datastorekit/tests/data/schema_at_extraction-06.json`. The log is
 `prompts/extraction/logs/06-version-keyed-lookups.md`.
+
+### Prompts 08a, 08b and 09: fixes and prose (`v0.2.1`)
+
+**The three fixes have no source.** They were made here, each closing an issue of this repository's
+board, `prompts/extraction/IMPLEMENTATION_STATE.md` §4:
+
+| Issue | Prompt, commit | What the layer now does | Test module |
+|---|---|---|---|
+| `[02-an-unsupplied-sharded-table-raises-keyerror]` | 08a, `f938844` | a reopen whose primary records a sharded table that `sharded_tables` lacks is refused with the intended `RuntimeError`, not a bare `KeyError` | `datastorekit/tests/test_unsupplied_sharded_table.py` |
+| `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]` | 08a, `f938844` | `object_get_vectorized` sends each shard copies of the caller's payloads, and leaves the caller's dicts as they were passed | `datastorekit/tests/test_vectorized_get_payloads.py` |
+| `[05-a-refused-open-leaves-its-engines-undisposed]` | 08b, `efedc8d` | an open that raises closes the actors it built and disposes the pool's engine, then re-raises its exception unchanged | `datastorekit/tests/test_refused_open_closes_engines.py` |
+
+`docs/client-contract.md` §9 gives each in detail. Each fixes behaviour that SGK's frozen copies
+still carry. "The freeze" above (decision U3) says that a defect found during the freeze is fixed
+here after G2; decision U33 fixed these three before it. SGK receives them by adopting `v0.2.1`.
+
+**Prompt 09 changed prose only.** It closed `[01-package-prose-names-sgks-layout]` (`cad7bc1`):
+the comments and docstrings that cited SGK's layout, campaigns, logs, audits, issues and commits
+were rewritten in 12 layer files and in `SQL/ShardedPool.py`, and in the test modules; the guard's
+`KNOWN_HITS` is empty, and the new `datastorekit/tests/test_prose_names_no_source.py` scans every
+comment and docstring of the package. With every docstring blanked, each of those 13 layer files
+parses to the same AST before and after 09. From `v0.2.1`, no layer file equals its SGK source in
+its comments except the seven that 09 did not touch, which are unchanged since `v0.2.0`:
+`__init__.py`, `object.py`, `SQL/__init__.py`, `SQL/ClientPool.py`, `SQL/SerialPoolBroker.py`,
+`SQL/ProfileAgent.py` and `tools/__init__.py`. "The differences allowed" above describes `v0.1.0`
+and is not extended.
+
+**The files each prompt changes:**
+- **08a**: `datastorekit/SQL/ShardedPool.py`; the new
+  `datastorekit/tests/test_unsupplied_sharded_table.py` and
+  `datastorekit/tests/test_vectorized_get_payloads.py`; `docs/client-contract.md` (§9, §9.1). The
+  log is `prompts/extraction/logs/08a-two-small-fixes.md`.
+- **08b**: `datastorekit/SQL/ShardedPool.py`; the new
+  `datastorekit/tests/test_refused_open_closes_engines.py`; `docs/client-contract.md` (§9.2). The
+  log is `prompts/extraction/logs/08b-dispose-engines-on-a-refused-open.md`.
+- **09**: the comments and docstrings of 13 layer files (`_timing.py`, `contract.py`,
+  `defaults.py`, `replication.py`, `shard_paths.py`, `store_inventory.py`, `store_reader.py`,
+  `SQL/Datastore.py`, `SQL/ShardedPool.py`, `SQL/factory_base.py`, `SQL/schema.py`,
+  `tools/shard_key_audit.py` and `tools/sharded_store.py`) and of 30 modules under
+  `datastorekit/tests/`, `test_layer_is_generic.py`'s `KNOWN_HITS` among them; the new
+  `datastorekit/tests/test_prose_names_no_source.py`. The log is
+  `prompts/extraction/logs/09-rewrite-the-package-prose.md`.

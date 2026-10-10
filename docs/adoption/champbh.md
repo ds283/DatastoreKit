@@ -14,6 +14,11 @@
   to do, under CPBH's `CLAUDE.md`. A recommendation is marked **Advice:**; a choice that is CPBH's
   is named as CPBH's.
 
+*Added by extraction prompt 10 on 2026-10-10: the section
+[Addendum: v0.2.1](#addendum-v021-extraction-prompt-10-2026-10-10), after item 10, gives the pin
+**`v0.2.1`** and what changed for CPBH since `v0.2.0`, and supersedes the statements it names.
+07a's text is unchanged and true of `v0.2.0`.*
+
 Unless another commit is named, a `path:line` is CPBH's at `52142d7`, and one under
 `datastorekit/` is the package's at `v0.2.0`.
 
@@ -395,6 +400,59 @@ What CPBH compares the rebuild against is CPBH's choice. What exists: the pilot 
   `.documents/architecture-summary.md:975`) describe the layer CPBH deletes.
 - **`[00-two-files-are-not-black-clean]`** (`.documents/OPEN_ISSUES.md:48`) names
   `Datastore/SQL/ObjectFactories/base.py`, which is deleted.
+
+---
+
+## Addendum: v0.2.1 (extraction prompt 10, 2026-10-10)
+
+*Written by extraction prompt 10 on 2026-10-10, and added to 07a's text, which stays as written
+and true of `v0.2.0` (`CLAUDE.md` rule 6). CPBH was not re-measured (decision U37); what this
+section says of CPBH comes from 07a's measurements, log 08a §3 and the `KeyError` measure below.*
+
+**The pin.** CPBH adopts **`v0.2.1`** in place of `v0.2.0` (decision U37), and G3 reads "CPBH has
+adopted `v0.2.1`":
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.1
+```
+
+`v0.2.1` carries `key_on_version`, `v0.2.0`'s feature, unchanged.
+
+**What changed for CPBH since `v0.2.0`.** The three changes are
+[`docs/client-contract.md` §9](../client-contract.md#9-changes-after-v020)'s rows, and
+[`README.md`'s addendum](README.md#addendum-v021-extraction-prompt-10-2026-10-10) gives them for
+every client. Nothing CPBH supplies changes, so items 1–10 stand as written but for the
+statements below.
+- **The vectorized get.** The refusal of a bare `beta_value` (item 6) is unchanged, and CPBH still
+  converts its 7 calls to the mapping form, `{"shard_key": beta}`. At `v0.2.1`
+  `object_get_vectorized` is `datastorekit/SQL/ShardedPool.py:3327-3351`: its membership test is
+  `:3339` and the payload line `:3348`, so a bare key is refused before the payload line, as at
+  `v0.2.0`. Once CPBH has converted, the package sends each shard copies of the payloads,
+  `{**value, **shard_key}`, and CPBH's dicts are left as they were passed. **The in-place hazard
+  is gone.** CPBH reads no payload list back in any case (log 08a §3).
+- **The `KeyError`.** A reopen whose primary records a sharded table that `sharded_tables` lacks is
+  refused with the intended `RuntimeError`, not a bare `KeyError`
+  (`datastorekit/SQL/ShardedPool.py:1071-1072`, `:1100-1103`), and CPBH's code does not depend on
+  the `KeyError`: measured through `git grep` at `52142d7`, CPBH catches `KeyError` nowhere, and has
+  no `try` within three lines before a `ShardedPool(` outside its layer.
+- **The refused open.** An open that raises closes the actors it built and disposes the pool's
+  engine (`datastorekit/SQL/ShardedPool.py:203-207`, `:375-408`): a client that retries refused
+  opens no longer holds a file descriptor per refused engine until the collector runs.
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`). A `datastorekit/` line in this addendum is `v0.2.1`'s, whose `datastorekit/` is the
+tree of extraction prompt 09's commit `cad7bc1`.
+
+**What this addendum supersedes**, in this file. Each `path:line` is this file's as committed with
+this addendum. In 07a's file (`dd45243`) every line after `:15` is five lines earlier, since the
+italic line under the title adds five.
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/champbh.md:6` | the package at **`v0.2.0`** | at `v0.2.1`, with this addendum |
+| `docs/adoption/champbh.md:22-23` | a `datastorekit/` line is the package's at `v0.2.0` | still so for 07a's text; a `datastorekit/` line in this addendum is at `v0.2.1` |
+| `docs/adoption/champbh.md:259-260` | "It also adds that mapping to every payload dict in place" | `v0.2.1` sends copies, and leaves CPBH's dicts as passed; "The vectorized get", above |
+| `docs/adoption/champbh.md:379` | G3 holds when CPBH has adopted `v0.2.0` | G3 holds when CPBH has adopted `v0.2.1` (U37) |
 
 ---
 

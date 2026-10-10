@@ -13,6 +13,11 @@
   do, under SGK's `CLAUDE.md`. A recommendation is marked **Advice:**; a choice that is SGK's is
   named as SGK's.
 
+*Added by extraction prompt 10 on 2026-10-10: the section
+[Addendum: v0.2.1](#addendum-v021-extraction-prompt-10-2026-10-10), after item 10, gives the pin
+**`v0.2.1`** and what changed for SGK since `v0.2.0`, and supersedes the statements it names.
+07a's text is unchanged and true of `v0.2.0`.*
+
 Unless another commit is named, a `path:line` is SGK's at `b510bc9`, and one under
 `datastorekit/` is the package's at `v0.2.0`.
 
@@ -352,6 +357,84 @@ choose for the adoption's run.
   `[00-a-new-stores-first-open-can-leave-a-primary-without-its-shards]`,
   `[00-the-inventory-cannot-see-a-serial-split]`, `[01-cross-filesystem-move-advice-says-delete-by-hand]`).
   After adoption the code they describe is DatastoreKit's.
+
+---
+
+## Addendum: v0.2.1 (extraction prompt 10, 2026-10-10)
+
+*Written by extraction prompt 10 on 2026-10-10, and added to 07a's text, which stays as written
+and true of `v0.2.0` (`CLAUDE.md` rule 6). SGK was not re-measured (decision U37); what this
+section says of SGK comes from 07a's measurements, log 08a §3 and the `KeyError` measure below.*
+
+**The pin.** SGK adopts **`v0.2.1`** in place of `v0.2.0` (decision U37, which amends U29), and G2
+reads "SGK has adopted `v0.2.1`":
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.1
+```
+
+**What changed for SGK since `v0.2.0`.** The three changes are
+[`docs/client-contract.md` §9](../client-contract.md#9-changes-after-v020)'s rows, and
+[`README.md`'s addendum](README.md#addendum-v021-extraction-prompt-10-2026-10-10) gives them for
+every client.
+- **The files.** At `v0.2.1`, SGK's 17 layer files and the package differ, beyond what the
+  paragraph at the head lists against `v0.2.0`, also by:
+  - 08a's and 08b's code in `SQL/ShardedPool.py`;
+  - 09's prose, its comments and docstrings, in 11 of the 17: `contract.py`, `replication.py`,
+    `shard_paths.py`, `store_reader.py`, `store_inventory.py`, `SQL/schema.py`,
+    `SQL/ShardedPool.py`, `SQL/Datastore.py`, `SQL/ObjectFactories/base.py` (the package's
+    `SQL/factory_base.py`) and both tools.
+
+  So only the six that 09 did not touch, `__init__.py`, `object.py`, `SQL/__init__.py`,
+  `SQL/ClientPool.py`, `SQL/SerialPoolBroker.py` and `SQL/ProfileAgent.py`, can equal SGK's
+  sources byte for byte (with the module map applied, as at the head). Each was among the 11
+  byte-identical against `v0.2.0`, and none has changed since. The count of 11 is `v0.2.0`'s.
+- **The factory base.** `datastorekit/SQL/factory_base.py` now differs from SGK's
+  `Datastore/SQL/ObjectFactories/base.py` in its comments and docstrings; with its docstrings
+  blanked it parses to the same code. SGK's factories still change nothing but their imports.
+- **The vectorized get.** `object_get_vectorized` sends each shard copies of the caller's payloads
+  (`datastorekit/SQL/ShardedPool.py:3348`), and no longer adds the shard key to the caller's dicts.
+  SGK's 17 calls in `main.py` each pass a work list built just before, and no line reads a payload
+  list back (log 08a §3).
+- **The `KeyError`.** A reopen whose primary records a sharded table that `sharded_tables` lacks is
+  refused with the intended `RuntimeError`, not a bare `KeyError`
+  (`datastorekit/SQL/ShardedPool.py:1071-1072`, `:1100-1103`), and SGK's code does not depend on
+  the `KeyError`: measured through `git grep` at `b510bc9`, SGK catches `KeyError` only at
+  `RunRegistry/__init__.py:606` and `RunRegistry/tests/test_run_registry.py:489`, neither around a
+  pool, and the only `try` around a `ShardedPool(` outside its layer is in two archived
+  measurement scripts, `prompts/datastore-generic/orchestrator/measure-07/scripts/m7_messages.py:184`
+  (which catches `ReadOnlyMiss` only) and
+  `prompts/datastore-generic/orchestrator/measure-09/scripts/m4c_open_rw.py:38` (which catches any
+  exception and records its type).
+- **The refused open.** An open that raises closes the actors it built and disposes the pool's
+  engine (`datastorekit/SQL/ShardedPool.py:203-207`, `:375-408`): a client that retries refused
+  opens no longer holds a file descriptor per refused engine until the collector runs.
+- **Item 8 still holds: no SGK store is refused.** The fixes change nothing the layer writes
+  (contract [§9.1](../client-contract.md#91-prompt-08a),
+  [§9.2](../client-contract.md#92-prompt-08b)), and 09 changes no code, so every SGK store opens as
+  under `v0.2.0`. G2's rehearsal (item 9) is the measurement.
+- **SGK's frozen copies carry the three defects**, and adopting `v0.2.1` fixes them. "The freeze"
+  of `PROVENANCE.md` (decision U3) says a defect found during the freeze is fixed in DatastoreKit
+  after G2; decision U33 fixed these three before it.
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`). A `datastorekit/` line in this addendum is `v0.2.1`'s, whose `datastorekit/` is the
+tree of extraction prompt 09's commit `cad7bc1`.
+
+**What this addendum supersedes**, in this file. Each `path:line` is this file's as committed with
+this addendum. In 07a's file (`dd45243`) every line after `:14` is five lines earlier, since the
+italic line under the title adds five.
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/secondarygwkit.md:6` | the package at **`v0.2.0`** | at `v0.2.1`, with this addendum |
+| `docs/adoption/secondarygwkit.md:21-22` | a `datastorekit/` line is the package's at `v0.2.0` | still so for 07a's text; a `datastorekit/` line in this addendum is at `v0.2.1` |
+| `docs/adoption/secondarygwkit.md:30-32` | against `v0.2.0`, 11 files byte-identical, the tools by D-tool, four by prompt 06's additions | `v0.2.0`'s count. At `v0.2.1` only the six can be byte-identical; "The files", above |
+| `docs/adoption/secondarygwkit.md:187-188` | `base.py` equals `datastorekit/SQL/factory_base.py` byte for byte | they differ in comments and docstrings (09); "The factory base", above |
+| `docs/adoption/secondarygwkit.md:203-207` | "No call changes behaviour", and the one difference a read-only open makes | three more differences, none of which changes what SGK's calls use: "The vectorized get", "The `KeyError`" and "The refused open", above |
+| `docs/adoption/secondarygwkit.md:208-211` | the in-place update of the caller's payloads "is SGK's own behaviour, unchanged" | `v0.2.1` sends copies, and SGK reads nothing back; "The vectorized get", above |
+| `docs/adoption/secondarygwkit.md:297-302` | item 8's reasoning, through `v0.2.0` | extended to `v0.2.1`; "Item 8 still holds", above |
+| `docs/adoption/secondarygwkit.md:306` | G2 holds when SGK has adopted `v0.2.0` | G2 holds when SGK has adopted `v0.2.1` (U37) |
 
 ---
 
