@@ -23,6 +23,7 @@ same day: the four issues the board holds open are fixed before the campaign clo
 and 09, and released by 10 as **`v0.2.1`**, which the clients adopt in place of `v0.2.0`; 07b is
 withdrawn, and its verification and close-out are 11's. **Prompt 08a is written** (2026-10-09), and landed as `f938844` (2026-10-10) and was reviewed.
 **Prompt 08b is written** (2026-10-10), and landed as `efedc8d` the same day and was reviewed.
+The user took U38–U40 the same day; **prompt 09 is written** (2026-10-10).
 Each later prompt is written after the one before it has landed and been
 reviewed, against the tree it left.
 
@@ -197,7 +198,7 @@ measures the survey again before doing so.
 | ~~07b~~ | ~~`07b-verification-and-close-out.md`~~ | *Withdrawn 2026-10-09, unwritten (U33, U35): its work is 11's, after the fixes and `v0.2.1`.* | withdrawn |
 | 08a | [`08a-two-small-fixes.md`](08a-two-small-fixes.md) | `[02-an-unsupplied-sharded-table-raises-keyerror]`: a reopen whose primary records a sharded table the constructor lacks is refused with the intended `RuntimeError`, not a bare `KeyError`. `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]`: `object_get_vectorized` copies the caller's payloads. A test for each that the unfixed code fails. Nothing the layer writes changes. | **landed** 2026-10-10 (`f938844`), reviewed |
 | 08b | [`08b-dispose-engines-on-a-refused-open.md`](08b-dispose-engines-on-a-refused-open.md) | `[05-a-refused-open-leaves-its-engines-undisposed]`: a refused or abandoned open disposes the engines the pool and its actors made, with a test that counts unclosed connections across a refused open (05's measurement: 105 over the 444, at three sites). *(At writing: 109 over the 469 at `2123445`, of which 107 are a raised constructor's and 2 a ported test's directly built actors; the open moves into `_open` under a guard, and `_close_refused_open` closes the actors and disposes the engine.)* | **landed** 2026-10-10 (`efedc8d`), reviewed |
-| 09 | `09-rewrite-the-package-prose.md` | `[01-package-prose-names-sgks-layout]`: the package's comments and docstrings that name SGK's layout, campaigns or tables are rewritten for this repository (155 lines in 40 files at 04b), and the guard's `KNOWN_HITS` is emptied (U17). No code changes. | not written |
+| 09 | [`09-rewrite-the-package-prose.md`](09-rewrite-the-package-prose.md) | `[01-package-prose-names-sgks-layout]`: the package's comments and docstrings that name SGK's layout, campaigns or tables are rewritten for this repository (155 lines in 40 files at 04b), and the guard's `KNOWN_HITS` is emptied (U17). No code changes. *(At writing: still 155 in 40 at `452b3c9` by log 03a §8's method; U38 widens the scope to every citation of the source's layout, campaigns, logs, audits, issues, commits and `var/`, 248 lines in 42 files, of which 57 are found by reading; U39 removes each citation and keeps its explanation, true for this package; U40 adds `test_prose_names_no_source`, which scans every comment and docstring of the package with no allow list.)* | **written** 2026-10-10 |
 | 10 | `10-release-v0.2.1.md` | `pyproject.toml` at `0.2.1`, `PROVENANCE.md` and `README.md`; both ends locally and in CI; **tag `v0.2.1`** on its commit after green CI (as U23, U28). Dated addenda to `docs/adoption/` for the new pin and what changed since `v0.2.0` (U37). | not written |
 | 11 | `11-verification-and-close-out.md` | A verification document for the campaign, from the package at `v0.2.1` and the records of 01–10; the contract §8 citation corrected (U34); the campaign closed (U30, U33). | not written |
 
@@ -266,7 +267,8 @@ person under SGK's rules.
   `docs/extraction/measure_client_imports.py`, which 11's verification document cites.
 - **After 08a–09** (planned, U35): the layer's three fixes with their tests; the package's prose
   rewritten, and the guard's `KNOWN_HITS` empty. Each prompt names its own interfaces when it is
-  written.
+  written. *(At 09's writing: the prose guard `datastorekit/tests/test_prose_names_no_source.py`,
+  U40.)*
 - **After 10** (planned): `pyproject.toml` at `0.2.1`; the adoption addenda (U37). After its CI
   passes, the tag `v0.2.1` on 10's commit.
 
@@ -619,6 +621,34 @@ taken on 2026-10-09, when 05 was written.
   `v0.2.0`, for example CPBH's and SI's vectorized-payload hazard gone. 07a's measurements stay as
   written (`CLAUDE.md` rule 6). **Rejected:** re-measuring all three clients against `v0.2.1` in a
   prompt of its own, a 07a-sized run for a release that changes no call a client makes.
+- **U38: what the prose rewrite covers. (taken 2026-10-10, as recommended)** At 09's writing the
+  board's pattern (log 03a §8) still found 155 comment and docstring lines in 40 files, as at 04b.
+  It misses the source's campaign names without a `prompts/` prefix, `var/`, the source's commits
+  (`b04671f`, `a2bd966`, `e53f323`), and bare citations of the source's records ("(prompt 03)"
+  meaning its `a3-v2-readiness` prompt 03, "audit §4.1", "README U1", "QSI"), which only reading
+  finds. No runtime string names the source. **Recommended:** every comment and docstring that
+  points at the source's layout, campaigns, logs, audits, issues, commits or `var/`: 248 lines in
+  42 files at `452b3c9`, 57 of them found by reading. The import commit's provenance, generic
+  mentions of "the source repository", and this repository's own citations stay. **Rejected:** the
+  155 only, which leaves "(prompt 03)" reading as this campaign's prompt, the source's SHAs, and
+  "nothing under `var/`" in place.
+- **U39: what a citation of the source becomes. (taken 2026-10-10, as recommended)**
+  **Recommended:** the citation is removed, and the sentence it supported stays and is made true
+  for this package (a source path becomes the package's module, a tool is run as
+  `python -m datastorekit.tools.<name>`, the removed `sys.path` bootstrap is no longer described).
+  `PROVENANCE.md` records the source and the import commit, so the history stays reachable.
+  **Rejected:** rewriting each as an attribution ("the source repository's `a3-v2-readiness`
+  prompt 03"), which keeps per-line traceability into SGK but leaves its campaign names in the
+  package, and would need an allow list in any guard.
+- **U40: a guard on the prose. (taken 2026-10-10, as recommended)** **Recommended:** 09 adds a test
+  module, `test_prose_names_no_source`, that reads every comment and docstring under
+  `datastorekit/`, the layer and its tests, and fails on a path of the source's layout that does
+  not exist here, a dotted module of the source, its other names, its campaign names and `var/`,
+  each failure naming `file:line`, with no allow list. The source's SHAs and bare citations stay a
+  matter for review. `test_layer_is_generic`'s `KNOWN_HITS` is emptied, as U17 says.
+  **Rejected:** no new test, which leaves nothing to stop a later prompt bringing such prose back;
+  and widening `test_layer_is_generic`, which checks the layer, not the tests, for client
+  vocabulary, and would change that module's scope and docstring.
 
 ## 7. Gates outside this repository
 

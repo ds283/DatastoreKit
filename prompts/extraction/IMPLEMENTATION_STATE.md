@@ -1,8 +1,8 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-10 · **Status: IN PROGRESS — 11 of 14 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b), 11 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28); 07a landed (`dd45243`) and reviewed; 07b withdrawn (U33): the four open issues are fixed in 08a, 08b and 09 and released as `v0.2.1` by 10 before 11 closes the campaign; 08a landed (`f938844`) and reviewed, closing two of the four; 08b landed (`efedc8d`) and reviewed, closing the third.**
+**Last updated:** 2026-10-10 · **Status: IN PROGRESS — 12 of 14 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b, 09), 11 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28); 07a landed (`dd45243`) and reviewed; 07b withdrawn (U33): the four open issues are fixed in 08a, 08b and 09 and released as `v0.2.1` by 10 before 11 closes the campaign; 08a landed (`f938844`) and reviewed, closing two of the four; 08b landed (`efedc8d`) and reviewed, closing the third; 09 written.**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
-U8–U13 the same day, U14–U22 on 2026-10-08, and U6, U23–U37 on 2026-10-09 (README §6.2); U10, U14 and U30 split 03, 04
+U8–U13 the same day, U14–U22 on 2026-10-08, U6, U23–U37 on 2026-10-09, and U38–U40 on 2026-10-10 (README §6.2); U10, U14 and U30 split 03, 04
 and 07, each into an a and a b prompt.
 
 **Campaign:** [`README.md`](README.md) ·
@@ -65,6 +65,9 @@ and 07, each into an a and a b prompt.
 | **U35** splitting the fixes | 08a the `KeyError` and the vectorized copy; 08b engine disposal; 09 the prose; 10 the release; 11 the close-out | **taken** 2026-10-09, at 08a's writing |
 | **U36** the fix release's version | `v0.2.1` | **taken** 2026-10-09, at 08a's writing |
 | **U37** how the clients and checklists follow | every client adopts `v0.2.1` (amends U29, G2–G4); 10 adds dated addenda to `docs/adoption/` | **taken** 2026-10-09, at 08a's writing |
+| **U38** what the prose rewrite covers | every comment and docstring citing the source's layout, campaigns, logs, audits, issues, commits or `var/`: 248 lines in 42 files | **taken** 2026-10-10, at 09's writing |
+| **U39** what a citation of the source becomes | removed; the explanation stays, true for this package; `PROVENANCE.md` keeps the history reachable | **taken** 2026-10-10, at 09's writing |
+| **U40** a guard on the prose | a new test, `test_prose_names_no_source`, over every comment and docstring of the package, no allow list; `KNOWN_HITS` emptied | **taken** 2026-10-10, at 09's writing |
 
 ---
 
@@ -84,7 +87,7 @@ and 07, each into an a and a b prompt.
 | ~~07b~~ | ~~Verification and close-out~~ | *withdrawn 2026-10-09, unwritten (U33); its work is 11's* | — | — | — | — |
 | 08a | [Two small fixes](08a-two-small-fixes.md) | `[02-an-unsupplied-sharded-table-raises-keyerror]` and `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]`, each with a test module; the contract's §9 | ✍️ yes, 2026-10-09 | ✅ 2026-10-10 | `f938844` | [log](logs/08a-two-small-fixes.md) |
 | 08b | [Dispose engines on a refused open](08b-dispose-engines-on-a-refused-open.md) | `[05-a-refused-open-leaves-its-engines-undisposed]`: the open under a guard that closes the actors and disposes the engine; a test module that counts connections; the contract's §9.2 | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | `efedc8d` | [log](logs/08b-dispose-engines-on-a-refused-open.md) |
-| 09 | Rewrite the package prose | `[01-package-prose-names-sgks-layout]`; the guard's `KNOWN_HITS` emptied (U17) | ⬜ | ⬜ | — | — |
+| 09 | [Rewrite the package prose](09-rewrite-the-package-prose.md) | `[01-package-prose-names-sgks-layout]`, widened by U38: 248 lines in 42 files, citations removed (U39); the guard's `KNOWN_HITS` emptied (U17); `test_prose_names_no_source` (U40) | ✍️ yes, 2026-10-10 | ⬜ | — | — |
 | 10 | Release `v0.2.1` | `0.2.1`; both ends and CI; the tag after green CI; the adoption addenda (U37) | ⬜ | ⬜ | — | — |
 | 11 | Verification and close-out | the verification document; the contract §8 citation (U34); the campaign closed | ⬜ | ⬜ | — | — |
 
@@ -1276,6 +1279,14 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
   - **Assigned (2026-10-09):** to prompt 09 of this campaign. U33 fixes the four open issues before
     the campaign closes; U35 gives the prose its own prompt, after the code fixes, since it rewrites
     comments in files 08a and 08b change.
+  - **Measured at 09's writing, and widened (2026-10-10, U38).** Log 03a §8's method, reimplemented,
+    reproduces every figure above and gives **155 lines in 40 files** at `452b3c9`, unchanged since
+    04b. U38 takes in what the pattern misses: the source's campaign names without `prompts/`,
+    `var/`, its commits (`b04671f`, `a2bd966`, `e53f323`), and bare citations of its records found
+    by reading ("(prompt 03)", "audit §4.1", "README U1", "QSI"). No runtime string names the
+    source. Together: **248 lines in 42 files** (97 in 13 layer files, 151 in 29 test files; 57 by
+    reading), listed in 09's appendix. Under U39 each citation is removed and its sentence kept,
+    true for this package; U40 adds a test that keeps it so.
 
 ## 4. Resolved issues
 

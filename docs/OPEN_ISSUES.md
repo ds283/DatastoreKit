@@ -11,7 +11,7 @@ disagree. See `CLAUDE.md` for the maintenance rule.
 
 | Issue | Hook |
 |---|---|
-| `[01-package-prose-names-sgks-layout]` | 155 prose lines in 40 files of the package name SGK's paths and campaigns (02: the stand-in pool's, and one comment naming SGK's table, which the guard pins (U17); 03a–04b: the eighteen ported modules' and two fixtures' docstrings); two describe the removed `sys.path` bootstrap *(assigned to 09, U33)* |
+| `[01-package-prose-names-sgks-layout]` | 248 comment and docstring lines in 42 files of the package cite SGK's paths, campaigns, logs, audits or commits (155 by the board's pattern; widened by U38 at 09's writing), one names SGK's table (the guard pins it, U17), and five are false *(assigned to 09, U33)* |
 
 ### 1.2 Inherited from SecondaryGWKit, on SGK's boards
 
