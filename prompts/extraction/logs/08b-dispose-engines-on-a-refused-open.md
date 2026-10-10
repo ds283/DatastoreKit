@@ -1,6 +1,6 @@
 # Log 08b — dispose engines on a refused open
 
-**Subject:** Close what a refused open made before it raises · **Commit:** this commit ·
+**Subject:** Close what a refused open made before it raises · **Commit:** `efedc8d` ·
 **Date:** 2026-10-10 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and untagged.
 
 `[05-a-refused-open-leaves-its-engines-undisposed]`, held open since 05 and assigned here by U33
@@ -652,7 +652,7 @@ The index goes from **6 to 5 open**: 1 on this board (`[01-package-prose-names-s
 
 ## 8. State handed to the next prompt
 
-- `HEAD` is this commit. The tree is clean but for the ignored entries of dispatch (`.idea/`, the
+- `HEAD` is `efedc8d`. The tree is clean but for the ignored entries of dispatch (`.idea/`, the
   `__pycache__/` directories, `venv/`). `venv/` is unchanged.
 - **Not pushed, not tagged.** `origin/main` is `102f225`; the tags are `v0.1.0` and `v0.2.0`. The
   version stays `0.2.0`; 10 releases `v0.2.1`.

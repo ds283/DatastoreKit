@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-10 · **Status: IN PROGRESS — 11 of 14 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b), 11 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28); 07a landed (`dd45243`) and reviewed; 07b withdrawn (U33): the four open issues are fixed in 08a, 08b and 09 and released as `v0.2.1` by 10 before 11 closes the campaign; 08a landed (`f938844`) and reviewed, closing two of the four; 08b landed (this commit), closing the third.**
+**Last updated:** 2026-10-10 · **Status: IN PROGRESS — 11 of 14 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b), 11 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28); 07a landed (`dd45243`) and reviewed; 07b withdrawn (U33): the four open issues are fixed in 08a, 08b and 09 and released as `v0.2.1` by 10 before 11 closes the campaign; 08a landed (`f938844`) and reviewed, closing two of the four; 08b landed (`efedc8d`) and reviewed, closing the third.**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 U8–U13 the same day, U14–U22 on 2026-10-08, and U6, U23–U37 on 2026-10-09 (README §6.2); U10, U14 and U30 split 03, 04
 and 07, each into an a and a b prompt.
@@ -83,7 +83,7 @@ and 07, each into an a and a b prompt.
 | 07a | [The adoption checklists](07a-the-adoption-checklists.md) | `docs/adoption/`: a README and checklists for SGK, CPBH and SI against `v0.2.0` (U29), measured read-only; `measure_client_imports.py`; instances and abstract hooks (U32); SI's stores rebuilt (U31) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | `dd45243` | [log](logs/07a-the-adoption-checklists.md) |
 | ~~07b~~ | ~~Verification and close-out~~ | *withdrawn 2026-10-09, unwritten (U33); its work is 11's* | — | — | — | — |
 | 08a | [Two small fixes](08a-two-small-fixes.md) | `[02-an-unsupplied-sharded-table-raises-keyerror]` and `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]`, each with a test module; the contract's §9 | ✍️ yes, 2026-10-09 | ✅ 2026-10-10 | `f938844` | [log](logs/08a-two-small-fixes.md) |
-| 08b | [Dispose engines on a refused open](08b-dispose-engines-on-a-refused-open.md) | `[05-a-refused-open-leaves-its-engines-undisposed]`: the open under a guard that closes the actors and disposes the engine; a test module that counts connections; the contract's §9.2 | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | this commit | [log](logs/08b-dispose-engines-on-a-refused-open.md) |
+| 08b | [Dispose engines on a refused open](08b-dispose-engines-on-a-refused-open.md) | `[05-a-refused-open-leaves-its-engines-undisposed]`: the open under a guard that closes the actors and disposes the engine; a test module that counts connections; the contract's §9.2 | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | `efedc8d` | [log](logs/08b-dispose-engines-on-a-refused-open.md) |
 | 09 | Rewrite the package prose | `[01-package-prose-names-sgks-layout]`; the guard's `KNOWN_HITS` emptied (U17) | ⬜ | ⬜ | — | — |
 | 10 | Release `v0.2.1` | `0.2.1`; both ends and CI; the tag after green CI; the adoption addenda (U37) | ⬜ | ⬜ | — | — |
 | 11 | Verification and close-out | the verification document; the contract §8 citation (U34); the campaign closed | ⬜ | ⬜ | — | — |
@@ -100,7 +100,8 @@ used for 01; [`orchestrator/prompt-02.md`](orchestrator/prompt-02.md) (`737ad6e`
 with an addendum at `7ee9b6e`), used for 04b; [`orchestrator/prompt-05.md`](orchestrator/prompt-05.md)
 (`f69921b`), used for 05; [`orchestrator/prompt-06.md`](orchestrator/prompt-06.md) (`0e524b4`),
 used for 06; [`orchestrator/prompt-07a.md`](orchestrator/prompt-07a.md) (`a816632`), used for 07a;
-[`orchestrator/prompt-08a.md`](orchestrator/prompt-08a.md) (`484ad41`), used for 08a.
+[`orchestrator/prompt-08a.md`](orchestrator/prompt-08a.md) (`484ad41`), used for 08a;
+[`orchestrator/prompt-08b.md`](orchestrator/prompt-08b.md) (`f24ded1`), used for 08b.
 
 **Orchestrator review of prompt 01 (2026-10-07).** Dispatched from `bd9f461` to one Opus
 subagent, with the note's §0 corrections and additions. Reviewed against its commit `8bc60a5`,
@@ -1079,6 +1080,104 @@ opened. The index is 6.
 - README's header, and its §2 status for 08a;
 - this paragraph and the notes line.
 
+**Orchestrator review of prompt 08b (2026-10-10).** Dispatched from `f24ded1` to one Opus
+subagent, with the note's four corrections and four additions. Reviewed against its commit
+`efedc8d`, with nothing landed after it. **Every check of the note's §3 passed**, and acceptance
+1–6 are met. No stop condition fired. Nothing was pushed, and the tags are `v0.1.0` and `v0.2.0`
+only.
+
+*At dispatch.* The note's gate held at `f24ded1`. The tree was clean, and the only worktree was
+this checkout. The suite gave `Ran 469 tests … OK` in `venv/`, the port check exited 0, and
+`black --check datastorekit docs` left 68 files unchanged. The clients were at SGK `b510bc9`
+(clean), CPBH `52142d7` (23 untracked entries) and SI `7bb3efd` (clean). `origin/main` was
+`102f225`, and no Ray process was up. While writing the note, the orchestrator applied §2.1 and
+§2.2 to scratch exports of `9f9c970` and probed them:
+- a connection counter over the 469 reproduced §1.1 (109 never closed of 41,213; `:869` 62, 55
+  read-write and 7 read-only; `Datastore.py:378` 41; `:881` 6) and §2.2 (2, both
+  `TestInsertBeforeSetVersion`'s), and the fixed 469 passed at both ends, with 4
+  `ResourceWarning` lines at the high end;
+- a probe of §2.3's eleven opens gave the prompt's counts before and after, and (a)–(g) failed
+  them as §4.4 says;
+- over the 469, only (f) failed anything (`errors=72`, in ten modules);
+- test 7's `cluster.controller` is inert inside a constructor (correction 1), (g) must drop the
+  bare `raise` (correction 2), and an escaped `KeyboardInterrupt` ends a `unittest` run
+  (correction 3).
+
+*The checks.*
+1. **Scope.** `efedc8d` touches exactly the prompt's §7 list, 7 files. The ignored entries are
+   dispatch's. Each client's `HEAD` and `git status --short` are as at dispatch.
+2. **E1, the layer.** `git diff f24ded1 efedc8d -- datastorekit/SQL/ShardedPool.py` has no `-`
+   line: the guard at `:203-207`, `def _open` at `:209` with its docstring, and
+   `_close_refused_open` at `:374-407`, as §2.2 gives it. The docstrings name no client and no
+   SGK path, and say that the caller's profile agent is not cleaned up. `Datastore.py` is
+   unchanged.
+3. **E2, by reading.** The 11 tests are §2.3's, in three classes. Each refusal test asserts its
+   exception's type and message, and that it counted a connection; each counts by identity over
+   the connections its own open made, and closes any left open in cleanup. Test 7 pins the
+   controller with `pin_controller(0)` and never sets `cluster.controller`. Test 9 requires
+   exactly shard 1's file left open. Test 10 catches its `KeyboardInterrupt` inside the test, and
+   its hook fires once and is removed in cleanup. The wrapper restores both attributes in
+   `finally`. Every store is in a `tempfile` directory, stdout is captured, Ray is checked
+   uninitialised, and nothing names a client.
+4. **E2, by running.** In an export of `efedc8d` with `ShardedPool.py` from `f24ded1`, the module
+   gives `FAILED (failures=10)`: tests 1–10 on their counts (1 of 1, 1 of 1, 1 of 10, 1 of 15, 4
+   of 13, 4 of 16, 4 of 7, 4 of 13, test 9 four left where one is required, and 4 of 13). Test 11
+   passes, and the run ends with its verdict line.
+5. **E3, both ends.** In `venv/`, `Ran 480 tests … OK`. In the review's own offline venv (3.13.16
+   / 2.55.1 / 2.0.46, SQLite 3.53.4) with `git archive efedc8d` installed editable, `Ran 480
+   tests … OK`, with **4** `ResourceWarning` lines, the log's.
+6. **E4, the measurement.** The orchestrator's own counter over the 480, at both ends: 41,292
+   opened, **2** never closed, both `Datastore.py:378` in `TestInsertBeforeSetVersion`'s two
+   tests, none alive after. The log's 41,411 is larger because the new module's `counting()`
+   replaces this counter inside its own blocks, and the agent's probe also counted connections
+   made with a `factory=`; the never-closed count is the same.
+7. **The checks.** The port check exits 0 with 04b's counts. `black --check datastorekit docs`
+   leaves 69 files unchanged. The layer guard passes; its file is unchanged, and `KNOWN_HITS` has
+   its one entry.
+8. **E5, the contract.** The diff is the header line after 08a's, and §9.2 after §9.1, and nothing
+   else. §9.2 supersedes no row and carries no marker. Every line reference in it holds at
+   `efedc8d` (`:203-207`, `:209-372`, `:374-407`, `:809-815`, `:820-821`, `:316-332`,
+   `:592-609`).
+9. **E6, the breakages.** The seven diffs, extracted from the log, apply both ways to their own
+   exports of `efedc8d`. Over the module:
+   - (a) and (c): `failures=10`;
+   - (b): `failures=6`, tests 5–10 with 3 left open;
+   - (d): `errors=2`, tests 8 and 9 raising `StandinActorDied` from shard 1's `__exit__`;
+   - (e): `failures=1`, test 10 with 4 left open, its interrupt caught in the test;
+   - (f): `errors=4`, tests 1–4 with `AttributeError`;
+   - (g): `failures=1`, test 11 with 0 open while the pool is open.
+
+   Over the 480, each verdict is the log's, and none of the 469 fails except under (f)
+   (`errors=76`: 72 of the 469, and the module's 4).
+10. **E7, the records.**
+    - The log has every section of README §5.1, the port check's output, the test-by-test record,
+      §2.4's measurement at both ends with its method, and the clients' commits and statuses.
+      Under "Observations not acted on" are `TestInsertBeforeSetVersion`'s two connections and
+      hazard 3's stand-in comprehension.
+    - The board's §3 holds one issue, and the closed one heads §4 with its "Closed" line.
+    - The index has 1 row on this repository and says 5.
+    - `prompts/INDEX.md` says 1.
+11. **Nothing left behind.** No Ray process. `origin` has `main` at `102f225` and the two tags.
+
+*Findings beyond the prompt*, recorded and not acted on:
+- The note said seven modules read `cluster.calls`; six test modules do (the orchestrator's
+  `grep` counted `standin_pool.py`). The agent is right (log §2).
+- §1.1's list of the raised constructors' exceptions omits `ReadOnlyMiss`, which one of the 107
+  raised (log §2 item 14, §6 item 3).
+- The agent first wrote the module into the checkout and moved it to the scratchpad before
+  anything ran. Nothing was run or committed in that state (log §2, UNINTENDED DRIFT).
+- Under Ray, a dead actor's `__exit__` raises `RayActorError`, which `_close_refused_open`
+  ignores. This is pinned under the stand-in only, since no test may start Ray (log §6 item 4).
+
+*Issues.* `[05-a-refused-open-leaves-its-engines-undisposed]` is closed (§4). Nothing is opened.
+The index is 5.
+
+*Residue fixed in this follow-up:*
+- "this commit" → `efedc8d` in the log, the board and `prompts/INDEX.md`;
+- one over-long line of the issue's "Closed" entry, rewrapped;
+- README's header, and its §2 status for 08b;
+- this paragraph and the notes line.
+
 ## 2. Gates outside this repository (README §7)
 
 | Gate | Status |
@@ -1209,7 +1308,7 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     05), with a test that counts unclosed connections across a refused open. Unassigned.
   - **Assigned (2026-10-09):** to prompt 08b of this campaign. U33; U35 gives it a prompt of its
     own, since it touches the pool's and actors' open and refusal paths.
-  - **Closed (2026-10-10, prompt 08b)** (this commit, log 08b §1, §4). `ShardedPool.__init__`
+  - **Closed (2026-10-10, prompt 08b)** (`efedc8d`, log 08b §1, §4). `ShardedPool.__init__`
     calls the open, moved unchanged into `_open`, under a guard that on any exception,
     `BaseException` included, calls `_close_refused_open` and re-raises the open's exception
     unchanged (`datastorekit/SQL/ShardedPool.py:203-207`, `_open` `:209-372`,
@@ -1221,9 +1320,9 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     test; on the unfixed layer its ten refusal tests fail on their counts (log 08b §4.2), and each of
     the seven breakages of log 08b §5 fails it. Over the suite, the connections never closed go from
     109 of 41,213 (over the 469, unfixed, in `venv/`) to **2** of 41,411 (over the 480, fixed, at
-    both ends): the two actors `test_version_row_at_open.TestInsertBeforeSetVersion` builds directly and never
-    exits, which are a ported test's and not the layer's (log 08b §6 item 1). The high end prints 4
-    `ResourceWarning` lines. `docs/client-contract.md` §9.2 records it.
+    both ends): the two actors `test_version_row_at_open.TestInsertBeforeSetVersion` builds
+    directly and never exits, which are a ported test's and not the layer's (log 08b §6 item 1).
+    The high end prints 4 `ResourceWarning` lines. `docs/client-contract.md` §9.2 records it.
 
 - **[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]** *(opened 2026-10-09 by
   prompt 06)*
