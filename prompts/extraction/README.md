@@ -26,7 +26,7 @@ withdrawn, and its verification and close-out are 11's. **Prompt 08a is written*
 The user took U38–U40 the same day; **prompt 09 is written** (2026-10-10), and landed as
 `cad7bc1` the same day and was reviewed. **Prompt 10 is written** (2026-10-10), and landed as
 `33778b0` the same day and was reviewed; CI passed there at both ends, and `v0.2.1` is tagged
-on it.
+on it. The user took U41 and U42 the same day; **prompt 11 is written** (2026-10-10).
 Each later prompt is written after the one before it has landed and been
 reviewed, against the tree it left.
 
@@ -203,7 +203,7 @@ measures the survey again before doing so.
 | 08b | [`08b-dispose-engines-on-a-refused-open.md`](08b-dispose-engines-on-a-refused-open.md) | `[05-a-refused-open-leaves-its-engines-undisposed]`: a refused or abandoned open disposes the engines the pool and its actors made, with a test that counts unclosed connections across a refused open (05's measurement: 105 over the 444, at three sites). *(At writing: 109 over the 469 at `2123445`, of which 107 are a raised constructor's and 2 a ported test's directly built actors; the open moves into `_open` under a guard, and `_close_refused_open` closes the actors and disposes the engine.)* | **landed** 2026-10-10 (`efedc8d`), reviewed |
 | 09 | [`09-rewrite-the-package-prose.md`](09-rewrite-the-package-prose.md) | `[01-package-prose-names-sgks-layout]`: the package's comments and docstrings that name SGK's layout, campaigns or tables are rewritten for this repository (155 lines in 40 files at 04b), and the guard's `KNOWN_HITS` is emptied (U17). No code changes. *(At writing: still 155 in 40 at `452b3c9` by log 03a §8's method; U38 widens the scope to every citation of the source's layout, campaigns, logs, audits, issues, commits and `var/`, 248 lines in 42 files, of which 57 are found by reading; U39 removes each citation and keeps its explanation, true for this package; U40 adds `test_prose_names_no_source`, which scans every comment and docstring of the package with no allow list.)* | **landed** 2026-10-10 (`cad7bc1`), reviewed |
 | 10 | [`10-release-v0.2.1.md`](10-release-v0.2.1.md) | `pyproject.toml` at `0.2.1`, `PROVENANCE.md` and `README.md`; both ends locally and in CI; **tag `v0.2.1`** on its commit after green CI (as U23, U28). Dated addenda to `docs/adoption/` for the new pin and what changed since `v0.2.0` (U37). *(At writing: only `SQL/ShardedPool.py` changed in code since `v0.2.0`, the other 12 changed layer files in prose only; a `0.2.1` wheel builds and installs offline with 25 entries; no client reads its payloads back (log 08a §2.5) or catches the `KeyError` 08a replaced; the addenda supersede 07a's statements by `path:line` and rewrite none.)* | **landed** 2026-10-10 (`33778b0`), reviewed; CI green at both ends; **tagged `v0.2.1`** |
-| 11 | `11-verification-and-close-out.md` | A verification document for the campaign, from the package at `v0.2.1` and the records of 01–10; the contract §8 citation corrected (U34); the campaign closed (U30, U33). | not written |
+| 11 | [`11-verification-and-close-out.md`](11-verification-and-close-out.md) | A verification document for the campaign, from the package at `v0.2.1` and the records of 01–10; the contract §8 citation corrected (U34); the campaign closed (U30, U33). *(At writing: the document is `docs/extraction-verification.md`; U41 adds a smoke run under a local `ray.init()` at both ends, a script in `docs/extraction/`, which the planner's probe passed in 10–13 s; U42 installs the pin from GitHub, whose 20 package files equal 10's wheel's; the probe found that a closed pool holds its actors' names until it is collected, inherited from SGK, which 11 opens as an issue; the contract's head gains a dated line, since 08a–09 moved lines its head leaves a reader to take as current.)* | **written** 2026-10-10 |
 
 **Order.** 01 → 02 → 03a → 03b → 04a → 04b → 05 → 06 → 07a → 08a → 08b → 09 → 10 → 11. (03b and 04 could have run in either
 order, but never concurrently, since both extend `compare_ported_tests.py`'s table and
@@ -274,6 +274,8 @@ person under SGK's rules.
   U40.)*
 - **After 10** (planned): `pyproject.toml` at `0.2.1`; the adoption addenda (U37). After its CI
   passes, the tag `v0.2.1` on 10's commit.
+- **After 11** (planned): `docs/extraction-verification.md`, the campaign's verification document,
+  and `docs/extraction/ray_smoke_run.py` (U41); the campaign closed.
 
 ## 5. The rules this campaign runs under
 
@@ -652,6 +654,20 @@ taken on 2026-10-09, when 05 was written.
   **Rejected:** no new test, which leaves nothing to stop a later prompt bringing such prose back;
   and widening `test_layer_is_generic`, which checks the layer, not the tests, for client
   vocabulary, and would change that module's scope and docstring.
+- **U41: the package under real Ray. (taken 2026-10-10, as recommended)** No prompt had started
+  Ray: the suite runs the actors through the in-process stand-in, so the package had never run as
+  real Ray actors here. **Recommended:** 11's verification includes a smoke run under a local
+  `ray.init()`, no cluster, at both version ends, by a script kept in `docs/extraction/` and never
+  collected by the suite. It opens a `tempfile` store through the neutral client: write, reopen,
+  read-only open, a keyed get and a refused open, and checks that no Ray process is left. A defect
+  it finds is opened as an issue, not fixed in 11. **Rejected:** recording the real-Ray path as
+  unverified, and leaving SGK's G2 rehearsal as its first measurement.
+- **U42: the pin, as a client installs it. (taken 2026-10-10, as recommended)** Every prompt had
+  been offline. **Recommended:** 11 installs `datastorekit @
+  git+https://github.com/ds283/DatastoreKit@v0.2.1` from GitHub into a scratch venv, with Ray and
+  SQLAlchemy from the offline cache and only the package fetched, compares it with 10's wheel, and
+  runs it from outside the repository. **Rejected:** staying offline, and relying on 10's wheel and
+  the CI run on `33778b0`.
 
 ## 7. Gates outside this repository
 
