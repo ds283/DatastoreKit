@@ -14,6 +14,20 @@ a marker.*
 
 *§9.2 is measured from the package at prompt 08b's tree, and its line numbers are that tree's.*
 
+*Added by extraction prompt 11 (2026-10-10). Every line number in §1–§9 is that of the tree its
+section states: §1–§7 `8bc60a5`'s (their one citation of the stand-in pool,
+`tests/standin_pool.py` in §6, is of prompt 02's tree, `e988e69`, which added that file), §8
+`v0.2.0`'s (`240028e`), §9.1 prompt 08a's (`f938844`) and §9.2 prompt 08b's (`efedc8d`). The lines
+have moved since those trees.
+Prompts 08a and 08b moved `SQL/ShardedPool.py`'s, and prompt 09 rewrote the prose, and so moved the
+lines, of 13 layer files and 30 modules under `tests/` (`PROVENANCE.md`, "Prompts 08a, 08b and 09:
+fixes and prose (`v0.2.1`)"). Among them are `store_inventory.py`, `store_reader.py` and
+`SQL/factory_base.py`, which prompt 06 did not change and which the second paragraph above leaves a
+reader to take as unchanged. By `git diff --stat 8bc60a5 33778b0`, the only layer files cited here
+that are unchanged are `object.py` and `SQL/ClientPool.py`, and the test client and test modules
+cited did not exist at `8bc60a5`. So a line is read at its section's tree (`git show
+<tree>:datastorekit/<path>`), and only §8's correction note gives `v0.2.1`'s lines.*
+
 A client of `datastorekit` gives the layer a fixed set of facts: the arguments of a pool's
 constructor, the keys a factory's `register()` returns, the hooks a factory defines, the
 inventory declarations, two tables the layer owns, and what its stored objects carry. This
@@ -225,7 +239,16 @@ layer writes changes: an insert carries the version serial as it always has (§2
 | The actor's two serials | the layer's | `_version_serial` stamps inserts; `_lookup_serial` keys lookups (`SQL/Datastore.py:91-96`). `set_version(serial)` sets both, with its checks unchanged (`:150-170`). `set_lookup_version(serial)` sets the lookup serial only: an `int` (`TypeError` otherwise), and a change to a different serial raises `RuntimeError` (`:172-190`). It never sets the insert serial. | A keyed get before either is called: `RuntimeError` naming the class and the label and saying that the pool sets the serial with `set_version` or `set_lookup_version`; nothing is built (`:609-615`). | — |
 | The keyed get | the layer's | In `object_get`, after the payloads are formed and before the transaction, a class whose record has `key_on_version` (read with `.get(..., False)`) has its payloads replaced by keyed copies (`SQL/Datastore.py:557-561`, `_keyed_payloads` at `:598-625`). The caller's payloads are not changed. Scalar and vectorized gets alike, and so `ShardedPool.object_get` and `object_get_vectorized`, which reach the actor's `object_get`. | §8's refusals above. | `Tessera`, scalar and vectorized |
 | A read-write pool | — | `set_version` on every actor once the version row exists (`SQL/ShardedPool.py:355-360`) gives each both serials. | — | `test_version_keyed_lookups.TestThroughThePool` |
-| A read-only pool | — | Its actors are never given the insert serial, the third guard against an insert (`SQL/Datastore.py:192-201`). After every actor's `read_only_state` has returned, the pool calls `set_lookup_version` on each with the version row's serial and waits for every call (`SQL/ShardedPool.py:567-574`; step 6 of the comment at `:467-470`). A keyed get then finds the rows of the pool's label. | A keyed miss reaches the inserter, which a read-only actor refuses: `ReadOnlyWrite` for a sharded class, `ReadOnlyMiss` for a replicated one (`SQL/Datastore.py:292-313`); `_insert`'s guard is behind it (`:779-787`). | `TestThroughThePool.test_a_read_only_*` |
+| A read-only pool | — | Its actors are never given the insert serial, the third guard against an insert (`SQL/Datastore.py:192-201`). After every actor's `read_only_state` has returned, the pool calls `set_lookup_version` on each with the version row's serial and waits for every call (`SQL/ShardedPool.py:568-575`; step 6 of the comment at `:467-470`). A keyed get then finds the rows of the pool's label. | A keyed miss reaches the inserter, which a read-only actor refuses: `ReadOnlyWrite` for a sharded class, `ReadOnlyMiss` for a replicated one (`SQL/Datastore.py:292-313`); `_insert`'s guard is behind it (`:779-787`). | `TestThroughThePool.test_a_read_only_*` |
+
+*Correction (extraction prompt 11, 2026-10-10; decision U34).* The read-only row above cited the
+pool's `set_lookup_version` calls as `SQL/ShardedPool.py:567-574`. That citation was wrong when it
+was written, as extraction prompt 07a's review found: at §8's tree (`v0.2.0`, `240028e`) `:567` is
+blank, the comment is `:568-569` and the call `:570-575`. It is corrected in place to `:568-575`;
+this is a correction, not a superseded measurement (`CLAUDE.md` rule 6). §8's other
+`SQL/ShardedPool.py` citations, `:355-360` and `:467-470`, hold at `v0.2.0`. At `v0.2.1`
+(`33778b0`) the calls are `SQL/ShardedPool.py:614-621` (the comment `:614-615`, the call
+`:616-621`), and step 6 of the comment is `:513-516`.
 
 **What is not keyed.** Only `object_get`. `object_read_batch`, `read_table`, `object_store` and
 `object_validate` hand the factory what the caller gives (`SQL/Datastore.py:606-607`, the docstring

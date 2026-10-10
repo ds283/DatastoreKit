@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-10 · **Status: IN PROGRESS — 14 of 14 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b, 09, 10, 11), 13 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b, 09, 10); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28); 07a landed (`dd45243`) and reviewed; 07b withdrawn (U33): the four open issues are fixed in 08a, 08b and 09 and released as `v0.2.1` by 10 before 11 closes the campaign; 08a landed (`f938844`) and reviewed, closing two of the four; 08b landed (`efedc8d`) and reviewed, closing the third; 09 landed (`cad7bc1`) and reviewed, closing the fourth; 10 landed (`33778b0`) and reviewed; `v0.2.1` tagged on it after green CI; 11 written.**
+**Last updated:** 2026-10-10 · **Status: CLOSED (2026-10-10, by prompt 11) — all 14 written prompts landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b, 09, 10, 11) and 07b withdrawn unwritten (U33); `v0.1.0` tagged on `68db557` (U23), `v0.2.0` on `240028e` (U28) and `v0.2.1` on `33778b0`, each after green CI; the four issues open at U33 fixed by 08a, 08b and 09; 01–10 reviewed; 11 verified the campaign in [`docs/extraction-verification.md`](../../docs/extraction-verification.md), corrected the contract's §8 citation (U34) and opened `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]`; G2–G4 have not held, and the campaign does not wait for them (README §7).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 U8–U13 the same day, U14–U22 on 2026-10-08, U6, U23–U37 on 2026-10-09, and U38–U42 on 2026-10-10 (README §6.2); U10, U14 and U30 split 03, 04
 and 07, each into an a and a b prompt.
@@ -91,7 +91,7 @@ and 07, each into an a and a b prompt.
 | 08b | [Dispose engines on a refused open](08b-dispose-engines-on-a-refused-open.md) | `[05-a-refused-open-leaves-its-engines-undisposed]`: the open under a guard that closes the actors and disposes the engine; a test module that counts connections; the contract's §9.2 | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | `efedc8d` | [log](logs/08b-dispose-engines-on-a-refused-open.md) |
 | 09 | [Rewrite the package prose](09-rewrite-the-package-prose.md) | `[01-package-prose-names-sgks-layout]`, widened by U38: 248 lines in 42 files, citations removed (U39); the guard's `KNOWN_HITS` emptied (U17); `test_prose_names_no_source` (U40) | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | `cad7bc1` | [log](logs/09-rewrite-the-package-prose.md) |
 | 10 | [Release `v0.2.1`](10-release-v0.2.1.md) | `0.2.1`; `README.md` and `PROVENANCE.md`; the release check and both ends, offline; dated addenda to `docs/adoption/` (U37); the tag after green CI, not by 10 | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | `33778b0` | [log](logs/10-release-v0.2.1.md) |
-| 11 | [Verification and close-out](11-verification-and-close-out.md) | `docs/extraction-verification.md`; a smoke run under real Ray (U41) and the pin installed from GitHub (U42); the contract §8 citation (U34) and a dated head line; `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]` opened; the campaign closed | ✍️ yes, 2026-10-10 | ⬜ | — | — |
+| 11 | [Verification and close-out](11-verification-and-close-out.md) | `docs/extraction-verification.md`; a smoke run under real Ray (U41) and the pin installed from GitHub (U42); the contract §8 citation (U34) and a dated head line; `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]` opened; the campaign closed | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | this commit | [log](logs/11-verification-and-close-out.md) |
 
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
@@ -1427,13 +1427,58 @@ The rest of `main`, this review and its record, is pushed after them.
 | **G3**: CPBH adopted `v0.2.1` (U37) | ⬜ *(2026-10-09: the adoption checklist is [`docs/adoption/champbh.md`](../../docs/adoption/champbh.md), measured at CPBH `52142d7` by 07a.)* *(2026-10-09: `v0.2.0` is made, annotated, on 06's commit `240028e` (tag object `9eaf542`) and pushed, after CI passed there at both ends, [run 37934881027](https://github.com/ds283/DatastoreKit/actions/runs/37934881027): Python 3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39 and 3.13.16 / 2.55.1 / 2.0.46, SQLite 3.45.1 at both, each `Ran 458 tests … OK`. CPBH may now adopt it.)* *(2026-10-10: `v0.2.1` is ready to be tagged on extraction prompt 10's commit once CI passes there at both ends, as U23 and U28; 10 makes no tag and pushes nothing. CPBH's addendum is [`docs/adoption/champbh.md`](../../docs/adoption/champbh.md#addendum-v021-extraction-prompt-10-2026-10-10).)* *(2026-10-10: `v0.2.1` is made, annotated, on 10's commit `33778b0` (tag object `0ba2e4d`) and pushed, after CI passed there at both ends, [run 38054748108](https://github.com/ds283/DatastoreKit/actions/runs/38054748108): Python 3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39 and 3.13.16 / 2.55.1 / 2.0.46, SQLite 3.45.1 at both, each `Ran 486 tests … OK`. CPBH may now adopt it.)* |
 | **G4**: SI adopted `v0.2.1` (U37) | ⬜ *(2026-10-09: the adoption checklist is [`docs/adoption/stochasticinstantons.md`](../../docs/adoption/stochasticinstantons.md), measured at SI `7bb3efd` by 07a; its stores are rebuilt, U31.)* *(2026-10-10: `v0.2.1` is ready to be tagged on extraction prompt 10's commit once CI passes there at both ends, as U23 and U28; 10 makes no tag and pushes nothing. SI's addendum is [`docs/adoption/stochasticinstantons.md`](../../docs/adoption/stochasticinstantons.md#addendum-v021-extraction-prompt-10-2026-10-10).)* *(2026-10-10: `v0.2.1` is made, annotated, on 10's commit `33778b0` (tag object `0ba2e4d`) and pushed, after CI passed there at both ends, [run 38054748108](https://github.com/ds283/DatastoreKit/actions/runs/38054748108): Python 3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39 and 3.13.16 / 2.55.1 / 2.0.46, SQLite 3.45.1 at both, each `Ran 486 tests … OK`. SI may now adopt it.)* |
 
+*(2026-10-10, prompt 11: the campaign is closed with G2–G4 open. After the close, a gate is recorded on this board when it holds, in a records commit of its own.)*
+
 ## 3. Active and unresolved issues
 
 The issues the layer carries from SGK are indexed in
 [`docs/OPEN_ISSUES.md`](../../docs/OPEN_ISSUES.md) §1.2. They stay on SGK's boards, and are out
 of scope here (README §1). Log 01 §4.6 records where each one's code is in the package.
 
-No issue of this repository is open on this board (2026-10-10, since prompt 09).
+- **[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]** *(opened 2026-10-10 by
+  prompt 11)*
+  - **The defect.** A `ShardedPool` gives its Ray actors fixed names in Ray's default namespace,
+    and its `__exit__` releases none of them. A name is freed only when the pool object holding
+    the actors' handles is collected. So, in one Ray session, two pools cannot be open at once, on
+    any stores, and a store cannot be reopened while the previous pool object is still
+    referenced, closed or not: `pool = ShardedPool(…)` over a live `pool` builds the new pool
+    before it rebinds the name, and is refused by Ray.
+  - **Measured** (2026-10-10, by prompt 11, `docs/extraction/ray_smoke_run.py` step N, under a
+    local `ray.init(address="local", …)`, at both ends: Python 3.12.15 / Ray 2.43.0 / SQLAlchemy
+    2.0.39 and 3.13.16 / 2.55.1 / 2.0.46, SQLite 3.53.4; log 11 §4.1,
+    `docs/extraction-verification.md` §4). On a three-shard store of the neutral client:
+    - after the read-write pool's `__exit__`, with the pool still referenced, `ray.get_actor`
+      finds all four names, `SerialPoolBroker` and `shard0000-store` to `shard0002-store`;
+    - a second read-write open is then refused on `SerialPoolBroker`, "The name SerialPoolBroker
+      (namespace=None) is already taken". At Ray 2.43.0 the exception is the builtin
+      `ValueError`; at 2.55.1 it is `ray.exceptions.ActorAlreadyExistsError`, a subclass of
+      `ValueError`;
+    - after the refused open's exception is dropped, the four names are still held while the
+      first pool is referenced;
+    - after `del` and `gc.collect()`, none is held (0.0 s at 2.43.0, 0.2 s at 2.55.1, polled every
+      0.1 s);
+    - a read-only pool holds its three shard names after `__exit__` in the same way (it makes no
+      broker), and they are freed the same way.
+  - **The cause** (`datastorekit/SQL/ShardedPool.py` at `v0.2.1`, `33778b0`): the broker is named
+    `SerialPoolBroker` (`:307`); each read-write shard's actor `shard{key:04d}-store` (`:318`), and
+    each read-only one the same (`:592`). `__exit__` (`:808-820`) calls each shard's `__exit__`,
+    cleans up the profile agent and disposes the engine; it kills no actor and drops no handle.
+    The shard actors are built last id first (`:316`), so a collision on the read-only pool's names
+    is reported on the highest shard's.
+  - **Inherited from SGK, unchanged.** SGK names the same actors at
+    `Datastore/SQL/ShardedPool.py:294` (the broker), `:305` (read-write shards) and `:544`
+    (read-only shards), at both `6f7f291` and `b510bc9` (read by `git show`). Nothing on SGK's
+    boards or in this repository recorded it (`git grep` for "already taken", `ActorAlreadyExists`
+    and `get_actor`). `docs/client-contract.md` does not say how long a closed pool holds its
+    names.
+  - **Impact.** A client that opens two pools in one process, or reopens a store while it still
+    holds a closed pool, is refused by Ray at the reopen, with Ray's name-collision exception and
+    not one of the layer's. The collision is raised when the broker is created, after the check at
+    open and before any actor of the new pool exists (`:307`), and 08b's guard then disposes the
+    new pool's engine. The suite cannot see it: the stand-in pool keeps each name but reserves none
+    (`datastorekit/tests/standin_pool.py:160-172`), so no name collides there.
+  - **Next step.** None assigned. The smoke script drops each pool (`del` and `gc.collect()`)
+    before it opens the next, and its step 5 drops the refused open's exception.
 
 ## 4. Resolved issues
 
