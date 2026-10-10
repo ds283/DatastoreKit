@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-10 · **Status: IN PROGRESS — 10 of 14 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a), 10 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28); 07a landed (`dd45243`) and reviewed; 07b withdrawn (U33): the four open issues are fixed in 08a, 08b and 09 and released as `v0.2.1` by 10 before 11 closes the campaign; 08a landed (`f938844`) and reviewed, closing two of the four.**
+**Last updated:** 2026-10-10 · **Status: IN PROGRESS — 11 of 14 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b), 10 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28); 07a landed (`dd45243`) and reviewed; 07b withdrawn (U33): the four open issues are fixed in 08a, 08b and 09 and released as `v0.2.1` by 10 before 11 closes the campaign; 08a landed (`f938844`) and reviewed, closing two of the four; 08b written.**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 U8–U13 the same day, U14–U22 on 2026-10-08, and U6, U23–U37 on 2026-10-09 (README §6.2); U10, U14 and U30 split 03, 04
 and 07, each into an a and a b prompt.
@@ -83,7 +83,7 @@ and 07, each into an a and a b prompt.
 | 07a | [The adoption checklists](07a-the-adoption-checklists.md) | `docs/adoption/`: a README and checklists for SGK, CPBH and SI against `v0.2.0` (U29), measured read-only; `measure_client_imports.py`; instances and abstract hooks (U32); SI's stores rebuilt (U31) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | `dd45243` | [log](logs/07a-the-adoption-checklists.md) |
 | ~~07b~~ | ~~Verification and close-out~~ | *withdrawn 2026-10-09, unwritten (U33); its work is 11's* | — | — | — | — |
 | 08a | [Two small fixes](08a-two-small-fixes.md) | `[02-an-unsupplied-sharded-table-raises-keyerror]` and `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]`, each with a test module; the contract's §9 | ✍️ yes, 2026-10-09 | ✅ 2026-10-10 | `f938844` | [log](logs/08a-two-small-fixes.md) |
-| 08b | Dispose engines on a refused open | `[05-a-refused-open-leaves-its-engines-undisposed]` | ⬜ | ⬜ | — | — |
+| 08b | [Dispose engines on a refused open](08b-dispose-engines-on-a-refused-open.md) | `[05-a-refused-open-leaves-its-engines-undisposed]`: the open under a guard that closes the actors and disposes the engine; a test module that counts connections; the contract's §9.2 | ✍️ yes, 2026-10-10 | ⬜ | — | — |
 | 09 | Rewrite the package prose | `[01-package-prose-names-sgks-layout]`; the guard's `KNOWN_HITS` emptied (U17) | ⬜ | ⬜ | — | — |
 | 10 | Release `v0.2.1` | `0.2.1`; both ends and CI; the tag after green CI; the adoption addenda (U37) | ⬜ | ⬜ | — | — |
 | 11 | Verification and close-out | the verification document; the contract §8 citation (U34); the campaign closed | ⬜ | ⬜ | — | — |
