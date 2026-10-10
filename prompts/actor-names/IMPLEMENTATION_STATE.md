@@ -127,6 +127,16 @@ opened. The index is 4, none of them this repository's.
 `main` is ahead of `origin/main` (`d06b46a`) by this note, `ac50a8a` and this record, and is pushed
 only with the user's approval. 02 (`v0.2.2`) is written next, against the tree 01 leaves.
 
+*The push (2026-10-10).* With the user's approval, `main` was pushed, moving `origin/main` from
+`d06b46a` to `049fa1a` (a fast-forward, with no tag). CI passed there at both ends,
+[run 38086774849](https://github.com/ds283/DatastoreKit/actions/runs/38086774849):
+- low: Python 3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39, `Ran 492 tests in 161.507s` / `OK`, and
+  `black` leaving 72 files unchanged;
+- high: 3.13.16 / 2.55.1 / 2.0.46, `Ran 492 tests in 167.201s` / `OK`;
+- SQLite 3.45.1 at both.
+
+The smoke script is not collected by the suite, so CI started no Ray.
+
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
 
