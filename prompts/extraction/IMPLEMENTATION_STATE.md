@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-10 · **Status: IN PROGRESS — 13 of 14 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b, 09, 10), 13 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b, 09, 10); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28); 07a landed (`dd45243`) and reviewed; 07b withdrawn (U33): the four open issues are fixed in 08a, 08b and 09 and released as `v0.2.1` by 10 before 11 closes the campaign; 08a landed (`f938844`) and reviewed, closing two of the four; 08b landed (`efedc8d`) and reviewed, closing the third; 09 landed (`cad7bc1`) and reviewed, closing the fourth; 10 landed (this commit), ready for `v0.2.1`, which is tagged on its commit only once CI passes there (as U23, U28).**
+**Last updated:** 2026-10-10 · **Status: IN PROGRESS — 13 of 14 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b, 09, 10), 13 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b, 09, 10); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28); 07a landed (`dd45243`) and reviewed; 07b withdrawn (U33): the four open issues are fixed in 08a, 08b and 09 and released as `v0.2.1` by 10 before 11 closes the campaign; 08a landed (`f938844`) and reviewed, closing two of the four; 08b landed (`efedc8d`) and reviewed, closing the third; 09 landed (`cad7bc1`) and reviewed, closing the fourth; 10 landed (`33778b0`) and reviewed, ready for `v0.2.1`, which is tagged on its commit only once CI passes there (as U23, U28).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 U8–U13 the same day, U14–U22 on 2026-10-08, U6, U23–U37 on 2026-10-09, and U38–U40 on 2026-10-10 (README §6.2); U10, U14 and U30 split 03, 04
 and 07, each into an a and a b prompt.
@@ -88,7 +88,7 @@ and 07, each into an a and a b prompt.
 | 08a | [Two small fixes](08a-two-small-fixes.md) | `[02-an-unsupplied-sharded-table-raises-keyerror]` and `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]`, each with a test module; the contract's §9 | ✍️ yes, 2026-10-09 | ✅ 2026-10-10 | `f938844` | [log](logs/08a-two-small-fixes.md) |
 | 08b | [Dispose engines on a refused open](08b-dispose-engines-on-a-refused-open.md) | `[05-a-refused-open-leaves-its-engines-undisposed]`: the open under a guard that closes the actors and disposes the engine; a test module that counts connections; the contract's §9.2 | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | `efedc8d` | [log](logs/08b-dispose-engines-on-a-refused-open.md) |
 | 09 | [Rewrite the package prose](09-rewrite-the-package-prose.md) | `[01-package-prose-names-sgks-layout]`, widened by U38: 248 lines in 42 files, citations removed (U39); the guard's `KNOWN_HITS` emptied (U17); `test_prose_names_no_source` (U40) | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | `cad7bc1` | [log](logs/09-rewrite-the-package-prose.md) |
-| 10 | [Release `v0.2.1`](10-release-v0.2.1.md) | `0.2.1`; `README.md` and `PROVENANCE.md`; the release check and both ends, offline; dated addenda to `docs/adoption/` (U37); the tag after green CI, not by 10 | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | this commit | [log](logs/10-release-v0.2.1.md) |
+| 10 | [Release `v0.2.1`](10-release-v0.2.1.md) | `0.2.1`; `README.md` and `PROVENANCE.md`; the release check and both ends, offline; dated addenda to `docs/adoption/` (U37); the tag after green CI, not by 10 | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | `33778b0` | [log](logs/10-release-v0.2.1.md) |
 | 11 | Verification and close-out | the verification document; the contract §8 citation (U34); the campaign closed | ⬜ | ⬜ | — | — |
 
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
@@ -105,7 +105,8 @@ with an addendum at `7ee9b6e`), used for 04b; [`orchestrator/prompt-05.md`](orch
 used for 06; [`orchestrator/prompt-07a.md`](orchestrator/prompt-07a.md) (`a816632`), used for 07a;
 [`orchestrator/prompt-08a.md`](orchestrator/prompt-08a.md) (`484ad41`), used for 08a;
 [`orchestrator/prompt-08b.md`](orchestrator/prompt-08b.md) (`f24ded1`), used for 08b;
-[`orchestrator/prompt-09.md`](orchestrator/prompt-09.md) (`b5b1586`), used for 09.
+[`orchestrator/prompt-09.md`](orchestrator/prompt-09.md) (`b5b1586`), used for 09;
+[`orchestrator/prompt-10.md`](orchestrator/prompt-10.md) (`208d702`), used for 10.
 
 **Orchestrator review of prompt 01 (2026-10-07).** Dispatched from `bd9f461` to one Opus
 subagent, with the note's §0 corrections and additions. Reviewed against its commit `8bc60a5`,
@@ -1305,6 +1306,105 @@ note, the orchestrator measured the prompt's facts:
 - the issue's "Closed" entry, rewrapped (one line ran to 132 columns);
 - README's header, and its §2 status for 09;
 - this paragraph and the notes line.
+
+**Orchestrator review of prompt 10 (2026-10-10).** Dispatched from `208d702` to one Opus
+subagent, with the note's five corrections and four additions. Reviewed against its commit
+`33778b0`, with nothing landed after it. **Every check of the note's §3 passed**, and acceptance
+1–5 are met. No stop condition fired. Nothing was pushed, and the tags are `v0.1.0` and `v0.2.0`
+only.
+
+*At dispatch.* The note's gate held at `208d702`. The tree was clean, and the only worktree was
+this checkout. The suite gave `Ran 486 tests … OK` in `venv/` (0 `ResourceWarning` lines) and at
+the high end (4). The port check exited 0, and `black --check datastorekit docs` left 70 files
+unchanged. The clients were at SGK `b510bc9` (clean), CPBH `52142d7` (23 untracked entries) and SI
+`7bb3efd` (clean). `origin` had `main` at `102f225` and the two tags, and no Ray process was up.
+While writing the note, the orchestrator measured the prompt's facts:
+- with docstrings blanked, only `SQL/ShardedPool.py` differs in code from `v0.2.0`; 12 layer files
+  differ in prose only, and 7 are unchanged;
+- the `KeyError` measure on the clients gives the prompt's sites;
+- a `0.2.1` wheel builds, installs and runs offline as §1.2 says.
+
+It found that the prompt's `pip` reinstall of `venv/` needs `setuptools` from an index
+(correction 1), that the editable build leaves an `egg-info` in the checkout (correction 2), that
+"log 08a §2.5" is log 08a §3 (correction 3), that the contract's rows have no anchors
+(correction 4), and one line number off by one (correction 5).
+
+*The checks.*
+1. **Scope.** `33778b0` touches the prompt's §7 files only: `pyproject.toml`, `README.md`,
+   `PROVENANCE.md`, the four files under `docs/adoption/`, the log, the board and
+   `prompts/INDEX.md`. The ignored entries are dispatch's, with no `egg-info`, `build/` or `dist/`.
+   Each client's `HEAD` and `git status --short` are as at dispatch.
+2. **Additive.** `git diff 208d702 33778b0 -- docs/adoption/` has no removed line. The diff over
+   `datastorekit/`, `docs/client-contract.md`, `docs/extraction/` and `.github/` is empty.
+   `pyproject.toml` changes in its version line alone.
+3. **The release**, from the review's own `git archive 33778b0`, built and installed offline:
+   - `datastorekit-0.2.1-py3-none-any.whl`, 97,849 bytes, 25 entries, none under `tests/`, with
+     the licence;
+   - `METADATA` gives `Version: 0.2.1` and 05's three lines;
+   - the `RECORD` hashes to `f840ffa4…6c5e`, the log's, and the file list equals the log's;
+   - from outside the repository, with `PYTHONPATH` unset: the 20 modules import from
+     `site-packages`, the `contract` import works, `datastorekit.tests` is refused, the version is
+     `0.2.1`, `sharded_store --help` exits 0 and `shard_key_audit --help` exits 2 with its
+     no-such-file message.
+4. **`README.md` and `PROVENANCE.md`, by reading.**
+   - The Status paragraph, the pin, the "remain tagged" sentence and the §9 item are as §2.2 says.
+     Nothing says `v0.2.1` is tagged.
+   - `PROVENANCE.md`'s new section follows "Prompt 06", and its facts hold: 13 layer files
+     prose-only across 09 by the review's AST check, 30 test modules, and each prompt's files.
+5. **The addenda, by reading.**
+   - Each has its italic line and an unnumbered, dated addendum before the appendix, or at the end
+     of the README.
+   - Each gives the pin, links §9.1 or §9.2, and cites log 08a §3.
+   - Every superseded `path:line` lands on its statement in the committed file. The tables cite
+     committed numbers, five lines below 07a's, and say so.
+   - Every `datastorekit/` line they cite holds at `cad7bc1`: `ShardedPool.py:203-207`,
+     `:375-408`, `:1071-1072`, `:1100-1103`, `:3339` and `:3348`.
+   - SGK's adds two supersessions the prompt did not name, both true: `:187-188`, which says
+     `base.py` equals `factory_base.py` byte for byte (09 rewrote its docstrings), and `:203-207`,
+     "No call changes behaviour".
+6. **Names and links, by running.** The review's own script resolves all 43 relative links and
+   their anchors in the six documents, by GitHub's rule. All 21 dotted `datastorekit.` names
+   resolve in `venv/`.
+7. **Both ends.** In `venv/`, `pip show` says `0.2.1`, and `Ran 486 tests … OK`. In the review's
+   own offline venv (3.13.16 / 2.55.1 / 2.0.46), with `git archive 33778b0` installed editable,
+   `Ran 486 tests … OK` with **4** `ResourceWarning` lines. The port check exits 0 with 04b's
+   counts, and `black` leaves 70 files unchanged.
+8. **The breakages.** Both diffs, extracted from the log, apply both ways to their own exports of
+   `33778b0`.
+   - (a): the wheel is `0.2.0`, and so are `METADATA` and the installed version.
+   - (b): 71 entries, 46 under `datastorekit/tests/`, and `import datastorekit.tests` succeeds.
+9. **The records.**
+   - The log has every section of README §5.1 and the prompt's §5.5 list.
+   - The board's row for 10, its header and the three gate titles read `v0.2.1`. Each gate has its
+     dated "ready to be tagged" line, and the `v0.1.0` and `v0.2.0` lines are unchanged.
+   - `docs/OPEN_ISSUES.md` is unchanged at 4.
+10. **Nothing left behind.** No Ray process. The tags are `v0.1.0` and `v0.2.0`, and `origin/main`
+    is `102f225`.
+
+*Findings beyond the prompt*, recorded and not acted on:
+- **The note's `object_get_vectorized` lines were one too low.** The orchestrator misread its own
+  listing. The method is `:3327-3351` at `cad7bc1`, its membership test is at `:3339` and the copy
+  at `:3348`. The agent found this (log 10 §2 item 10), and the addenda cite the correct lines.
+- **§1.1 described one archived SGK script inexactly.** `m7_messages.py` catches `ReadOnlyMiss`
+  only. The agent read it and said so in the addenda (log §2 item 9). The finding stands: no client
+  depends on the `KeyError`.
+- **The agent's release check and high-end run used `612b73a`**, a `git stash create` snapshot of
+  its working tree before the records and three wording edits to lines it added. The review's
+  release check and high-end run used `33778b0` itself, and agree with the log.
+- **The agent amended its own unpushed commit once** (`f6ae2ec` → `33778b0`), before the review,
+  to correct one sentence of the log. Nothing else had landed on it, and the log says so. It is not
+  the cross-prompt amend that `CLAUDE.md` rule 1 forbids.
+
+*Issues.* None opened or closed. The index is 4, none of them this repository's.
+
+*Residue fixed in this follow-up:*
+- "this commit" → `33778b0` in the board's row and header, the log's header and §9, and
+  `prompts/INDEX.md`;
+- README's header, and its §2 status for 10;
+- this paragraph and the notes line.
+
+`v0.2.1` waits for the push of `33778b0` and its CI at both ends (the note's §5). Each push and the
+tag need the user's approval.
 
 ## 2. Gates outside this repository (README §7)
 

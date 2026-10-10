@@ -1,6 +1,6 @@
 # Log 10 — release `v0.2.1`
 
-**Subject:** Make the package ready to be released as v0.2.1 · **Commit:** this commit ·
+**Subject:** Make the package ready to be released as v0.2.1 · **Commit:** `33778b0` ·
 **Date:** 2026-10-10 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and untagged.
 
 The package is ready to be released as **`v0.2.1`** (U36), the release every client adopts in
@@ -709,10 +709,10 @@ succeeds, as at 05's (f). The counts are the orchestrator's: 71 entries, 46 unde
 
 ## 9. State handed to the next prompt
 
-- `HEAD` is this commit. The tree is clean apart from dispatch's ignored entries. `venv/` has
+- `HEAD` is `33778b0`. The tree is clean apart from dispatch's ignored entries. `venv/` has
   `datastorekit 0.2.1` installed editable from this checkout, and its `egg-info` was removed.
 - **Not pushed, not tagged.** `origin/main` is `102f225`, and the tags are `v0.1.0` and `v0.2.0`.
-- **After the review**, this commit is pushed as `main`, which fast-forwards over 07a–09, their
+- **After the review**, `33778b0` is pushed as `main`, which fast-forwards over 07a–09, their
   reviews and the notes. `v0.2.1` is made on it, annotated, only once CI passes there at both
   ends (as U23, U28). If CI fails, a fix prompt lands first, and no tag is made on a commit whose
   CI is red (rule 10).
