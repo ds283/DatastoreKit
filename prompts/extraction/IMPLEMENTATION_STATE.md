@@ -1546,6 +1546,11 @@ The issues the layer carries from SGK are indexed in
 [`docs/OPEN_ISSUES.md`](../../docs/OPEN_ISSUES.md) §1.2. They stay on SGK's boards, and are out
 of scope here (README §1). Log 01 §4.6 records where each one's code is in the package.
 
+No issue of this repository is open on this board (2026-10-10, since `actor-names` prompt 01
+closed `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]`, now at the head of §4).
+
+## 4. Resolved issues
+
 - **[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]** *(opened 2026-10-10 by
   prompt 11)*
   - **The defect.** A `ShardedPool` gives its Ray actors fixed names in Ray's default namespace,
@@ -1595,8 +1600,22 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     freed at once, and the stand-in pool reserves names so that the suite sees a regression. The
     user asked for the campaign on 2026-10-10, after this campaign closed; the entry stays here,
     with its measurement, until that prompt closes it.
-
-## 4. Resolved issues
+  - **Closed (2026-10-10, by `actor-names` prompt 01, this commit)**
+    ([log 01](../actor-names/logs/01-a-closed-pool-releases-its-actor-names.md) §1, §4, §5).
+    `ShardedPool.__exit__` runs its body unchanged, then kills each shard actor and the broker, if
+    there is one, with `ray.kill(handle, no_restart=True)` (the new `_kill_actors`), and marks the
+    pool closed, so that a second `__exit__` does nothing; `_close_refused_open` ends with the same
+    kill, of the handles the half-built pool holds and never of an actor looked up by name. Ray
+    frees a killed actor's name at once, so a store can be reopened in one Ray session while the
+    closed pool, or a refused open's exception, is still referenced. The names are unchanged, so two
+    open pools still collide (U1). The stand-in pool now reserves each actor's name until its handle
+    is killed, stands in `ray.kill`, and refuses a call to a killed handle, in every test (U2). The
+    new module `datastorekit/tests/test_closed_pool_releases_its_names.py` (6 tests) pins it: with
+    the kill removed from `__exit__`, 4 of its tests fail, and 159 failure entries in 11 other
+    modules. `docs/extraction/ray_smoke_run.py` has step N reversed and a step C, "two open pools
+    collide", and exits 0 at both ends under real Ray (`docs/extraction-verification.md` §4.6).
+    `docs/client-contract.md` §9.3 records it. The suite goes from 486 to 492, in `venv/` and at
+    the high end.
 
 - **[01-package-prose-names-sgks-layout]** *(opened 2026-10-07 by prompt 01)*
   - **The defect.** Comments and docstrings in the package, imported unchanged (D-str leaves prose

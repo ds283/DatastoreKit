@@ -372,6 +372,208 @@ releases no actor, at `33778b0`. SGK names the same actors at `Datastore/SQL/Sha
 `:305` and `:544`, at `6f7f291` and `b510bc9`. The smoke script drops every pool before the next
 open, so it records the behaviour without failing on it.
 
+### 4.6 The smoke run after the fix (`actor-names` prompt 01, 2026-10-10)
+
+*Added by [`actor-names` prompt 01](../prompts/actor-names/01-a-closed-pool-releases-its-actor-names.md)
+(log [`01-a-closed-pool-releases-its-actor-names.md`](../prompts/actor-names/logs/01-a-closed-pool-releases-its-actor-names.md)),
+under `CLAUDE.md` rule 6. §4.1–§4.5 above are of `v0.2.1` (`33778b0`) and the script as extraction
+prompt 11 committed it, and stay true of them: at `v0.2.1` a closed pool holds its actors' names
+until it is collected, as §4.5 measured. This subsection is of `actor-names` prompt 01's tree, where
+`ShardedPool.__exit__` and a refused open kill the pool's actors (`docs/client-contract.md` §9.3).*
+
+That prompt changed the script (SHA-256 `e9be6ffaf35ce05fabfd4788a90a9101c761b4b57bdd0baf58464d16d51cc331`)
+in two steps, and in the record after every `__exit__`; steps 1–6 are as before:
+
+- **step N, reversed.** With the closed pool of steps 1 and 2 still referenced, none of its names
+  is held, and a second read-write open works at once. That pool is closed, none of its names is
+  held, and both pools are dropped, in a `finally`. If the second open is refused, the step fails
+  naming the collision and the record;
+- **step C, new: two open pools collide.** With a pool open, a second read-write open raises
+  `ValueError` with "is already taken" and `SerialPoolBroker` in its message, and the first pool
+  then serves step 2's get;
+- **the record after each `__exit__`**, the pool still referenced, now expects no name held, for
+  every pool: step N checks step 2's pool's, and steps N, C, 3, 4 and 6 their own, after the
+  close. Each pool is still dropped before the next open.
+
+Each end ran from a fresh offline venv with a fresh export of the working tree installed editable
+(`--no-deps --no-build-isolation`, after `ray`, `sqlalchemy` and `setuptools`), with `PYTHONPATH`
+unset, from the export's root: §10.2's commands, with an export of the working tree in place of
+`git archive HEAD`. `<scratch01>` is the prompt's scratch directory
+(`<session scratchpad>/agent-01`).
+
+| | Low end | High end |
+|---|---|---|
+| Python / Ray / SQLAlchemy / SQLite | 3.12.15 / 2.43.0 / 2.0.39 / 3.53.4 | 3.13.16 / 2.55.1 / 2.0.46 / 3.53.4 |
+| Started (BST) | 21:15:21 | 21:15:40 |
+| `ray.init` | 4.0 s | 5.1 s |
+| The script, in all | 13.2 s (`time -p`: real 13.44) | 15.6 s (real 15.79) |
+| Exit code | 0 | 0 |
+| Ray's session directory | `/tmp/ray/session_2026-10-10_21-15-23_174455_99956` | `/tmp/ray/session_2026-10-10_21-15-41_686311_458` |
+| Ray processes before and after (the script's own check, and the log's, by the same rule) | 0 and 0 | 0 and 0 |
+
+**What it shows**, at both ends:
+
+| | Low end (2.43.0) | High end (2.55.1) |
+|---|---|---|
+| After the read-write pool's `__exit__`, the pool referenced | 0 of 4 names held | the same |
+| A second read-write open, the closed pool referenced | works at once: 1.2 s | works at once: 1.4 s |
+| A second open while a pool is open (step C) | refused: `builtins.ValueError` | refused: `ray.exceptions.ActorAlreadyExistsError` |
+| Its message | "The name SerialPoolBroker (namespace=None) is already taken. Please use a different name or get the existing actor using ray.get_actor('SerialPoolBroker', namespace='None')" | the same |
+| The open pool after that refusal | serves step 2's get: serials `[1, 2]` | the same |
+| A read-only pool after `__exit__`, referenced | 0 of 3 shard names held | the same |
+| After a refused open (step 5) | 0 of 4 held | the same |
+
+#### 4.6.1 The output, low end
+
+```text
+2026-10-10 21:15:26,255	INFO worker.py:1841 -- Started a local Ray instance.
+Environment:
+    Python       3.12.15 (<scratch01>/smoke-lo/venv/bin/python)
+    Ray          2.43.0
+    SQLAlchemy   2.0.39
+    SQLite       3.53.4
+    datastorekit 0.2.1
+    imported from <scratch01>/smoke-lo/tree/datastorekit/__init__.py
+Ray processes before: 0
+Ray started in 4.0 s, at 127.0.0.1; session directory /tmp/ray/session_2026-10-10_21-15-23_174455_99956
+step 1: write every class (read-write)
+PASS  step 1 (0.7 s): wrote store_tag 3, keypoint 3, dial_setting 2, knob_setting 1, gauge_setting 2, routing_rule 2, ephemeral_probe 1, keypoint_alias 3, Gadget 2, Tessera 6, Sample 4, Trace 2, Weave 1
+step 2: keyed vectorized get, the caller's dicts
+    after __exit__, the pool referenced: 0 of 4 held
+PASS  step 2 (0.0 s): serials [1, 2] (step 1's), the caller's dicts unchanged
+step N: a closed pool releases its names
+    a second read-write open, the first pool referenced: opened in 1.2 s
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step N (1.2 s): after __exit__, the pool referenced, 0 of 4 held; a second read-write open worked at once (1.2 s); after its __exit__, 0 of 4 held
+step C: two open pools collide
+    the second open raised builtins.ValueError: The name SerialPoolBroker (namespace=None) is already taken. Please use a different name or get the existing actor using ray.get_actor('SerialPoolBroker', namespace='None')
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step C (1.3 s): the second open raised builtins.ValueError naming SerialPoolBroker; the first pool then: serials [1, 2], the caller's dicts unchanged; after its __exit__, 0 of 4 held
+step 3: reopen read-write, the same get
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step 3 (1.2 s): serials [1, 2], the caller's dicts unchanged
+step 4: read-only pool, the same get
+    after __exit__, the pool referenced: 0 of 3 held
+    after del and gc.collect(): 0 of 3 held, after 0.0 s
+PASS  step 4 (1.2 s): read-only: serials [1, 2], the caller's dicts unchanged
+step 5: refused open, Weave left out
+    the constructor printed, as not supplied: ['Weave']
+    after the exception is dropped: 0 of 4 held
+PASS  step 5 (0.0 s): builtins.RuntimeError: Mismatch between sharded tables supplied to the constructor and read from the existing ShardedPool; 0 of 4 held
+step 6: read-write open after the refusal
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step 6 (1.2 s): read-write open after the refusal: serials [1, 2], the caller's dicts unchanged
+ray.shutdown(); waited 0.0 s for its processes
+Ray processes after: 0
+Summary: every step passed; 0 Ray process(es) left; 13.2 s in all
+real 13.44
+user 3.68
+sys 1.01
+exit=0
+```
+
+#### 4.6.2 The output, high end
+
+```text
+2026-10-10 21:15:45,740	INFO worker.py:2012 -- Started a local Ray instance.
+<scratch01>/smoke-hi/venv/lib/python3.13/site-packages/ray/_private/worker.py:2051: FutureWarning: Tip: In future versions of Ray, Ray will no longer override accelerator visible devices env var if num_gpus=0 or num_gpus=None (default). To enable this behavior and turn off this error message, set RAY_ACCEL_ENV_VAR_OVERRIDE_ON_ZERO=0
+  warnings.warn(
+Environment:
+    Python       3.13.16 (<scratch01>/smoke-hi/venv/bin/python)
+    Ray          2.55.1
+    SQLAlchemy   2.0.46
+    SQLite       3.53.4
+    datastorekit 0.2.1
+    imported from <scratch01>/smoke-hi/tree/datastorekit/__init__.py
+Ray processes before: 0
+Ray started in 5.1 s, at 127.0.0.1; session directory /tmp/ray/session_2026-10-10_21-15-41_686311_458
+step 1: write every class (read-write)
+PASS  step 1 (1.0 s): wrote store_tag 3, keypoint 3, dial_setting 2, knob_setting 1, gauge_setting 2, routing_rule 2, ephemeral_probe 1, keypoint_alias 3, Gadget 2, Tessera 6, Sample 4, Trace 2, Weave 1
+step 2: keyed vectorized get, the caller's dicts
+    after __exit__, the pool referenced: 0 of 4 held
+PASS  step 2 (0.2 s): serials [1, 2] (step 1's), the caller's dicts unchanged
+step N: a closed pool releases its names
+    a second read-write open, the first pool referenced: opened in 1.4 s
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step N (1.5 s): after __exit__, the pool referenced, 0 of 4 held; a second read-write open worked at once (1.4 s); after its __exit__, 0 of 4 held
+step C: two open pools collide
+    the second open raised ray.exceptions.ActorAlreadyExistsError: The name SerialPoolBroker (namespace=None) is already taken. Please use a different name or get the existing actor using ray.get_actor('SerialPoolBroker', namespace='None')
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step C (1.4 s): the second open raised ray.exceptions.ActorAlreadyExistsError naming SerialPoolBroker; the first pool then: serials [1, 2], the caller's dicts unchanged; after its __exit__, 0 of 4 held
+step 3: reopen read-write, the same get
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step 3 (1.3 s): serials [1, 2], the caller's dicts unchanged
+step 4: read-only pool, the same get
+    after __exit__, the pool referenced: 0 of 3 held
+    after del and gc.collect(): 0 of 3 held, after 0.0 s
+PASS  step 4 (1.3 s): read-only: serials [1, 2], the caller's dicts unchanged
+step 5: refused open, Weave left out
+    the constructor printed, as not supplied: ['Weave']
+    after the exception is dropped: 0 of 4 held
+PASS  step 5 (0.0 s): builtins.RuntimeError: Mismatch between sharded tables supplied to the constructor and read from the existing ShardedPool; 0 of 4 held
+step 6: read-write open after the refusal
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step 6 (1.3 s): read-write open after the refusal: serials [1, 2], the caller's dicts unchanged
+ray.shutdown(); waited 0.1 s for its processes
+Ray processes after: 0
+Summary: every step passed; 0 Ray process(es) left; 15.6 s in all
+real 15.79
+user 4.16
+sys 1.10
+exit=0
+```
+
+#### 4.6.3 The fix reverted, under Ray
+
+The prompt's breakage (e): its breakage (a), the `_kill_actors()` call removed from `__exit__`
+(the log's §5 gives the diff), applied to a fresh export of the working tree, and the script run at
+the high end as above. Step N fails on the collision and on its record, 4 of 4 names held after
+`__exit__`; steps C and 3–6 are not run; the script exits 1, and Ray leaves no process:
+
+```text
+2026-10-10 21:16:10,579	INFO worker.py:2012 -- Started a local Ray instance.
+<scratch01>/break-e/venv/lib/python3.13/site-packages/ray/_private/worker.py:2051: FutureWarning: Tip: In future versions of Ray, Ray will no longer override accelerator visible devices env var if num_gpus=0 or num_gpus=None (default). To enable this behavior and turn off this error message, set RAY_ACCEL_ENV_VAR_OVERRIDE_ON_ZERO=0
+  warnings.warn(
+Environment:
+    Python       3.13.16 (<scratch01>/break-e/venv/bin/python)
+    Ray          2.55.1
+    SQLAlchemy   2.0.46
+    SQLite       3.53.4
+    datastorekit 0.2.1
+    imported from <scratch01>/break-e/tree/datastorekit/__init__.py
+Ray processes before: 0
+Ray started in 4.8 s, at 127.0.0.1; session directory /tmp/ray/session_2026-10-10_21-16-06_706126_720
+step 1: write every class (read-write)
+PASS  step 1 (1.1 s): wrote store_tag 3, keypoint 3, dial_setting 2, knob_setting 1, gauge_setting 2, routing_rule 2, ephemeral_probe 1, keypoint_alias 3, Gadget 2, Tessera 6, Sample 4, Trace 2, Weave 1
+step 2: keyed vectorized get, the caller's dicts
+    after __exit__, the pool referenced: 4 of 4 held (SerialPoolBroker, shard0000-store, shard0001-store, shard0002-store)
+PASS  step 2 (0.2 s): serials [1, 2] (step 1's), the caller's dicts unchanged
+step N: a closed pool releases its names
+    the second open raised ray.exceptions.ActorAlreadyExistsError: The name SerialPoolBroker (namespace=None) is already taken. Please use a different name or get the existing actor using ray.get_actor('SerialPoolBroker', namespace='None')
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+FAIL  step N (0.1 s): __main__.StepFailed: after __exit__, the pool referenced, 4 of 4 held (SerialPoolBroker, shard0000-store, shard0001-store, shard0002-store); the second open raised ray.exceptions.ActorAlreadyExistsError: The name SerialPoolBroker (namespace=None) is already taken. Please use a different name or get the existing actor using ray.get_actor('SerialPoolBroker', namespace='None')
+NOT RUN  step C: two open pools collide: needs step N
+NOT RUN  step 3: reopen read-write, the same get: needs step N
+NOT RUN  step 4: read-only pool, the same get: needs step N
+NOT RUN  step 5: refused open, Weave left out: needs step N
+NOT RUN  step 6: read-write open after the refusal: needs step N
+ray.shutdown(); waited 0.1 s for its processes
+Ray processes after: 0
+Summary: a step did not pass; 0 Ray process(es) left; 8.8 s in all
+real 9.00
+user 3.93
+sys 0.86
+exit=1
+```
+
 ---
 
 ## 5. The pin (U42)

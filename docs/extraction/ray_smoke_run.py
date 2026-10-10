@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 Run the package under real Ray, once, on a store in a temporary directory: a smoke run, not a
-test (extraction prompt 11 §2.2, decision U41).
+test (extraction prompt 11 §2.2, decision U41; step N reversed, and step C added, by
+``actor-names`` prompt 01).
 
 The suite runs the layer's actors through the in-process stand-in pool and never starts Ray. This
 script starts a local Ray instance of its own, opens a ``ShardedPool`` on the neutral test client
@@ -15,12 +16,18 @@ shards), and runs these steps, each an assertion that prints ``PASS`` or ``FAIL`
 
    the pool is closed, and whether its actors' names are still held is recorded;
 
-N. the names: with the closed pool still referenced, a second read-write open is refused by Ray's
-   name collision (``ValueError`` at Ray 2.43, its subclass ``ActorAlreadyExistsError`` at 2.55),
-   naming ``SerialPoolBroker``; the names are still held after the refused open's exception is
-   dropped, and free once the pool is dropped (``del`` and ``gc.collect()``). This is the
-   behaviour of ``[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]``, and the step
-   passes when it is as measured;
+N. the names: with the closed pool still referenced, none of its names is held, and a second
+   read-write open works at once; the second pool is closed, none of its names is held, and both
+   pools are dropped. At ``v0.2.1`` a closed pool held its names until it was collected, and the
+   second open was refused by Ray's name collision
+   (``[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]``, measured by extraction
+   prompt 11 with this step reversed); ``actor-names`` prompt 01 made ``__exit__`` kill the
+   pool's actors, and the step now asserts that. If the second open is refused, the step fails
+   naming the collision and the record;
+C. two open pools collide: with a pool open, a second read-write open is refused by Ray's name
+   collision (``ValueError`` at Ray 2.43, its subclass ``ActorAlreadyExistsError`` at 2.55),
+   "is already taken", naming ``SerialPoolBroker``; the first pool then serves the same get as
+   step 2, and is closed and dropped;
 3. the store is reopened read-write, and the same get finds the same serials;
 4. a read-only pool finds the same serials (its lookup serial is given by ``set_lookup_version``);
 5. an open with ``Weave`` left out of ``sharded_tables`` is refused with ``RuntimeError``
@@ -28,10 +35,12 @@ N. the names: with the closed pool still referenced, a second read-write open is
    ShardedPool", and the exception is dropped;
 6. a read-write open after the refusal works, and the same get finds the same serials.
 
-After each pool's ``__exit__`` the script records whether its names are held, and then drops the
-pool before the next open. A step that raises prints ``FAIL`` with the exception's type and the
-last line of its message, and the script goes on; a step that needs a failed one is reported as
-``NOT RUN``.
+After each pool's ``__exit__`` the script records whether its names are held, with the pool still
+referenced, and expects none to be: step N checks the record of step 2's pool, and every other
+step that closes a pool checks its own, after the close. It then drops the pool before the next
+open (a client may now omit that, but the steps do not test it). A step that raises prints
+``FAIL`` with the exception's type and the last line of its message, and the script goes on; a
+step that needs a failed one is reported as ``NOT RUN``.
 
 **What it starts and touches.** It refuses to run when ``RAY_ADDRESS`` is set, when Ray is already
 initialised, or when ``pgrep`` finds a Ray process (a ``gcs_server``, ``raylet``, ``ray::`` or
@@ -330,43 +339,90 @@ class Smoke:
         finally:
             self.close_pool()
 
-    def step_names(self) -> str:
-        """The closed pool of steps 1 and 2 is still referenced: a second open collides."""
-        seen = []
-        held = self.names_held(self.pool_names)
-        if not all(held.values()):
-            raise StepFailed(f"before the second open: {self.describe(held)}")
-        seen.append(f"before the second open, {self.describe(held)}")
-        # a refused open never reaches open_pool's assignment, so self.pool stays the first pool,
-        # and the first pool is referenced there alone
-        collision = None
-        try:
-            self.open_pool()
-        except ValueError as exc:
-            collision = (type_name(exc), last_line(exc))
-        else:
-            # the second pool is open, in place of the first: close it and drop it
-            self.close_pool()
-            self.drop_pool()
-            raise StepFailed("the second open was not refused")
-        gc.collect()
-        kind, message = collision
-        print(f"    the second open raised {kind}: {message}")
-        if "is already taken" not in message or BROKER not in message:
-            raise StepFailed(f"{kind}: {message}")
-        seen.append(f"the second open raised {kind} naming {BROKER}")
-        held = self.names_held(self.pool_names)
-        print(
-            f"    after the exception is dropped, the pool referenced: {self.describe(held)}"
-        )
-        if not all(held.values()):
-            raise StepFailed(f"after the refused open: {self.describe(held)}")
-        seen.append(f"after the exception was dropped, {self.describe(held)}")
-        held, waited = self.drop_pool()
+    @staticmethod
+    def require_none_held(held: Dict[str, bool], when: str) -> None:
+        """The record after a pool's ``__exit__``: no name held, the pool still referenced."""
         if any(held.values()):
-            raise StepFailed(f"after del and gc.collect(): {self.describe(held)}")
-        seen.append(f"after del and gc.collect(), none held ({waited:.1f} s)")
-        return "; ".join(seen)
+            raise StepFailed(f"{when}: {Smoke.describe(held)}")
+
+    def step_names(self) -> str:
+        """
+        The closed pool of steps 1 and 2 is still referenced: none of its names is held, and a
+        second read-write open works at once. Both pools are dropped whatever happens, so that
+        the steps after this one start with no name held.
+        """
+        # the first pool stays referenced here, and by self.pool until the second open succeeds
+        first = self.pool
+        try:
+            seen = []
+            held = self.names_held(self.pool_names)
+            after_exit = f"after __exit__, the pool referenced, {self.describe(held)}"
+            start = time.monotonic()
+            try:
+                self.open_pool()
+            except ValueError as exc:
+                kind, message = type_name(exc), last_line(exc)
+                print(f"    the second open raised {kind}: {message}")
+                raise StepFailed(
+                    f"{after_exit}; the second open raised {kind}: {message}"
+                )
+            opened = time.monotonic() - start
+            print(
+                f"    a second read-write open, the first pool referenced: "
+                f"opened in {opened:.1f} s"
+            )
+            self.require_none_held(held, "after __exit__, the pool referenced")
+            seen.append(after_exit)
+            seen.append(f"a second read-write open worked at once ({opened:.1f} s)")
+            # self.pool is now the second pool
+            held = self.close_pool()
+            self.require_none_held(held, "after the second pool's __exit__")
+            seen.append(f"after its __exit__, {self.describe(held)}")
+            return "; ".join(seen)
+        finally:
+            # drops the second pool, or the first if the second open was refused; the first is
+            # let go first, so that it is collected with it
+            first = None
+            self.drop_pool()
+
+    def step_collide(self) -> str:
+        """
+        With a pool open, a second read-write open is refused by Ray's name collision, naming
+        the broker; the first pool then serves the same get. The pool is closed and dropped
+        whatever happens.
+        """
+        held = self.names_held([BROKER] + SHARD_NAMES)
+        if any(held.values()):
+            raise StepFailed(f"before the open: {self.describe(held)}")
+        self.open_pool()
+        first = self.pool
+        try:
+            try:
+                self.open_pool()
+            except ValueError as exc:
+                kind, message = type_name(exc), last_line(exc)
+            else:
+                # the second pool opened in place of the first: close it, and leave the first
+                # for the finally below
+                second, self.pool = self.pool, first
+                with contextlib.suppress(Exception):
+                    with contextlib.redirect_stdout(io.StringIO()):
+                        second.__exit__(None, None, None)
+                second = None
+                raise StepFailed("the second open, with a pool open, was not refused")
+            print(f"    the second open raised {kind}: {message}")
+            if "is already taken" not in message or BROKER not in message:
+                raise StepFailed(f"{kind}: {message}")
+            served = self.same_serials(self.the_alias())
+        finally:
+            first = None
+            held = self.close_pool()
+            self.drop_pool()
+        self.require_none_held(held, "after __exit__, the pool referenced")
+        return (
+            f"the second open raised {kind} naming {BROKER}; the first pool then: "
+            f"{served}; after its __exit__, {self.describe(held)}"
+        )
 
     def reopen_and_get(self, read_only: bool) -> str:
         held = self.names_held([BROKER] + SHARD_NAMES)
@@ -374,10 +430,12 @@ class Smoke:
             raise StepFailed(f"before the open: {self.describe(held)}")
         self.open_pool(read_only=read_only)
         try:
-            return self.same_serials(self.the_alias())
+            seen = self.same_serials(self.the_alias())
         finally:
-            self.close_pool()
+            held = self.close_pool()
             self.drop_pool()
+        self.require_none_held(held, "after __exit__, the pool referenced")
+        return seen
 
     def step_3(self) -> str:
         return self.reopen_and_get(read_only=False)
@@ -428,7 +486,8 @@ class Smoke:
     STEPS = [
         ("1", "write every class (read-write)", "step_1", []),
         ("2", "keyed vectorized get, the caller's dicts", "step_2", ["1"]),
-        ("N", "a closed pool holds its names (prompt 11 §1.3)", "step_names", ["1"]),
+        ("N", "a closed pool releases its names", "step_names", ["1"]),
+        ("C", "two open pools collide", "step_collide", ["1", "N"]),
         ("3", "reopen read-write, the same get", "step_3", ["1", "N"]),
         ("4", "read-only pool, the same get", "step_4", ["1", "N"]),
         ("5", f"refused open, {LEFT_OUT} left out", "step_5", ["1", "N"]),

@@ -14,7 +14,23 @@ code, every factory, the ``SerialPoolBroker`` and SQLite on disk. What is stood 
   the call raised. ``ray.get`` of a list reads every reference and raises the first error, so an
   exception reaches the driver only after every call it submitted has run, as with Ray;
 - the controlling shard. ``ShardedPool`` draws it with ``random.randrange``; ``controller`` pins
-  it by shard id, or leaves the draw random when ``None``.
+  it by shard id, or leaves the draw random when ``None``;
+- actor names and ``ray.kill``. Each ``StandinCluster`` is one Ray session's namespace: an actor's
+  name is reserved once its constructor has returned (a constructor that raises reserves
+  nothing), and creating a name a live handle holds raises ``ValueError`` with Ray 2.43.0's
+  message, before the constructor runs, as Ray checks the name before it creates the actor.
+  ``ray.kill(handle, ...)`` marks the handle killed and frees its name; killing a killed handle
+  does nothing, and anything that is not a stand-in handle raises ``ValueError``, as Ray refuses
+  what is not an actor handle. A call through a killed handle runs nothing, is not added to the
+  call log, runs no hook, and returns a ``StandinRef`` that raises ``StandinActorDied`` naming
+  the actor and the method.
+
+**The one way it is stricter than Ray.** Ray also frees an actor's name when the last handle to
+it is collected; the stand-in frees a name only when its handle is killed. So a test that drops a
+pool without closing it holds that pool's names for the rest of its cluster. A pool whose
+constructor raised while building its actors (an actor's constructor that raises does so at once
+here, inside the comprehension that builds them) cannot kill the actors built before it, and their
+names stay reserved in that cluster.
 
 Faults are injected per shard, method and class: ``"before"`` raises ``StandinActorDied`` without
 running the call (an actor that died before committing), ``"after"`` runs the call, commits, and
@@ -104,6 +120,15 @@ class _Method:
         cls_name = _class_name(args)
         call = (handle.shard_id, self._name, cls_name)
 
+        # a killed actor runs nothing. The flag is read from the instance's __dict__: any
+        # attribute a handle lacks is a _Method (Handle.__getattr__), which is always truthy
+        if handle.__dict__.get("killed", False):
+            return StandinRef(
+                error=StandinActorDied(
+                    f"{handle.name}.{self._name}({cls_name}) called on a killed actor"
+                )
+            )
+
         cluster.calls.append(
             {
                 "shard": handle.shard_id,
@@ -169,9 +194,41 @@ class _Options:
         shard_id = None
         if self._name is not None and self._name.startswith("shard"):
             shard_id = int(self._name[len("shard") : len("shard") + 4])
+        cluster = self._cluster
+        # Ray refuses a name a live actor holds before it creates anything
+        if self._name is not None and self._name in cluster.names:
+            raise ValueError(
+                f"The name {self._name} (namespace=None) is already taken. Please use a "
+                f"different name or get the existing actor using "
+                f"ray.get_actor('{self._name}', namespace='None')"
+            )
         # constructor arguments are passed as they are: the Datastore actor receives the broker's
         # handle, which must stay the one broker
-        return Handle(self._cls(*args, **kwargs), self._name, self._cluster, shard_id)
+        handle = Handle(self._cls(*args, **kwargs), self._name, cluster, shard_id)
+        # reserved only once the constructor has returned
+        if self._name is not None:
+            cluster.names[self._name] = handle
+        return handle
+
+
+def standin_kill(actor, no_restart: bool = True):
+    """
+    ``ray.kill``: mark a stand-in handle killed and free its name in its cluster, if it is the
+    name's live holder. Killing a killed handle does nothing. Anything that is not a stand-in
+    ``Handle`` raises ``ValueError``, as Ray's ``ray.kill`` refuses what is not an actor handle.
+    """
+    if not isinstance(actor, Handle):
+        raise ValueError(
+            "ray.kill() only supported for actors. For tasks, try ray.cancel(). "
+            f"Got: {type(actor)}."
+        )
+    # read from __dict__: any attribute a handle lacks is a _Method, which is always truthy
+    if actor.__dict__.get("killed", False):
+        return
+    actor.__dict__["killed"] = True
+    names = actor.cluster.names
+    if actor.name is not None and names.get(actor.name) is actor:
+        del names[actor.name]
 
 
 class _StandinActorClass:
@@ -225,11 +282,14 @@ class StandinCluster:
         # replicated write is running
         self.open_controller: Optional[int] = None
         self._writing_pool = None
+        # actor name -> the live handle that holds it, in this cluster (one Ray session)
+        self.names: Dict[str, Handle] = {}
 
     @contextlib.contextmanager
     def active(self):
         with contextlib.ExitStack() as stack:
             stack.enter_context(mock.patch.object(ray, "get", standin_get))
+            stack.enter_context(mock.patch.object(ray, "kill", standin_kill))
             stack.enter_context(
                 mock.patch.object(
                     sp_mod, "Datastore", _StandinActorClass(DatastoreClass, self)

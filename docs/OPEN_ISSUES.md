@@ -3,13 +3,13 @@
 One line per open issue, pointing at the board that holds it. The board is right if the two
 disagree. See `CLAUDE.md` for the maintenance rule.
 
-**Last updated:** 2026-10-10 · **5 open**: 1 on this repository's boards, 4 inherited (§1.2).
+**Last updated:** 2026-10-10 · **4 open**: 0 on this repository's boards, 4 inherited (§1.2).
 
 ## 1. By campaign
 
 ### 1.1 `extraction` ([board](../prompts/extraction/IMPLEMENTATION_STATE.md)): campaign closed 2026-10-10 (prompt 11)
 
-None open (2026-10-10: its one issue is assigned to `actor-names`, §1.3).
+None open (2026-10-10: its one issue was closed by `actor-names` prompt 01).
 
 ### 1.2 Inherited from SecondaryGWKit, on SGK's boards
 
@@ -27,6 +27,4 @@ package once 01 lands, and taken over by a board here when a campaign is planned
 
 ### 1.3 `actor-names` ([board](../prompts/actor-names/IMPLEMENTATION_STATE.md)): assigned issues, held on the boards that opened them
 
-| Issue | Held on | Hook |
-|---|---|---|
-| `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]` | `extraction` | A closed pool's Ray actors keep their fixed names until the pool object is collected, so a second open in one Ray session, while a closed pool is still referenced, is refused by Ray; inherited from SGK; to be fixed by `actor-names` prompt 01 |
+None open (2026-10-10: `actor-names` prompt 01 closed the one issue assigned to it, on the `extraction` board).

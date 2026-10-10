@@ -28,6 +28,9 @@ that are unchanged are `object.py` and `SQL/ClientPool.py`, and the test client 
 cited did not exist at `8bc60a5`. So a line is read at its section's tree (`git show
 <tree>:datastorekit/<path>`), and only §8's correction note gives `v0.2.1`'s lines.*
 
+*§9.3 is measured from the package at `actor-names` prompt 01's tree, and its line numbers are
+that tree's.*
+
 A client of `datastorekit` gives the layer a fixed set of facts: the arguments of a pool's
 constructor, the keys a factory's `register()` returns, the hooks a factory defines, the
 inventory declarations, two tables the layer owns, and what its stored objects carry. This
@@ -291,3 +294,19 @@ exception.
 | Change | Supersedes | What the layer now does (`SQL/ShardedPool.py`, at 08b's tree) | Pinned by |
 |---|---|---|---|
 | An open that raises | none: §1–§8 never said what a refused open leaves open | `__init__` sets the pool's attributes, then calls `_open` (`:209-372`, the open's lines unchanged) under a guard (`:203-207`): on any exception, `BaseException` included, it calls `_close_refused_open` (`:374-407`) and re-raises the open's exception unchanged. `_close_refused_open` closes each actor built so far by its own `__exit__`, every call submitted before any is waited for, as the pool's `__exit__` closes them (`:809-815`), and then disposes the pool's engine, as `__exit__` does (`:820-821`). Before the actors exist (the dicts at `:316-332`, and `:592-609` for a read-only pool) there is none to close, and before `_create_engine` runs there is no engine. Nothing it meets is raised and nothing is printed, so an actor whose `__exit__` fails does not replace the open's exception. The caller's `profile_agent` is not cleaned up, since it outlives the refused pool, and the broker holds no engine. An open that succeeds is unchanged, and keeps its engines' connections until the pool's `__exit__`. Before 08b a refused open's engines were left for the garbage collector. | `tests/test_refused_open_closes_engines.py` |
+
+### 9.3 `actor-names` prompt 01
+
+One fix ([`prompts/actor-names/README.md`](../prompts/actor-names/README.md), decision U1).
+Nothing a client supplies changes, nothing the layer writes, and no message, refusal or exception
+of the layer's. What changes is what a closed pool, or a refused open, leaves in the Ray session:
+its actors are killed, so their names are free at once, and the handles the pool keeps are dead.
+No client reads a pool's `_shards` or `_broker`, or looks an actor up by name (the campaign
+README §0.1). The stand-in pool of the tests (`tests/standin_pool.py`) reserves each actor's name
+until its handle is killed, and stands in `ray.kill`, so every test meets both.
+
+| Change | Supersedes | What the layer now does (`SQL/ShardedPool.py`, at `actor-names` prompt 01's tree) | Pinned by |
+|---|---|---|---|
+| `ShardedPool.__exit__` | none: §1–§9.2 never said what `__exit__` does with the actors, or how long a closed pool holds their names. §9.2's row cites `__exit__` for what it closes, and still holds | `__exit__` (`:841-868`) returns at once if the pool is closed (`:851-852`). Otherwise its body is unchanged: each shard actor's `__exit__`, every one waited for (`:854-859`); the profile agent's `clean_up` (`:861-862`); the pool's engine disposed (`:864-865`). Then `_kill_actors` (`:419-441`, called at `:867`) kills each shard actor and then the broker, if there is one (a read-only pool has none, `:621`), with `ray.kill(handle, no_restart=True)`, ignoring anything a kill raises; and the pool is marked closed (`:868`; the flag is set false at `:205`, before the open). Ray frees a killed actor's name at once, so the store can be reopened, read-write or read-only, in the same Ray session while the closed pool is still referenced. The handles stay in `_shards` and `_broker`, and are dead: a call through one fails. A second `__exit__` does nothing. If a shard's `__exit__` raises, `__exit__` raises as before, kills nothing and does not mark the pool closed. The names are unchanged: `SerialPoolBroker` (`:311`) and `shard{key:04d}-store` (`:322`, and `:625` for a read-only pool). Before this prompt a closed pool's names were freed only when the pool object was collected. | `tests/test_closed_pool_releases_its_names.py` (tests 1, 2, 5, 6); `docs/extraction/ray_smoke_run.py` step N |
+| A refused open | none. §9.2's row, which says what `_close_refused_open` closes and disposes, still holds; this adds the kill | `_close_refused_open` (`:379-417`) ends, after closing each actor and disposing the engine as §9.2 says, by calling `_kill_actors` (`:417`). It kills only the handles the half-built pool holds: the shard actors once `_shards` is their dict (until then it is the shard count), and the broker once `_broker` is set (`:311`). No actor is looked up by name. So a refused or abandoned open, read-write or read-only, releases the names it took at once, even while its exception, and with it the half-built pool, is held: for example an open refused by the `read_table_config` check after every actor exists (`:350-356`; `:656-663` for a read-only pool). Nothing it meets is raised, so the caller sees the open's own exception, as in §9.2. | `tests/test_closed_pool_releases_its_names.py` (test 3) |
+| Two open pools | none: §1–§9.2 never said | The names are fixed, so in one Ray session a second open while a pool is open is still refused by Ray when the second pool creates its broker (`:311`), with Ray's name collision, "The name SerialPoolBroker (namespace=None) is already taken. …": `ValueError` at Ray 2.43.0, and its subclass `ray.exceptions.ActorAlreadyExistsError` at 2.55.1. The refused open has made no actor and set no `_broker`, so its `_close_refused_open` kills nothing, and the open pool goes on serving. One serial broker per store, per Ray session, is kept. | `tests/test_closed_pool_releases_its_names.py` (test 4); `docs/extraction/ray_smoke_run.py` step C |

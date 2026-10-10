@@ -200,6 +200,10 @@ class ShardedPool:
         # the version row of version_label, found or written once every actor exists
         self._version = None
 
+        # true once __exit__ has closed the pool and killed its actors; a second __exit__ then
+        # does nothing
+        self._closed: bool = False
+
         try:
             self._open(version_label, drop_tables, read_table_config, read_only)
         except BaseException:
@@ -381,6 +385,10 @@ class ShardedPool:
         self._shards is the shard count, and self._engine exists only once _create_engine has
         run, so either may be absent.
 
+        Last, it kills each actor built so far and the broker, if it was made (_kill_actors), so
+        that a refused open releases the actors' names at once, even while its exception, and
+        with it this half-built pool, is still referenced.
+
         Nothing this meets is raised, and it prints nothing, so that the exception the caller
         sees is the open's own: an actor that is dead raises from its __exit__, and that is
         ignored. The profile agent is the caller's and outlives a refused pool, so it is not
@@ -404,6 +412,31 @@ class ShardedPool:
         if engine is not None:
             try:
                 engine.dispose()
+            except Exception:
+                pass
+        self._kill_actors()
+
+    def _kill_actors(self) -> None:
+        """
+        Kill the pool's actors with ray.kill(handle, no_restart=True): each shard actor, then the
+        broker, if there is one. Ray frees a killed actor's name at once, so the store can be
+        opened again in the same Ray session while this pool is still referenced. The handles
+        are kept, and are dead afterwards.
+
+        Only the handles this pool holds are killed: self._shards when it is a dict of actors
+        (before they exist it is the shard count), and self._broker if it is set (a read-only
+        pool sets it to None, and an open refused before the broker was made never set it). No
+        actor is looked up by name, so an open refused because another pool holds the names
+        kills nothing of that pool's. Nothing this meets is raised.
+        """
+        shards = self._shards if isinstance(self._shards, dict) else {}
+        handles = list(shards.values())
+        broker = getattr(self, "_broker", None)
+        if broker is not None:
+            handles.append(broker)
+        for handle in handles:
+            try:
+                ray.kill(handle, no_restart=True)
             except Exception:
                 pass
 
@@ -806,6 +839,18 @@ class ShardedPool:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        Close the pool: every shard actor's __exit__, waited for (each disposes its engine and
+        cleans up its serial manager and profile batcher); the profile agent's clean_up; the
+        pool's engine disposed. Then each shard actor and the broker, if there is one, is killed
+        (_kill_actors), which releases the actors' names: the store can be opened again in the
+        same Ray session while this pool is still referenced. The handles in self._shards and
+        self._broker are kept, and are dead afterwards: a call through one fails. A second call
+        does nothing.
+        """
+        if self._closed:
+            return
+
         ray.get(
             [
                 shard.__exit__.remote(exc_type=None, exc_val=None, exc_tb=None)
@@ -818,6 +863,9 @@ class ShardedPool:
 
         if self._engine is not None:
             self._engine.dispose()
+
+        self._kill_actors()
+        self._closed = True
 
     def _create_engine(self):
         connect_args = {}
