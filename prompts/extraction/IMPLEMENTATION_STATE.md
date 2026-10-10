@@ -1284,7 +1284,8 @@ note, the orchestrator measured the prompt's facts:
   `P1-C`, `C-P3` and `Rn-P3` are runtime strings of its cases, and `P3-K` and `P1` appear in its
   docstrings only. Their table was the source's log 01, which 09 rightly stopped citing. The log
   keeps the last two as "labels the module's code uses", which is exact only for the family. This
-  gap predates 09. It is put to the user, not opened here.
+  gap predates 09. It is put to the user, not opened here. **Taken (2026-10-10, by the user):** no
+  issue is opened, and 11's verification document records the gap.
 - Two rewritten passages are true but read poorly:
   - `test_store_inventory.py:703` was left a short line where its citation went, not rewrapped
     (rule 7);
