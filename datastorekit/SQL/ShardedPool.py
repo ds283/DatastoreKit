@@ -200,6 +200,18 @@ class ShardedPool:
         # the version row of version_label, found or written once every actor exists
         self._version = None
 
+        try:
+            self._open(version_label, drop_tables, read_table_config, read_only)
+        except BaseException:
+            self._close_refused_open()
+            raise
+
+    def _open(self, version_label: str, drop_tables, read_table_config, read_only):
+        """
+        Open the store, read-only or read-write, once __init__ has set the pool's attributes. If
+        it raises, __init__ closes what it made (_close_refused_open), and the exception
+        propagates.
+        """
         # A READ-ONLY POOL (prompts/a3-v2-readiness, prompt 03). It opens an existing store with
         # every file mode=ro and writes nothing to any of them; _open_read_only is the whole of its
         # construction, and nothing below this block runs for it
@@ -358,6 +370,41 @@ class ShardedPool:
                 for shard in self._shards.values()
             ]
         )
+
+    def _close_refused_open(self) -> None:
+        """
+        Close what a refused or abandoned open made, before its exception propagates. Each actor
+        built so far is closed by its own __exit__, as the pool's __exit__ closes them (its engine
+        disposed, its serial manager and profile batcher cleaned up), every call submitted before
+        any is waited for; then the pool's engine is disposed. Until the actors exist
+        self._shards is the shard count, and self._engine exists only once _create_engine has
+        run, so either may be absent.
+
+        Nothing this meets is raised, and it prints nothing, so that the exception the caller
+        sees is the open's own: an actor that is dead raises from its __exit__, and that is
+        ignored. The profile agent is the caller's and outlives a refused pool, so it is not
+        cleaned up here, although __exit__ cleans it up; the broker holds no engine.
+        """
+        shards = self._shards if isinstance(self._shards, dict) else {}
+        refs = []
+        for shard in shards.values():
+            try:
+                refs.append(
+                    shard.__exit__.remote(exc_type=None, exc_val=None, exc_tb=None)
+                )
+            except Exception:
+                pass
+        for ref in refs:
+            try:
+                ray.get(ref)
+            except Exception:
+                pass
+        engine = getattr(self, "_engine", None)
+        if engine is not None:
+            try:
+                engine.dispose()
+            except Exception:
+                pass
 
     def _find_version_row(self, version_label: str):
         """

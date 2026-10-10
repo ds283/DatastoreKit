@@ -12,6 +12,8 @@ since.*
 of its subsections names the rows of §1–§8 it supersedes; those rows are not rewritten, and carry
 a marker.*
 
+*§9.2 is measured from the package at prompt 08b's tree, and its line numbers are that tree's.*
+
 A client of `datastorekit` gives the layer a fixed set of facts: the arguments of a pool's
 constructor, the keys a factory's `register()` returns, the hooks a factory defines, the
 inventory declarations, two tables the layer owns, and what its stored objects carry. This
@@ -257,3 +259,12 @@ Two fixes. Nothing a client supplies changes, nothing the layer writes, and no m
 |---|---|---|---|
 | A reopen whose primary records a sharded table that `sharded_tables` lacks | §1 row 6, its clause "except that a sharded table the store records and the mapping lacks raises `KeyError` at `:1015` before that message is reached" | `_read_shard_data` compares the primary's `sharded_tables` rows with the mapping (`:1020-1034`). A row whose table the mapping lacks is recorded as not supplied (`:1024-1025`) and contributes no key attribute: the loop goes on to the next row (`:1026-1027`). The open is then refused as §1 row 6 says of any other difference: the table is printed under "The following sharded tables are configured in the existing ShardedPool, but were not supplied to the constructor:" (`:1035-1040`), and `RuntimeError` "Mismatch between sharded tables supplied to the constructor and read from the existing ShardedPool" is raised (`:1055-1058`), before any actor exists. No message changed. A table the primary records twice is refused as before: the mismatch `RuntimeError`, the table printed as not supplied although it was. | `tests/test_unsupplied_sharded_table.py` |
 | What `object_get_vectorized` does to the caller's payloads | none: §1–§8 never said. §1 rows 4 and 6 cite its shard-key getter and its two refusals; §8's "The caller's payloads are not changed" is of the actor's `_keyed_payloads`, and still holds | `object_get_vectorized` (`:3290-3314`) sends the shard's actor a copy of each payload with the shard key merged in last, `{**value, **shard_key}` (`:3311`), so a payload carrying its own value for the key's field gets the pool's key. The caller's list and dicts are not changed. The payloads' order and count, the routing by `shard_key` (`:3307-3309`) and the two refusals (`:3296-3299`, `:3302-3305`) are unchanged. Before 08a the key was added to each of the caller's dicts in place. | `tests/test_vectorized_get_payloads.py` |
+
+### 9.2 Prompt 08b
+
+One fix. Nothing a client supplies changes, nothing the layer writes, and no message, refusal or
+exception.
+
+| Change | Supersedes | What the layer now does (`SQL/ShardedPool.py`, at 08b's tree) | Pinned by |
+|---|---|---|---|
+| An open that raises | none: §1–§8 never said what a refused open leaves open | `__init__` sets the pool's attributes, then calls `_open` (`:209-372`, the open's lines unchanged) under a guard (`:203-207`): on any exception, `BaseException` included, it calls `_close_refused_open` (`:374-407`) and re-raises the open's exception unchanged. `_close_refused_open` closes each actor built so far by its own `__exit__`, every call submitted before any is waited for, as the pool's `__exit__` closes them (`:809-815`), and then disposes the pool's engine, as `__exit__` does (`:820-821`). Before the actors exist (the dicts at `:316-332`, and `:592-609` for a read-only pool) there is none to close, and before `_create_engine` runs there is no engine. Nothing it meets is raised and nothing is printed, so an actor whose `__exit__` fails does not replace the open's exception. The caller's `profile_agent` is not cleaned up, since it outlives the refused pool, and the broker holds no engine. An open that succeeds is unchanged, and keeps its engines' connections until the pool's `__exit__`. Before 08b a refused open's engines were left for the garbage collector. | `tests/test_refused_open_closes_engines.py` |

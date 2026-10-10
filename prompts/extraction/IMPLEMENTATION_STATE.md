@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-10 · **Status: IN PROGRESS — 11 of 14 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b), 10 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28); 07a landed (`dd45243`) and reviewed; 07b withdrawn (U33): the four open issues are fixed in 08a, 08b and 09 and released as `v0.2.1` by 10 before 11 closes the campaign; 08a landed (`f938844`) and reviewed, closing two of the four; 08b written.**
+**Last updated:** 2026-10-10 · **Status: IN PROGRESS — 11 of 14 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b), 11 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28); 07a landed (`dd45243`) and reviewed; 07b withdrawn (U33): the four open issues are fixed in 08a, 08b and 09 and released as `v0.2.1` by 10 before 11 closes the campaign; 08a landed (`f938844`) and reviewed, closing two of the four; 08b landed (this commit), closing the third.**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 U8–U13 the same day, U14–U22 on 2026-10-08, and U6, U23–U37 on 2026-10-09 (README §6.2); U10, U14 and U30 split 03, 04
 and 07, each into an a and a b prompt.
@@ -83,7 +83,7 @@ and 07, each into an a and a b prompt.
 | 07a | [The adoption checklists](07a-the-adoption-checklists.md) | `docs/adoption/`: a README and checklists for SGK, CPBH and SI against `v0.2.0` (U29), measured read-only; `measure_client_imports.py`; instances and abstract hooks (U32); SI's stores rebuilt (U31) | ✍️ yes, 2026-10-09 | ✅ 2026-10-09 | `dd45243` | [log](logs/07a-the-adoption-checklists.md) |
 | ~~07b~~ | ~~Verification and close-out~~ | *withdrawn 2026-10-09, unwritten (U33); its work is 11's* | — | — | — | — |
 | 08a | [Two small fixes](08a-two-small-fixes.md) | `[02-an-unsupplied-sharded-table-raises-keyerror]` and `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]`, each with a test module; the contract's §9 | ✍️ yes, 2026-10-09 | ✅ 2026-10-10 | `f938844` | [log](logs/08a-two-small-fixes.md) |
-| 08b | [Dispose engines on a refused open](08b-dispose-engines-on-a-refused-open.md) | `[05-a-refused-open-leaves-its-engines-undisposed]`: the open under a guard that closes the actors and disposes the engine; a test module that counts connections; the contract's §9.2 | ✍️ yes, 2026-10-10 | ⬜ | — | — |
+| 08b | [Dispose engines on a refused open](08b-dispose-engines-on-a-refused-open.md) | `[05-a-refused-open-leaves-its-engines-undisposed]`: the open under a guard that closes the actors and disposes the engine; a test module that counts connections; the contract's §9.2 | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | this commit | [log](logs/08b-dispose-engines-on-a-refused-open.md) |
 | 09 | Rewrite the package prose | `[01-package-prose-names-sgks-layout]`; the guard's `KNOWN_HITS` emptied (U17) | ⬜ | ⬜ | — | — |
 | 10 | Release `v0.2.1` | `0.2.1`; both ends and CI; the tag after green CI; the adoption addenda (U37) | ⬜ | ⬜ | — | — |
 | 11 | Verification and close-out | the verification document; the contract §8 citation (U34); the campaign closed | ⬜ | ⬜ | — | — |
@@ -1177,6 +1177,9 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
   - **Assigned (2026-10-09):** to prompt 09 of this campaign. U33 fixes the four open issues before
     the campaign closes; U35 gives the prose its own prompt, after the code fixes, since it rewrites
     comments in files 08a and 08b change.
+
+## 4. Resolved issues
+
 - **[05-a-refused-open-leaves-its-engines-undisposed]** *(opened 2026-10-09 by prompt 05)*
   - **The defect.** When an open is refused or abandoned, the engines the pool and its actors made
     are never disposed, and each one's pooled SQLite connection is closed only when the garbage
@@ -1206,8 +1209,21 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     05), with a test that counts unclosed connections across a refused open. Unassigned.
   - **Assigned (2026-10-09):** to prompt 08b of this campaign. U33; U35 gives it a prompt of its
     own, since it touches the pool's and actors' open and refusal paths.
-
-## 4. Resolved issues
+  - **Closed (2026-10-10, prompt 08b)** (this commit, log 08b §1, §4). `ShardedPool.__init__`
+    calls the open, moved unchanged into `_open`, under a guard that on any exception,
+    `BaseException` included, calls `_close_refused_open` and re-raises the open's exception
+    unchanged (`datastorekit/SQL/ShardedPool.py:203-207`, `_open` `:209-372`,
+    `_close_refused_open` `:374-407` at 08b's tree). It closes each actor built so far by its own
+    `__exit__`, as the pool's `__exit__` does, and disposes the pool's engine; nothing it meets is
+    raised, and no message or refusal changed. The new module
+    `datastorekit/tests/test_refused_open_closes_engines.py` (11 tests) counts the connections each
+    refused open makes, by identity, and requires every one closed when the exception reaches the
+    test; on the unfixed layer its ten refusal tests fail on their counts (log 08b §4.2), and each of
+    the seven breakages of log 08b §5 fails it. Over the suite, the connections never closed go from
+    109 of 41,213 (over the 469, unfixed, in `venv/`) to **2** of 41,411 (over the 480, fixed, at
+    both ends): the two actors `test_version_row_at_open.TestInsertBeforeSetVersion` builds directly and never
+    exits, which are a ported test's and not the layer's (log 08b §6 item 1). The high end prints 4
+    `ResourceWarning` lines. `docs/client-contract.md` §9.2 records it.
 
 - **[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]** *(opened 2026-10-09 by
   prompt 06)*
