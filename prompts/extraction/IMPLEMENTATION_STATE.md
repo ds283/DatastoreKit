@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-10 · **Status: CLOSED (2026-10-10, by prompt 11) — all 14 written prompts landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b, 09, 10, 11) and 07b withdrawn unwritten (U33); `v0.1.0` tagged on `68db557` (U23), `v0.2.0` on `240028e` (U28) and `v0.2.1` on `33778b0`, each after green CI; the four issues open at U33 fixed by 08a, 08b and 09; 01–10 reviewed; 11 verified the campaign in [`docs/extraction-verification.md`](../../docs/extraction-verification.md), corrected the contract's §8 citation (U34) and opened `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]`; G2–G4 have not held, and the campaign does not wait for them (README §7).**
+**Last updated:** 2026-10-10 · **Status: CLOSED (2026-10-10, by prompt 11) — all 14 written prompts landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b, 09, 10, 11) and 07b withdrawn unwritten (U33); `v0.1.0` tagged on `68db557` (U23), `v0.2.0` on `240028e` (U28) and `v0.2.1` on `33778b0`, each after green CI; the four issues open at U33 fixed by 08a, 08b and 09; 01–10 reviewed; 11 verified the campaign in [`docs/extraction-verification.md`](../../docs/extraction-verification.md), corrected the contract's §8 citation (U34) and opened `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]`; 11 landed (`39b1348`) and was reviewed; G2–G4 have not held, and the campaign does not wait for them (README §7).**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 U8–U13 the same day, U14–U22 on 2026-10-08, U6, U23–U37 on 2026-10-09, and U38–U42 on 2026-10-10 (README §6.2); U10, U14 and U30 split 03, 04
 and 07, each into an a and a b prompt.
@@ -91,7 +91,7 @@ and 07, each into an a and a b prompt.
 | 08b | [Dispose engines on a refused open](08b-dispose-engines-on-a-refused-open.md) | `[05-a-refused-open-leaves-its-engines-undisposed]`: the open under a guard that closes the actors and disposes the engine; a test module that counts connections; the contract's §9.2 | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | `efedc8d` | [log](logs/08b-dispose-engines-on-a-refused-open.md) |
 | 09 | [Rewrite the package prose](09-rewrite-the-package-prose.md) | `[01-package-prose-names-sgks-layout]`, widened by U38: 248 lines in 42 files, citations removed (U39); the guard's `KNOWN_HITS` emptied (U17); `test_prose_names_no_source` (U40) | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | `cad7bc1` | [log](logs/09-rewrite-the-package-prose.md) |
 | 10 | [Release `v0.2.1`](10-release-v0.2.1.md) | `0.2.1`; `README.md` and `PROVENANCE.md`; the release check and both ends, offline; dated addenda to `docs/adoption/` (U37); the tag after green CI, not by 10 | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | `33778b0` | [log](logs/10-release-v0.2.1.md) |
-| 11 | [Verification and close-out](11-verification-and-close-out.md) | `docs/extraction-verification.md`; a smoke run under real Ray (U41) and the pin installed from GitHub (U42); the contract §8 citation (U34) and a dated head line; `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]` opened; the campaign closed | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | this commit | [log](logs/11-verification-and-close-out.md) |
+| 11 | [Verification and close-out](11-verification-and-close-out.md) | `docs/extraction-verification.md`; a smoke run under real Ray (U41) and the pin installed from GitHub (U42); the contract §8 citation (U34) and a dated head line; `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]` opened; the campaign closed | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | `39b1348` | [log](logs/11-verification-and-close-out.md) |
 
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
@@ -108,7 +108,8 @@ used for 06; [`orchestrator/prompt-07a.md`](orchestrator/prompt-07a.md) (`a81663
 [`orchestrator/prompt-08a.md`](orchestrator/prompt-08a.md) (`484ad41`), used for 08a;
 [`orchestrator/prompt-08b.md`](orchestrator/prompt-08b.md) (`f24ded1`), used for 08b;
 [`orchestrator/prompt-09.md`](orchestrator/prompt-09.md) (`b5b1586`), used for 09;
-[`orchestrator/prompt-10.md`](orchestrator/prompt-10.md) (`208d702`), used for 10.
+[`orchestrator/prompt-10.md`](orchestrator/prompt-10.md) (`208d702`), used for 10;
+[`orchestrator/prompt-11.md`](orchestrator/prompt-11.md) (`ec059c8`), used for 11.
 
 **Orchestrator review of prompt 01 (2026-10-07).** Dispatched from `bd9f461` to one Opus
 subagent, with the note's §0 corrections and additions. Reviewed against its commit `8bc60a5`,
@@ -1417,6 +1418,106 @@ It found that the prompt's `pip` reinstall of `venv/` needs `setuptools` from an
    `git ls-remote origin 'refs/tags/v0.2.1^{}'` gives `33778b0`.
 
 The rest of `main`, this review and its record, is pushed after them.
+
+**Orchestrator review of prompt 11 (2026-10-10).** Dispatched from `ec059c8` to one Opus
+subagent, with the note's eight corrections and five additions. Reviewed against its commit
+`39b1348`, with nothing landed after it. **Every check of the note's §3 passed**, and acceptance
+1–8 are met. No stop condition fired. Nothing was pushed, and the tags are `v0.1.0`, `v0.2.0` and
+`v0.2.1` only.
+
+*At dispatch.* The note's gate held at `ec059c8`. The tree was clean, and the only worktree was
+this checkout. The suite gave `Ran 486 tests … OK` in `venv/` (0 `ResourceWarning` lines) and at
+the high end (4). The port check exited 0, `black --check datastorekit docs` left 70 files
+unchanged, and `compare_with_source.py` at `v0.1.0` exited 0 with 31 / 20 / 10. The clients were
+at SGK `b510bc9` (clean), CPBH `52142d7` (23 untracked entries) and SI `7bb3efd` (clean). `origin`
+had `main` at `41c77c1` and the three tags. No Ray process was up, `RAY_ADDRESS` was unset and
+there was no `/tmp/ray/ray_current_cluster`. While writing the note, the orchestrator probed the
+prompt under a local Ray at both ends, and the pin and (c) offline from this repository. It found:
+- at Ray 2.43.0 the name collision is the builtin `ValueError`, and `ActorAlreadyExistsError`
+  exists only at 2.55.1 (correction 1);
+- the prompt's `pgrep` pattern matches shells whose command text carries it, this session's and
+  another's (correction 2);
+- a plain `ray.init()` could join a cluster `ray start` had recorded (correction 3);
+- `uv`'s cache held the planner's GitHub clone and build, so the prompt's install would have
+  reused them (correction 4);
+- (c) from GitHub would be a second network use (correction 5);
+- hazard 4 forbade the index's three rewritten lines (correction 6);
+- `object.py` is a second unchanged cited file (correction 7), and the prompt's timings were too
+  low for the machine's load (correction 8).
+
+*The checks.*
+1. **Scope.** `39b1348` touches the prompt's §7 files only: the two new files under `docs/`,
+   `docs/client-contract.md`, `docs/OPEN_ISSUES.md`, the log, the board, the campaign README and
+   `prompts/INDEX.md`. The ignored entries are dispatch's. Each client's `HEAD` and `git status
+   --short` are as at dispatch.
+2. **The diffs.** The diff over `datastorekit/`, `pyproject.toml`, `README.md`, `PROVENANCE.md`,
+   `docs/adoption/`, `.github/` and the other four scripts of `docs/extraction/` is empty. The
+   contract's diff is the one corrected citation, the note after §8's table and the head's italic
+   line. The index's is correction 6's three lines, the new row, and the table's header and
+   separator, which the row needs (log 11 §2 item 7).
+3. **The contract, by reading.** Both additions are dated and are prompt 11's. The note's lines
+   hold at `240028e` and `33778b0`, and the head line's file statements hold by `git diff --stat
+   8bc60a5 33778b0`.
+4. **The script, by reading.** It refuses on `RAY_ADDRESS`, `ray.is_initialized()` and a non-shell
+   Ray process, starts Ray with `address="local"`, stops it in a `finally`, keeps its store in a
+   `TemporaryDirectory`, patches only `build.resolve`, and asserts `ValueError` with "is already
+   taken" and `SerialPoolBroker` at step N. The suite does not collect it. `black` passes on it.
+5. **The runs.** In the review's own offline venvs, each with `git archive 39b1348` installed
+   editable, the script exits 0 at both ends, with every step `PASS`. Step N raises
+   `builtins.ValueError` at 2.43.0 and `ray.exceptions.ActorAlreadyExistsError` at 2.55.1, as the
+   log says. No Ray process was up before or left after any run.
+6. **The pin.** The review's own install, by correction 4's command from outside the repository,
+   fetched `v0.2.1` from GitHub as `33778b0`. Its `direct_url.json` is the log's. Its 20 `RECORD`
+   lines under `datastorekit/` equal those of a wheel the review built from `git archive 33778b0`,
+   and the document's §5.2 list. The three checks hold. The venv was deleted.
+7. **The breakages.** The log's (a) and (b) pass `git apply --check` and `-R --check` against their
+   own exports of `39b1348`. Under (a) steps 2, 3, 4 and 6 fail with "keys added ['k']"; under (b)
+   step 4 fails with the actor's `RayTaskError(RuntimeError)`; every other step passes, as the log
+   records. (c), replayed offline, installs `0.2.0`, and 13 of the 20 lines differ.
+8. **The document.** Eleven sections, in order, with its head. §2's 59 commits and their classes
+   agree with `git log`. The review recounted the §2 entries of logs 04a, 08b and 09 and got the
+   document's figures. Ten observation dispositions were checked against `33778b0`, and all hold.
+   The four relative links resolve. §6.3's citations at `v0.2.1` and §9.1's at SGK `6f7f291` read
+   true.
+9. **The issue.** It is on the board's §3 in the form of §4's entries, with both ends' measurement,
+   the cause at `v0.2.1`, SGK's lines, the impact and no assignment. Its row is in the index, at 5
+   (1 of this repository).
+10. **The close.** The board's header says **CLOSED**, §1's row and §2's dated line are in place,
+    and so are the README's header, §2 row and §7 line, `prompts/INDEX.md`'s **closed** line with
+    1 open issue, and the index's §1.1 heading.
+11. **Both ends.** In `venv/`, `Ran 486 tests … OK`. In the review's own offline high-end venv with
+    `git archive 39b1348` installed editable, `Ran 486 tests … OK`, with **4** `ResourceWarning`
+    lines. No Ray process was up during either. The port check exits 0 with 04b's counts, and
+    `black` leaves 71 files unchanged.
+12. **Nothing left behind.** No Ray process. The agent's pin venvs are gone. The tags are the
+    three, and `origin` is unchanged.
+
+*Findings beyond the prompt*, recorded and not acted on:
+- **Two of the note's line numbers were inexact**, and the agent measured them (log 11 §2 items 18
+  and 19). `__exit__` is `SQL/ShardedPool.py:808-820` at `v0.2.1`, not `:808-821`; SGK's log 01
+  table is `:149-169`, after its caption at `:147`, not `:150-167`. The board's issue and the
+  document cite the measured lines.
+- **Correction 2's rule, as the note wrote it, was not enough.** It read `pgrep -lf`'s output line
+  by line, and another session's multi-line `zsh -c` commands put pattern-bearing continuation
+  lines into it. The agent's script classes each PID by its executable instead (log 11 §2 item 3),
+  which is the rule's intent.
+- **The agent's recorded runs were of working-tree exports** before its commit (log 11 §2 item 17).
+  The review's runs used `39b1348` itself, and agree with the log.
+- The agent's two UNINTENDED DRIFT entries, the script's two faulty drafts and the final suites'
+  foreground overrun, are in log 11 §2 items 23 and 24.
+
+*Issues.* `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]` is opened, unassigned.
+Nothing is closed. The index is 5, 1 of them this repository's.
+
+*Residue fixed in this follow-up:*
+- "this commit" → `39b1348` in the board's row, the README's header and §2 row, the log's header
+  and §8, and `prompts/INDEX.md`;
+- "reviewed" for 11 in the board's header, the README's header and §2 row, and
+  `prompts/INDEX.md`;
+- this paragraph and the notes line.
+
+The campaign is closed. `main` is ahead of `origin/main` (`41c77c1`) by 11's prompt, its note,
+`39b1348` and this record, and is pushed only with the user's approval.
 
 ## 2. Gates outside this repository (README §7)
 

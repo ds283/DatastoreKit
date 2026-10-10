@@ -1,6 +1,6 @@
 # Log 11 — verification and close-out
 
-**Subject:** Verify the extraction campaign and close it · **Commit:** this commit ·
+**Subject:** Verify the extraction campaign and close it · **Commit:** `39b1348` ·
 **Date:** 2026-10-10 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and untagged.
 The campaign is closed.
 
@@ -648,8 +648,8 @@ same 20.
 
 **The campaign is closed**, and this is its last prompt. A later reader starts from
 `docs/extraction-verification.md`.
-- **`HEAD`** is this commit, unpushed and untagged. `origin/main` is `41c77c1`, and the tags are
-  `v0.1.0`, `v0.2.0` and `v0.2.1`, unchanged. Pushing this commit, after the review, is the user's.
+- **`HEAD`** is `39b1348`, unpushed and untagged. `origin/main` is `41c77c1`, and the tags are
+  `v0.1.0`, `v0.2.0` and `v0.2.1`, unchanged. Pushing `39b1348`, after the review, is the user's.
 - **The suite** is 486, in `venv/` and at the high end. The port check passes over 20 modules with
   one test declared not ported. `black` leaves 71 files unchanged.
 - **The smoke script** is `docs/extraction/ray_smoke_run.py`. It is run by hand under §2.2's
