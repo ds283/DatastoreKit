@@ -9,9 +9,7 @@ disagree. See `CLAUDE.md` for the maintenance rule.
 
 ### 1.1 `extraction` ([board](../prompts/extraction/IMPLEMENTATION_STATE.md)): campaign closed 2026-10-10 (prompt 11)
 
-| Issue | Hook |
-|---|---|
-| `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]` | A closed pool's Ray actors keep their fixed names until the pool object is collected, so a second open in one Ray session, while a closed pool is still referenced, is refused by Ray; inherited from SGK; not assigned |
+None open (2026-10-10: its one issue is assigned to `actor-names`, §1.3).
 
 ### 1.2 Inherited from SecondaryGWKit, on SGK's boards
 
@@ -26,3 +24,9 @@ package once 01 lands, and taken over by a board here when a campaign is planned
 | `[00-a-new-stores-first-open-can-leave-a-primary-without-its-shards]` | `a3-v2-readiness` | An interrupted first open leaves a primary whose next open is refused for a missing shard |
 | `[00-the-inventory-cannot-see-a-serial-split]` | `datastore-integrity` | The inventory compares replicated classes by key, tags, `validated` and count, not by serial |
 | `[01-cross-filesystem-move-advice-says-delete-by-hand]` | `store-retirement` | A failed cross-filesystem move advises deleting the source by hand |
+
+### 1.3 `actor-names` ([board](../prompts/actor-names/IMPLEMENTATION_STATE.md)): assigned issues, held on the boards that opened them
+
+| Issue | Held on | Hook |
+|---|---|---|
+| `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]` | `extraction` | A closed pool's Ray actors keep their fixed names until the pool object is collected, so a second open in one Ray session, while a closed pool is still referenced, is refused by Ray; inherited from SGK; to be fixed by `actor-names` prompt 01 |

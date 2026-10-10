@@ -1590,6 +1590,11 @@ of scope here (README §1). Log 01 §4.6 records where each one's code is in the
     (`datastorekit/tests/standin_pool.py:160-172`), so no name collides there.
   - **Next step.** None assigned. The smoke script drops each pool (`del` and `gc.collect()`)
     before it opens the next, and its step 5 drops the refused open's exception.
+  - **Assigned (2026-10-10):** to the [`actor-names`](../actor-names/README.md) campaign, whose
+    prompt 01 fixes it: a closed pool, and a refused open, kill their actors so that the names are
+    freed at once, and the stand-in pool reserves names so that the suite sees a regression. The
+    user asked for the campaign on 2026-10-10, after this campaign closed; the entry stays here,
+    with its measurement, until that prompt closes it.
 
 ## 4. Resolved issues
 
