@@ -1,6 +1,6 @@
 # extraction campaign — implementation state
 
-**Last updated:** 2026-10-10 · **Status: IN PROGRESS — 12 of 14 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b, 09), 12 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b, 09); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28); 07a landed (`dd45243`) and reviewed; 07b withdrawn (U33): the four open issues are fixed in 08a, 08b and 09 and released as `v0.2.1` by 10 before 11 closes the campaign; 08a landed (`f938844`) and reviewed, closing two of the four; 08b landed (`efedc8d`) and reviewed, closing the third; 09 landed (this commit), closing the fourth.**
+**Last updated:** 2026-10-10 · **Status: IN PROGRESS — 12 of 14 prompts written (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b, 09), 12 landed (01, 02, 03a, 03b, 04a, 04b, 05, 06, 07a, 08a, 08b, 09); `v0.1.0` tagged on `68db557` after green CI (U23); 06 reviewed; `v0.2.0` tagged on `240028e` after green CI (U28); 07a landed (`dd45243`) and reviewed; 07b withdrawn (U33): the four open issues are fixed in 08a, 08b and 09 and released as `v0.2.1` by 10 before 11 closes the campaign; 08a landed (`f938844`) and reviewed, closing two of the four; 08b landed (`efedc8d`) and reviewed, closing the third; 09 landed (`cad7bc1`) and reviewed, closing the fourth.**
 G1 holds: the import commit is SGK `6f7f291`. The user took U2–U5 as recommended on 2026-10-07,
 U8–U13 the same day, U14–U22 on 2026-10-08, U6, U23–U37 on 2026-10-09, and U38–U40 on 2026-10-10 (README §6.2); U10, U14 and U30 split 03, 04
 and 07, each into an a and a b prompt.
@@ -87,7 +87,7 @@ and 07, each into an a and a b prompt.
 | ~~07b~~ | ~~Verification and close-out~~ | *withdrawn 2026-10-09, unwritten (U33); its work is 11's* | — | — | — | — |
 | 08a | [Two small fixes](08a-two-small-fixes.md) | `[02-an-unsupplied-sharded-table-raises-keyerror]` and `[06-a-vectorized-get-adds-the-shard-key-to-the-callers-payloads]`, each with a test module; the contract's §9 | ✍️ yes, 2026-10-09 | ✅ 2026-10-10 | `f938844` | [log](logs/08a-two-small-fixes.md) |
 | 08b | [Dispose engines on a refused open](08b-dispose-engines-on-a-refused-open.md) | `[05-a-refused-open-leaves-its-engines-undisposed]`: the open under a guard that closes the actors and disposes the engine; a test module that counts connections; the contract's §9.2 | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | `efedc8d` | [log](logs/08b-dispose-engines-on-a-refused-open.md) |
-| 09 | [Rewrite the package prose](09-rewrite-the-package-prose.md) | `[01-package-prose-names-sgks-layout]`, widened by U38: 248 lines in 42 files, citations removed (U39); the guard's `KNOWN_HITS` emptied (U17); `test_prose_names_no_source` (U40) | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | this commit | [log](logs/09-rewrite-the-package-prose.md) |
+| 09 | [Rewrite the package prose](09-rewrite-the-package-prose.md) | `[01-package-prose-names-sgks-layout]`, widened by U38: 248 lines in 42 files, citations removed (U39); the guard's `KNOWN_HITS` emptied (U17); `test_prose_names_no_source` (U40) | ✍️ yes, 2026-10-10 | ✅ 2026-10-10 | `cad7bc1` | [log](logs/09-rewrite-the-package-prose.md) |
 | 10 | Release `v0.2.1` | `0.2.1`; both ends and CI; the tag after green CI; the adoption addenda (U37) | ⬜ | ⬜ | — | — |
 | 11 | Verification and close-out | the verification document; the contract §8 citation (U34); the campaign closed | ⬜ | ⬜ | — | — |
 
@@ -104,7 +104,8 @@ with an addendum at `7ee9b6e`), used for 04b; [`orchestrator/prompt-05.md`](orch
 (`f69921b`), used for 05; [`orchestrator/prompt-06.md`](orchestrator/prompt-06.md) (`0e524b4`),
 used for 06; [`orchestrator/prompt-07a.md`](orchestrator/prompt-07a.md) (`a816632`), used for 07a;
 [`orchestrator/prompt-08a.md`](orchestrator/prompt-08a.md) (`484ad41`), used for 08a;
-[`orchestrator/prompt-08b.md`](orchestrator/prompt-08b.md) (`f24ded1`), used for 08b.
+[`orchestrator/prompt-08b.md`](orchestrator/prompt-08b.md) (`f24ded1`), used for 08b;
+[`orchestrator/prompt-09.md`](orchestrator/prompt-09.md) (`b5b1586`), used for 09.
 
 **Orchestrator review of prompt 01 (2026-10-07).** Dispatched from `bd9f461` to one Opus
 subagent, with the note's §0 corrections and additions. Reviewed against its commit `8bc60a5`,
@@ -1181,6 +1182,129 @@ The index is 5.
 - README's header, and its §2 status for 08b;
 - this paragraph and the notes line.
 
+**Orchestrator review of prompt 09 (2026-10-10).** Dispatched from `b5b1586` to one Opus
+subagent, with the note's five corrections and five additions. Reviewed against its commit
+`cad7bc1`, with nothing landed after it. **Every check of the note's §3 passed**, and acceptance
+1–6 are met. No stop condition fired. Nothing was pushed, and the tags are `v0.1.0` and `v0.2.0`
+only.
+
+*At dispatch.* The note's gate held at `21334c2`. The tree was clean, and the only worktree was
+this checkout. The suite gave `Ran 480 tests … OK` in `venv/` and at the high end (4
+`ResourceWarning` lines). The port check exited 0, and `black --check datastorekit docs` left 69
+files unchanged. The clients were at SGK `b510bc9` (clean), CPBH `52142d7` (23 untracked entries)
+and SI `7bb3efd` (clean). `origin/main` was `102f225`, and no Ray process was up. While writing the
+note, the orchestrator measured the prompt's facts:
+- a reimplementation of log 03a §8's measure gave every recorded figure, 102 / 19 at `8bc60a5` to
+  155 / 40 at `452b3c9`, when each pattern is matched within its token;
+- tier A's rules, as §2.4 words them, matched `Datastore.object_get` in five true lines (186 in
+  43); with a trailing boundary they gave the appendix's 181 in 42 (correction 1);
+- tiers B and C are 9 and 58 lines, not 10 and 57 (correction 2);
+- a sweep found further citations of the source the appendix missed: three issue names, two
+  `logs/` paths, and labels pointing into its audits and decisions (correction 3);
+- the AST check and the guard with `KNOWN_HITS` emptied behaved as the prompt says.
+
+*The checks.*
+1. **Scope.** `cad7bc1` touches 48 files:
+   - the appendix's 42 under `datastorekit/`;
+   - `defaults.py`, which §2.1 rule 4 names;
+   - the new module;
+   - the log, the board, `docs/OPEN_ISSUES.md` and `prompts/INDEX.md`.
+
+   Nothing else under `docs/` is touched. The ignored entries are dispatch's. Each client's `HEAD`
+   and `git status --short` are as at dispatch.
+2. **E1, only prose.** The review's own AST check, against `21334c2`'s blobs with docstrings
+   blanked: 42 files compare equal. `test_layer_is_generic.py` differs only by the emptied
+   `test_no_comment` list.
+3. **E2, the diff, by reading.** Every hunk was read.
+   - Each citation of the source is gone, and its explanation is kept.
+   - Each module docstring opens with what the module is about.
+   - §2.2's five sentences are true, and so are correction 4's two.
+   - `defaults.py` and `_timing.py` keep the import commit and `PROVENANCE.md`.
+   - The bare "prompt NN" of this campaign in ported modules read "extraction prompt NN".
+   - No client vocabulary is added. `[00-quadsource-…]`, which named a client's table in a test,
+     is gone.
+4. **E2, what was kept.** The log's tables decide all 58 tier C lines (57 rewritten, 1 kept as a
+   generic mention of the source) and 81 further lines. Correction 3's 33 are among them. The
+   review's own sweep of the prose (`prompt`, `log NN`, `logs/`, `README`, `audit`, `U<n>`, `§`,
+   capital-letter labels, 7-hex strings, `var/`) finds only:
+   - this repository's citations;
+   - the generic mentions of the source that rule 4 allows;
+   - the tool's own "audit";
+   - the version labels `L1` and `L2`;
+   - the commit-point labels of `test_reconcile_at_open` and the states `C5'` and `M4'` of
+     `test_copy_move_store`.
+5. **E3, the module, by reading.** It has six tests: §2.4's four, with test 4 split into three.
+   - Addition 1 is in place: `Datastore.object_get` is in `NOT_FOUND`.
+   - The file set comes from the filesystem.
+   - Comments are read by `tokenize`, and docstrings by `ast` spans.
+   - The path rule checks existence, with trailing `.,;:` stripped.
+   - The module rule has `(?!\w)`.
+   - The planted forms are runtime strings, and its own prose quotes no forbidden form.
+   - `tearDownModule` checks Ray.
+6. **E3, on the unrewritten tree.** In an export of `21334c2` with the module copied in, test 1
+   fails on 281 hits: 181 lines in 42 files, the orchestrator's tier A line for line. Tests 2–6
+   pass.
+7. **E4, both ends.** In `venv/`, `Ran 486 tests … OK`; the loader gives 6 for the module. In the
+   review's own offline venv (3.13.16 / 2.55.1 / 2.0.46) with `git archive cad7bc1` installed
+   editable, `Ran 486 tests … OK`, with **4** `ResourceWarning` lines, the log's.
+8. **E5, the measurement after.**
+   - The review's tier A scan gives 0 over 66 files.
+   - The source's three SHAs are in no comment or docstring. `"a2bd966"` is left only as the
+     asserted string, now `test_shard_key_audit_refusals.py:194`.
+   - Log 03a's measure finds 17 lines, every one a runtime string of the new module.
+   - `--help` carries hazard 3's seven phrases, and no citation.
+9. **The checks.** The port check exits 0 with 04b's counts. `black --check datastorekit docs`
+   leaves 70 files unchanged. The guard's 8 tests pass with every `KNOWN_HITS` list empty.
+10. **E6, the breakages.** The nine diffs, extracted from the log, apply both ways to their own
+    exports of `cad7bc1`. Each verdict is the log's, over the module, the guard and the 486:
+    - (a), (b) and (c): test 1 fails, naming `ShardedPool.py:173`, `test_replicated_write.py:23`,
+      and `Datastore.py:670` twice (a path and a campaign);
+    - (d): only the guard's `test_no_comment` fails;
+    - (e): test 2 fails (`failures=4`);
+    - (f): test 3 fails (`failures=40`);
+    - (g): `failures=5`, test 1 on the six `docs/` lines of this repository, and test 4's
+      existence checks;
+    - (h): `Ran 486 tests … OK`, and the AST check names `test_shard_paths.py`;
+    - (i): `failures=4`, test 1 on correction 1's five lines, and test 4's `Datastore.object_get`.
+
+    No other test fails under any of them.
+11. **E7, the records.**
+    - The log has every section of README §5.1, the port check's output, the AST check, the
+      measurement after, the tier C and further-line tables, §2.2's corrections, the breakage
+      record, and the clients' commits and statuses. Under "Observations not acted on" it records
+      that `logs/` is no rule's prefix.
+    - The board's §3 holds no issue of this repository, and the closed one heads §4 with its
+      "Closed" line.
+    - The index has no row on this repository and says 4.
+    - `prompts/INDEX.md` says 0.
+12. **Nothing left behind.** No Ray process. `origin` has `main` at `102f225` and the two tags.
+
+*Findings beyond the prompt*, recorded and not acted on:
+- **The commit-point labels of `test_reconcile_at_open` are defined nowhere in this repository.**
+  `P1-C`, `C-P3` and `Rn-P3` are runtime strings of its cases, and `P3-K` and `P1` appear in its
+  docstrings only. Their table was the source's log 01, which 09 rightly stopped citing. The log
+  keeps the last two as "labels the module's code uses", which is exact only for the family. This
+  gap predates 09. It is put to the user, not opened here.
+- Two rewritten passages are true but read poorly:
+  - `test_store_inventory.py:703` was left a short line where its citation went, not rewrapped
+    (rule 7);
+  - `test_absolute_shard_record_refused.py:5-6` reads "A primary written before shard records
+    were bare file names recorded its shards by absolute path".
+
+  Neither is residue a records follow-up may change.
+- The agent's four slips, each caught by its own checks before the commit, are in log 09 §2 item
+  20 (UNINTENDED DRIFT).
+
+*Issues.* `[01-package-prose-names-sgks-layout]` is closed (§4). Nothing is opened. The index is
+4, none of them this repository's.
+
+*Residue fixed in this follow-up:*
+- "this commit" → `cad7bc1` in the log, the board and `prompts/INDEX.md`, and "reviewed" added
+  for 09 in the board's header and `prompts/INDEX.md`;
+- the issue's "Closed" entry, rewrapped (one line ran to 132 columns);
+- README's header, and its §2 status for 09;
+- this paragraph and the notes line.
+
 ## 2. Gates outside this repository (README §7)
 
 | Gate | Status |
@@ -1291,22 +1415,22 @@ No issue of this repository is open on this board (2026-10-10, since prompt 09).
     source. Together: **248 lines in 42 files** (97 in 13 layer files, 151 in 29 test files; 57 by
     reading), listed in 09's appendix. Under U39 each citation is removed and its sentence kept,
     true for this package; U40 adds a test that keeps it so.
-  - **Closed (2026-10-10, prompt 09)** (this commit, log 09 §1, §4, §5). Every comment and
-    docstring under `datastorekit/` that cited the source's layout, campaigns, logs, audits, issues,
-    commits or `var/` lost the citation and kept its explanation, true for this package (U39): of
-    09's appendix of 248 lines (181 by tier A's rules, 9 citing the source's commits, 58 found by
+  - **Closed (2026-10-10, prompt 09)** (`cad7bc1`, log 09 §1, §4, §5). Every comment and docstring
+    under `datastorekit/` that cited the source's layout, campaigns, logs, audits, issues, commits
+    or `var/` lost the citation and kept its explanation, true for this package (U39): of 09's
+    appendix of 248 lines (181 by tier A's rules, 9 citing the source's commits, 58 found by
     reading), 247 are rewritten and 1 is kept as a generic mention of the source; 81 further lines
     found by reading (33 of them listed by the dispatch note) are rewritten (log 09 §1.2). The two
-    `sys.path` sentences and the three that described how the tools are run are true now, and so
-    are correction 4's two and five more the reading found false. The guard's `KNOWN_HITS` is empty, and its 8 tests pass (U17). The
-    new module `datastorekit/tests/test_prose_names_no_source.py` (6 tests, U40) reads every
-    comment and docstring of the package and fails on any match of four rules, with no allow list:
-    on the unrewritten tree its first test fails on exactly tier A's 181 lines in 42 files, and
-    after the rewrite all six pass; each of the nine breakages of log 09 §5 fails it or the guard.
-    Only prose changed: with docstrings blanked, the AST of every changed file equals `452b3c9`'s,
-    except the guard (`KNOWN_HITS`' entry) and the new module (log 09 §4.3). Log 03a §8's method
-    now finds 17 lines, every one a runtime string of the new module. The suite goes from 480 to
-    486, in `venv/` and at the high end.
+    `sys.path` sentences and the three that described how the tools are run are true now, and so are
+    correction 4's two and five more the reading found false. The guard's `KNOWN_HITS` is empty, and
+    its 8 tests pass (U17). The new module `datastorekit/tests/test_prose_names_no_source.py` (6
+    tests, U40) reads every comment and docstring of the package and fails on any match of four
+    rules, with no allow list: on the unrewritten tree its first test fails on exactly tier A's 181
+    lines in 42 files, and after the rewrite all six pass; each of the nine breakages of log 09 §5
+    fails it or the guard. Only prose changed: with docstrings blanked, the AST of every changed
+    file equals `452b3c9`'s, except the guard (`KNOWN_HITS`' entry) and the new module (log 09
+    §4.3). Log 03a §8's method now finds 17 lines, every one a runtime string of the new module. The
+    suite goes from 480 to 486, in `venv/` and at the high end.
 
 - **[05-a-refused-open-leaves-its-engines-undisposed]** *(opened 2026-10-09 by prompt 05)*
   - **The defect.** When an open is refused or abandoned, the engines the pool and its actors made

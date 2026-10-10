@@ -1,6 +1,6 @@
 # Log 09 — rewrite the package prose
 
-**Subject:** Rewrite the package prose for this repository · **Commit:** this commit ·
+**Subject:** Rewrite the package prose for this repository · **Commit:** `cad7bc1` ·
 **Date:** 2026-10-10 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and untagged.
 
 `[01-package-prose-names-sgks-layout]`, open since 01 and assigned here by U33 and U35, widened by
