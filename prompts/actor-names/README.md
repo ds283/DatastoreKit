@@ -1,8 +1,8 @@
 # Campaign — actor-names
 
 **Written:** 2026-10-10 by Claude Opus 5.5, at the user's request, to fix the one issue the
-`extraction` campaign left open on this repository (§0). **Prompt 01 is written** (2026-10-10). It
-waits on U1 and U2 (§6). Prompt 02 is written after 01 has landed and been reviewed, against the
+`extraction` campaign left open on this repository (§0). **Prompt 01 is written** (2026-10-10), and
+the user took U1–U3 as recommended the same day (§6). Prompt 02 is written after 01 has landed and been reviewed, against the
 tree it leaves.
 
 ## 0. Why this campaign exists
@@ -95,7 +95,7 @@ there; `test_refused_open_closes_engines` already uses it (`:45`, `:238`).
 
 | # | Prompt | Covers | Status |
 |---|---|---|---|
-| 01 | [`01-a-closed-pool-releases-its-actor-names.md`](01-a-closed-pool-releases-its-actor-names.md) | `ShardedPool.__exit__` kills its actors after closing them, and a second `__exit__` does nothing; a refused open kills what it made; the stand-in stands in `ray.kill`, reserves names and refuses calls to killed handles; a test module that a revert fails; the smoke script's step N reversed, and a step that two open pools still collide, run under real Ray at both ends; contract §9.3; a dated subsection of the verification document. **Closes** `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]`. | **written** 2026-10-10; waits on U1, U2 |
+| 01 | [`01-a-closed-pool-releases-its-actor-names.md`](01-a-closed-pool-releases-its-actor-names.md) | `ShardedPool.__exit__` kills its actors after closing them, and a second `__exit__` does nothing; a refused open kills what it made; the stand-in stands in `ray.kill`, reserves names and refuses calls to killed handles; a test module that a revert fails; the smoke script's step N reversed, and a step that two open pools still collide, run under real Ray at both ends; contract §9.3; a dated subsection of the verification document. **Closes** `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]`. | **written** 2026-10-10; U1, U2 taken |
 | 02 | `02-release-v0.2.2.md` (planned) | `pyproject.toml` at `0.2.2`, `README.md`, `PROVENANCE.md`; dated addenda to `docs/adoption/` for the new pin; both ends locally and in CI; **tag `v0.2.2`** on its commit after green CI, not by the prompt. Shaped by U3. | planned |
 
 **Order.** 01 → 02. 02 releases what 01 leaves, and is written after 01 is reviewed.
@@ -160,7 +160,7 @@ adopts the release named in the adoption addenda) and U41 (the smoke run).
 
 ### 6.2 Decisions this campaign needs
 
-- **U1: how a closed pool releases its names.** *(Open.)* **Recommended:** at the end of
+- **U1: how a closed pool releases its names.** *(Taken 2026-10-10, as recommended.)* **Recommended:** at the end of
   `__exit__`, once every shard's `__exit__` has returned and the engine is disposed, `ray.kill`
   each shard actor and the broker (`no_restart=True`), and mark the pool closed so that a second
   `__exit__` returns at once. `_close_refused_open` kills what it made, in the same way. The names
@@ -174,7 +174,7 @@ adopts the release named in the adoption addenda) and U41 (the smoke run).
   - dropping the handles (`self._shards = {}`) instead of keeping them killed. It is not needed to
     free the names (the probe reopened with the closed pool's handles still held), and code that
     reads `pool._shards` after `__exit__` would meet an empty dict rather than a dead actor.
-- **U2: the stand-in pool.** *(Open.)* **Recommended:** the stand-in stands in `ray.kill` inside
+- **U2: the stand-in pool.** *(Taken 2026-10-10, as recommended.)* **Recommended:** the stand-in stands in `ray.kill` inside
   `StandinCluster.active()`, as it does `ray.get`. Each `StandinCluster` reserves an actor's name
   when its constructor succeeds, and frees it when the handle is killed. A second creation of a
   live name raises `ValueError` with Ray 2.43.0's message. A call to a killed handle returns a
@@ -185,7 +185,7 @@ adopts the release named in the adoption addenda) and U41 (the smoke run).
   it is killed. **Rejected:** name reservation opt-in per cluster, which would leave only the new
   module able to see a regression; no stand-in change, which is not possible: an unpatched
   `ray.kill` refuses a stand-in handle, and every test that closes a pool would fail.
-- **U3: the release.** *(Open; needed by 02, not 01.)* **Recommended:** **`v0.2.2`**, made by 02 as
+- **U3: the release.** *(Taken 2026-10-10, as recommended; needed by 02, not 01.)* **Recommended:** **`v0.2.2`**, made by 02 as
   10 made `v0.2.1`, with adoption addenda saying each client adopts `v0.2.2` in place of `v0.2.1`.
   No client has adopted `v0.2.1` (G2–G4 are open), so no pin moves twice. Patch-level, as U36:
   no API is added, nothing the layer writes changes, and the one behaviour that changes (a closed
@@ -197,5 +197,5 @@ adopts the release named in the adoption addenda) and U41 (the smoke run).
 ## 7. Gates outside this repository
 
 The extraction campaign's G2–G4 (each client's adoption) are recorded on the extraction board when
-they hold. Under U3 as recommended, the release they adopt is `v0.2.2`; 02's addenda say so. This
+they hold. Under U3, the release they adopt is `v0.2.2`; 02's addenda say so. This
 campaign does not wait for them.

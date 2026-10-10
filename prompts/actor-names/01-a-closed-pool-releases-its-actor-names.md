@@ -3,8 +3,7 @@
 **Campaign:** [`README.md`](README.md) · **Board:** [`IMPLEMENTATION_STATE.md`](IMPLEMENTATION_STATE.md)
 
 **Gate:**
-- U1 and U2 are taken (README §6.2). If either is taken otherwise than recommended, this prompt is
-  amended before it is dispatched.
+- U1 and U2 are taken (README §6.2): both as recommended, by the user on 2026-10-10.
 - `git status` is clean in this repository, and `origin/main` is an ancestor of `main`.
 - `datastorekit/` is `33778b0`'s (`v0.2.1`): `git diff --stat 33778b0 HEAD -- datastorekit` is empty.
 

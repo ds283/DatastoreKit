@@ -1,7 +1,7 @@
 # actor-names campaign — implementation state
 
-**Last updated:** 2026-10-10 · **Status: PLANNED — 1 of 2 prompts written (01), 0 landed; 01 waits
-on U1 and U2.**
+**Last updated:** 2026-10-10 · **Status: PLANNED — 1 of 2 prompts written (01), 0 landed; U1–U3
+taken 2026-10-10, as recommended; 01 ready to dispatch.**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]`, held on the
@@ -14,13 +14,13 @@ on U1 and U2.**
 
 ### Decisions
 
-**Put to the user (README §6.2):**
+**Put to the user (README §6.2), taken 2026-10-10:**
 
 | Decision | Recommendation | Status |
 |---|---|---|
-| **U1** how a closed pool releases its names | `ray.kill` each actor at the end of `__exit__` and of `_close_refused_open`; a closed flag; the names unchanged | open |
-| **U2** the stand-in pool | stands in `ray.kill`; reserves names per cluster until killed; a killed handle's calls raise; always on | open |
-| **U3** the release | `v0.2.2` by 02, which the clients adopt in place of `v0.2.1` | open (needed by 02) |
+| **U1** how a closed pool releases its names | `ray.kill` each actor at the end of `__exit__` and of `_close_refused_open`; a closed flag; the names unchanged | **taken** 2026-10-10 |
+| **U2** the stand-in pool | stands in `ray.kill`; reserves names per cluster until killed; a killed handle's calls raise; always on | **taken** 2026-10-10 |
+| **U3** the release | `v0.2.2` by 02, which the clients adopt in place of `v0.2.1` | **taken** 2026-10-10 (needed by 02) |
 
 ## 1. Prompts
 
