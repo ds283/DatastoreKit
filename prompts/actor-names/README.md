@@ -5,7 +5,10 @@
 the user took U1–U3 as recommended the same day (§6). Prompt 02 is written after 01 has landed and been reviewed, against the
 tree it leaves. **Prompt 01 landed** on 2026-10-10 (`ac50a8a`; [log](logs/01-a-closed-pool-releases-its-actor-names.md)),
 and closed the issue; it was reviewed the same day. **Prompt 02 is written** (2026-10-10), against
-the tree 01 left (`168ecd0`).
+the tree 01 left (`168ecd0`). **02 is held** (2026-10-11): checking its facts, the orchestrator
+found that a pool closed while its process is not connected to Ray starts a local Ray, which
+`[02-closing-a-pool-can-start-ray]` records. The user chose to fix it before the release (U4).
+**Prompt 01b is written** (2026-10-11) to fix it; 02 is re-measured against the tree 01b leaves.
 
 ## 0. Why this campaign exists
 
@@ -79,6 +82,7 @@ there; `test_refused_open_closes_engines` already uses it (`:45`, `:238`).
 - a closed pool, and a refused open, release their actors' names (U1);
 - the stand-in pool standing in `ray.kill` and reserving names (U2), and tests that a regression
   fails;
+- closing a pool never starting Ray, when the process is not connected to it (U4, prompt 01b);
 - `docs/extraction/ray_smoke_run.py` changed to expect the release, and run under real Ray at both
   ends;
 - `docs/client-contract.md` §9.3, and a dated subsection of `docs/extraction-verification.md`
@@ -98,9 +102,11 @@ there; `test_refused_open_closes_engines` already uses it (`:45`, `:238`).
 | # | Prompt | Covers | Status |
 |---|---|---|---|
 | 01 | [`01-a-closed-pool-releases-its-actor-names.md`](01-a-closed-pool-releases-its-actor-names.md) | `ShardedPool.__exit__` kills its actors after closing them, and a second `__exit__` does nothing; a refused open kills what it made; the stand-in stands in `ray.kill`, reserves names and refuses calls to killed handles; a test module that a revert fails; the smoke script's step N reversed, and a step that two open pools still collide, run under real Ray at both ends; contract §9.3; a dated subsection of the verification document. **Closes** `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]`. | **written** 2026-10-10; U1, U2 taken; **landed** 2026-10-10 (`ac50a8a`), reviewed; closed the issue |
-| 02 | [`02-release-v0.2.2.md`](02-release-v0.2.2.md) | `pyproject.toml` at `0.2.2`, `README.md`, `PROVENANCE.md`; dated addenda to `docs/adoption/` for the new pin; both ends locally and in CI; **tag `v0.2.2`** on its commit after green CI, not by the prompt. Shaped by U3. | **written** 2026-10-10 |
+| 01b | [`01b-closing-a-pool-starts-no-ray.md`](01b-closing-a-pool-starts-no-ray.md) | `_kill_actors` kills nothing, and so starts no Ray, when the process is not connected to Ray (a module-level `_ray_is_running()`); the stand-in stands it in inside `active()`; two tests; the smoke run, unchanged, at both ends; contract §9.4; a dated subsection of the verification document. **Closes** `[02-closing-a-pool-can-start-ray]`. | **written** 2026-10-11; U4 taken |
+| 02 | [`02-release-v0.2.2.md`](02-release-v0.2.2.md) | `pyproject.toml` at `0.2.2`, `README.md`, `PROVENANCE.md`; dated addenda to `docs/adoption/` for the new pin; both ends locally and in CI; **tag `v0.2.2`** on its commit after green CI, not by the prompt. Shaped by U3. | **written** 2026-10-10; ⏸ **held** 2026-10-11 on 01b, and re-measured against its tree before its orchestration note |
 
-**Order.** 01 → 02. 02 releases what 01 leaves, and is written after 01 is reviewed.
+**Order.** 01 → 01b → 02. 02 releases what 01 and 01b leave. It was written after 01 was reviewed,
+and is re-measured, and amended in a planning commit of its own, after 01b is reviewed.
 
 ## 3. Datastores
 
@@ -112,6 +118,8 @@ directories.
 - **After 01:** `ShardedPool`'s closed flag and its actor release (their names are 01's to choose);
   the stand-in's `ray.kill` and name reservation; the new test module; the smoke script's new
   steps; contract §9.3.
+- **After 01b:** `SQL/ShardedPool.py`'s `_ray_is_running()` and the guard in `_kill_actors`; the
+  stand-in's patch of `_ray_is_running`; tests 7 and 8 of 01's module; contract §9.4.
 - **After 02:** `pyproject.toml` at `0.2.2`; the adoption addenda. After its CI passes, the tag
   `v0.2.2` on 02's commit.
 
@@ -195,6 +203,25 @@ adopts the release named in the adoption addenda) and U41 (the smoke run).
   - holding the fix on `main` until another change needs a release. The clients would adopt
     `v0.2.1` with the defect latent, and move again later;
   - `v0.3.0`, treating dead handles after `__exit__` as a change of behaviour.
+
+- **U4: closing a pool must not start Ray.** *(Taken 2026-10-11: the user chose to fix it before
+  the release, when the orchestrator put `[02-closing-a-pool-can-start-ray]` to them. The form is
+  the planner's recommendation in 01b, and the user may change it at 01b's dispatch.)*
+  **Recommended:** `_kill_actors` returns at once when a module-level `_ray_is_running()` (which
+  returns `ray.is_initialized()`) is false. No actor of the process can then be alive, and Ray's
+  `ray.kill`, one of its auto-init calls, would run `ray.init()` first. The stand-in stands in
+  `_ray_is_running` as true inside `active()`, as it stands in `random`. Measured (01b §1.2): 493
+  at both ends with a prototype and a scratch test, and the smoke run unchanged under real Ray.
+  **Rejected:**
+  - releasing `v0.2.2` with the side effect and recording it for the clients. Once SGK adopts, its
+    "No Ray" test `test_quadsource_policy_main` would start a local Ray, and the fix would need a
+    second tag and a second pin move;
+  - the stand-in faking `ray.is_initialized` inside `active()`. 12 modules assert in `tearDown`,
+    while `active()` is entered, that Ray is not initialised;
+  - calling Ray's private `ray._private.worker.kill`, which is not wrapped by auto-init. It is not
+    public API, and the stand-in would have to patch a private name;
+  - skipping the kill for a handle that is not a `ray.actor.ActorHandle`. The stand-in's handles
+    are not, so the suite would see no kill.
 
 ## 7. Gates outside this repository
 

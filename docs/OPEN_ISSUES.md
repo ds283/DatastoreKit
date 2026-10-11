@@ -3,7 +3,7 @@
 One line per open issue, pointing at the board that holds it. The board is right if the two
 disagree. See `CLAUDE.md` for the maintenance rule.
 
-**Last updated:** 2026-10-10 · **4 open**: 0 on this repository's boards, 4 inherited (§1.2).
+**Last updated:** 2026-10-11 · **5 open**: 1 on this repository's boards (§1.3), 4 inherited (§1.2).
 
 ## 1. By campaign
 
@@ -27,4 +27,8 @@ package once 01 lands, and taken over by a board here when a campaign is planned
 
 ### 1.3 `actor-names` ([board](../prompts/actor-names/IMPLEMENTATION_STATE.md)): assigned issues, held on the boards that opened them
 
-None open (2026-10-10: `actor-names` prompt 01 closed the one issue assigned to it, on the `extraction` board).
+`actor-names` prompt 01 closed the one issue assigned to it, on the `extraction` board (2026-10-10).
+
+| Issue | Board | Hook |
+|---|---|---|
+| `[02-closing-a-pool-can-start-ray]` | `actor-names` | `ray.kill` is a Ray auto-init call, so a pool closed while its process is not connected to Ray starts a local Ray; assigned to `actor-names` prompt 01b (U4) |

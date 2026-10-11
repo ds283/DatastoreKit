@@ -1,11 +1,13 @@
 # actor-names campaign — implementation state
 
-**Last updated:** 2026-10-10 · **Status: IN PROGRESS — 2 of 2 prompts written (01, 02), 1 landed (01,
-`ac50a8a`, reviewed); U1–U3 taken 2026-10-10, as recommended; 02 ready to dispatch.**
+**Last updated:** 2026-10-11 · **Status: IN PROGRESS — 3 of 3 prompts written (01, 01b, 02), 1 landed
+(01, `ac50a8a`, reviewed); U1–U3 taken 2026-10-10, as recommended, and U4 2026-10-11; 01b ready
+to dispatch; 02 held on 01b. One issue open: `[02-closing-a-pool-can-start-ray]` (§3).**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]`, closed by 01 on the
-[extraction board](../extraction/IMPLEMENTATION_STATE.md) §4 ·
+[extraction board](../extraction/IMPLEMENTATION_STATE.md) §4; `[02-closing-a-pool-can-start-ray]`,
+held in §3 below ·
 **Index:** [`docs/OPEN_ISSUES.md`](../../docs/OPEN_ISSUES.md) §1.3
 
 > **Maintenance rule.** Whenever an entry is added to, narrowed in, or closed out of §3 or §4
@@ -14,20 +16,22 @@
 
 ### Decisions
 
-**Put to the user (README §6.2), taken 2026-10-10:**
+**Put to the user (README §6.2), U1–U3 taken 2026-10-10 and U4 2026-10-11:**
 
 | Decision | Recommendation | Status |
 |---|---|---|
 | **U1** how a closed pool releases its names | `ray.kill` each actor at the end of `__exit__` and of `_close_refused_open`; a closed flag; the names unchanged | **taken** 2026-10-10 |
 | **U2** the stand-in pool | stands in `ray.kill`; reserves names per cluster until killed; a killed handle's calls raise; always on | **taken** 2026-10-10 |
 | **U3** the release | `v0.2.2` by 02, which the clients adopt in place of `v0.2.1` | **taken** 2026-10-10 (needed by 02) |
+| **U4** closing a pool must not start Ray | fix before the release, by 01b: `_kill_actors` kills nothing when a module-level `_ray_is_running()` is false; the stand-in stands it in | **taken** 2026-10-11 (fix first); the form is 01b's recommendation |
 
 ## 1. Prompts
 
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [A closed pool releases its actor names](01-a-closed-pool-releases-its-actor-names.md) | the kill at `__exit__` and on a refused open, and the closed flag (U1); the stand-in's `ray.kill` and names (U2); a test module; the smoke script's step N reversed and a collision step; contract §9.3; a dated subsection of the verification document; closes the issue | ✍️ yes, 2026-10-10 | ✅ 2026-10-10; reviewed | `ac50a8a` | [log 01](logs/01-a-closed-pool-releases-its-actor-names.md) |
-| 02 | [Release `v0.2.2`](02-release-v0.2.2.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G2–G4; the tag after green CI (U3) | ✍️ yes, 2026-10-10 | ⬜ | — | — |
+| 01b | [Closing a pool starts no Ray](01b-closing-a-pool-starts-no-ray.md) | `_ray_is_running()` and the guard in `_kill_actors`; the stand-in's patch; tests 7 and 8; the smoke run unchanged at both ends; contract §9.4; a dated subsection of the verification document; closes `[02-closing-a-pool-can-start-ray]` (U4) | ✍️ yes, 2026-10-11 | ⬜ | — | — |
+| 02 | [Release `v0.2.2`](02-release-v0.2.2.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G2–G4; the tag after green CI (U3) | ✍️ yes, 2026-10-10; ⏸ held 2026-10-11 on 01b, to be re-measured against its tree | ⬜ | — | — |
 
 **Orchestrator review of prompt 01 (2026-10-10).** Dispatched from `7c97125` to one Opus
 subagent, with the note's eight corrections and its additions. Reviewed against its commit
@@ -148,8 +152,38 @@ None of this campaign's own. The extraction campaign's G2–G4 are recorded on i
 
 ## 3. Active and unresolved issues
 
-No issue is held on this board (2026-10-10). The issue this campaign owned was held on the
-extraction board's §3, with its measurement; 01 closed it there, and §4 below points to it.
+- **[02-closing-a-pool-can-start-ray]** — *opened 2026-10-11 by the orchestrator, checking prompt
+  02's facts at `1925898`; **assigned** to prompt 01b (U4).*
+  - **What.** `_kill_actors` (`SQL/ShardedPool.py:419-441`, 01's) calls Ray's `ray.kill` on every
+    close. `ray.kill` is one of Ray's auto-init calls (`AUTO_INIT_APIS`, `ray/__init__.py:211-220`
+    at 2.43.0, `:208-217` at 2.55.1): when the process is not connected to Ray, it runs `ray.init()`
+    first. So a pool closed while the process is not connected to Ray starts a local Ray, which
+    stays up until the process exits. The kill then raises, which `_kill_actors` ignores, so the
+    close returns normally.
+  - **Measured.** At Ray 2.55.1, `ray.kill` of an object that is not a handle, in a process with no
+    Ray, started a local Ray ("Started a local Ray instance"), then raised `ValueError`, and
+    `ray.is_initialized()` was then true. 2.43.0's source is the same in the lines above.
+  - **Impact.** Under real Ray none, since a pool's actors exist only while the process is
+    connected. A client's stand-in that patches `ray.get` and not `ray.kill` meets it: SGK's
+    `Datastore/tests/standin_pool.py` (`active()`, `:231-247` at `b510bc9`), through
+    `ComputeTargets/tests/test_quadsource_policy_main.py`, a "No Ray" test that closes a pool on
+    stand-in shards. Once SGK adopted `v0.2.2` as 01 left it, that test would start a local Ray.
+    CPBH and SI stand in neither call. Prompt 02 §1.1 states the opposite ("it never starts Ray"),
+    from `ray/_private/worker.py`'s `def kill` alone, so 02 is held, and re-measured after 01b.
+  - **Next.** 01b (U4): a module-level `_ray_is_running()` guards `_kill_actors`, and the stand-in
+    stands it in. A prototype passed 493 at both ends, and the smoke run under real Ray (01b §1.2).
+
+  **How it was found, and a rule broken in finding it.** Writing 02's orchestration note, the
+  orchestrator re-checked 02 §1.1's claim with that one probe, from a scratch venv at the high end.
+  The probe is not the smoke script, so starting Ray broke README §5 rule 7. It also ran while the
+  orchestrator's high-end suite run of `1925898` was in progress, against the rule's "never with
+  the suite running". The Ray it started was shut down when the probe's process exited, and no Ray
+  process was found afterwards. That suite run (`Ran 492 tests … OK`, 0 `ResourceWarning` lines) is
+  not relied on. Nothing else of the campaign repeats the probe: 01b's hazard 1 forbids it, and its
+  test stands in `ray.init`.
+
+The issue this campaign was opened for was held on the extraction board's §3, with its
+measurement; 01 closed it there, and §4 below points to it.
 
 ## 4. Resolved issues
 
