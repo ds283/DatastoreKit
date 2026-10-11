@@ -135,6 +135,19 @@ row, the log's header and `prompts/INDEX.md`; the notes line. No issue is opened
 observations (a plain word as a test name; a parameterised factory's objects dispatched by their
 class's name, contract §6's existing fact; the suite not seeing an actor unpickle) need no work.
 
+*The push (2026-10-11).* With the user's approval, `main` was pushed, moving `origin/main` from
+`460b012` to `85f504d` (a fast-forward of four commits, `93446be`, `b8a00ad`, `f5d8957` and
+`85f504d`, with no tag). CI passed there at both ends,
+[run 38172753163](https://github.com/ds283/DatastoreKit/actions/runs/38172753163):
+- low: Python 3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39, `Ran 504 tests in 175.876s` / `OK`, and
+  `black` leaving 74 files unchanged;
+- high: 3.13.16 / 2.55.1 / 2.0.46, `Ran 504 tests in 165.611s` / `OK`, with 4 `ResourceWarning`
+  lines (0 at the low end), which is timing (`actor-names` log 01, correction 8);
+- SQLite 3.45.1 at both.
+
+The smoke script is not collected by the suite, so CI started no Ray. 02 (`v0.2.3`) is written
+next, against `f5d8957`'s tree.
+
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
 
