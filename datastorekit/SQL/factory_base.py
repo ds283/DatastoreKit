@@ -13,23 +13,41 @@ class SQLAFactoryBase(ABC):
     def build(payload, conn, table, inserter, tables, inserters):
         raise NotImplementedError
 
-    @staticmethod
-    @abstractmethod
-    def store(obj, conn, table, inserter, tables, inserters):
-        raise NotImplementedError
-
-    @staticmethod
-    @abstractmethod
-    def validate(obj, conn, table, tables):
-        raise NotImplementedError
-
-    @staticmethod
-    @abstractmethod
-    def validate_on_startup(conn, table, tables, prune=False):
-        raise NotImplementedError
-
     # Hooks the datastore layer calls. They are not abstract, so a factory that has no use for one
-    # need not define it.
+    # need not define it. The layer calls each on the registry's entry, a class or an instance
+    # alike, only in the case its docstring names; a hook the factory does not define then raises
+    # NotImplementedError, or returns its default, as below.
+
+    @staticmethod
+    def store(obj, conn, table, inserter, tables, inserters):
+        """
+        Store ``obj``, an object of this factory's class, through ``inserter``, and return the
+        object as stored. The layer calls it, in an actor, for every store of an object of the
+        class. A replicated store calls it on the controlling shard, and then on every other shard
+        with the controlling shard's answer, which carries the serials it must insert under or
+        verify.
+        """
+        raise NotImplementedError
+
+    @staticmethod
+    def validate(obj, conn, table, tables):
+        """
+        Validate ``obj``, an object of this factory's class, and return the outcome. The layer
+        calls it, in an actor, for every validate of an object of the class. A replicated validate
+        calls it on the controlling shard, and, when that outcome is true, on every other shard,
+        whose outcome must equal it.
+        """
+        raise NotImplementedError
+
+    @staticmethod
+    def validate_on_startup(conn, table, tables, prune=False):
+        """
+        Return lines describing the stored rows that are not validated, and, with ``prune``,
+        delete them. The layer calls it only for a class whose ``register()`` declares
+        ``validate_on_startup: True``: in each actor when a store is opened, and in the pool's
+        prune of such a class when it is replicated.
+        """
+        raise NotImplementedError
 
     @staticmethod
     def revalidate(serial, conn, table, tables) -> bool:

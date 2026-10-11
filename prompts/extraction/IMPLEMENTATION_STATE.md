@@ -59,7 +59,7 @@ and 07, each into an a and a b prompt.
 | **U29** the release SGK adopts | `v0.2.0` directly; G2 reads `v0.2.0` | **taken** 2026-10-09, by the user |
 | **U30** splitting 07 | 07a the adoption checklists; 07b verification and close-out | **taken** 2026-10-09, at 07a's writing |
 | **U31** SI's stores | rebuilt, not migrated, as D4; SI tags its last commit on the old layer | **taken** 2026-10-09, at 07a's writing |
-| **U32** clients that register factory instances | client-side: define the three abstract hooks (CPBH 20 classes, 24 entries; SI 16, 18), or register the class once its hooks need no instance | **taken** 2026-10-09, at 07a's writing |
+| **U32** clients that register factory instances | client-side: define the three abstract hooks (CPBH 20 classes, 24 entries; SI 16, 18), or register the class once its hooks need no instance | **taken** 2026-10-09, at 07a's writing; *revisited in part 2026-10-11 by `factory-defaults` U1, on the user's ruling: from `v0.2.3` the base defaults the three hooks, and a client may register instances as they are ([`../factory-defaults/README.md`](../factory-defaults/README.md) §6.2)* |
 | **U33** the open issues at close | *(recommended: close with them open, unassigned)* | **taken** 2026-10-09, otherwise: fix all four before closing, and release; 07b withdrawn |
 | **U34** the contract's §8 citation | the close-out corrects it in place, with a dated note | **taken** 2026-10-09 |
 | **U35** splitting the fixes | 08a the `KeyError` and the vectorized copy; 08b engine disposal; 09 the prose; 10 the release; 11 the close-out | **taken** 2026-10-09, at 08a's writing |

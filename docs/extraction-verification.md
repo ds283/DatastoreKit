@@ -767,6 +767,256 @@ sys 1.09
 exit=1
 ```
 
+### 4.8 The smoke run with a registry of instances (`factory-defaults` prompt 01, 2026-10-11)
+
+*Added by [`factory-defaults` prompt 01](../prompts/factory-defaults/01-the-base-defaults-three-hooks.md)
+(log [`01-the-base-defaults-three-hooks.md`](../prompts/factory-defaults/logs/01-the-base-defaults-three-hooks.md)),
+under `CLAUDE.md` rule 6. §4.6 and §4.7 above are of `actor-names` prompts 01 and 01b's trees, and
+stay true of them. This subsection is of `factory-defaults` prompt 01's tree, where
+`SQLAFactoryBase` defaults `store`, `validate` and `validate_on_startup`, so that a factory class
+that defines `register` and `build` can be instantiated and its instance registered
+(`docs/client-contract.md` §9.5). The stand-in pool of the suite passes the registry to its actors
+as it is, so step I is the one place an instance is sent to a real actor.*
+
+The script gains a step **I**, "a registry of instances", after step 6 and needing no other step
+(SHA-256 `032036798e101d610a4ac0185ea4eaa7f1db0fe58f52c48ad9f3707548a6a92a`). On a store of its
+own (`instances.sqlite`, in the script's temporary directory), it opens a read-write pool whose
+registry is `datastorekit/tests/client/instances.py`'s `instance_registry()`: the neutral client's
+factories with `gauge_setting` mapped to `gauge_setting_factory()`, and `scalar_left` and
+`scalar_right` mapped to two instances of one parameterised factory class,
+`scalar_entry_factory("left_value")` and `scalar_entry_factory("right_value")`, whose hooks take
+`self`. It gets a row of each of the two tables and a `gauge_setting`, each of which must be
+inserted (`_new_insert`); closes the pool and checks its names released; reopens it read-write with
+the same registry, and the same three gets must each be found (`_deserialized`) under the same
+serial; and closes it, checks its names released, and drops it. The instances are made inside the
+step, so a base that refuses one fails step I alone. Nothing else in the script changed: its diff
+adds lines and removes none.
+
+Each end ran from a fresh offline venv with a fresh export of the working tree installed editable
+(`--no-deps --no-build-isolation`, after `ray`, `sqlalchemy` and `setuptools`), with `PYTHONPATH`
+unset, from the export's root, under `/usr/bin/time -p`, one after the other and with no suite
+running. `<scratch-fd01>` is the prompt's scratch directory (`<session scratchpad>/agent01`).
+`RAY_ADDRESS` and `RAY_ENABLE_AUTO_CONNECT` were unset, and there was no
+`/tmp/ray/ray_current_cluster`, before and after each run. Another session's local Ray instance,
+up when the prompt was dispatched, had gone by its start: `pgrep` found no Ray process at 20:21,
+and the script's rule none at 20:25:56, at 20:42:51, or before and after each run. One session
+directory under `/tmp/ray/` not of this prompt, `session_2026-10-11_20-24-26_375548_24732`, dates
+from between those checks; this prompt started no Ray then, and touched no directory there.
+
+| | Low end | High end | (a) applied, high end |
+|---|---|---|---|
+| Python / Ray / SQLAlchemy / SQLite | 3.12.15 / 2.43.0 / 2.0.39 / 3.53.4 | 3.13.16 / 2.55.1 / 2.0.46 / 3.53.4 | 3.13.16 / 2.55.1 / 2.0.46 / 3.53.4 |
+| Started (BST) | 20:43:18 | 20:43:43 | 20:44:15 |
+| `ray.init` | 4.1 s | 6.8 s | 5.5 s |
+| The script, in all | 19.0 s (`time -p`: real 19.34) | 24.9 s (real 25.29) | 17.7 s (real 17.97) |
+| Steps | every one `PASS` (1, 2, N, C, 3, 4, 5, 6, I) | every one `PASS` | 1, 2, N, C, 3, 4, 5, 6 `PASS`; **I `FAIL`**, `builtins.TypeError` |
+| Exit code | 0 | 0 | 1 |
+| Ray's session directory | `/tmp/ray/session_2026-10-11_20-43-20_087521_39121` | `/tmp/ray/session_2026-10-11_20-43-45_431275_39477` | `/tmp/ray/session_2026-10-11_20-44-16_911206_40041` |
+| Ray processes before and after (the script's own check, and the log's, by the same rule) | 0 and 0 | 0 and 0 | 0 and 0 |
+
+**What it shows.** At both ends steps 1–6 give §4.7's results, and step I passes: each of the
+three gets on the new store inserted its row (serial 1 in each table), and after the reopen each
+was found under the same serial; after each pool's `__exit__`, 0 of 4 names were held. So under
+real Ray each actor received the registry of instances, serialised with its constructor's
+arguments, and its copies of the two parameterised instances each served its own table. With the
+prompt's breakage (a) applied (`@abstractmethod` restored on the three hooks; the log's §5 gives
+the diff), step I fails at its first instance, `TypeError: Can't instantiate abstract class
+gauge_setting_factory without an implementation for abstract methods 'store', 'validate',
+'validate_on_startup'`, before any pool is opened, and every other step passes: the base that
+`v0.2.2` shipped refuses the registry that step I sends.
+
+#### 4.8.1 The output, low end
+
+```text
+2026-10-11 20:43:23,156	INFO worker.py:1841 -- Started a local Ray instance.
+Environment:
+    Python       3.12.15 (<scratch-fd01>/smoke-lo/venv/bin/python)
+    Ray          2.43.0
+    SQLAlchemy   2.0.39
+    SQLite       3.53.4
+    datastorekit 0.2.2
+    imported from <scratch-fd01>/smoke-lo/tree/datastorekit/__init__.py
+Ray processes before: 0
+Ray started in 4.1 s, at 127.0.0.1; session directory /tmp/ray/session_2026-10-11_20-43-20_087521_39121
+step 1: write every class (read-write)
+PASS  step 1 (0.9 s): wrote store_tag 3, keypoint 3, dial_setting 2, knob_setting 1, gauge_setting 2, routing_rule 2, ephemeral_probe 1, keypoint_alias 3, Gadget 2, Tessera 6, Sample 4, Trace 2, Weave 1
+step 2: keyed vectorized get, the caller's dicts
+    after __exit__, the pool referenced: 0 of 4 held
+PASS  step 2 (0.0 s): serials [1, 2] (step 1's), the caller's dicts unchanged
+step N: a closed pool releases its names
+    a second read-write open, the first pool referenced: opened in 1.4 s
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step N (1.4 s): after __exit__, the pool referenced, 0 of 4 held; a second read-write open worked at once (1.4 s); after its __exit__, 0 of 4 held
+step C: two open pools collide
+    the second open raised builtins.ValueError: The name SerialPoolBroker (namespace=None) is already taken. Please use a different name or get the existing actor using ray.get_actor('SerialPoolBroker', namespace='None')
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step C (1.5 s): the second open raised builtins.ValueError naming SerialPoolBroker; the first pool then: serials [1, 2], the caller's dicts unchanged; after its __exit__, 0 of 4 held
+step 3: reopen read-write, the same get
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step 3 (1.5 s): serials [1, 2], the caller's dicts unchanged
+step 4: read-only pool, the same get
+    after __exit__, the pool referenced: 0 of 3 held
+    after del and gc.collect(): 0 of 3 held, after 0.0 s
+PASS  step 4 (1.4 s): read-only: serials [1, 2], the caller's dicts unchanged
+step 5: refused open, Weave left out
+    the constructor printed, as not supplied: ['Weave']
+    after the exception is dropped: 0 of 4 held
+PASS  step 5 (0.0 s): builtins.RuntimeError: Mismatch between sharded tables supplied to the constructor and read from the existing ShardedPool; 0 of 4 held
+step 6: read-write open after the refusal
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step 6 (1.8 s): read-write open after the refusal: serials [1, 2], the caller's dicts unchanged
+step I: a registry of instances
+    the registry's instances: scalar_left: scalar_entry_factory('left_value'), scalar_right: scalar_entry_factory('right_value'), gauge_setting: gauge_setting_factory()
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+    a new store, each inserted: {'scalar_left': 1, 'scalar_right': 1, 'gauge_setting': 1}
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step I (3.0 s): serials {'scalar_left': 1, 'scalar_right': 1, 'gauge_setting': 1}, inserted, and found again after a reopen; after each __exit__, 0 of 4 held
+ray.shutdown(); waited 0.0 s for its processes
+Ray processes after: 0
+Summary: every step passed; 0 Ray process(es) left; 19.0 s in all
+real 19.34
+user 4.70
+sys 1.46
+exit=0
+```
+
+#### 4.8.2 The output, high end
+
+```text
+2026-10-11 20:43:51,051	INFO worker.py:2012 -- Started a local Ray instance.
+<scratch-fd01>/smoke-hi/venv/lib/python3.13/site-packages/ray/_private/worker.py:2051: FutureWarning: Tip: In future versions of Ray, Ray will no longer override accelerator visible devices env var if num_gpus=0 or num_gpus=None (default). To enable this behavior and turn off this error message, set RAY_ACCEL_ENV_VAR_OVERRIDE_ON_ZERO=0
+  warnings.warn(
+Environment:
+    Python       3.13.16 (<scratch-fd01>/smoke-hi/venv/bin/python)
+    Ray          2.55.1
+    SQLAlchemy   2.0.46
+    SQLite       3.53.4
+    datastorekit 0.2.2
+    imported from <scratch-fd01>/smoke-hi/tree/datastorekit/__init__.py
+Ray processes before: 0
+Ray started in 6.8 s, at 127.0.0.1; session directory /tmp/ray/session_2026-10-11_20-43-45_431275_39477
+step 1: write every class (read-write)
+PASS  step 1 (1.5 s): wrote store_tag 3, keypoint 3, dial_setting 2, knob_setting 1, gauge_setting 2, routing_rule 2, ephemeral_probe 1, keypoint_alias 3, Gadget 2, Tessera 6, Sample 4, Trace 2, Weave 1
+step 2: keyed vectorized get, the caller's dicts
+    after __exit__, the pool referenced: 0 of 4 held
+PASS  step 2 (0.1 s): serials [1, 2] (step 1's), the caller's dicts unchanged
+step N: a closed pool releases its names
+    a second read-write open, the first pool referenced: opened in 1.8 s
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step N (1.9 s): after __exit__, the pool referenced, 0 of 4 held; a second read-write open worked at once (1.8 s); after its __exit__, 0 of 4 held
+step C: two open pools collide
+    the second open raised ray.exceptions.ActorAlreadyExistsError: The name SerialPoolBroker (namespace=None) is already taken. Please use a different name or get the existing actor using ray.get_actor('SerialPoolBroker', namespace='None')
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step C (1.6 s): the second open raised ray.exceptions.ActorAlreadyExistsError naming SerialPoolBroker; the first pool then: serials [1, 2], the caller's dicts unchanged; after its __exit__, 0 of 4 held
+step 3: reopen read-write, the same get
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step 3 (1.6 s): serials [1, 2], the caller's dicts unchanged
+step 4: read-only pool, the same get
+    after __exit__, the pool referenced: 0 of 3 held
+    after del and gc.collect(): 0 of 3 held, after 0.0 s
+PASS  step 4 (2.1 s): read-only: serials [1, 2], the caller's dicts unchanged
+step 5: refused open, Weave left out
+    the constructor printed, as not supplied: ['Weave']
+    after the exception is dropped: 0 of 4 held
+PASS  step 5 (0.0 s): builtins.RuntimeError: Mismatch between sharded tables supplied to the constructor and read from the existing ShardedPool; 0 of 4 held
+step 6: read-write open after the refusal
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step 6 (2.0 s): read-write open after the refusal: serials [1, 2], the caller's dicts unchanged
+step I: a registry of instances
+    the registry's instances: scalar_left: scalar_entry_factory('left_value'), scalar_right: scalar_entry_factory('right_value'), gauge_setting: gauge_setting_factory()
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+    a new store, each inserted: {'scalar_left': 1, 'scalar_right': 1, 'gauge_setting': 1}
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step I (4.3 s): serials {'scalar_left': 1, 'scalar_right': 1, 'gauge_setting': 1}, inserted, and found again after a reopen; after each __exit__, 0 of 4 held
+ray.shutdown(); waited 0.0 s for its processes
+Ray processes after: 0
+Summary: every step passed; 0 Ray process(es) left; 24.9 s in all
+real 25.29
+user 5.51
+sys 1.90
+exit=0
+```
+
+#### 4.8.3 Breakage (a), under Ray
+
+```text
+2026-10-11 20:44:21,066	INFO worker.py:2012 -- Started a local Ray instance.
+<scratch-fd01>/smoke-break-a/venv/lib/python3.13/site-packages/ray/_private/worker.py:2051: FutureWarning: Tip: In future versions of Ray, Ray will no longer override accelerator visible devices env var if num_gpus=0 or num_gpus=None (default). To enable this behavior and turn off this error message, set RAY_ACCEL_ENV_VAR_OVERRIDE_ON_ZERO=0
+  warnings.warn(
+Environment:
+    Python       3.13.16 (<scratch-fd01>/smoke-break-a/venv/bin/python)
+    Ray          2.55.1
+    SQLAlchemy   2.0.46
+    SQLite       3.53.4
+    datastorekit 0.2.2
+    imported from <scratch-fd01>/smoke-break-a/tree/datastorekit/__init__.py
+Ray processes before: 0
+Ray started in 5.5 s, at 127.0.0.1; session directory /tmp/ray/session_2026-10-11_20-44-16_911206_40041
+step 1: write every class (read-write)
+PASS  step 1 (1.2 s): wrote store_tag 3, keypoint 3, dial_setting 2, knob_setting 1, gauge_setting 2, routing_rule 2, ephemeral_probe 1, keypoint_alias 3, Gadget 2, Tessera 6, Sample 4, Trace 2, Weave 1
+step 2: keyed vectorized get, the caller's dicts
+    after __exit__, the pool referenced: 0 of 4 held
+PASS  step 2 (0.2 s): serials [1, 2] (step 1's), the caller's dicts unchanged
+step N: a closed pool releases its names
+    a second read-write open, the first pool referenced: opened in 1.9 s
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step N (2.0 s): after __exit__, the pool referenced, 0 of 4 held; a second read-write open worked at once (1.9 s); after its __exit__, 0 of 4 held
+step C: two open pools collide
+    the second open raised ray.exceptions.ActorAlreadyExistsError: The name SerialPoolBroker (namespace=None) is already taken. Please use a different name or get the existing actor using ray.get_actor('SerialPoolBroker', namespace='None')
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step C (1.6 s): the second open raised ray.exceptions.ActorAlreadyExistsError naming SerialPoolBroker; the first pool then: serials [1, 2], the caller's dicts unchanged; after its __exit__, 0 of 4 held
+step 3: reopen read-write, the same get
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step 3 (1.6 s): serials [1, 2], the caller's dicts unchanged
+step 4: read-only pool, the same get
+    after __exit__, the pool referenced: 0 of 3 held
+    after del and gc.collect(): 0 of 3 held, after 0.0 s
+PASS  step 4 (1.5 s): read-only: serials [1, 2], the caller's dicts unchanged
+step 5: refused open, Weave left out
+    the constructor printed, as not supplied: ['Weave']
+    after the exception is dropped: 0 of 4 held
+PASS  step 5 (0.0 s): builtins.RuntimeError: Mismatch between sharded tables supplied to the constructor and read from the existing ShardedPool; 0 of 4 held
+step 6: read-write open after the refusal
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step 6 (1.5 s): read-write open after the refusal: serials [1, 2], the caller's dicts unchanged
+step I: a registry of instances
+Traceback (most recent call last):
+  File "<scratch-fd01>/smoke-break-a/tree/docs/extraction/ray_smoke_run.py", line 627, in run
+    seen = getattr(self, method)()
+  File "<scratch-fd01>/smoke-break-a/tree/docs/extraction/ray_smoke_run.py", line 557, in step_instances
+    factories, replicated_tables = instances.instance_registry()
+                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "<scratch-fd01>/smoke-break-a/tree/datastorekit/tests/client/instances.py", line 94, in instance_registry
+    factories["gauge_setting"] = _f.gauge_setting_factory()
+                                 ~~~~~~~~~~~~~~~~~~~~~~~~^^
+TypeError: Can't instantiate abstract class gauge_setting_factory without an implementation for abstract methods 'store', 'validate', 'validate_on_startup'
+FAIL  step I (0.0 s): builtins.TypeError: Can't instantiate abstract class gauge_setting_factory without an implementation for abstract methods 'store', 'validate', 'validate_on_startup'
+ray.shutdown(); waited 0.0 s for its processes
+Ray processes after: 0
+Summary: a step did not pass; 0 Ray process(es) left; 17.7 s in all
+real 17.97
+user 4.93
+sys 1.35
+exit=1
+```
+
+
 ---
 
 ## 5. The pin (U42)
@@ -1081,6 +1331,20 @@ Tally, by the last column's first words: 22 addressed (by a prompt, a review or 
 superseded, 1 no longer true, 34 still so or still observations, and 6 records or corrections with
 nothing open. Each of the 34 was left as an observation by its log, and no later log or review
 opened it as an issue.
+
+### 8.1 07a §7.3, after `factory-defaults` prompt 01 (2026-10-11)
+
+*Added by [`factory-defaults` prompt 01](../prompts/factory-defaults/01-the-base-defaults-three-hooks.md),
+under `CLAUDE.md` rule 6.* §8's row for 07a §7.3 ("contract §3 does not say what U32 found about
+instances": **still an observation**) was right for the trees it was taken on, `v0.2.1` and every
+tree since up to `v0.2.2`. From `factory-defaults` prompt 01's tree, the contract says what U32
+found: its §9.5 supersedes §3's first two sentences and the "Kind" of `store`, `validate` and
+`validate_on_startup`, and states that the layer calls each hook on the registry's entry, class or
+instance alike, and what a pool's actors receive. And the base no longer refuses an instance of a
+factory class that lacks those three hooks: it defaults them, and a class that defines `register`
+and `build` can be instantiated (extraction U32, revisited in part by `factory-defaults` U1, on the
+user's ruling). So at that tree 07a §7.3 is **addressed**. The table above, and its tally, are
+unchanged.
 
 ---
 

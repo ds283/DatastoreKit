@@ -1,7 +1,8 @@
 # factory-defaults campaign — implementation state
 
-**Last updated:** 2026-10-11 · **Status: PLANNED — 1 of 2 prompts written (01), 0 landed; U1–U5 taken
-2026-10-11, as recommended; 01 is ready to be dispatched.**
+**Last updated:** 2026-10-11 · **Status: IN PROGRESS — 1 of 2 prompts written (01), 1 landed (01,
+this commit, not yet reviewed); U1–U5 taken 2026-10-11, as recommended; 02 is written after 01's
+review.**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** no issue. It carries out the user's ruling of 2026-10-11 (README §0), revisits extraction
@@ -29,7 +30,7 @@ U32 in part (U1), and addresses extraction 07a's observation §7.3
 
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
-| 01 | [The base defaults three hooks](01-the-base-defaults-three-hooks.md) | the base (U1); `test_factory_instances.py` and `ABSTRACT_HOOKS` (U2); smoke step I at both ends (U3); contract §9.5 with its markers; verification §4.8 and §8.1; a note on extraction U32 | ✍️ yes, 2026-10-11 | ⬜ | — | — |
+| 01 | [The base defaults three hooks](01-the-base-defaults-three-hooks.md) | the base (U1); `test_factory_instances.py` and `ABSTRACT_HOOKS` (U2); smoke step I at both ends (U3); contract §9.5 with its markers; verification §4.8 and §8.1; a note on extraction U32 | ✍️ yes, 2026-10-11 | ✅ 2026-10-11; not yet reviewed | this commit | [log 01](logs/01-the-base-defaults-three-hooks.md) |
 | 02 | Release `v0.2.3` (planned) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G2–G4; the tag after green CI (U5) | ⬜ | ⬜ | — | — |
 
 **Planning note (2026-10-11, at `460b012`).** The brief's three points of §3 were re-measured, and

@@ -594,6 +594,9 @@ taken on 2026-10-09, when 05 was written.
   state both routes.)* The package is unchanged. **Rejected:** making those hooks defaulted in a
   release before CPBH adopts, which changes the contract that SGK's factories and the neutral client
   satisfy, for a fix a client makes in a few lines.
+  *(Revisited in part 2026-10-11 by `factory-defaults` U1, on the user's ruling: from `v0.2.3` the
+  base defaults `store`, `validate` and `validate_on_startup`, and a client may register instances
+  as they are. See `../factory-defaults/README.md` §6.2.)*
 - **U33: the open issues at close. (taken 2026-10-09, by the user)** When 07b was to be written,
   the board held four issues open on this repository:
   `[01-package-prose-names-sgks-layout]`, `[02-an-unsupplied-sharded-table-raises-keyerror]`,

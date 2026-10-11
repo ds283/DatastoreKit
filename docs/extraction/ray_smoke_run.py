@@ -34,6 +34,15 @@ C. two open pools collide: with a pool open, a second read-write open is refused
    "Mismatch between sharded tables supplied to the constructor and read from the existing
    ShardedPool", and the exception is dropped;
 6. a read-write open after the refusal works, and the same get finds the same serials.
+I. a registry of instances (added by ``factory-defaults`` prompt 01), needing no other step: on a
+   new store of its own, in the same temporary directory, a read-write pool whose registry is
+   ``tests/client/instances.py``'s ``instance_registry()`` (``gauge_setting`` registered as an
+   instance of its factory class, and one parameterised factory class registered as two instances
+   over two tables of its own) gets a row of each of the two tables and a ``gauge_setting``, each
+   inserted; the pool is closed, and its names checked released; a read-write reopen with the same
+   registry gets the same three, each found under the same serial; it is closed, its names checked
+   released, and dropped. The registry reaches each actor serialised with its constructor's
+   arguments, so this is the one place an instance is sent to a real actor.
 
 After each pool's ``__exit__`` the script records whether its names are held, with the pool still
 referenced, and expects none to be: step N checks the record of step 2's pool, and every other
@@ -118,6 +127,8 @@ NOT_SUPPLIED = (
     "sharded tables are configured in the existing ShardedPool, but were not supplied to "
     "the constructor"
 )
+# step I's store, beside the other steps' in the temporary directory
+INSTANCES_STORE = "instances.sqlite"
 # how long a dropped pool's names, or a stopped instance's processes, are waited for
 WAIT_SECONDS = 30.0
 
@@ -480,6 +491,109 @@ class Smoke:
         )
 
     # ---------------------------------------------------------------------------------------------
+    # step I, a registry of instances (added by factory-defaults prompt 01)
+    # ---------------------------------------------------------------------------------------------
+
+    def open_instance_pool(self, factories, replicated_tables) -> None:
+        """
+        A read-write pool on step I's own store, as ``open_pool`` builds one, with the registry
+        of instances and its replicated tables in place of the client's.
+        """
+        printed = io.StringIO()
+        self.last_printed = ""
+        with self.keep_printed(printed), contextlib.redirect_stdout(printed):
+            pool = self.ShardedPool(
+                version_label="standin",
+                db_name=self.primary.parent / INSTANCES_STORE,
+                ShardKeyType=self.registry.shard_key_type,
+                ShardKeyStoreIdGetter=self.registry.shard_key_store_id,
+                replicated_tables=replicated_tables,
+                sharded_tables=self.registry.sharded_tables,
+                shards=SHARDS,
+                factories=factories,
+                read_table_config=self.registry.read_table_config,
+                serial_batch_sizes=self.registry.serial_batch_sizes,
+            )
+        self.pool = pool
+        self.pool_names = [BROKER] + SHARD_NAMES
+
+    def get_instances(self, instances, new: bool) -> Dict[str, int]:
+        """
+        A get of each table of the registry of instances, and of a ``gauge_setting``: name ->
+        serial. Each object must be inserted when ``new``, and found otherwise.
+        """
+        gets = {
+            name: self.pool.object_get(name, value=value)
+            for name, value in instances.SCALAR_VALUES.items()
+        }
+        gets["gauge_setting"] = self.pool.object_get(
+            "gauge_setting", exponent=self.build.GAUGE_EXPONENTS[0]
+        )
+        serials = {}
+        for name, ref in gets.items():
+            obj = self.ray.get(ref)
+            inserted = getattr(obj, "_new_insert", False) is True
+            found = getattr(obj, "_deserialized", False) is True
+            if (inserted, found) != ((True, False) if new else (False, True)):
+                raise StepFailed(
+                    f"{name}: serial {obj.store_id}, _new_insert {inserted}, _deserialized "
+                    f"{found}, on a {'new' if new else 'reopened'} store"
+                )
+            serials[name] = obj.store_id
+        return serials
+
+    def step_instances(self) -> str:
+        """
+        Step I: a pool whose registry holds instances gets a row of each of its two
+        parameterised tables and a ``gauge_setting``; a reopen with the same registry finds the
+        same serials. Each pool is closed and dropped whatever happens.
+        """
+        from datastorekit.tests.client import instances
+
+        held = self.names_held([BROKER] + SHARD_NAMES)
+        if any(held.values()):
+            raise StepFailed(f"before the open: {self.describe(held)}")
+        # the instances are made here, so that a base that refuses one fails this step alone
+        factories, replicated_tables = instances.instance_registry()
+        names = list(instances.SCALAR_TABLES) + ["gauge_setting"]
+        kinds = ", ".join(
+            f"{name}: {type(factories[name]).__name__}("
+            + (
+                repr(factories[name].column)
+                if hasattr(factories[name], "column")
+                else ""
+            )
+            + ")"
+            for name in names
+        )
+        if any(isinstance(factories[name], type) for name in names):
+            raise StepFailed(f"the registry holds a class among {names}")
+        print(f"    the registry's instances: {kinds}")
+
+        self.open_instance_pool(factories, replicated_tables)
+        try:
+            first = self.get_instances(instances, new=True)
+        finally:
+            held = self.close_pool()
+            self.drop_pool()
+        self.require_none_held(held, "after the first pool's __exit__")
+        print(f"    a new store, each inserted: {first}")
+
+        self.open_instance_pool(factories, replicated_tables)
+        try:
+            again = self.get_instances(instances, new=False)
+        finally:
+            held = self.close_pool()
+            self.drop_pool()
+        self.require_none_held(held, "after the reopened pool's __exit__")
+        if again != first:
+            raise StepFailed(f"the reopen found serials {again}, not {first}")
+        return (
+            f"serials {first}, inserted, and found again after a reopen; after each "
+            f"__exit__, {self.describe(held)}"
+        )
+
+    # ---------------------------------------------------------------------------------------------
     # the run
     # ---------------------------------------------------------------------------------------------
 
@@ -492,6 +606,7 @@ class Smoke:
         ("4", "read-only pool, the same get", "step_4", ["1", "N"]),
         ("5", f"refused open, {LEFT_OUT} left out", "step_5", ["1", "N"]),
         ("6", "read-write open after the refusal", "step_6", ["1", "N"]),
+        ("I", "a registry of instances", "step_instances", []),
     ]
 
     def run(self) -> bool:

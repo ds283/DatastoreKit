@@ -61,8 +61,15 @@ REGISTER_KEYS = (
     "validated_column",
     "key_on_version",
 )
-ABSTRACT_HOOKS = ("register", "build", "store", "validate", "validate_on_startup")
-DEFAULTED_HOOKS = ("revalidate", "owned_serials", "inventory_spec")
+ABSTRACT_HOOKS = ("register", "build")
+DEFAULTED_HOOKS = (
+    "store",
+    "validate",
+    "validate_on_startup",
+    "revalidate",
+    "owned_serials",
+    "inventory_spec",
+)
 UNDECLARED_HOOKS = ("read_batch", "read_table")
 
 NINE = {
@@ -276,6 +283,20 @@ class TestCoverageByDeclaration(unittest.TestCase):
             {n for n, f in registry.factories.items() if _defines(f, "read_table")},
             set(registry.read_table_config),
         )
+
+    def test_the_hook_lists_are_the_bases(self):
+        # the base's abstract hooks are exactly ABSTRACT_HOOKS, and each of DEFAULTED_HOOKS is a
+        # hook of the base that is not abstract (factory-defaults prompt 01)
+        self.assertEqual(set(ABSTRACT_HOOKS), SQLAFactoryBase.__abstractmethods__)
+        for hook in DEFAULTED_HOOKS:
+            with self.subTest(hook=hook):
+                self.assertTrue(hasattr(SQLAFactoryBase, hook), hook)
+                self.assertFalse(
+                    getattr(
+                        getattr(SQLAFactoryBase, hook), "__isabstractmethod__", False
+                    ),
+                    hook,
+                )
 
     def test_read_table_config_takes_tables_arg_both_ways(self):
         self.assertEqual(
