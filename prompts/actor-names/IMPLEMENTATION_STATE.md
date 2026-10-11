@@ -1,9 +1,9 @@
 # actor-names campaign — implementation state
 
-**Last updated:** 2026-10-11 · **Status: IN PROGRESS — 3 of 3 prompts written (01, 01b, 02), 3 landed
-(01, `ac50a8a`, reviewed; 01b, `f024fc6`, reviewed; 02, `6d8ee9a`, reviewed); U1–U3
-taken 2026-10-10, as recommended, and U4 2026-10-11. 02 makes the package ready to be released as
-`v0.2.2`; the tag waits for CI to pass on its commit at both ends. No issue
+**Last updated:** 2026-10-11 · **Status: CLOSED (2026-10-11) — 3 of 3 prompts written (01, 01b, 02) and
+landed (01, `ac50a8a`; 01b, `f024fc6`; 02, `6d8ee9a`), each reviewed; `v0.2.2` tagged on
+`6d8ee9a` (tag object `c32d027`) after CI passed there at both ends; U1–U3 taken 2026-10-10, as
+recommended, and U4 2026-10-11. No issue
 open on this board: 01b closed `[02-closing-a-pool-can-start-ray]` (§4).**
 
 **Campaign:** [`README.md`](README.md) ·
@@ -33,7 +33,7 @@ closed by 01b in §4 below ·
 |---|---|---|---|---|---|---|
 | 01 | [A closed pool releases its actor names](01-a-closed-pool-releases-its-actor-names.md) | the kill at `__exit__` and on a refused open, and the closed flag (U1); the stand-in's `ray.kill` and names (U2); a test module; the smoke script's step N reversed and a collision step; contract §9.3; a dated subsection of the verification document; closes the issue | ✍️ yes, 2026-10-10 | ✅ 2026-10-10; reviewed | `ac50a8a` | [log 01](logs/01-a-closed-pool-releases-its-actor-names.md) |
 | 01b | [Closing a pool starts no Ray](01b-closing-a-pool-starts-no-ray.md) | `_ray_is_running()` and the guard in `_kill_actors`; the stand-in's patch; tests 7 and 8; the smoke run unchanged at both ends; contract §9.4; a dated subsection of the verification document; closes `[02-closing-a-pool-can-start-ray]` (U4) | ✍️ yes, 2026-10-11 | ✅ 2026-10-11; reviewed | `f024fc6` | [log 01b](logs/01b-closing-a-pool-starts-no-ray.md) |
-| 02 | [Release `v0.2.2`](02-release-v0.2.2.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G2–G4; the tag after green CI (U3) | ✍️ yes, 2026-10-10; held 2026-10-11 on 01b; re-measured and amended 2026-10-11 against `a4290de` | ✅ 2026-10-11; reviewed; awaiting CI for `v0.2.2` | `6d8ee9a` | [log 02](logs/02-release-v0.2.2.md) |
+| 02 | [Release `v0.2.2`](02-release-v0.2.2.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G2–G4; the tag after green CI (U3) | ✍️ yes, 2026-10-10; held 2026-10-11 on 01b; re-measured and amended 2026-10-11 against `a4290de` | ✅ 2026-10-11; reviewed; tagged `v0.2.2` | `6d8ee9a` | [log 02](logs/02-release-v0.2.2.md) |
 
 **Orchestrator review of prompt 01 (2026-10-10).** Dispatched from `7c97125` to one Opus
 subagent, with the note's eight corrections and its additions. Reviewed against its commit
@@ -338,6 +338,21 @@ each matched the prompt. It found:
 `main` is ahead of `origin/main` (`2fd3ba2`) by `a4290de`, `ce2070b`, the note `394a974`,
 `6d8ee9a` and this record. `6d8ee9a` is pushed as `main` only with the user's approval, and
 `v0.2.2` is made on it only after CI passes there at both ends, with approval again.
+
+*The push and the tag (2026-10-11).* With the user's approval, `6d8ee9a` was pushed as `main`,
+moving `origin/main` from `2fd3ba2` to `6d8ee9a` (a fast-forward over `a4290de`, `ce2070b` and
+`394a974`). CI passed there at both ends, [run 38131949852](https://github.com/ds283/DatastoreKit/actions/runs/38131949852):
+- low: Python 3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39, `Ran 494 tests in 166.672s` / `OK`, and
+  `black` leaving 72 files unchanged;
+- high: 3.13.16 / 2.55.1 / 2.0.46, `Ran 494 tests in 162.757s` / `OK`, with one `ResourceWarning`
+  (timing, as log 01's correction 8);
+- SQLite 3.45.1 at both.
+
+With the user's approval again, `v0.2.2` was made, annotated, on `6d8ee9a` (tag object `c32d027`,
+"datastorekit 0.2.2: a closed pool, and a refused open, release their Ray actors' names; closing a
+pool never starts Ray") and pushed; `git ls-remote origin refs/tags/v0.2.2^{}` is `6d8ee9a`. The
+extraction board's G2–G4 record it. **The campaign is closed**; this record, `15483de` and the
+rest of `main` are pushed with the user's approval.
 
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.

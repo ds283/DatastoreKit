@@ -25,7 +25,7 @@ package once 01 lands, and taken over by a board here when a campaign is planned
 | `[00-the-inventory-cannot-see-a-serial-split]` | `datastore-integrity` | The inventory compares replicated classes by key, tags, `validated` and count, not by serial |
 | `[01-cross-filesystem-move-advice-says-delete-by-hand]` | `store-retirement` | A failed cross-filesystem move advises deleting the source by hand |
 
-### 1.3 `actor-names` ([board](../prompts/actor-names/IMPLEMENTATION_STATE.md)): assigned issues, held on the boards that opened them
+### 1.3 `actor-names` ([board](../prompts/actor-names/IMPLEMENTATION_STATE.md)): campaign closed 2026-10-11 (`v0.2.2`)
 
 `actor-names` prompt 01 closed the one issue assigned to it, on the `extraction` board (2026-10-10).
 
