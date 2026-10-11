@@ -1,9 +1,9 @@
 # factory-defaults campaign — implementation state
 
-**Last updated:** 2026-10-11 · **Status: IN PROGRESS — 2 of 2 prompts written, 2 landed (01,
-`f5d8957`, reviewed; 02, `0de2b16`, reviewed; awaiting CI for `v0.2.3`); U1–U5 taken 2026-10-11,
-as recommended; `v0.2.3` is made on 02's commit once CI passes there at both ends. Nothing is
-pushed or tagged.**
+**Last updated:** 2026-10-11 · **Status: CLOSED (2026-10-11) — 2 of 2 prompts written and landed
+(01, `f5d8957`; 02, `0de2b16`), each reviewed; `v0.2.3` tagged on `0de2b16` (tag object `8dac562`)
+after CI passed there at both ends; U1–U5 taken 2026-10-11, as recommended, the change and the
+version being the user's ruling.**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** no issue. It carries out the user's ruling of 2026-10-11 (README §0), revisits extraction
@@ -32,7 +32,7 @@ U32 in part (U1), and addresses extraction 07a's observation §7.3
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [The base defaults three hooks](01-the-base-defaults-three-hooks.md) | the base (U1); `test_factory_instances.py` and `ABSTRACT_HOOKS` (U2); smoke step I at both ends (U3); contract §9.5 with its markers; verification §4.8 and §8.1; a note on extraction U32 | ✍️ yes, 2026-10-11 | ✅ 2026-10-11; reviewed | `f5d8957` | [log 01](logs/01-the-base-defaults-three-hooks.md) |
-| 02 | [Release `v0.2.3`](02-release-v0.2.3.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G2–G4; the tag after green CI (U5) | ✍️ yes, 2026-10-11 | ✅ 2026-10-11; reviewed; awaiting CI for `v0.2.3`; unpushed and untagged | `0de2b16` | [log 02](logs/02-release-v0.2.3.md) |
+| 02 | [Release `v0.2.3`](02-release-v0.2.3.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G2–G4; the tag after green CI (U5) | ✍️ yes, 2026-10-11 | ✅ 2026-10-11; reviewed; tagged `v0.2.3` | `0de2b16` | [log 02](logs/02-release-v0.2.3.md) |
 
 **Planning note (2026-10-11, at `460b012`).** The brief's three points of §3 were re-measured, and
 hold (README §0.1). A prototype, the three decorators removed and three scratch tests added, gave
@@ -233,6 +233,22 @@ in this board's header and row, README's header and §2 row, the log's header an
 prompt 02's commit", not "this commit", and need nothing. No issue is opened: the log's
 observations (earlier addenda's citations read through the stated shifts; SGK's moving `HEAD`;
 long table rows; an approximate link-check rule, its misreads checked by hand) need no work.
+
+*The push and the tag (2026-10-11).* With the user's approval, `0de2b16` was pushed as `main`,
+moving `origin/main` from `85f504d` to `0de2b16` (a fast-forward over `97c9a8e`, `f01c4e2` and
+`389e13b`). CI passed there at both ends, [run 38177954330](https://github.com/ds283/DatastoreKit/actions/runs/38177954330):
+- low: Python 3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39, `Ran 504 tests in 204.589s` / `OK`, and
+  `black` leaving 74 files unchanged;
+- high: 3.13.16 / 2.55.1 / 2.0.46, `Ran 504 tests in 155.394s` / `OK`;
+- SQLite 3.45.1 at both, and no `ResourceWarning` line at either.
+
+With the user's approval again, `v0.2.3` was made, annotated, on `0de2b16` (tag object `8dac562`,
+"datastorekit 0.2.3: the factory base defaults store, validate and validate_on_startup, so a
+factory class defining register and build can be instantiated") and pushed;
+`git ls-remote origin refs/tags/v0.2.3^{}` is `0de2b16`. The extraction board's G2–G4 record it.
+**The campaign is closed**; this record, `3d8c47a` and the rest of `main` are pushed with the
+user's approval. The tag object and commit go to the user for CPBH's prompt 07, with README §0.2's
+four points.
 
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
