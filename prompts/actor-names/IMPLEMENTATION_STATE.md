@@ -230,6 +230,16 @@ them this repository's.
 record, and is pushed only with the user's approval. 02 is re-measured against the tree 01b
 leaves, and amended in a planning commit of its own, before its orchestration note.
 
+*The push (2026-10-11).* With the user's approval, `main` was pushed, moving `origin/main` from
+`1925898` to `2fd3ba2` (a fast-forward, with no tag). CI passed there at both ends,
+[run 38103745544](https://github.com/ds283/DatastoreKit/actions/runs/38103745544):
+- low: Python 3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39, `Ran 494 tests in 183.462s` / `OK`, and
+  `black` leaving 72 files unchanged;
+- high: 3.13.16 / 2.55.1 / 2.0.46, `Ran 494 tests in 158.304s` / `OK`;
+- SQLite 3.45.1 at both.
+
+The smoke script is not collected by the suite, so CI started no Ray.
+
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
 
