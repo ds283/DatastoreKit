@@ -1,8 +1,8 @@
 # Log 02 — release `v0.2.3`
 
-**Subject:** Make the package ready to be released as v0.2.3 · **Commit:** this commit ·
-**Date:** 2026-10-11 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and untagged; not
-yet reviewed.
+**Subject:** Make the package ready to be released as v0.2.3 · **Commit:** `0de2b16` ·
+**Date:** 2026-10-11 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and untagged;
+reviewed 2026-10-11.
 
 The package is ready to be released as **`v0.2.3`** (U5). `pyproject.toml` says `0.2.3`, and
 nothing else in it changed. `README.md` has a `v0.2.3` status paragraph, the `v0.2.3` pin with the
@@ -211,11 +211,11 @@ that board (`git diff --numstat`: 3/3):
 7. **The exports are of the working tree before the records were written**, made with `git archive
    $(git stash create)`: commit object `d352567`, whose tree equalled the working tree then (`git
    diff --quiet d352567` held). `git stash create` writes no ref, and `git stash list` stayed empty.
-   That tree differs from this commit's in two ways: the records (this log, this board, this
+   That tree differs from `0de2b16`'s in two ways: the records (this log, this board, this
    campaign's README, `prompts/INDEX.md`), and one cell of the README addendum's measure table,
    where SGK's row first named only `643c3b2` and now names `643c3b2`, then `af26914` (item 9).
-   Neither is in the wheel or read by the suite. `pyproject.toml` and `datastorekit/` are this
-   commit's, so (a)'s and (b)'s diffs apply to an export of this commit as recorded.
+   Neither is in the wheel or read by the suite. `pyproject.toml` and `datastorekit/` are
+   `0de2b16`'s, so (a)'s and (b)'s diffs apply to an export of `0de2b16` as recorded.
    **IMPLEMENTATION CHOICE.**
 8. **Two checks not asked for.** The release wheel's 20 `RECORD` hashes against `f5d8957`'s files,
    read by `git show`: 20 of 20 equal. And an `ast` comparison of SGK's base at `b510bc9` with the
@@ -273,7 +273,7 @@ that board (`git diff --numstat`: 3/3):
 
 ## 4. The supersession tables
 
-Each is as committed in its addendum. Line numbers are each file's at this commit.
+Each is as committed in its addendum. Line numbers are each file's at `0de2b16`.
 
 ### 4.1 `docs/adoption/README.md`
 
@@ -786,7 +786,7 @@ SGK's `HEAD` moved by the other session's commit `af26914` (§2 item 9); CPBH an
 **The method.**
 1. Each diff below was made with `diff -u` of `pyproject.toml` before and after the one change,
    labelled `a/` and `b/`, and is recorded exactly as applied (`<scratch>/breaks/`).
-2. Each has its own export: `git archive d352567` (whose `pyproject.toml` is this commit's) into
+2. Each has its own export: `git archive d352567` (whose `pyproject.toml` is `0de2b16`'s) into
    `<scratch>/exports/break-a` and `break-b`, and `git archive v0.2.2` into `break-c`.
 3. In each export, `git apply --check` passed on the clean export, `git apply` applied it, and
    `git apply -R --check` passed on the applied one.
@@ -969,13 +969,13 @@ no change behind it.
 
 ## 9. State handed to the next prompt
 
-- `HEAD` is this commit, unpushed and untagged. The tree is clean apart from dispatch's ignored
+- `HEAD` is `0de2b16`, unpushed and untagged. The tree is clean apart from dispatch's ignored
   entries. `venv/` has `datastorekit 0.2.3` installed editable from this checkout, its `egg-info`
   removed.
 - **Not pushed, not tagged.** `origin/main` is `85f504d`, and the tags are `v0.1.0`, `v0.2.0`,
   `v0.2.1` and `v0.2.2`.
-- **After the review**, this commit is pushed as `main`, fast-forwarding over `97c9a8e`, `f01c4e2`,
-  `389e13b` and the review. `v0.2.3` is made on this commit, annotated, only once CI passes there at
+- **After the review**, `0de2b16` is pushed as `main`, fast-forwarding over `97c9a8e`, `f01c4e2`,
+  `389e13b` and the review. `v0.2.3` is made on `0de2b16`, annotated, only once CI passes there at
   both ends (U23, U28). If CI fails, a fix prompt lands first, and no tag is made on a commit whose
   CI is red.
 - **The suite is 504** in `venv/` and at the high end (0 and 4 `ResourceWarning` lines).

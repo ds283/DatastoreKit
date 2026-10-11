@@ -1,9 +1,9 @@
 # factory-defaults campaign — implementation state
 
 **Last updated:** 2026-10-11 · **Status: IN PROGRESS — 2 of 2 prompts written, 2 landed (01,
-`f5d8957`, reviewed; 02, this commit, not yet reviewed); U1–U5 taken 2026-10-11, as recommended;
-`v0.2.3` is ready to be tagged on 02's commit once it is reviewed and CI passes there at both
-ends. Nothing is pushed or tagged.**
+`f5d8957`, reviewed; 02, `0de2b16`, reviewed; awaiting CI for `v0.2.3`); U1–U5 taken 2026-10-11,
+as recommended; `v0.2.3` is made on 02's commit once CI passes there at both ends. Nothing is
+pushed or tagged.**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** no issue. It carries out the user's ruling of 2026-10-11 (README §0), revisits extraction
@@ -32,7 +32,7 @@ U32 in part (U1), and addresses extraction 07a's observation §7.3
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [The base defaults three hooks](01-the-base-defaults-three-hooks.md) | the base (U1); `test_factory_instances.py` and `ABSTRACT_HOOKS` (U2); smoke step I at both ends (U3); contract §9.5 with its markers; verification §4.8 and §8.1; a note on extraction U32 | ✍️ yes, 2026-10-11 | ✅ 2026-10-11; reviewed | `f5d8957` | [log 01](logs/01-the-base-defaults-three-hooks.md) |
-| 02 | [Release `v0.2.3`](02-release-v0.2.3.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G2–G4; the tag after green CI (U5) | ✍️ yes, 2026-10-11 | ✅ 2026-10-11; not yet reviewed; unpushed and untagged | this commit | [log 02](logs/02-release-v0.2.3.md) |
+| 02 | [Release `v0.2.3`](02-release-v0.2.3.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G2–G4; the tag after green CI (U5) | ✍️ yes, 2026-10-11 | ✅ 2026-10-11; reviewed; awaiting CI for `v0.2.3`; unpushed and untagged | `0de2b16` | [log 02](logs/02-release-v0.2.3.md) |
 
 **Planning note (2026-10-11, at `460b012`).** The brief's three points of §3 were re-measured, and
 hold (README §0.1). A prototype, the three decorators removed and three scratch tests added, gave
@@ -149,11 +149,96 @@ class's name, contract §6's existing fact; the suite not seeing an actor unpick
 The smoke script is not collected by the suite, so CI started no Ray. 02 (`v0.2.3`) is written
 next, against `f5d8957`'s tree.
 
+**Orchestrator review of prompt 02 (2026-10-11).** Dispatched from `389e13b` to one Opus
+subagent, with the note's four corrections and its additions. Reviewed against its commit
+`0de2b16`, with nothing landed after it. **Every check of the note's §3 passed**, and acceptance
+1–6 are met. No stop condition fired, and no issue was opened. Nothing was pushed, and the tags are
+`v0.1.0`, `v0.2.0`, `v0.2.1` and `v0.2.2` only.
+
+*At dispatch.* The note's gate held at `389e13b`. While writing the note, the orchestrator checked
+the prompt at `f01c4e2`: the suite gave `Ran 504 tests … OK` in `venv/` (0 `ResourceWarning`
+lines) and at the high end (4, timing); a `0.2.3` wheel built offline from an export had 25
+entries and differed from `v0.2.2`'s wheel in `SQL/factory_base.py`'s `RECORD` line alone;
+(a)–(c) were built and probed; §1.1's measure reproduced at all four commits; every line the
+prompt cites held. It found:
+- `venv/` has no `setuptools`, so hazard 6's reinstall needs no `--no-build-isolation`
+  (correction 1, as `actor-names` 02 found);
+- `store` called with no arguments raises `TypeError` at every release, so the probe calls each
+  defaulted hook with its arity (correction 2);
+- the line shifts the addenda state, as numbers (correction 3), and four more grep hits, each still
+  true (correction 4).
+
+SGK's `HEAD` moved twice during the work, by the other session's own commits: `789b72d` →
+`643c3b2` before dispatch, and → `af26914` during it. At each SGK instantiates no factory.
+
+*The checks.*
+1. **Scope.** `0de2b16` touches the prompt's §7 files only: `pyproject.toml`, `README.md`,
+   `PROVENANCE.md`, the four files under `docs/adoption/`, the extraction board, the log, this
+   board, the campaign README and `prompts/INDEX.md`. The diff over `datastorekit/`, the contract,
+   the verification document, `docs/extraction/`, `.github/`, `CLAUDE.md`, `LICENSE`,
+   `.gitignore` and `docs/OPEN_ISSUES.md` is empty. The ignored entries are dispatch's, with no
+   wheel, `dist/`, `build/` or `*.egg-info`. CPBH (`52142d7`, 25 entries) and SI (`7bb3efd`, clean)
+   are as at dispatch; SGK is at `af26914`, clean.
+2. **Additive.** The diff under `docs/adoption/` has no `-` line (107, 92, 90 and 86 lines added).
+   `pyproject.toml`'s diff is the version line alone. The extraction board's diff is G2–G4's three
+   rows, each the old row with its title changed and one dated sentence added.
+3. **The release.** From `git archive 0de2b16`, the review's own offline build:
+   `datastorekit-0.2.3-py3-none-any.whl`, 99,185 bytes, 25 entries, none under `tests/`, the
+   licence, `METADATA` `0.2.3` with `v0.2.2`'s requirements. Installed at the high pins and run
+   from outside the repository with `python -I`: version `0.2.3`; `__abstractmethods__`
+   `['build', 'register']`; the three hooks static, not abstract, with `v0.2.2`'s signatures; a
+   subclass defining only `register` and `build` instantiates, and each of its three hooks, called
+   with its arity, raises `NotImplementedError` with `args == ()`; `datastorekit.tests` refused;
+   `sharded_store --help` exits 0. Against the review's own `v0.2.2` wheel, only
+   `SQL/factory_base.py`'s `RECORD` line differs of 20.
+4. **`README.md` and `PROVENANCE.md`, by reading.** The `v0.2.3` paragraph sits above `v0.2.2`'s,
+   which is unchanged, and says what the note's check 4 asks, linking §9.5 by anchor. The pin is
+   `v0.2.3`, the four earlier tags remain, CPBH and SI adopt `v0.2.3`, and SGK may stay on `v0.2.2`
+   or move, as it chooses: no advice either way, no client path, nothing saying `v0.2.3` is
+   tagged. "Using it" names the two abstract and six defaulted hooks, and that a registry may hold
+   classes or instances. `PROVENANCE.md`'s `###` section follows the `actor-names` one; its account
+   of SGK's base at `6f7f291` (five `@staticmethod @abstractmethod` hooks) was read true through
+   `git`, and `b510bc9`'s base equals it.
+5. **The addenda, by reading.** Each italic line follows `actor-names` 02's; each addendum is
+   unnumbered, dated, names `factory-defaults` prompt 02, and sits after the `v0.2.2` addendum and
+   before the appendix (checklists) or at the end (README). Each gives its pin per U5. Every
+   `path:line` in the four supersession tables, 47 rows in all, was read in the file as committed
+   and holds, as do the claims of SGK's adoption at `af26914` (`0c9e2cf` an ancestor, the base absent,
+   the `v0.2.2` pin, factories importing `datastorekit.SQL.factory_base`). N is 5 in the README
+   and 6 in each checklist, k + N 10 and 12, each as the italic lines added.
+6. **Names and links.** The review's own script: 107 relative links in the six documents and
+   G2–G4, every file present and every anchor a heading by GitHub's rule. The one dotted name the commit
+   adds to them, `datastorekit.SQL.factory_base`, imports.
+7. **Both ends.** In `venv/`: `pip show` says `0.2.3`; `Ran 504 tests … OK`, 0 `ResourceWarning`
+   lines; no `egg-info`. In the review's own high-end venv (3.13.16 / 2.55.1 / 2.0.46) with `git
+   archive 0de2b16` installed editable: `Ran 504 tests … OK`, 4 lines (timing). The port check
+   exits 0, and `black` leaves 74 files unchanged.
+8. **The breakages.** The log's three diffs, extracted from it, pass `git apply --check`, apply and
+   pass `-R --check` against their own exports ((a), (b) of `0de2b16`; (c) of `v0.2.2`). (a): a
+   `0.2.2` wheel and metadata version, its base the release's. (b): 74 entries, 49 under
+   `tests/`, and `datastorekit.tests` imports. (c): `Version: 0.2.3`, all 20 `RECORD` lines equal
+   to `v0.2.2`'s, five abstract hooks, and `F()` raising `TypeError: Can't instantiate abstract
+   class F …`.
+9. **The records.** The log is in README §5.1's form, with the release check, the documents' check,
+   the names and links, §1.1 re-run, (a)–(c), the clients at both ends, the corrections and the
+   four supersession tables. The extraction board's G2–G4, this board, the README and
+   `prompts/INDEX.md` were in step; the index is unchanged at 4.
+10. **Nothing left behind.** No Ray process. The tags are the four, and `origin` is unchanged at
+    `85f504d`.
+
+*Residue fixed in this follow-up:* "this commit" → `0de2b16` on this board, in the log's header,
+§2, §4, §6 and §9, the README and `prompts/INDEX.md`; "reviewed; awaiting CI for `v0.2.3`" for 02
+in this board's header and row, README's header and §2 row, the log's header and
+`prompts/INDEX.md`; the notes line. The extraction board's G2–G4 sentences name "`factory-defaults`
+prompt 02's commit", not "this commit", and need nothing. No issue is opened: the log's
+observations (earlier addenda's citations read through the stated shifts; SGK's moving `HEAD`;
+long table rows; an approximate link-check rule, its misreads checked by hand) need no work.
+
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
 
 **Orchestrator notes:** [`orchestrator/prompt-01.md`](orchestrator/prompt-01.md) (`b8a00ad`),
-used for 01.
+used for 01; [`orchestrator/prompt-02.md`](orchestrator/prompt-02.md) (`389e13b`), used for 02.
 
 ## 2. Gates outside this repository
 
