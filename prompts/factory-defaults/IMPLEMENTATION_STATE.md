@@ -1,8 +1,9 @@
 # factory-defaults campaign — implementation state
 
-**Last updated:** 2026-10-11 · **Status: IN PROGRESS — 2 of 2 prompts written, 1 landed (01,
-`f5d8957`, reviewed); U1–U5 taken 2026-10-11, as recommended; 02 is written, against `97c9a8e`,
-and ready for its orchestration note.**
+**Last updated:** 2026-10-11 · **Status: IN PROGRESS — 2 of 2 prompts written, 2 landed (01,
+`f5d8957`, reviewed; 02, this commit, not yet reviewed); U1–U5 taken 2026-10-11, as recommended;
+`v0.2.3` is ready to be tagged on 02's commit once it is reviewed and CI passes there at both
+ends. Nothing is pushed or tagged.**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** no issue. It carries out the user's ruling of 2026-10-11 (README §0), revisits extraction
@@ -31,7 +32,7 @@ U32 in part (U1), and addresses extraction 07a's observation §7.3
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [The base defaults three hooks](01-the-base-defaults-three-hooks.md) | the base (U1); `test_factory_instances.py` and `ABSTRACT_HOOKS` (U2); smoke step I at both ends (U3); contract §9.5 with its markers; verification §4.8 and §8.1; a note on extraction U32 | ✍️ yes, 2026-10-11 | ✅ 2026-10-11; reviewed | `f5d8957` | [log 01](logs/01-the-base-defaults-three-hooks.md) |
-| 02 | [Release `v0.2.3`](02-release-v0.2.3.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G2–G4; the tag after green CI (U5) | ✍️ yes, 2026-10-11 | ⬜ | — | — |
+| 02 | [Release `v0.2.3`](02-release-v0.2.3.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G2–G4; the tag after green CI (U5) | ✍️ yes, 2026-10-11 | ✅ 2026-10-11; not yet reviewed; unpushed and untagged | this commit | [log 02](logs/02-release-v0.2.3.md) |
 
 **Planning note (2026-10-11, at `460b012`).** The brief's three points of §3 were re-measured, and
 hold (README §0.1). A prototype, the three decorators removed and three scratch tests added, gave

@@ -23,6 +23,12 @@ gives the pin **`v0.2.2`** and what changed for SI since `v0.2.1`, and supersede
 it names. The text before it, the `v0.2.1` addendum included, is unchanged and true of the
 release it names.*
 
+*Added by `factory-defaults` prompt 02 on 2026-10-11: the section
+[Addendum: v0.2.3](#addendum-v023-factory-defaults-prompt-02-2026-10-11), after the `v0.2.2`
+addendum, gives the pin **`v0.2.3`** and what changed for SI since `v0.2.2`, and supersedes the
+statements it names. The text before it, the `v0.2.1` and `v0.2.2` addenda included, is unchanged
+and true of the release each names.*
+
 Unless another commit is named, a `path:line` is SI's at `7bb3efd`, and one under `datastorekit/`
 is the package's at `v0.2.0`.
 
@@ -489,6 +495,86 @@ but `:5`, which is above the insert).
 | `docs/adoption/stochasticinstantons.md:422-424` | the `v0.2.1` addendum's `path:line`s are "this file's as committed with this addendum" | they are read at `33778b0`, or six lines later here (all but `:5`) |
 | `docs/adoption/stochasticinstantons.md:428` | the package "at `v0.2.1`, with this addendum" | at `v0.2.2`, with both addenda |
 | `docs/adoption/stochasticinstantons.md:431` | "G4 holds when SI has adopted `v0.2.1` (U37)" | G4 holds when SI has adopted `v0.2.2` (U37; `actor-names` U3) |
+
+---
+
+## Addendum: v0.2.3 (factory-defaults prompt 02, 2026-10-11)
+
+*Written by `factory-defaults` prompt 02 on 2026-10-11, and added after `actor-names` prompt 02's
+`v0.2.2` addendum. 07a's text, the `v0.2.1` addendum and the `v0.2.2` addendum stay as written,
+each true of the release it names (`CLAUDE.md` rule 6). SI was not re-measured (as decision U37);
+what this section says of SI comes from 07a's measurements and from reads through `git` only, at
+`7bb3efd`.*
+
+**The pin.** SI adopts **`v0.2.3`** in place of `v0.2.2`, when it is next active (decision U5 of
+the `factory-defaults` campaign, which keeps extraction decision U37 and `actor-names` decision U3
+for SI), and G4 reads "SI has adopted `v0.2.3`":
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.3
+```
+
+`v0.2.3` carries `key_on_version`, `v0.2.0`'s feature, `v0.2.1`'s three fixes and `v0.2.2`'s fix,
+unchanged.
+
+**What changed for SI since `v0.2.2`.** The change is
+[`docs/client-contract.md` §9.5](../client-contract.md#95-factory-defaults-prompt-01)'s, and
+[`README.md`'s addendum](README.md#addendum-v023-factory-defaults-prompt-02-2026-10-11) gives it for
+every client: `SQLAFactoryBase` keeps `register` and `build` abstract and defaults `store`,
+`validate` and `validate_on_startup`, so a factory class that defines the two can be instantiated
+and its instance registered. Nothing SI supplies changes, nothing the layer writes changes, and no
+message, refusal or exception of the layer's. **For SI it removes item 5's U32 obligation, and
+item 3's `TypeError` at import.**
+- **SI's registry of instances works as it stands.** Read by an `ast` read of every `.py` file
+  through `git show` at `7bb3efd`: 28 classes whose bases name `SQLAFactoryBase`, 16 of them
+  lacking one of `store`, `validate` and `validate_on_startup`, and none lacking `register` or
+  `build`; 33 calls of them by name, 21 of them of a class lacking one of the three. Of those 21,
+  18 are registry entries (`Datastore/SQL/Datastore.py:97-126`), and under `v0.2.3` each
+  instantiates, since every class defines `register` and `build`.
+- **The three instantiations at import** of item 3, `CosmologyConcepts/Potentials/registry.py:33`
+  and `:40` (`sqla_QuadraticPotential_factory()`, `sqla_QuarticPotential_factory()`) and
+  `Datastore/SQL/ObjectFactories/MasslessDecoupledDiffusion.py:71`
+  (`sqla_MasslessDecoupledDiffusion_factory()`), stop raising too: under `v0.2.3` each
+  instantiates as it stands.
+- **So item 5 asks nothing of the 16 classes** but the base's import path (item 3), and neither of
+  the two routes is needed; the seven of them on SI's protected list need no change for U32. The
+  defaults are static: a hook an SI class defines with `self` overrides the base's default as
+  before, and one it does not define raises a bare `NotImplementedError` when the layer calls it,
+  as SI's own base does today (`Datastore/SQL/ObjectFactories/base.py:16-30` at `7bb3efd`).
+  Contract §9.5's third row says what a registered instance must be under Ray: of a class defined
+  at module level, with picklable attributes.
+- **Item 5's other findings are unchanged:** `InflatonTrajectory.validate_on_startup` names its
+  parameter `prune_unvalidated`, where the pool calls a replicated class's hook by keyword,
+  `prune`; and `InflatonTrajectory` is a replicated, validated class, repaired after an interrupted
+  validate only if it declares `validated_column` and defines `revalidate`. Both choices stay SI's.
+  So do items 6 and 8: every SI store is refused at open, and is rebuilt (U31).
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`), and one in the `v0.2.1` addendum stays `v0.2.1`'s (`33778b0`). The `v0.2.2` addendum
+cites none. This addendum cites no `datastorekit/` line; one cited here would be `v0.2.3`'s, whose
+`datastorekit/` is the tree of `factory-defaults` prompt 01's commit `f5d8957`.
+
+**What this addendum supersedes**, in this file. Each `path:line` is this file's as committed with
+this addendum. In the file as `actor-names` prompt 02 left it (`6d8ee9a`), every line after `:25`
+is six lines earlier, since this addendum's italic line under the title adds six. So the `v0.2.2`
+addendum's citations, which are that file's, are read at `6d8ee9a`, or six lines later here (all
+but `:15-18`, which is above the insert). The `v0.2.1` addendum's citations, which the `v0.2.2`
+addendum reads at `33778b0` or six lines later, are read at `33778b0`, or twelve lines later here
+(all but `:5`).
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/stochasticinstantons.md:20-24` | the `v0.2.2` addendum gives the pin **`v0.2.2`** | it gives `v0.2.2`'s pin and changes, true of `v0.2.2`; this addendum gives `v0.2.3` |
+| `docs/adoption/stochasticinstantons.md:36-37` | SI "registers factory instances (16 classes lack three of the five abstract hooks, U32)" | the count holds; at `v0.2.3` the base's only abstract hooks are `register` and `build`, which all 28 classes define, so SI's instances are accepted; "What changed for SI since `v0.2.2`", above |
+| `docs/adoption/stochasticinstantons.md:131-132` | the three import-time sites: "under the package's ABC each raises `TypeError` at import" | true through `v0.2.2`; under `v0.2.3` each instantiates. The rest of the paragraph (`:127-131`), the sites themselves, still holds |
+| `docs/adoption/stochasticinstantons.md:198-206` | the package's base "is" an ABC (`datastorekit/SQL/factory_base.py:5-29`), "so each raises `TypeError` at instantiation: in the registry, and at the three import-time sites of item 3", and the two routes, "The choice is SI's" | true through `v0.2.2`. At `v0.2.3` each instantiates, and neither route is needed. The rest of item 5's U32 paragraph (`:193-198`), the counts and SI's own base, still holds |
+| `docs/adoption/stochasticinstantons.md:448-450` | "SI adopts **`v0.2.2`** in place of `v0.2.1`, when it is next active", and G4 reads "SI has adopted `v0.2.2`" | SI adopts `v0.2.3` in place of `v0.2.2`, when it is next active (`factory-defaults` U5), and G4 reads "SI has adopted `v0.2.3`" |
+| `docs/adoption/stochasticinstantons.md:453` | the pin `…@v0.2.2` | the pin `…@v0.2.3`, above |
+| `docs/adoption/stochasticinstantons.md:484-488` | the `v0.2.2` addendum's `path:line`s are "this file's as committed with this addendum" | they are read at `6d8ee9a`, or six lines later here (all but `:15-18`) |
+| `docs/adoption/stochasticinstantons.md:493` | in the `v0.2.2` addendum's table, SI adopts `v0.2.2` in place of `v0.2.1`, and G4 reads "SI has adopted `v0.2.2`" | as `:448-450` |
+| `docs/adoption/stochasticinstantons.md:494` | "the pin `…@v0.2.2`, above" | the pin `…@v0.2.3`, above |
+| `docs/adoption/stochasticinstantons.md:496` | the package "at `v0.2.2`, with both addenda" | at `v0.2.3`, with the three addenda |
+| `docs/adoption/stochasticinstantons.md:497` | "G4 holds when SI has adopted `v0.2.2` (U37; `actor-names` U3)" | G4 holds when SI has adopted `v0.2.3` (U37; `actor-names` U3; `factory-defaults` U5) |
 
 ---
 

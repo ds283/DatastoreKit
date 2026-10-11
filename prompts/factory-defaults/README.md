@@ -6,7 +6,8 @@ same day (§6.2), U1 after its wording was clarified (below). Prompt 02,
 the release, is written after 01 has landed and been reviewed, against the tree 01 leaves.
 **Prompt 01 landed** on 2026-10-11 (`f5d8957`; [log](logs/01-the-base-defaults-three-hooks.md)),
 and was reviewed the same day. **Prompt 02 is written** (2026-10-11), against `97c9a8e`, the tree
-01 left.
+01 left. **Prompt 02 landed** on 2026-10-11 (this commit; [log](logs/02-release-v0.2.3.md)),
+unpushed and untagged: `v0.2.3` is made on it after its review, once CI passes there at both ends.
 
 ## 0. Why this campaign exists
 
@@ -162,7 +163,7 @@ adds, each to be reported back to the ChamPBH session when `v0.2.3` is tagged:
 | # | Prompt | Covers | Status |
 |---|---|---|---|
 | 01 | [`01-the-base-defaults-three-hooks.md`](01-the-base-defaults-three-hooks.md) | `store`, `validate` and `validate_on_startup` lose `@abstractmethod` and move under the base's comment on defaulted hooks (U1); a test module of instances, parameterised instances, the two abstract hooks, the defaults, and a `cloudpickle` round trip, and the neutral client's hook lists (U2); a smoke step that registers instances, run under real Ray at both ends (U3); contract §9.5; a dated subsection of the verification document, closing 07a §7.3; a dated note on extraction U32. | **landed** 2026-10-11 (`f5d8957`; [log](logs/01-the-base-defaults-three-hooks.md)), reviewed 2026-10-11; U1–U3 taken |
-| 02 | [`02-release-v0.2.3.md`](02-release-v0.2.3.md) | `pyproject.toml` at `0.2.3`, `README.md`, `PROVENANCE.md`; dated `v0.2.3` addenda to `docs/adoption/` (the README and the three checklists); the extraction board's G2–G4; both ends locally and in CI; **tag `v0.2.3`** on its commit after green CI, not by the prompt. Shaped by U5. *(At writing: only `SQL/factory_base.py` changed in the wheel since `v0.2.2`; a `0.2.3` wheel builds and installs offline with 25 entries; CPBH's 24 registry entries and SI's 18, and SI's three import-time instantiations, are of classes lacking only the three hooks, and SGK instantiates no factory, at its checklist's commit or at `789b72d`, where it has adopted `v0.2.2`.)* | **written** 2026-10-11 |
+| 02 | [`02-release-v0.2.3.md`](02-release-v0.2.3.md) | `pyproject.toml` at `0.2.3`, `README.md`, `PROVENANCE.md`; dated `v0.2.3` addenda to `docs/adoption/` (the README and the three checklists); the extraction board's G2–G4; both ends locally and in CI; **tag `v0.2.3`** on its commit after green CI, not by the prompt. Shaped by U5. *(At writing: only `SQL/factory_base.py` changed in the wheel since `v0.2.2`; a `0.2.3` wheel builds and installs offline with 25 entries; CPBH's 24 registry entries and SI's 18, and SI's three import-time instantiations, are of classes lacking only the three hooks, and SGK instantiates no factory, at its checklist's commit or at `789b72d`, where it has adopted `v0.2.2`.)* | **landed** 2026-10-11 (this commit; [log](logs/02-release-v0.2.3.md)); not yet reviewed; unpushed and untagged |
 
 **Order.** 01 → 02. 02 releases what 01 leaves. Each is landed and reviewed on its own (U4).
 

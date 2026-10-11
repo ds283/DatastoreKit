@@ -24,6 +24,12 @@ gives the pin **`v0.2.2`** and what changed for SGK since `v0.2.1`, and supersed
 it names. The text before it, the `v0.2.1` addendum included, is unchanged and true of the
 release it names.*
 
+*Added by `factory-defaults` prompt 02 on 2026-10-11: the section
+[Addendum: v0.2.3](#addendum-v023-factory-defaults-prompt-02-2026-10-11), after the `v0.2.2`
+addendum, gives SGK's pin, `v0.2.2` or `v0.2.3` as SGK chooses, and what changed for SGK since
+`v0.2.2`, and supersedes the statements it names. The text before it, the `v0.2.1` and `v0.2.2`
+addenda included, is unchanged and true of the release each names.*
+
 Unless another commit is named, a `path:line` is SGK's at `b510bc9`, and one under
 `datastorekit/` is the package's at `v0.2.0`.
 
@@ -531,6 +537,92 @@ but `:6`, which is above the insert).
 | `docs/adoption/secondarygwkit.md:440` | at `v0.2.1`, "three more differences, none of which changes what SGK's calls use" | at `v0.2.2` also the four of contract §9.3, none of which changes what SGK's calls use, since SGK uses no closed pool; "Item 6's constructions", above |
 | `docs/adoption/secondarygwkit.md:442` | item 8's reasoning "extended to `v0.2.1`" | extended to `v0.2.2`; "Item 8 still holds", above |
 | `docs/adoption/secondarygwkit.md:443` | "G2 holds when SGK has adopted `v0.2.1` (U37)" | G2 holds when SGK has adopted `v0.2.2` (U37; `actor-names` U3) |
+
+---
+
+## Addendum: v0.2.3 (factory-defaults prompt 02, 2026-10-11)
+
+*Written by `factory-defaults` prompt 02 on 2026-10-11, and added after `actor-names` prompt 02's
+`v0.2.2` addendum. 07a's text, the `v0.2.1` addendum and the `v0.2.2` addendum stay as written,
+each true of the release it names (`CLAUDE.md` rule 6). SGK was not re-measured (as decision U37);
+what this section says of SGK comes from 07a's measurements and from reads through `git` only, at
+`b510bc9` and at SGK's `HEAD` when read.*
+
+**The pin.** SGK may stay on **`v0.2.2`** or move to **`v0.2.3`**, as SGK chooses, a move being a
+commit of its own (decision U5 of the `factory-defaults` campaign, which amends extraction decision
+U37 and `actor-names` decision U3 for SGK only), and G2 reads "SGK has adopted `v0.2.2` or later":
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.2
+```
+
+or
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.3
+```
+
+`v0.2.3` carries `v0.2.1`'s three fixes and `v0.2.2`'s fix unchanged.
+
+**What changed for SGK since `v0.2.2`.** The change is
+[`docs/client-contract.md` §9.5](../client-contract.md#95-factory-defaults-prompt-01)'s, and
+[`README.md`'s addendum](README.md#addendum-v023-factory-defaults-prompt-02-2026-10-11) gives it for
+every client: `SQLAFactoryBase` keeps `register` and `build` abstract and defaults `store`,
+`validate` and `validate_on_startup`, so a factory class that defines the two can be instantiated
+and its instance registered. Nothing SGK supplies changes, nothing the layer writes changes, and no
+message, refusal or exception of the layer's. **Nothing changes for SGK.**
+- **SGK instantiates no factory.** It registers classes (item 5), and a class is never
+  instantiated, so the base's abstractness was never enforced on SGK under any release, and its
+  defaults answer a call from a class as its abstract hooks did: a bare `NotImplementedError`.
+  Read by an `ast` read of every `.py` file through `git show`: at `b510bc9`, 38 classes whose
+  bases name `SQLAFactoryBase`, 31 of them lacking one of `store`, `validate` and
+  `validate_on_startup`, none lacking `register` or `build`, and no call of any of them by name.
+  The same at SGK's `HEAD` when read on 2026-10-11, `643c3b2` and then `af26914` (branch
+  `handover-remedial`).
+- **The factory base.** At `v0.2.3` the package's `datastorekit/SQL/factory_base.py` differs from
+  SGK's `Datastore/SQL/ObjectFactories/base.py` (at `b510bc9`, as at `6f7f291`) also by the three
+  `@abstractmethod` lines it removed, by the comment it moved and reworded, and by three
+  docstrings. With its docstrings blanked it no longer parses to SGK's code: the three decorators
+  differ. SGK, registering classes, never meets the difference, and its factories still change
+  nothing but their imports.
+- **Item 8 still holds: no SGK store is refused.** Nothing the layer writes changes (contract
+  [§9.5](../client-contract.md#95-factory-defaults-prompt-01)), so every SGK store opens as under
+  `v0.2.2`, and so as under `v0.2.0`. G2's rehearsal (item 9) is the measurement.
+- **SGK's adoption, as read** (a fact, not a gate). SGK's own adoption campaign has begun: its
+  commit `0c9e2cf` (2026-10-11, "Adopt datastorekit and delete SGK's copy of the datastore layer")
+  is an ancestor of `af26914`. There `Datastore/SQL/ObjectFactories/base.py` no longer exists,
+  `requirements.txt:17` pins `v0.2.2`, and the factories import `SQLAFactoryBase` from
+  `datastorekit.SQL.factory_base`. G2 is recorded on the extraction board when it holds, not here.
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`), one in the `v0.2.1` addendum stays `v0.2.1`'s (`33778b0`), and one in the `v0.2.2`
+addendum stays `v0.2.2`'s (`6d8ee9a`). This addendum cites no `datastorekit/` line; one cited here
+would be `v0.2.3`'s, whose `datastorekit/` is the tree of `factory-defaults` prompt 01's commit
+`f5d8957`.
+
+**What this addendum supersedes**, in this file. Each `path:line` is this file's as committed with
+this addendum. In the file as `actor-names` prompt 02 left it (`6d8ee9a`), every line after `:26`
+is six lines earlier, since this addendum's italic line under the title adds six. So the `v0.2.2`
+addendum's citations, which are that file's, are read at `6d8ee9a`, or six lines later here (all
+but `:16-19`, which is above the insert). The `v0.2.1` addendum's citations, which the `v0.2.2`
+addendum reads at `33778b0` or six lines later, are read at `33778b0`, or twelve lines later here
+(all but `:6`).
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/secondarygwkit.md:21-25` | the `v0.2.2` addendum gives the pin **`v0.2.2`** | it gives `v0.2.2`'s pin and changes, true of `v0.2.2`; this addendum gives SGK's pins at `v0.2.3` |
+| `docs/adoption/secondarygwkit.md:199-200` | `base.py` equals `datastorekit/SQL/factory_base.py` byte for byte | superseded by the `v0.2.1` addendum (its row for `:187-188`, here `:445`): they differ in comments and docstrings. At `v0.2.3` they also differ by the three decorators; "The factory base", above |
+| `docs/adoption/secondarygwkit.md:404-406` | the `v0.2.1` addendum's "with its docstrings blanked it parses to the same code" | so through `v0.2.2`; at `v0.2.3` the three decorators differ, which SGK never meets; "The factory base", above |
+| `docs/adoption/secondarygwkit.md:445` | the `v0.2.1` addendum's row: they "differ in comments and docstrings (09)" | at `v0.2.3` also by the three decorators |
+| `docs/adoption/secondarygwkit.md:460-461` | "SGK adopts **`v0.2.2`** in place of `v0.2.1`", and G2 reads "SGK has adopted `v0.2.2`" | SGK may stay on `v0.2.2` or move to `v0.2.3` (`factory-defaults` U5), and G2 reads "SGK has adopted `v0.2.2` or later" |
+| `docs/adoption/secondarygwkit.md:464` | the pin `…@v0.2.2` | `…@v0.2.2` or `…@v0.2.3`, as SGK chooses, above |
+| `docs/adoption/secondarygwkit.md:523-527` | the `v0.2.2` addendum's `path:line`s are "this file's as committed with this addendum" | they are read at `6d8ee9a`, or six lines later here (all but `:16-19`) |
+| `docs/adoption/secondarygwkit.md:532` | in the `v0.2.2` addendum's table, SGK adopts `v0.2.2` in place of `v0.2.1`, and G2 reads "SGK has adopted `v0.2.2`" | as `:460-461` |
+| `docs/adoption/secondarygwkit.md:533` | "the pin `…@v0.2.2`, above" | as `:464` |
+| `docs/adoption/secondarygwkit.md:536` | the package "at `v0.2.2`, with both addenda" | at `v0.2.2` or `v0.2.3`, with the three addenda |
+| `docs/adoption/secondarygwkit.md:537` | at `v0.2.2`, "also the four of contract §9.3, none of which changes what SGK's calls use" | at `v0.2.3` also the change of contract §9.5, which changes nothing SGK's calls use, since SGK registers classes; "SGK instantiates no factory", above |
+| `docs/adoption/secondarygwkit.md:538` | item 8's reasoning "extended to `v0.2.2`" | extended to `v0.2.3`; "Item 8 still holds", above |
+| `docs/adoption/secondarygwkit.md:539` | "G2 holds when SGK has adopted `v0.2.2` (U37; `actor-names` U3)" | G2 holds when SGK has adopted `v0.2.2` or later (U37; `actor-names` U3; `factory-defaults` U5) |
 
 ---
 

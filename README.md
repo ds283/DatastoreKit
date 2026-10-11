@@ -7,6 +7,17 @@ one shard by a shard key, and checks the store's integrity each time it is opene
 
 ## Status
 
+**`v0.2.3`** is a release with one change (`factory-defaults` prompt 01, on the user's ruling):
+`SQLAFactoryBase` keeps `register` and `build` abstract and defaults `store`, `validate` and
+`validate_on_startup`, so a factory class that defines the two can be instantiated and its
+instance registered. A registered instance meets, for a hook its class does not define, what a
+class meets: the base's `NotImplementedError`, when the layer calls that hook. A class lacking
+`register` or `build` is still refused at instantiation, and a client that registers factory
+classes meets nothing new. No API is added or removed, nothing the layer writes changes, and no
+message, refusal or exception of the layer's changes.
+[`docs/client-contract.md`](docs/client-contract.md)
+[§9.5](docs/client-contract.md#95-factory-defaults-prompt-01) gives the detail.
+
 **`v0.2.2`** is a fix release with one fix (`actor-names` prompt 01): a closed pool, and an open
 that is refused, release their Ray actors' names at once, so a store can be reopened in the same
 Ray session while a closed pool is still referenced. A closed pool's actor handles are dead
@@ -69,11 +80,13 @@ separate unit of work.
 A client depends on a tagged release, pinned in its `requirements.txt`:
 
 ```text
-datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.2
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.3
 ```
 
-`v0.2.1`, `v0.2.0` and `v0.1.0` remain tagged, and no tag is moved or deleted; every client adopts
-`v0.2.2`, which fixes a defect that all three earlier releases carry.
+`v0.2.2`, `v0.2.1`, `v0.2.0` and `v0.1.0` remain tagged, and no tag is moved or deleted. ChamPBH
+and StochasticInstantons adopt `v0.2.3`, with which their registries of factory instances work as
+they stand; SecondaryGWKit, which registers factory classes, may stay on `v0.2.2` or move, in a
+commit of its own, as it chooses.
 
 An editable install (`pip install -e`) is for developing this package, never for a client's
 production runs: a production run must be reproducible from its pin.
@@ -91,9 +104,11 @@ the layer does with it, and what happens when it is wrong or absent.
   reader and the inventory (§1, row 15; [§7](docs/client-contract.md#7-the-other-entry-points-that-take-client-facts)).
 - **Each factory's `register()`**, the dict of keys that describes its table, or `None` for a
   class with no table ([§2](docs/client-contract.md#2-the-keys-of-register)).
-- **Each factory's hooks**: `build`, `store`, `validate` and `validate_on_startup`, and the
-  defaulted `revalidate`, `owned_serials` and `inventory_spec`, from `SQLAFactoryBase`
-  (`datastorekit.SQL.factory_base`) ([§3](docs/client-contract.md#3-the-factory-hooks)).
+- **Each factory's hooks**: `register` and `build`, the base's two abstract hooks, and the six it
+  defaults, `store`, `validate`, `validate_on_startup`, `revalidate`, `owned_serials` and
+  `inventory_spec`, from `SQLAFactoryBase` (`datastorekit.SQL.factory_base`)
+  ([§3](docs/client-contract.md#3-the-factory-hooks)). A registry may map a name to a factory
+  class or to an instance of one ([§9.5](docs/client-contract.md#95-factory-defaults-prompt-01)).
 - **The inventory declarations**: an `InventorySpec` per class, with its `Parent`s and
   `ParentSet`s (`datastorekit.store_inventory`) ([§4](docs/client-contract.md#4-the-inventorys-declarations)).
 - **The two tables the layer owns**: `version` and `store_tag`, named in `datastorekit.contract`,
@@ -105,8 +120,9 @@ the layer does with it, and what happens when it is wrong or absent.
   ([§8](docs/client-contract.md#8-version-keyed-lookups-v020-prompt-06)).
 - **What changed after `v0.2.0`**: the three fixes of `v0.2.1`, and the fix of `v0.2.2`, that a
   closed pool releases its actors' names, with the property it keeps, that closing a pool never
-  starts Ray; each with what the layer now does and the test that pins it
-  ([§9](docs/client-contract.md#9-changes-after-v020)).
+  starts Ray; and the change of `v0.2.3`, that the base defaults `store`, `validate` and
+  `validate_on_startup`, so a factory may be an instance; each with what the layer now does and the
+  test that pins it ([§9](docs/client-contract.md#9-changes-after-v020)).
 
 The worked example is the neutral test client, [`datastorekit/tests/client/`](datastorekit/tests/client/).
 Its registry module, [`datastorekit/tests/client/registry.py`](datastorekit/tests/client/registry.py),

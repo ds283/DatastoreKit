@@ -201,3 +201,40 @@ the new test module, the smoke script `docs/extraction/ray_smoke_run.py` (by 01)
   `datastorekit/tests/test_closed_pool_releases_its_names.py` (tests 7 and 8);
   `docs/client-contract.md` (§9.4); `docs/extraction-verification.md` (§4.7). The log is
   `prompts/actor-names/logs/01b-closing-a-pool-starts-no-ray.md`.
+
+### `factory-defaults` prompt 01: the base defaults three hooks (`v0.2.3`)
+
+**The change has no source, and is a departure from it.** SGK's base,
+`Datastore/SQL/ObjectFactories/base.py` at `6f7f291` (the file map's source of
+`datastorekit/SQL/factory_base.py`), makes all five of its hooks, `register`, `build`, `store`,
+`validate` and `validate_on_startup`, `@staticmethod @abstractmethod`, and the package carried that
+over. `factory-defaults` prompt 01 (`f5d8957`), carrying out decision U1 of
+`prompts/factory-defaults/README.md` §6.2 on the user's ruling (2026-10-11), makes `store`,
+`validate` and `validate_on_startup` defaulted, as the base already defaulted `revalidate`,
+`owned_serials` and `inventory_spec`. It revisits decision U32 of the extraction campaign in part
+(`prompts/extraction/README.md` §6.2, and U32's row on its board). It fixes no defect of SGK's:
+SGK registers factory classes, which are never instantiated, so its base's abstractness was never
+enforced on it. What it removes is Python's `TypeError` on instantiating a factory class that lacks
+any of the three, which a client that registers factory instances met. Its test module is
+`datastorekit/tests/test_factory_instances.py`, and `docs/client-contract.md` §9.5 gives the
+detail.
+
+**What changed in the package**: `datastorekit/SQL/factory_base.py` only (24 lines added and 6
+removed, `git diff --numstat 6d8ee9a f5d8957 -- datastorekit/SQL`): three `@abstractmethod` lines
+removed, the comment on defaulted hooks moved above the three and reworded, and a docstring added
+to each of the three. Every hook's arguments and body are unchanged. In this repository only,
+outside the wheel, `datastorekit/tests/test_neutral_client.py` changed (its `ABSTRACT_HOOKS` is
+now `register` and `build`); `datastorekit/tests/client/instances.py` and its test module are new;
+the smoke script `docs/extraction/ray_smoke_run.py` gained step I, a registry of instances under
+real Ray; and the contract gained §9.5 and its five markers, the verification document §4.8 and
+§8.1, and extraction U32 a dated note. The suite went from 494 to 504.
+
+**The files 01 changes:**
+- `datastorekit/SQL/factory_base.py`; `datastorekit/tests/test_neutral_client.py`; the new
+  `datastorekit/tests/client/instances.py` and `datastorekit/tests/test_factory_instances.py`;
+- `docs/extraction/ray_smoke_run.py`; `docs/client-contract.md` (§9.5);
+  `docs/extraction-verification.md` (§4.8 and §8.1);
+- `prompts/extraction/README.md` and `prompts/extraction/IMPLEMENTATION_STATE.md` (the notes on
+  U32).
+
+The log is `prompts/factory-defaults/logs/01-the-base-defaults-three-hooks.md`.

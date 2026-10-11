@@ -25,6 +25,12 @@ gives the pin **`v0.2.2`** and what changed for CPBH since `v0.2.1`, and superse
 it names. The text before it, the `v0.2.1` addendum included, is unchanged and true of the
 release it names.*
 
+*Added by `factory-defaults` prompt 02 on 2026-10-11: the section
+[Addendum: v0.2.3](#addendum-v023-factory-defaults-prompt-02-2026-10-11), after the `v0.2.2`
+addendum, gives the pin **`v0.2.3`** and what changed for CPBH since `v0.2.2`, and supersedes the
+statements it names. The text before it, the `v0.2.1` and `v0.2.2` addenda included, is unchanged
+and true of the release each names.*
+
 Unless another commit is named, a `path:line` is CPBH's at `52142d7`, and one under
 `datastorekit/` is the package's at `v0.2.0`.
 
@@ -520,6 +526,90 @@ but `:6`, which is above the insert).
 | `docs/adoption/champbh.md:452-454` | the `v0.2.1` addendum's `path:line`s are "this file's as committed with this addendum" | they are read at `33778b0`, or six lines later here (all but `:6`) |
 | `docs/adoption/champbh.md:458` | the package "at `v0.2.1`, with this addendum" | at `v0.2.2`, with both addenda |
 | `docs/adoption/champbh.md:461` | "G3 holds when CPBH has adopted `v0.2.1` (U37)" | G3 holds when CPBH has adopted `v0.2.2` (U37; `actor-names` U3) |
+
+---
+
+## Addendum: v0.2.3 (factory-defaults prompt 02, 2026-10-11)
+
+*Written by `factory-defaults` prompt 02 on 2026-10-11, and added after `actor-names` prompt 02's
+`v0.2.2` addendum. 07a's text, the `v0.2.1` addendum and the `v0.2.2` addendum stay as written,
+each true of the release it names (`CLAUDE.md` rule 6). CPBH was not re-measured (as decision
+U37); what this section says of CPBH comes from 07a's measurements and from reads through `git`
+only, at `52142d7`.*
+
+**The pin.** CPBH adopts **`v0.2.3`** in place of `v0.2.2` (decision U5 of the `factory-defaults`
+campaign, which keeps extraction decision U37 and `actor-names` decision U3 for CPBH), and G3
+reads "CPBH has adopted `v0.2.3`":
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.3
+```
+
+`v0.2.3` carries `key_on_version`, `v0.2.0`'s feature, `v0.2.1`'s three fixes and `v0.2.2`'s fix,
+unchanged.
+
+**What changed for CPBH since `v0.2.2`.** The change is
+[`docs/client-contract.md` §9.5](../client-contract.md#95-factory-defaults-prompt-01)'s, and
+[`README.md`'s addendum](README.md#addendum-v023-factory-defaults-prompt-02-2026-10-11) gives it for
+every client: `SQLAFactoryBase` keeps `register` and `build` abstract and defaults `store`,
+`validate` and `validate_on_startup`, so a factory class that defines the two can be instantiated
+and its instance registered. Nothing CPBH supplies changes, nothing the layer writes changes, and
+no message, refusal or exception of the layer's. **For CPBH it removes item 5's U32 obligation.**
+- **CPBH's registry of instances works as it stands.** Read by an `ast` read of every `.py` file
+  through `git show` at `52142d7`: 23 classes whose bases name `SQLAFactoryBase`, 20 of them
+  lacking one of `store`, `validate` and `validate_on_startup`, and none lacking `register` or
+  `build`; 27 calls of them by name, all in the registry (`Datastore/SQL/Datastore.py:95-121`), 24
+  of them of a class lacking one of the three. Under `v0.2.2` each of those 24 raises `TypeError`
+  where the registry is built; under `v0.2.3` each instantiates, since every class defines
+  `register` and `build`. Item 5 asks nothing of CPBH's factories but the base's import path
+  (item 3), and neither of its two routes is needed.
+- **The defaults are static.** A hook a CPBH class defines with `self` overrides the base's default
+  as before, and is called on the instance. A hook it does not define raises a bare
+  `NotImplementedError` when the layer calls it, as CPBH's own base does today
+  (`Datastore/SQL/ObjectFactories/base.py:16-30` at `52142d7`: a plain class whose five hooks are
+  instance methods raising `NotImplementedError`). The layer calls `store` only on an
+  `object_store`, `validate` only on an `object_validate`, and `validate_on_startup` only for a
+  class whose `register()` declares `validate_on_startup: True` (contract §3), which none of the 20
+  does.
+- **The quantity factories** (`sqla_dimensionful_quantity_factory`, five registry entries, and
+  `sqla_dimensionless_quantity_factory`, one) are each one class whose instance holds the
+  `ObjectType` that tells its table apart. One class over several tables, each an instance, is the
+  case of the package's parameterised factory test (`datastorekit/tests/test_factory_instances.py`,
+  test 2). Contract §9.5's third row says what a
+  registered instance must be under Ray: of a class defined at module level, with picklable
+  attributes.
+- **Item 5's other findings are unchanged:** the keyed lookups of `ScalarModel`,
+  `AdiabaticHistory` and `BBNData`, the layer's own tables, and the six `inventory()` hooks the
+  package never calls. So are items 6 and 8: the constructor and the vectorized get are as at
+  `v0.2.2`, and every CPBH store is refused in the same order, by the same exceptions, and is
+  rebuilt (D4).
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`), and one in the `v0.2.1` addendum stays `v0.2.1`'s (`33778b0`). The `v0.2.2` addendum
+cites none. This addendum cites no `datastorekit/` line; one cited here would be `v0.2.3`'s, whose
+`datastorekit/` is the tree of `factory-defaults` prompt 01's commit `f5d8957`.
+
+**What this addendum supersedes**, in this file. Each `path:line` is this file's as committed with
+this addendum. In the file as `actor-names` prompt 02 left it (`6d8ee9a`), every line after `:27`
+is six lines earlier, since this addendum's italic line under the title adds six. So the `v0.2.2`
+addendum's citations, which are that file's, are read at `6d8ee9a`, or six lines later here (all
+but `:17-20`, which is above the insert). The `v0.2.1` addendum's citations, which the `v0.2.2`
+addendum reads at `33778b0` or six lines later, are read at `33778b0`, or twelve lines later here
+(all but `:6`).
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/champbh.md:22-26` | the `v0.2.2` addendum gives the pin **`v0.2.2`** | it gives `v0.2.2`'s pin and changes, true of `v0.2.2`; this addendum gives `v0.2.3` |
+| `docs/adoption/champbh.md:40-41` | "its factory base is an ABC, and CPBH registers instances of 20 classes that define only two of its five abstract hooks (U32)" | at `v0.2.3` the base's only abstract hooks are `register` and `build`, which all 23 classes define, so CPBH's instances are accepted; "What changed for CPBH since `v0.2.2`", above |
+| `docs/adoption/champbh.md:213-215` | "The package's `SQLAFactoryBase` is an ABC with the five abstract (`datastorekit/SQL/factory_base.py:5-29`). Subclassing it, `sqla_version_factory()` and the other 19 raise `TypeError` at instantiation" | true through `v0.2.2`. At `v0.2.3` the base defaults the three, and each of the 20 instantiates |
+| `docs/adoption/champbh.md:216-227` | "The two routes, and what each needs": define the three hooks on each of the 20, or register the class itself | neither is needed at `v0.2.3`: CPBH registers its instances as they stand. The rest of item 5's U32 paragraph (`:206-212`), the counts and CPBH's own base, still holds |
+| `docs/adoption/champbh.md:478-479` | "CPBH adopts **`v0.2.2`** in place of `v0.2.1`", and G3 reads "CPBH has adopted `v0.2.2`" | CPBH adopts `v0.2.3` in place of `v0.2.2` (`factory-defaults` U5), and G3 reads "CPBH has adopted `v0.2.3`" |
+| `docs/adoption/champbh.md:482` | the pin `…@v0.2.2` | the pin `…@v0.2.3`, above |
+| `docs/adoption/champbh.md:515-519` | the `v0.2.2` addendum's `path:line`s are "this file's as committed with this addendum" | they are read at `6d8ee9a`, or six lines later here (all but `:17-20`) |
+| `docs/adoption/champbh.md:524` | in the `v0.2.2` addendum's table, CPBH adopts `v0.2.2` in place of `v0.2.1`, and G3 reads "CPBH has adopted `v0.2.2`" | as `:478-479` |
+| `docs/adoption/champbh.md:525` | "the pin `…@v0.2.2`, above" | the pin `…@v0.2.3`, above |
+| `docs/adoption/champbh.md:527` | the package "at `v0.2.2`, with both addenda" | at `v0.2.3`, with the three addenda |
+| `docs/adoption/champbh.md:528` | "G3 holds when CPBH has adopted `v0.2.2` (U37; `actor-names` U3)" | G3 holds when CPBH has adopted `v0.2.3` (U37; `actor-names` U3; `factory-defaults` U5) |
 
 ---
 

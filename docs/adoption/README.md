@@ -14,6 +14,11 @@ text, before it, is unchanged and true of `v0.2.0`.*
 **`v0.2.2`** and what changed since `v0.2.1`, and supersedes the statements it names. The text
 before it, the `v0.2.1` addendum included, is unchanged and true of the release it names.*
 
+*Added by `factory-defaults` prompt 02 on 2026-10-11: the section
+[Addendum: v0.2.3](#addendum-v023-factory-defaults-prompt-02-2026-10-11) at the end gives the pins
+by client and what changed since `v0.2.2`, and supersedes the statements it names. The text before
+it, the `v0.2.1` and `v0.2.2` addenda included, is unchanged and true of the release each names.*
+
 This directory holds one **adoption checklist** per client project, and what the three share.
 Each checklist says what its client must do to depend on `datastorekit` at `v0.2.0`: what it
 deletes, which imports it rewrites, what leaves its copy of the layer, what its factories, call
@@ -361,3 +366,105 @@ but `:3`, which is above the insert).
 | `docs/adoption/README.md:270` | "the pin `…@v0.2.1`, above" | the pin `…@v0.2.2`, above |
 | `docs/adoption/README.md:271` | "G2, G3 and G4 each hold when that client has adopted `v0.2.1` (U37)" | G2, G3 and G4 each hold when that client has adopted `v0.2.2` (U37; `actor-names` U3) |
 | `docs/adoption/README.md:273` | "a `datastorekit/` line in an addendum is at `v0.2.1`" | as `:257-259` |
+
+---
+
+## Addendum: v0.2.3 (factory-defaults prompt 02, 2026-10-11)
+
+*Written by `factory-defaults` prompt 02 on 2026-10-11, and added after `actor-names` prompt 02's
+`v0.2.2` addendum. 07a's text, the `v0.2.1` addendum and the `v0.2.2` addendum stay as written,
+each true of the release it names (`CLAUDE.md` rule 6). No checklist was re-measured (as decision
+U37); the clients' factory classes below were read through `git` only.*
+
+**The pins, by client.** For the first time the clients' pins differ (decision U5 of the
+`factory-defaults` campaign, which amends extraction decision U37 and `actor-names` decision U3,
+"every client adopts the release named", for SGK only):
+- **CPBH and SI adopt `v0.2.3`** in place of `v0.2.2`, and G3 and G4 read "CPBH has adopted
+  `v0.2.3`" and "SI has adopted `v0.2.3`":
+
+  ```text
+  datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.3
+  ```
+
+- **SGK may stay on `v0.2.2` or move to `v0.2.3`**, as SGK chooses, a move being a commit of its
+  own, and G2 reads "SGK has adopted `v0.2.2` or later". `v0.2.3` changes nothing SGK meets
+  (below).
+
+`v0.2.3` carries `key_on_version`, `v0.2.0`'s feature, `v0.2.1`'s three fixes and `v0.2.2`'s fix,
+unchanged.
+
+**What changed since `v0.2.2`.** Only `datastorekit/SQL/factory_base.py` changed in the package,
+by `factory-defaults` prompt 01 (`f5d8957`), on the user's ruling: three `@abstractmethod` lines
+removed, the comment on defaulted hooks moved above the three and reworded, and a docstring added
+to each. Every hook's arguments and body are `v0.2.2`'s. Nothing a client supplies changes, no API
+is added or removed, nothing the layer writes changes, and no message, refusal or exception of the
+layer's changes. What changes is Python's: it no longer refuses to instantiate a factory class
+that lacks `store`, `validate` or `validate_on_startup`. Each row below is a row of
+[`docs/client-contract.md` §9.5](../client-contract.md#95-factory-defaults-prompt-01):
+
+| What | At `v0.2.2` | At `v0.2.3` | Contract row |
+|---|---|---|---|
+| A factory class that defines `register` and `build` but not all of `store`, `validate` and `validate_on_startup` | `SQLAFactoryBase` makes all five abstract, so Python refuses to instantiate the class, with `TypeError`, at the line that makes the instance | it can be instantiated, and its instance registered. The base (`datastorekit/SQL/factory_base.py:5-80`) has `register` (`:6-9`) and `build` (`:11-14`) as its only abstract hooks, and defaults the three (`:21-50`), static, as it defaults `revalidate`, `owned_serials` and `inventory_spec` | [§9.5](../client-contract.md#95-factory-defaults-prompt-01), "A factory may be an instance" |
+| A hook that a registered instance's class does not define | — (no such instance could be made) | what a class meets: the base's bare `NotImplementedError`, reached only when the layer calls the hook (a store of the class, a validate of it, or, for a class whose `register()` declares `validate_on_startup: True`, an actor's open or a replicated prune), from a class or an instance alike | [§9.5](../client-contract.md#95-factory-defaults-prompt-01), "`store`, `validate`, `validate_on_startup`" |
+| *Unchanged:* a factory class lacking `register` or `build` | refused at instantiation, `TypeError` | still refused at instantiation, `TypeError` | [§9.5](../client-contract.md#95-factory-defaults-prompt-01), "A factory may be an instance" |
+| *Unchanged:* a client that registers factory classes | the layer calls each hook on the class, and never instantiates a factory | the same: such a client meets nothing new, `NotImplementedError` included | [§9.5](../client-contract.md#95-factory-defaults-prompt-01), its preamble |
+| *Now stated:* what a pool's actors receive | the same, but unstated | the registry reaches each actor as a constructor argument, serialised under Ray, so a registered instance must be of a class defined at module level, with picklable attributes | [§9.5](../client-contract.md#95-factory-defaults-prompt-01), "What a pool's actors receive" |
+
+**Nothing any client supplies or stores changes.** A store that opened under `v0.2.2` opens under
+`v0.2.3`, and a store refused under `v0.2.2` is refused under `v0.2.3`, by the same exception and
+message.
+
+**What the clients do with it.** `factory-defaults` read the three clients through `git` only: a
+script parsed every `.py` file, from `git show <commit>:<path>`, with `ast`, importing and running
+nothing of a client, and found each class whose bases name `SQLAFactoryBase`, the methods it
+defines, and every call of such a class by name. The planner measured it, and prompt 02 re-ran it,
+on 2026-10-11:
+
+| Client, commit | Factory classes | Lacking `store`, `validate` or `validate_on_startup` | Lacking `register` or `build` | Calls that instantiate one | Of a class lacking one of the three |
+|---|---|---|---|---|---|
+| SGK `b510bc9` (its checklist's) | 38 | 31 | none | 0 | 0 |
+| SGK `643c3b2`, then `af26914` (its `HEAD` when read, 2026-10-11) | 38 | 31 | none | 0 | 0 |
+| CPBH `52142d7` | 23 | 20 | none | 27, all in its registry (`Datastore/SQL/Datastore.py:95-121`) | 24 |
+| SI `7bb3efd` | 28 | 16 | none | 33: 30 in its registry (`Datastore/SQL/Datastore.py:97-126`), and three at import (`CosmologyConcepts/Potentials/registry.py:33`, `:40`; `Datastore/SQL/ObjectFactories/MasslessDecoupledDiffusion.py:71`) | 21: 18 registry entries and the three at import |
+
+- **CPBH**: under `v0.2.2` each of the 24 calls raises `TypeError` where the registry is built.
+  Under `v0.2.3` each instantiates, since every CPBH class defines `register` and `build`. CPBH's
+  registry of instances works as it stands.
+- **SI**: the same for its 18 registry entries, and its three instantiations at import stop
+  raising too.
+- **SGK** instantiates no factory, at its checklist's commit or at its `HEAD`: it registers classes.
+  `v0.2.3` changes nothing SGK meets.
+
+**The checklists are not re-measured** (as U37). Each has an addendum of its own, after its `v0.2.2`
+addendum: [SGK's](secondarygwkit.md#addendum-v023-factory-defaults-prompt-02-2026-10-11),
+[CPBH's](champbh.md#addendum-v023-factory-defaults-prompt-02-2026-10-11) and
+[SI's](stochasticinstantons.md#addendum-v023-factory-defaults-prompt-02-2026-10-11).
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`), one in the `v0.2.1` addendum stays `v0.2.1`'s (`33778b0`), and one in the `v0.2.2`
+addendum stays `v0.2.2`'s (`6d8ee9a`). A `datastorekit/` line in this addendum is `v0.2.3`'s, whose
+`datastorekit/` is the tree of `factory-defaults` prompt 01's commit `f5d8957`; prompt 02 does not
+change it. A client's line is that client's at the commit named.
+
+**What this addendum supersedes**, in this file. Each `path:line` is this file's as committed with
+this addendum. In the file as `actor-names` prompt 02 left it (`6d8ee9a`), every line after `:16`
+is five lines earlier, since this addendum's italic line at the head adds five. So the `v0.2.2`
+addendum's citations, which are that file's, are read at `6d8ee9a`, or five lines later here (all
+but `:7-10`, which is above the insert). The `v0.2.1` addendum's citations, which the `v0.2.2`
+addendum reads at `33778b0` or five lines later, are read at `33778b0`, or ten lines later here
+(all but `:3`).
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/README.md:12-15` | the `v0.2.2` addendum, "at the end", gives the pin **`v0.2.2`** | it gives `v0.2.2`'s pin and changes, true of `v0.2.2`; this addendum, now at the end, gives the pins of `v0.2.3` |
+| `docs/adoption/README.md:137-138` | "`SQLAFactoryBase` (`datastorekit/SQL/factory_base.py:5-29`) is an ABC whose `register`, `build`, `store`, `validate` and `validate_on_startup` are abstract" | true through `v0.2.2`. At `v0.2.3` only `register` and `build` are abstract, and the base defaults the other three; "What changed since `v0.2.2`", above |
+| `docs/adoption/README.md:141-146` | a client that registers instances "must give each instantiated class all five, or Python refuses to instantiate it (`TypeError`) … (U32)", and "the other route", registering the class itself | at `v0.2.3` an instantiated class needs only `register` and `build`, which every CPBH and SI class defines, so a registry of instances works as it stands and neither route is needed. The paragraph's first sentence, that the layer never instantiates a factory and calls its hooks on what the registry holds (`:135-137`), and its first bullet, that a client that registers classes is unaffected (`:139-140`), still hold |
+| `docs/adoption/README.md:289-290` | "Every client adopts **`v0.2.2`** in place of `v0.2.1`" | CPBH and SI adopt `v0.2.3`, and SGK may stay on `v0.2.2` or move (`factory-defaults` U5); "The pins, by client", above |
+| `docs/adoption/README.md:293` | the pin `…@v0.2.2` | for CPBH and SI the pin `…@v0.2.3`; for SGK `…@v0.2.2` or `…@v0.2.3` |
+| `docs/adoption/README.md:351-355` | the `v0.2.2` addendum's `path:line`s are "this file's as committed with this addendum" | they are read at `6d8ee9a`, or five lines later here (all but `:7-10`) |
+| `docs/adoption/README.md:360` | "every client adopts `v0.2.2` in place of `v0.2.1`" | as `:289-290` |
+| `docs/adoption/README.md:361` | "the pin `…@v0.2.2`, above" | as `:293` |
+| `docs/adoption/README.md:364` | at `v0.2.2`, "each checklist with both its addenda" | at `v0.2.3`, each checklist with its three addenda |
+| `docs/adoption/README.md:365` | "all three adopt `v0.2.2` (U37; `actor-names` U3)" | as `:289-290` |
+| `docs/adoption/README.md:366` | "the pin `…@v0.2.2`, above" | as `:293` |
+| `docs/adoption/README.md:367` | "G2, G3 and G4 each hold when that client has adopted `v0.2.2` (U37; `actor-names` U3)" | G2 holds when SGK has adopted `v0.2.2` or later, and G3 and G4 when CPBH and SI have adopted `v0.2.3` (U37; `actor-names` U3; `factory-defaults` U5) |
