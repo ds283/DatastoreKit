@@ -1,9 +1,10 @@
 # actor-names campaign — implementation state
 
-**Last updated:** 2026-10-11 · **Status: IN PROGRESS — 3 of 3 prompts written (01, 01b, 02), 2 landed
-(01, `ac50a8a`, reviewed; 01b, `f024fc6`, reviewed); U1–U3 taken 2026-10-10, as
-recommended, and U4 2026-10-11; 02 re-measured against 01b's tree (`a4290de`) and amended, ready for its orchestration note. No
-issue open on this board: 01b closed `[02-closing-a-pool-can-start-ray]` (§4).**
+**Last updated:** 2026-10-11 · **Status: IN PROGRESS — 3 of 3 prompts written (01, 01b, 02), 3 landed
+(01, `ac50a8a`, reviewed; 01b, `f024fc6`, reviewed; 02, this commit, not yet reviewed); U1–U3
+taken 2026-10-10, as recommended, and U4 2026-10-11. 02 makes the package ready to be released as
+`v0.2.2`; the tag waits for 02's review and for CI to pass on its commit at both ends. No issue
+open on this board: 01b closed `[02-closing-a-pool-can-start-ray]` (§4).**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]`, closed by 01 on the
@@ -32,7 +33,7 @@ closed by 01b in §4 below ·
 |---|---|---|---|---|---|---|
 | 01 | [A closed pool releases its actor names](01-a-closed-pool-releases-its-actor-names.md) | the kill at `__exit__` and on a refused open, and the closed flag (U1); the stand-in's `ray.kill` and names (U2); a test module; the smoke script's step N reversed and a collision step; contract §9.3; a dated subsection of the verification document; closes the issue | ✍️ yes, 2026-10-10 | ✅ 2026-10-10; reviewed | `ac50a8a` | [log 01](logs/01-a-closed-pool-releases-its-actor-names.md) |
 | 01b | [Closing a pool starts no Ray](01b-closing-a-pool-starts-no-ray.md) | `_ray_is_running()` and the guard in `_kill_actors`; the stand-in's patch; tests 7 and 8; the smoke run unchanged at both ends; contract §9.4; a dated subsection of the verification document; closes `[02-closing-a-pool-can-start-ray]` (U4) | ✍️ yes, 2026-10-11 | ✅ 2026-10-11; reviewed | `f024fc6` | [log 01b](logs/01b-closing-a-pool-starts-no-ray.md) |
-| 02 | [Release `v0.2.2`](02-release-v0.2.2.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G2–G4; the tag after green CI (U3) | ✍️ yes, 2026-10-10; held 2026-10-11 on 01b; re-measured and amended 2026-10-11 against `a4290de` | ⬜ | — | — |
+| 02 | [Release `v0.2.2`](02-release-v0.2.2.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G2–G4; the tag after green CI (U3) | ✍️ yes, 2026-10-10; held 2026-10-11 on 01b; re-measured and amended 2026-10-11 against `a4290de` | ✅ 2026-10-11; not yet reviewed; untagged | this commit | [log 02](logs/02-release-v0.2.2.md) |
 
 **Orchestrator review of prompt 01 (2026-10-10).** Dispatched from `7c97125` to one Opus
 subagent, with the note's eight corrections and its additions. Reviewed against its commit

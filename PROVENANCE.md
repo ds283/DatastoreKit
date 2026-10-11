@@ -156,3 +156,48 @@ and is not extended.
   `datastorekit/tests/`, `test_layer_is_generic.py`'s `KNOWN_HITS` among them; the new
   `datastorekit/tests/test_prose_names_no_source.py`. The log is
   `prompts/extraction/logs/09-rewrite-the-package-prose.md`.
+
+### `actor-names` prompts 01 and 01b: a closed pool releases its actor names (`v0.2.2`)
+
+**The fix has no source.** It was made here, by `actor-names` prompt 01 (`ac50a8a`), and closed
+`[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]`. Extraction prompt 11 opened that
+issue, from the first run of the package under real Ray, and 01 closed it on the extraction board,
+`prompts/extraction/IMPLEMENTATION_STATE.md` §4. A closed pool, and an open that is refused, now
+kill their shard actors and their broker with `ray.kill(handle, no_restart=True)`, so the actors'
+names are free at once. A closed pool's handles are dead, and a second `__exit__` does nothing.
+The names are unchanged, so two pools open at once in one Ray session still collide (decision U1,
+`prompts/actor-names/README.md` §6.2). Its test module is
+`datastorekit/tests/test_closed_pool_releases_its_names.py` (tests 1–6), and
+`docs/client-contract.md` §9.3 gives the detail.
+
+**SGK's frozen copies carry the defect.** SGK names the same actors, `SerialPoolBroker` and
+`shard{key:04d}-store`, at `Datastore/SQL/ShardedPool.py:294`, `:305` and `:544`, at both
+`6f7f291` and `b510bc9`, and its `__exit__` kills none of them. "The freeze" above (decision U3)
+says that a defect found during the freeze is fixed here after G2. Decision U3 of `actor-names`
+fixed this one before it, as decision U33 of the extraction campaign fixed three. SGK receives the
+fix by adopting `v0.2.2`.
+
+**01b's guard has no source either.** `actor-names` prompt 01b (`f024fc6`) closed
+`[02-closing-a-pool-can-start-ray]`, which 01's kill introduced and which no release carried: it
+was opened and closed on `prompts/actor-names/IMPLEMENTATION_STATE.md` (§4). A module-level
+`_ray_is_running()` returns `ray.is_initialized()`, and `_kill_actors` kills nothing when it is
+false, so closing a pool in a process that is not connected to Ray never reaches Ray's `ray.kill`,
+which would start a local Ray first. SGK's `__exit__` calls no `ray.kill`, so SGK's frozen copies do
+not have that defect. Its tests are tests 7 and 8 of the same module, and
+`docs/client-contract.md` §9.4 gives the detail.
+
+**What changed in the package**: `datastorekit/SQL/ShardedPool.py` only, by addition: 64 lines,
+48 by 01 and 16 by 01b, and none removed (`git diff --numstat 33778b0 f024fc6 -- datastorekit`).
+In this repository only, outside the wheel, the stand-in pool (`datastorekit/tests/standin_pool.py`),
+the new test module, the smoke script `docs/extraction/ray_smoke_run.py` (by 01) and the contract's
+§9.3 and §9.4 changed too. The suite went from 486 to 494.
+
+**The files each prompt changes:**
+- **01**: `datastorekit/SQL/ShardedPool.py`; `datastorekit/tests/standin_pool.py`; the new
+  `datastorekit/tests/test_closed_pool_releases_its_names.py`; `docs/extraction/ray_smoke_run.py`;
+  `docs/client-contract.md` (§9.3); `docs/extraction-verification.md` (§4.6). The log is
+  `prompts/actor-names/logs/01-a-closed-pool-releases-its-actor-names.md`.
+- **01b**: `datastorekit/SQL/ShardedPool.py`; `datastorekit/tests/standin_pool.py`;
+  `datastorekit/tests/test_closed_pool_releases_its_names.py` (tests 7 and 8);
+  `docs/client-contract.md` (§9.4); `docs/extraction-verification.md` (§4.7). The log is
+  `prompts/actor-names/logs/01b-closing-a-pool-starts-no-ray.md`.

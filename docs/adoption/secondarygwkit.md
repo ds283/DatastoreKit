@@ -18,6 +18,12 @@
 **`v0.2.1`** and what changed for SGK since `v0.2.0`, and supersedes the statements it names.
 07a's text is unchanged and true of `v0.2.0`.*
 
+*Added by `actor-names` prompt 02 on 2026-10-11: the section
+[Addendum: v0.2.2](#addendum-v022-actor-names-prompt-02-2026-10-11), after the `v0.2.1` addendum,
+gives the pin **`v0.2.2`** and what changed for SGK since `v0.2.1`, and supersedes the statements
+it names. The text before it, the `v0.2.1` addendum included, is unchanged and true of the
+release it names.*
+
 Unless another commit is named, a `path:line` is SGK's at `b510bc9`, and one under
 `datastorekit/` is the package's at `v0.2.0`.
 
@@ -435,6 +441,96 @@ italic line under the title adds five.
 | `docs/adoption/secondarygwkit.md:208-211` | the in-place update of the caller's payloads "is SGK's own behaviour, unchanged" | `v0.2.1` sends copies, and SGK reads nothing back; "The vectorized get", above |
 | `docs/adoption/secondarygwkit.md:297-302` | item 8's reasoning, through `v0.2.0` | extended to `v0.2.1`; "Item 8 still holds", above |
 | `docs/adoption/secondarygwkit.md:306` | G2 holds when SGK has adopted `v0.2.0` | G2 holds when SGK has adopted `v0.2.1` (U37) |
+
+---
+
+## Addendum: v0.2.2 (actor-names prompt 02, 2026-10-11)
+
+*Written by `actor-names` prompt 02 on 2026-10-11, and added after extraction prompt 10's `v0.2.1`
+addendum. 07a's text and the `v0.2.1` addendum stay as written, each true of the release it names
+(`CLAUDE.md` rule 6). SGK was not re-measured (as decision U37); what this section says of SGK
+comes from 07a's measurements and from reads through `git` only, at `b510bc9`.*
+
+**The pin.** SGK adopts **`v0.2.2`** in place of `v0.2.1` (decision U3 of the `actor-names`
+campaign, which amends extraction decision U37), and G2 reads "SGK has adopted `v0.2.2`":
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.2
+```
+
+`v0.2.2` carries `v0.2.1`'s three fixes unchanged.
+
+**What changed for SGK since `v0.2.1`.** The changes are the rows of
+[`docs/client-contract.md` §9.3](../client-contract.md#93-actor-names-prompt-01) and
+[§9.4](../client-contract.md#94-actor-names-prompt-01b), and
+[`README.md`'s addendum](README.md#addendum-v022-actor-names-prompt-02-2026-10-11) gives them for
+every client: a closed pool, and an open that is refused, release their actors' names at once; a
+closed pool's handles are dead; a second `__exit__` does nothing. Two pools open at once still
+collide, and closing a pool never starts Ray. Nothing SGK supplies changes, nothing the layer
+writes changes, and no message.
+- **The files.** At `v0.2.2`, SGK's `Datastore/SQL/ShardedPool.py` and the package's
+  `datastorekit/SQL/ShardedPool.py` differ also by `actor-names` prompts 01's and 01b's 64 lines,
+  all added to that file and to no other. The six files the `v0.2.1` addendum names as able to
+  equal SGK's sources byte for byte (`__init__.py`, `object.py`, `SQL/__init__.py`,
+  `SQL/ClientPool.py`, `SQL/SerialPoolBroker.py` and `SQL/ProfileAgent.py`) are unchanged by them.
+- **Item 6's constructions.** SGK constructs the pool 7 times (item 6): `main.py:4164`, and
+  `extract_GkSource_data.py:932`, `extract_GkWKB_data.py:505`, `extract_Gk_data.py:453`,
+  `extract_QuadSourceIntegral_data.py:1294`, `extract_TkWKB_data.py:493` and
+  `extract_tensor_source_data.py:421`. Read by an `ast` read of `git show`, each is a `with
+  ShardedPool(…) as pool:` block, the only construction in its file and the last statement of its
+  block, and nothing after it names `pool`. SGK calls no pool's `__exit__` directly: the two
+  `super().__exit__` calls `git grep` finds, `Quadrature/simple_quadrature.py:45` and
+  `Quadrature/supervisors/numeric.py:51`, are not pools. It calls neither `ray.kill` nor
+  `ray.get_actor`, and reads no pool's `_shards` or `_broker`. `git grep` also finds
+  `ComputeTargets/tests/test_reader_read_only.py:91` and `:104`, a docstring and a message that
+  name the block. So SGK uses no closed pool and meets no dead handle, and since each script opens
+  one pool per process it never met the defect either. For SGK the fix is latent.
+- **SGK's own stand-in.** SGK keeps `Datastore/tests/standin_pool.py` (item 7, `:264-266` of this
+  file) for `ComputeTargets/tests/test_quadsource_policy_main.py`. It reaches the pool's module by
+  `importlib.import_module` (`Datastore/tests/standin_pool.py:43`), which SGK's import rewrite
+  points at the package. Its `active()` (`Datastore/tests/standin_pool.py:231-247`) stands in
+  `ray.get` (`:233`), the actor classes and `random`, but neither `ray.kill` nor the pool's
+  `_ray_is_running`. Under `v0.2.2`, inside that `active()`, `ray.is_initialized()` is false (the
+  test module's `tearDownModule` asserts it,
+  `ComputeTargets/tests/test_quadsource_policy_main.py:430-431`), so `_kill_actors` returns before
+  any kill (`datastorekit/SQL/ShardedPool.py:446-447`). Those tests therefore close their pools as
+  under `v0.2.1`: they kill nothing, and start no Ray. The stand-in reserves no names, so it does
+  not see the release either. Whether it stands in `_ray_is_running` and `ray.kill`, as the
+  package's stand-in does, is SGK's choice.
+- **Item 8 still holds: no SGK store is refused.** Nothing the layer writes changes (contract
+  [§9.3](../client-contract.md#93-actor-names-prompt-01),
+  [§9.4](../client-contract.md#94-actor-names-prompt-01b)), so every SGK store opens as under
+  `v0.2.1`, and so as under `v0.2.0`. G2's rehearsal (item 9) is the measurement.
+- **SGK's frozen copies carry 01's defect**, and adopting `v0.2.2` fixes it. SGK names the same
+  actors, `SerialPoolBroker` and `shard{key:04d}-store` (`Datastore/SQL/ShardedPool.py:294`, `:305`
+  and `:544`, at `6f7f291` and at `b510bc9`), and its `__exit__` kills none of them, so a closed
+  pool's names are held until the pool is collected. "The freeze" of `PROVENANCE.md` (decision U3)
+  says a defect found during the freeze is fixed in DatastoreKit after G2; decision U3 of
+  `actor-names` fixed this one before it. SGK's `__exit__` calls no `ray.kill`, so its copies do
+  not have the defect 01b guards against.
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`), and one in the `v0.2.1` addendum stays `v0.2.1`'s (`33778b0`). A `datastorekit/` line
+in this addendum is `v0.2.2`'s, whose `datastorekit/` is the tree of `actor-names` prompt 01b's
+commit `f024fc6`; prompt 02 does not change it.
+
+**What this addendum supersedes**, in this file. Each `path:line` is this file's as committed with
+this addendum. In the file as extraction prompt 10 left it (`33778b0`), every line after `:20` is
+six lines earlier, since this addendum's italic line under the title adds six: so the `v0.2.1`
+addendum's citations, which are that file's, are read at `33778b0`, or six lines later here (all
+but `:6`, which is above the insert).
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/secondarygwkit.md:16-19` | the `v0.2.1` addendum gives the pin **`v0.2.1`** | it gives `v0.2.1`'s pin and changes, true of `v0.2.1`; this addendum gives `v0.2.2` |
+| `docs/adoption/secondarygwkit.md:375-376` | "SGK adopts **`v0.2.1`** in place of `v0.2.0`", and G2 reads "SGK has adopted `v0.2.1`" | SGK adopts `v0.2.2` in place of `v0.2.1` (`actor-names` U3), and G2 reads "SGK has adopted `v0.2.2`" |
+| `docs/adoption/secondarygwkit.md:379` | the pin `…@v0.2.1` | the pin `…@v0.2.2`, above |
+| `docs/adoption/secondarygwkit.md:422-424` | "SGK's frozen copies carry the three defects, and adopting `v0.2.1` fixes them" | adopting `v0.2.2` fixes them, and 01's defect; "SGK's frozen copies", above |
+| `docs/adoption/secondarygwkit.md:430-432` | the `v0.2.1` addendum's `path:line`s are "this file's as committed with this addendum" | they are read at `33778b0`, or six lines later here (all but `:6`) |
+| `docs/adoption/secondarygwkit.md:436` | the package "at `v0.2.1`, with this addendum" | at `v0.2.2`, with both addenda |
+| `docs/adoption/secondarygwkit.md:440` | at `v0.2.1`, "three more differences, none of which changes what SGK's calls use" | at `v0.2.2` also the four of contract §9.3, none of which changes what SGK's calls use, since SGK uses no closed pool; "Item 6's constructions", above |
+| `docs/adoption/secondarygwkit.md:442` | item 8's reasoning "extended to `v0.2.1`" | extended to `v0.2.2`; "Item 8 still holds", above |
+| `docs/adoption/secondarygwkit.md:443` | "G2 holds when SGK has adopted `v0.2.1` (U37)" | G2 holds when SGK has adopted `v0.2.2` (U37; `actor-names` U3) |
 
 ---
 

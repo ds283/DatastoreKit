@@ -9,6 +9,11 @@ was imported, run or opened, and no store was opened.*
 **`v0.2.1`** and what changed since `v0.2.0`, and supersedes the statements it names. 07a's
 text, before it, is unchanged and true of `v0.2.0`.*
 
+*Added by `actor-names` prompt 02 on 2026-10-11: the section
+[Addendum: v0.2.2](#addendum-v022-actor-names-prompt-02-2026-10-11) at the end gives the pin
+**`v0.2.2`** and what changed since `v0.2.1`, and supersedes the statements it names. The text
+before it, the `v0.2.1` addendum included, is unchanged and true of the release it names.*
+
 This directory holds one **adoption checklist** per client project, and what the three share.
 Each checklist says what its client must do to depend on `datastorekit` at `v0.2.0`: what it
 deletes, which imports it rewrites, what leaves its copy of the layer, what its factories, call
@@ -266,3 +271,93 @@ italic line at the head adds five.
 | `docs/adoption/README.md:159` | "G2 (SGK has adopted `v0.2.0`, U29)" | G2, G3 and G4 each hold when that client has adopted `v0.2.1` (U37) |
 | `docs/adoption/README.md:161` | "The campaign closes at 07b" | it closes at extraction prompt 11 (U33); 07b was withdrawn unwritten |
 | `docs/adoption/README.md:178-179` | "one under `datastorekit/` is at `v0.2.0` (`240028e`)" | still so for 07a's text; a `datastorekit/` line in an addendum is at `v0.2.1` |
+
+---
+
+## Addendum: v0.2.2 (actor-names prompt 02, 2026-10-11)
+
+*Written by `actor-names` prompt 02 on 2026-10-11, and added after extraction prompt 10's `v0.2.1`
+addendum. 07a's text and the `v0.2.1` addendum stay as written, each true of the release it names
+(`CLAUDE.md` rule 6). No checklist was re-measured (as decision U37); the clients' pool
+constructions below were read through `git` only.*
+
+**The pin.** Every client adopts **`v0.2.2`** in place of `v0.2.1` (decision U3 of the
+`actor-names` campaign, which amends extraction decision U37 and G2–G4):
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.2
+```
+
+**What changed since `v0.2.1`.** Only `datastorekit/SQL/ShardedPool.py` changed in the package:
+64 lines added and none removed, by `actor-names` prompts 01 and 01b. Nothing a client supplies
+changes, no API is added or removed, nothing the layer writes changes, and no message, refusal or
+exception of the layer's changes. Four behaviours differ, all from 01, and two are unchanged. Each
+is a row of [`docs/client-contract.md` §9.3](../client-contract.md#93-actor-names-prompt-01) or
+[§9.4](../client-contract.md#94-actor-names-prompt-01b):
+
+| Behaviour | At `v0.2.1` | At `v0.2.2` | Contract row |
+|---|---|---|---|
+| A closed pool's actor names | held until the pool object is collected: a reopen in the same Ray session while the closed pool is referenced is refused by Ray | released at once: `__exit__` kills each shard actor and the broker with `ray.kill(handle, no_restart=True)` (`datastorekit/SQL/ShardedPool.py:857-884`; `_kill_actors`, `:430-457`), so the store can be reopened while the closed pool is still referenced | [§9.3](../client-contract.md#93-actor-names-prompt-01), "`ShardedPool.__exit__`" |
+| A closed pool's handles | live, with their engines disposed | dead: a call through `pool._shards` or `pool._broker` fails, and so does a pool method that reaches an actor | [§9.3](../client-contract.md#93-actor-names-prompt-01), "`ShardedPool.__exit__`" |
+| A second `__exit__` | runs the body again | does nothing (`datastorekit/SQL/ShardedPool.py:867-868`) | [§9.3](../client-contract.md#93-actor-names-prompt-01), "`ShardedPool.__exit__`" |
+| An open that is refused | closes the actors it made and disposes its engine (§9.2), and holds their names until it is collected | also kills the actors it made (`datastorekit/SQL/ShardedPool.py:428`), so it releases their names at once, even while its exception is held | [§9.3](../client-contract.md#93-actor-names-prompt-01), "A refused open" |
+| *Unchanged:* two pools open at once in one Ray session | collide | still collide, since the names are fixed: the second open is refused by Ray when it creates its broker, with `ValueError` at Ray 2.43.0 and `ray.exceptions.ActorAlreadyExistsError` at 2.55.1 | [§9.3](../client-contract.md#93-actor-names-prompt-01), "Two open pools" |
+| *Unchanged:* closing a pool in a process not connected to Ray | kills nothing, since a close calls no `ray.kill`, and so starts no Ray | kills nothing, and starts no Ray: `_kill_actors` returns before any `ray.kill` (`datastorekit/SQL/ShardedPool.py:446-447`) when `_ray_is_running()` (`:47-55`), which returns `ray.is_initialized()`, is false. Ray's `ray.kill` is one of its auto-init calls, and would run `ray.init()` first. This is `actor-names` prompt 01b's guard: a property the release keeps, not a second fix | [§9.4](../client-contract.md#94-actor-names-prompt-01b), "`ShardedPool._kill_actors`, when the process is not connected to Ray" |
+
+**Nothing any client supplies or stores changes.** A store that opened under `v0.2.1` opens under
+`v0.2.2`, and a store refused under `v0.2.1` is refused under `v0.2.2`, by the same exception and
+message.
+
+**What the clients do with a closed pool.** `actor-names` prompt 02 read the three clients through
+`git` only, at the checklists' commits (SGK `b510bc9`, CPBH `52142d7`, SI `7bb3efd`): `git grep -n
+-E 'ShardedPool\(|\.__exit__\(|ray\.kill|ray\.get_actor'` over each client's `.py` files outside
+its `Datastore/`, `prompts/` and `docs/`, then an `ast` read, from `git show`, of each file that
+constructs a pool.
+- **Every construction is a `with ShardedPool(…) as pool:` block**, the only construction in its
+  file, and nothing after the block names `pool`. There are 14:
+  - SGK 7: `main.py:4164`, and `extract_GkSource_data.py:932`, `extract_GkWKB_data.py:505`,
+    `extract_Gk_data.py:453`, `extract_QuadSourceIntegral_data.py:1294`, `extract_TkWKB_data.py:493`
+    and `extract_tensor_source_data.py:421`;
+  - CPBH 3: `main.py:1338`, `plot_ScalarModel.py:1577` and `plot_by_beta.py:1007`;
+  - SI 4: `main.py:1345`, `plot_GradientCoupledSolutions.py:974`, `plot_InstantonSolutions.py:1207`
+    and `tests/conftest.py:57`.
+
+  13 are the last statement of their block. SI's `live_pool` fixture yields the pool inside its
+  block, and calls `ray.shutdown()` after it.
+- **No client calls a pool's `__exit__` directly, or `ray.kill` or `ray.get_actor`**, and none reads
+  a pool's `_shards` or `_broker`. The five `super().__exit__` calls the grep finds, two each in SGK
+  and CPBH and one in SI, are in `Quadrature/` classes, not pools. SGK's grep also matches a
+  docstring and a message that name the block (`ComputeTargets/tests/test_reader_read_only.py:91`,
+  `:104`); neither is a construction.
+- **So no client uses a closed pool**, and none meets a dead handle. Each opens one pool per process
+  (SI's fixture one per pytest session), so none met the defect either: for each client the fix is
+  latent.
+
+**The checklists are not re-measured** (as U37). Each has an addendum of its own, after its `v0.2.1`
+addendum: [SGK's](secondarygwkit.md#addendum-v022-actor-names-prompt-02-2026-10-11),
+[CPBH's](champbh.md#addendum-v022-actor-names-prompt-02-2026-10-11) and
+[SI's](stochasticinstantons.md#addendum-v022-actor-names-prompt-02-2026-10-11).
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`), and one in the `v0.2.1` addendum stays `v0.2.1`'s (`33778b0`). A `datastorekit/` line
+in this addendum is `v0.2.2`'s, whose `datastorekit/` is the tree of `actor-names` prompt 01b's
+commit `f024fc6`; prompt 02 does not change it.
+
+**What this addendum supersedes**, in this file. Each `path:line` is this file's as committed with
+this addendum. In the file as extraction prompt 10 left it (`33778b0`), every line after `:11` is
+five lines earlier, since this addendum's italic line at the head adds five: so the `v0.2.1`
+addendum's citations, which are that file's, are read at `33778b0`, or five lines later here (all
+but `:3`, which is above the insert).
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/README.md:7-10` | the `v0.2.1` addendum, "at the end", gives the pin **`v0.2.1`** | it gives `v0.2.1`'s pin and changes, true of `v0.2.1`; this addendum, now at the end, gives `v0.2.2` |
+| `docs/adoption/README.md:213-214` | "Every client adopts **`v0.2.1`** in place of `v0.2.0`" | every client adopts `v0.2.2` in place of `v0.2.1` (`actor-names` U3); "The pin", above |
+| `docs/adoption/README.md:217` | the pin `…@v0.2.1` | the pin `…@v0.2.2`, above |
+| `docs/adoption/README.md:257-259` | "A `datastorekit/` line in an addendum is `v0.2.1`'s" | so in the `v0.2.1` addendum; one in this addendum is `v0.2.2`'s ("Line citations", above) |
+| `docs/adoption/README.md:261-263` | the `v0.2.1` addendum's `path:line`s are "this file's as committed with this addendum" | they are read at `33778b0`, or five lines later here (all but `:3`) |
+| `docs/adoption/README.md:268` | at `v0.2.1`, "each checklist with its addendum" | at `v0.2.2`, each checklist with both its addenda |
+| `docs/adoption/README.md:269` | "all three adopt `v0.2.1` (U37)" | all three adopt `v0.2.2` (U37; `actor-names` U3) |
+| `docs/adoption/README.md:270` | "the pin `…@v0.2.1`, above" | the pin `…@v0.2.2`, above |
+| `docs/adoption/README.md:271` | "G2, G3 and G4 each hold when that client has adopted `v0.2.1` (U37)" | G2, G3 and G4 each hold when that client has adopted `v0.2.2` (U37; `actor-names` U3) |
+| `docs/adoption/README.md:273` | "a `datastorekit/` line in an addendum is at `v0.2.1`" | as `:257-259` |

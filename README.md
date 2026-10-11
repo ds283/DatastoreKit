@@ -7,6 +7,19 @@ one shard by a shard key, and checks the store's integrity each time it is opene
 
 ## Status
 
+**`v0.2.2`** is a fix release with one fix (`actor-names` prompt 01): a closed pool, and an open
+that is refused, release their Ray actors' names at once, so a store can be reopened in the same
+Ray session while a closed pool is still referenced. A closed pool's actor handles are dead
+afterwards, and a second `__exit__` does nothing. Two pools open at once in one Ray session still
+collide, since the actors' names are fixed. Closing a pool never starts Ray: in a process not
+connected to Ray it kills nothing (`actor-names` prompt 01b). That is a property the release
+keeps, not a second fix: `v0.2.1`, which killed no actor on a close, never started Ray on one
+either. No API is added or removed, nothing the layer writes changes, and no message, refusal or
+exception of the layer's changes.
+[`docs/client-contract.md`](docs/client-contract.md)
+[§9.3](docs/client-contract.md#93-actor-names-prompt-01) and
+[§9.4](docs/client-contract.md#94-actor-names-prompt-01b) give the detail.
+
 **`v0.2.1`** is a fix release. It fixes three defects: a reopen whose primary records a sharded
 table the constructor was not given is refused with the intended `RuntimeError`, not a bare
 `KeyError`; `object_get_vectorized` no longer adds the shard key to the caller's payload dicts; and
@@ -56,11 +69,11 @@ separate unit of work.
 A client depends on a tagged release, pinned in its `requirements.txt`:
 
 ```text
-datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.1
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.2
 ```
 
-`v0.2.0` and `v0.1.0` remain tagged, and no tag is moved or deleted. Every client adopts `v0.2.1`,
-which fixes defects that both earlier releases carry.
+`v0.2.1`, `v0.2.0` and `v0.1.0` remain tagged, and no tag is moved or deleted; every client adopts
+`v0.2.2`, which fixes a defect that all three earlier releases carry.
 
 An editable install (`pip install -e`) is for developing this package, never for a client's
 production runs: a production run must be reproducible from its pin.
@@ -90,8 +103,10 @@ the layer does with it, and what happens when it is wrong or absent.
   `object_get` payload, under `datastorekit.contract.VERSION_SERIAL_KEY`, and its `build` filters
   on it through `datastorekit.contract.require_version_serial`
   ([§8](docs/client-contract.md#8-version-keyed-lookups-v020-prompt-06)).
-- **What changed after `v0.2.0`**: the three fixes of `v0.2.1`, each with what the layer now does
-  and the test that pins it ([§9](docs/client-contract.md#9-changes-after-v020)).
+- **What changed after `v0.2.0`**: the three fixes of `v0.2.1`, and the fix of `v0.2.2`, that a
+  closed pool releases its actors' names, with the property it keeps, that closing a pool never
+  starts Ray; each with what the layer now does and the test that pins it
+  ([§9](docs/client-contract.md#9-changes-after-v020)).
 
 The worked example is the neutral test client, [`datastorekit/tests/client/`](datastorekit/tests/client/).
 Its registry module, [`datastorekit/tests/client/registry.py`](datastorekit/tests/client/registry.py),

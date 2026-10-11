@@ -17,6 +17,12 @@
 **`v0.2.1`** and what changed for SI since `v0.2.0`, and supersedes the statements it names.
 07a's text is unchanged and true of `v0.2.0`.*
 
+*Added by `actor-names` prompt 02 on 2026-10-11: the section
+[Addendum: v0.2.2](#addendum-v022-actor-names-prompt-02-2026-10-11), after the `v0.2.1` addendum,
+gives the pin **`v0.2.2`** and what changed for SI since `v0.2.1`, and supersedes the statements
+it names. The text before it, the `v0.2.1` addendum included, is unchanged and true of the
+release it names.*
+
 Unless another commit is named, a `path:line` is SI's at `7bb3efd`, and one under `datastorekit/`
 is the package's at `v0.2.0`.
 
@@ -423,6 +429,66 @@ italic line under the title adds five.
 | `docs/adoption/stochasticinstantons.md:20-21` | a `datastorekit/` line is the package's at `v0.2.0` | still so for 07a's text; a `datastorekit/` line in this addendum is at `v0.2.1` |
 | `docs/adoption/stochasticinstantons.md:260-262` | the package "adds it to each payload dict in place" | `v0.2.1` sends copies, and leaves SI's dicts as passed; "The vectorized get", above |
 | `docs/adoption/stochasticinstantons.md:353` | G4 holds when SI has adopted `v0.2.0` | G4 holds when SI has adopted `v0.2.1` (U37) |
+
+---
+
+## Addendum: v0.2.2 (actor-names prompt 02, 2026-10-11)
+
+*Written by `actor-names` prompt 02 on 2026-10-11, and added after extraction prompt 10's `v0.2.1`
+addendum. 07a's text and the `v0.2.1` addendum stay as written, each true of the release it names
+(`CLAUDE.md` rule 6). SI was not re-measured (as decision U37); what this section says of SI comes
+from 07a's measurements and from reads through `git` only, at `7bb3efd`.*
+
+**The pin.** SI adopts **`v0.2.2`** in place of `v0.2.1`, when it is next active (decision U3 of
+the `actor-names` campaign, which amends extraction decision U37), and G4 reads "SI has adopted
+`v0.2.2`":
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.2
+```
+
+**What changed for SI since `v0.2.1`.** The changes are the rows of
+[`docs/client-contract.md` §9.3](../client-contract.md#93-actor-names-prompt-01) and
+[§9.4](../client-contract.md#94-actor-names-prompt-01b), and
+[`README.md`'s addendum](README.md#addendum-v022-actor-names-prompt-02-2026-10-11) gives them for
+every client: a closed pool, and an open that is refused, release their actors' names at once; a
+closed pool's handles are dead; a second `__exit__` does nothing. Two pools open at once still
+collide, and closing a pool never starts Ray. Nothing SI supplies changes, so items 1–10 stand as
+the `v0.2.1` addendum leaves them.
+- **Item 6's constructions.** SI constructs the pool 4 times (item 6): `main.py:1345`,
+  `plot_GradientCoupledSolutions.py:974`, `plot_InstantonSolutions.py:1207` and
+  `tests/conftest.py:57`. Read by an `ast` read of `git show`, each is a `with ShardedPool(…) as
+  pool:` block and the only construction in its file, and nothing after it names `pool`. The first
+  three are the last statement of their block.
+- **The `live_pool` fixture** (`tests/conftest.py:36-74`, session-scoped, `:36`) yields the pool
+  inside its block (`:72`), and calls `ray.shutdown()` after the block (`:74`). So the pool is
+  closed, and under `v0.2.2` its actors are killed, before Ray is shut down, and nothing uses the
+  pool after its block. It opens one pool per pytest session.
+- **No other use.** SI calls no pool's `__exit__` directly: the one `super().__exit__` call `git
+  grep` finds, `Quadrature/simple_quadrature.py:60`, is not a pool. It calls neither `ray.kill` nor
+  `ray.get_actor`, and reads no pool's `_shards` or `_broker`. So SI uses no closed pool and meets
+  no dead handle, and since each script opens one pool per process it never met the defect either.
+  **For SI the fix is latent.**
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`), and one in the `v0.2.1` addendum stays `v0.2.1`'s (`33778b0`). This addendum cites no
+`datastorekit/` line; one cited here would be `v0.2.2`'s, whose `datastorekit/` is the tree of
+`actor-names` prompt 01b's commit `f024fc6`.
+
+**What this addendum supersedes**, in this file. Each `path:line` is this file's as committed with
+this addendum. In the file as extraction prompt 10 left it (`33778b0`), every line after `:19` is
+six lines earlier, since this addendum's italic line under the title adds six: so the `v0.2.1`
+addendum's citations, which are that file's, are read at `33778b0`, or six lines later here (all
+but `:5`, which is above the insert).
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/stochasticinstantons.md:15-18` | the `v0.2.1` addendum gives the pin **`v0.2.1`** | it gives `v0.2.1`'s pin and changes, true of `v0.2.1`; this addendum gives `v0.2.2` |
+| `docs/adoption/stochasticinstantons.md:389-390` | "SI adopts **`v0.2.1`** in place of `v0.2.0`", and G4 reads "SI has adopted `v0.2.1`" | SI adopts `v0.2.2` in place of `v0.2.1` (`actor-names` U3), and G4 reads "SI has adopted `v0.2.2`" |
+| `docs/adoption/stochasticinstantons.md:393` | the pin `…@v0.2.1` | the pin `…@v0.2.2`, above |
+| `docs/adoption/stochasticinstantons.md:422-424` | the `v0.2.1` addendum's `path:line`s are "this file's as committed with this addendum" | they are read at `33778b0`, or six lines later here (all but `:5`) |
+| `docs/adoption/stochasticinstantons.md:428` | the package "at `v0.2.1`, with this addendum" | at `v0.2.2`, with both addenda |
+| `docs/adoption/stochasticinstantons.md:431` | "G4 holds when SI has adopted `v0.2.1` (U37)" | G4 holds when SI has adopted `v0.2.2` (U37; `actor-names` U3) |
 
 ---
 

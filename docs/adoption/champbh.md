@@ -19,6 +19,12 @@
 **`v0.2.1`** and what changed for CPBH since `v0.2.0`, and supersedes the statements it names.
 07a's text is unchanged and true of `v0.2.0`.*
 
+*Added by `actor-names` prompt 02 on 2026-10-11: the section
+[Addendum: v0.2.2](#addendum-v022-actor-names-prompt-02-2026-10-11), after the `v0.2.1` addendum,
+gives the pin **`v0.2.2`** and what changed for CPBH since `v0.2.1`, and supersedes the statements
+it names. The text before it, the `v0.2.1` addendum included, is unchanged and true of the
+release it names.*
+
 Unless another commit is named, a `path:line` is CPBH's at `52142d7`, and one under
 `datastorekit/` is the package's at `v0.2.0`.
 
@@ -453,6 +459,67 @@ italic line under the title adds five.
 | `docs/adoption/champbh.md:22-23` | a `datastorekit/` line is the package's at `v0.2.0` | still so for 07a's text; a `datastorekit/` line in this addendum is at `v0.2.1` |
 | `docs/adoption/champbh.md:259-260` | "It also adds that mapping to every payload dict in place" | `v0.2.1` sends copies, and leaves CPBH's dicts as passed; "The vectorized get", above |
 | `docs/adoption/champbh.md:379` | G3 holds when CPBH has adopted `v0.2.0` | G3 holds when CPBH has adopted `v0.2.1` (U37) |
+
+---
+
+## Addendum: v0.2.2 (actor-names prompt 02, 2026-10-11)
+
+*Written by `actor-names` prompt 02 on 2026-10-11, and added after extraction prompt 10's `v0.2.1`
+addendum. 07a's text and the `v0.2.1` addendum stay as written, each true of the release it names
+(`CLAUDE.md` rule 6). CPBH was not re-measured (as decision U37); what this section says of CPBH
+comes from 07a's measurements and from reads through `git` only, at `52142d7`.*
+
+**The pin.** CPBH adopts **`v0.2.2`** in place of `v0.2.1` (decision U3 of the `actor-names`
+campaign, which amends extraction decision U37), and G3 reads "CPBH has adopted `v0.2.2`":
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.2
+```
+
+`v0.2.2` carries `key_on_version`, `v0.2.0`'s feature, and `v0.2.1`'s three fixes, unchanged.
+
+**What changed for CPBH since `v0.2.1`.** The changes are the rows of
+[`docs/client-contract.md` §9.3](../client-contract.md#93-actor-names-prompt-01) and
+[§9.4](../client-contract.md#94-actor-names-prompt-01b), and
+[`README.md`'s addendum](README.md#addendum-v022-actor-names-prompt-02-2026-10-11) gives them for
+every client: a closed pool, and an open that is refused, release their actors' names at once; a
+closed pool's handles are dead; a second `__exit__` does nothing. Two pools open at once still
+collide, and closing a pool never starts Ray. Nothing CPBH supplies changes, so items 1–10 stand
+as the `v0.2.1` addendum leaves them.
+- **Item 6's constructions.** CPBH constructs the pool 3 times (item 6): `main.py:1338`,
+  `plot_ScalarModel.py:1577` and `plot_by_beta.py:1007`. Read by an `ast` read of `git show`, each
+  is a `with ShardedPool(…) as pool:` block, the only construction in its file and the last
+  statement of its block, and nothing after it names `pool`. CPBH calls no pool's `__exit__`
+  directly: the two `super().__exit__` calls `git grep` finds, `Quadrature/simple_quadrature.py:60`
+  and `Quadrature/supervisors/ScalarField.py:105`, are not pools. It calls neither `ray.kill` nor
+  `ray.get_actor`, and reads no pool's `_shards` or `_broker`. So CPBH uses no closed pool and
+  meets no dead handle, and since each script opens one pool per process it never met the defect
+  either. **For CPBH the fix is latent.**
+- **Nothing in item 6 or item 8 changes.** No API is added or removed, and no message, refusal or
+  exception of the layer's changes: the constructor, which takes neither `drop_actions=` nor
+  `inventory_config=` and requires `factories=`, and the vectorized get's refusal of a bare
+  `beta_value` are as at `v0.2.1`. Nothing the layer writes changes, so every CPBH store is refused
+  in the same order, by the same exceptions, and is rebuilt (D4).
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`), and one in the `v0.2.1` addendum stays `v0.2.1`'s (`33778b0`). This addendum cites no
+`datastorekit/` line; one cited here would be `v0.2.2`'s, whose `datastorekit/` is the tree of
+`actor-names` prompt 01b's commit `f024fc6`.
+
+**What this addendum supersedes**, in this file. Each `path:line` is this file's as committed with
+this addendum. In the file as extraction prompt 10 left it (`33778b0`), every line after `:21` is
+six lines earlier, since this addendum's italic line under the title adds six: so the `v0.2.1`
+addendum's citations, which are that file's, are read at `33778b0`, or six lines later here (all
+but `:6`, which is above the insert).
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/champbh.md:17-20` | the `v0.2.1` addendum gives the pin **`v0.2.1`** | it gives `v0.2.1`'s pin and changes, true of `v0.2.1`; this addendum gives `v0.2.2` |
+| `docs/adoption/champbh.md:418-419` | "CPBH adopts **`v0.2.1`** in place of `v0.2.0`", and G3 reads "CPBH has adopted `v0.2.1`" | CPBH adopts `v0.2.2` in place of `v0.2.1` (`actor-names` U3), and G3 reads "CPBH has adopted `v0.2.2`" |
+| `docs/adoption/champbh.md:422` | the pin `…@v0.2.1` | the pin `…@v0.2.2`, above |
+| `docs/adoption/champbh.md:452-454` | the `v0.2.1` addendum's `path:line`s are "this file's as committed with this addendum" | they are read at `33778b0`, or six lines later here (all but `:6`) |
+| `docs/adoption/champbh.md:458` | the package "at `v0.2.1`, with this addendum" | at `v0.2.2`, with both addenda |
+| `docs/adoption/champbh.md:461` | "G3 holds when CPBH has adopted `v0.2.1` (U37)" | G3 holds when CPBH has adopted `v0.2.2` (U37; `actor-names` U3) |
 
 ---
 
