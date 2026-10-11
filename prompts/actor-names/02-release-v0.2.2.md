@@ -2,10 +2,18 @@
 
 **Campaign:** [`README.md`](README.md) · **Board:** [`IMPLEMENTATION_STATE.md`](IMPLEMENTATION_STATE.md)
 
+*Written 2026-10-10 against `168ecd0`. Held 2026-10-11 on 01b, and re-measured and amended the
+same day against `a4290de`, the tree 01b left: §1.1's account of a client's test stand-in was
+wrong (`[02-closing-a-pool-can-start-ray]`), and 01b's fix is now part of the release.*
+
 **Gate:**
 - 01 landed (`ac50a8a`) and was reviewed (`049fa1a`). CI passed on `049fa1a` at both ends, recorded
   at `168ecd0`.
-- U3 is taken (README §6.2): `v0.2.2`, adopted by every client in place of `v0.2.1`.
+- 01b landed (`f024fc6`) and was reviewed (`2fd3ba2`). CI passed on `2fd3ba2` at both ends,
+  [run 38103745544](https://github.com/ds283/DatastoreKit/actions/runs/38103745544), recorded at
+  `a4290de`.
+- U3 is taken (README §6.2): `v0.2.2`, adopted by every client in place of `v0.2.1`. U4 is taken,
+  and 01b carried it out.
 - `git status` is clean in this repository, and `origin/main` is an ancestor of `main`.
 - This board's §3 holds no issue, and `docs/OPEN_ISSUES.md` counts 4, all inherited.
 
@@ -14,6 +22,8 @@ finds.
 
 **Recommended model:** **Opus.**
 - No line of code changes. The work is three short edits, four dated addenda and the gates.
+- The release carries two prompts' work, 01's and 01b's. The documents must say what each means
+  for a client, and not overstate 01b: against `v0.2.1`, 01b changes nothing a client sees (§1.1).
 - Each addendum must say exactly what changed for its client between `v0.2.1` and `v0.2.2`, no
   more. It must leave the text it extends as it was written (`CLAUDE.md` rule 6), and that includes
   extraction prompt 10's `v0.2.1` addendum.
@@ -24,17 +34,18 @@ finds.
 1. [`README.md`](README.md): §1, §2, §4, §5 (rules 4, 5, 9 and 10), §6 (U3, and the inherited
    U23, U28 and U37) and §7.
 2. `/Users/ds283/Documents/Code/DatastoreKit/CLAUDE.md`, above all "Releases".
-3. This board's review of 01, and log 01 (`logs/01-a-closed-pool-releases-its-actor-names.md`), §1
-   and §8.
+3. This board's reviews of 01 and 01b, its §4 entry for `[02-closing-a-pool-can-start-ray]`, and
+   logs 01 and 01b (`logs/01-a-closed-pool-releases-its-actor-names.md`,
+   `logs/01b-closing-a-pool-starts-no-ray.md`), §1 and §8 of each.
 4. Extraction prompt 10 (`../extraction/10-release-v0.2.1.md`) and its log
    (`../extraction/logs/10-release-v0.2.1.md`). 02 is that prompt again, for one fix. Their
    release check, their addenda's form and their breakages are this prompt's.
 5. The files 02 changes, as they stand: `pyproject.toml`, `README.md`, `PROVENANCE.md`,
    `docs/adoption/README.md` and the three checklists. In each checklist, read extraction prompt 10's
    `v0.2.1` addendum, which 02's follows.
-6. `docs/client-contract.md` §9.3, which 02 points at and does not change.
+6. `docs/client-contract.md` §9.3 and §9.4, which 02 points at and does not change.
 
-Facts below are at `168ecd0`, whose `datastorekit/` is `ac50a8a`'s, measured on 2026-10-10.
+Facts below are at `a4290de`, whose `datastorekit/` is `f024fc6`'s, measured on 2026-10-11.
 
 ---
 
@@ -51,7 +62,7 @@ Facts below are at `168ecd0`, whose `datastorekit/` is `ac50a8a`'s, measured on 
   for CI.
 
 **No line of code changes.** Nothing under `datastorekit/` is touched, and the suite stays at
-**492**.
+**494**.
 
 **02 makes no tag and pushes nothing** (U23, U28; README §5 rule 9). After its review, its commit
 is pushed as `main`. `v0.2.2` is made on it, annotated, only once CI passes there at both ends, as
@@ -60,20 +71,24 @@ is red. The tag is not this prompt's work.
 
 ### 1.1 What changed since `v0.2.1`, measured
 
-One prompt changed the package after `v0.2.1` (`33778b0`): `actor-names` 01, `ac50a8a`. It closed
-`[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]`.
+Two prompts changed the package after `v0.2.1` (`33778b0`):
+- `actor-names` 01, `ac50a8a`, which closed
+  `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]`;
+- `actor-names` 01b, `f024fc6`, which closed `[02-closing-a-pool-can-start-ray]`. That issue was
+  opened against 01's tree and closed before any release, so no tag ever carried it.
 
-- **In the wheel, only `SQL/ShardedPool.py` changed.** It gained 48 lines and lost none
-  (`git diff --stat 33778b0 ac50a8a -- datastorekit`). Two wheels built offline, one from
-  `git archive v0.2.1` and one from `168ecd0` with only the version changed, have the same 20
-  `RECORD` lines under `datastorekit/` but `SQL/ShardedPool.py`'s.
+- **In the wheel, only `SQL/ShardedPool.py` changed.** It gained 64 lines and lost none: 48 by 01
+  and 16 by 01b (`git diff --numstat 33778b0 f024fc6 -- datastorekit`). Two wheels built offline,
+  one from `git archive v0.2.1` and one from `a4290de` with only the version changed, have the same
+  20 `RECORD` lines under `datastorekit/` but `SQL/ShardedPool.py`'s.
 - **Outside the wheel**, `datastorekit/tests/standin_pool.py` changed and
-  `datastorekit/tests/test_closed_pool_releases_its_names.py` is new (6 tests: 486 → 492).
-  `docs/extraction/ray_smoke_run.py`, the contract's §9.3 and verification §4.6 changed too.
+  `datastorekit/tests/test_closed_pool_releases_its_names.py` is new (8 tests: 486 → 494).
+  `docs/extraction/ray_smoke_run.py` (by 01), the contract's §9.3 and §9.4, and verification §4.6
+  and §4.7 changed too.
 
 **What a client sees.** Nothing a client supplies changes. No API is added or removed. Nothing the
-layer writes changes, and no message, refusal or exception of the layer's changes (contract §9.3).
-Four behaviours differ:
+layer writes changes, and no message, refusal or exception of the layer's changes (contract §9.3,
+§9.4). Four behaviours differ, all from 01:
 - **a closed pool releases its actors' names at once.** `__exit__` kills each shard actor and the
   broker (`ray.kill(handle, no_restart=True)`). A store can then be reopened in the same Ray
   session while the closed pool object is still referenced. At `v0.2.1` that reopen was refused by
@@ -84,20 +99,28 @@ Four behaviours differ:
 - **a second `__exit__` does nothing;**
 - **a refused open releases the names it took**, even while its exception is held.
 
-**Unchanged:** two pools open at once in one Ray session still collide, since the names are fixed
-(U1). The second open is refused by Ray when it creates its broker, with `ValueError` at Ray
-2.43.0 and `ray.exceptions.ActorAlreadyExistsError` at 2.55.1.
+**Unchanged:**
+- two pools open at once in one Ray session still collide, since the names are fixed (U1). The
+  second open is refused by Ray when it creates its broker, with `ValueError` at Ray 2.43.0 and
+  `ray.exceptions.ActorAlreadyExistsError` at 2.55.1;
+- **closing a pool never starts Ray** (01b, U4). In a process not connected to Ray,
+  `_kill_actors` kills nothing: `_ray_is_running()` (`SQL/ShardedPool.py:47-55`), which returns
+  `ray.is_initialized()`, is false, and it returns before any `ray.kill` (`:446-447`). Ray's
+  `ray.kill` is one of its auto-init calls, and would have run `ray.init()` first. At `v0.2.1` a
+  close called no `ray.kill` at all, so it started no Ray either: against `v0.2.1` nothing here
+  changes. 01b only keeps 01's kill from changing it.
 
 **What the clients do with them**, read through `git` only, at the checklists' commits (SGK
-`b510bc9`, CPBH `52142d7`, SI `7bb3efd`; each is that client's `HEAD` at writing). The planner's
-measure:
+`b510bc9`, CPBH `52142d7`, SI `7bb3efd`; each is that client's `HEAD` at writing, re-checked on
+2026-10-11). The planner's measure:
 1. `git -C <client> grep -n -E 'ShardedPool\(|\.__exit__\(|ray\.kill|ray\.get_actor' <commit> --
    '*.py' ':!Datastore/**' ':!prompts/**' ':!docs/**'`;
 2. for each construction, an `ast` read of the file (`git show <commit>:<path>`): is it a `with`
    block, which statements follow it in the same block, and does any later statement name its
    `as` variable?
 
-The results:
+The results. Step 1 was re-run on 2026-10-11 at the same commits, and matches line for line; step 2
+is 2026-10-10's, of the same files:
 - **Every construction is a `with ShardedPool(…) as pool:` block.** Each is the last statement of
   its own block, or is followed by nothing that names `pool`. There are 14:
   - SGK 7: `main.py:4164`, and `extract_GkSource_data.py:932`, `extract_GkWKB_data.py:505`,
@@ -107,6 +130,9 @@ The results:
   - SI 4: `main.py:1345`, `plot_GradientCoupledSolutions.py:974`, `plot_InstantonSolutions.py:1207`
     and `tests/conftest.py:57`. The fixture yields the pool inside the block, then calls
     `ray.shutdown()` after it.
+
+  SGK's grep also matches two lines of `ComputeTargets/tests/test_reader_read_only.py` (`:91`,
+  `:104`), a docstring and a message that name the block; neither is a construction.
 - **No client calls a pool's `__exit__` directly** (the five `super().__exit__` hits, two each in
   SGK and CPBH and one in SI, are `Quadrature/` classes, not pools), **or `ray.kill` or
   `ray.get_actor`**. As README §0.1
@@ -116,17 +142,20 @@ The results:
   the fix is latent.
 - **SGK's own test stand-in.** SGK keeps `Datastore/tests/standin_pool.py` (its checklist
   `docs/adoption/secondarygwkit.md:258-260`, for `ComputeTargets/tests/test_quadsource_policy_main.py`).
-  It stands in `ray.get` and the actor classes, but not `ray.kill` (its `:233-245` at `b510bc9`).
-  Under `v0.2.2` the pool's kill therefore reaches Ray's own `ray.kill`. With Ray not started, that
-  raises `RaySystemError` from `worker.check_connected()`, and it never starts Ray (Ray 2.43.0 and
-  2.55.1, `ray/_private/worker.py`, `def kill`). `_kill_actors` ignores what a kill raises, so
-  those tests run as under `v0.2.1` and do not see the release. Whether SGK's stand-in takes up
-  the package's `ray.kill` is SGK's choice.
+  It reaches the pool's module by `importlib.import_module` (`:43` at `b510bc9`), which SGK's
+  import rewrite points at the package. Its `active()` (`:231-247`) stands in `ray.get` (`:233`)
+  and the actor classes, but neither `ray.kill` nor the pool's `_ray_is_running`. Under `v0.2.2`,
+  inside that `active()`, `ray.is_initialized()` is false (the test module's `tearDownModule`
+  asserts it, `:430-431`), so `_kill_actors` returns before any kill. Those tests therefore run as
+  under `v0.2.1`, kill nothing, and start no Ray. Under 01's tree alone the kill would have reached
+  Ray's `ray.kill`, started a local Ray, and failed that `tearDownModule`; 01b is why it does not.
+  SGK's stand-in reserves no names, so it does not see the release; whether it stands in
+  `_ray_is_running` and `ray.kill`, as the package's stand-in does, is SGK's choice.
 
 ### 1.2 The release check, probed
 
 The planner probed the release on this machine, offline, as extraction prompt 10 did.
-- **The build.** From a `git archive` of `168ecd0` with only `version = "0.2.2"` changed,
+- **The build.** From a `git archive` of `a4290de` with only `version = "0.2.2"` changed,
   `uv build --offline --wheel` gives `datastorekit-0.2.2-py3-none-any.whl`. It has 25 entries, none
   under `datastorekit/tests/`, and `…dist-info/licenses/LICENSE` is among them. `METADATA` says
   `Version: 0.2.2`, `Requires-Python: >=3.12`, `Requires-Dist: ray>=2.43` and
@@ -136,7 +165,8 @@ The planner probed the release on this machine, offline, as extraction prompt 10
 - **The run**, from a directory outside the repository with `PYTHONPATH` unset:
   - the layer modules import from the venv's `site-packages`;
   - `importlib.metadata.version("datastorekit")` is `0.2.2`;
-  - `ShardedPool` has `_kill_actors`, and `__exit__` has the docstring 01 gave it;
+  - `ShardedPool` has `_kill_actors`, `__exit__` has the docstring 01 gave it, and the module has
+    `_ray_is_running`, which returns `ray.is_initialized()`;
   - `import datastorekit.tests` raises `ModuleNotFoundError`;
   - `python -m datastorekit.tools.sharded_store --help` exits 0.
 - **Against `v0.2.1`'s wheel**, built from `git archive v0.2.1`: of the 20 `RECORD` lines under
@@ -161,22 +191,26 @@ and do not compare it with the planner's. The `RECORD` lines are content hashes,
     closed pool is still referenced;
   - a closed pool's actor handles are dead afterwards, and a second `__exit__` does nothing;
   - two pools open at once in one Ray session still collide;
+  - closing a pool never starts Ray: in a process not connected to Ray it kills nothing
+    (`actor-names` 01b). Say it as a property the release keeps, not as a second fix: `v0.2.1`
+    never started Ray on a close either;
   - no API changes, nothing the layer writes changes, and no message changes;
-  - it points at contract §9.3 for the detail, by its anchor.
+  - it points at contract §9.3 and §9.4 for the detail, by their anchors.
 - **Installing.** The pin is `v0.2.2` (`:59`). Replace `:62-63` with one sentence saying:
   - `v0.2.1`, `v0.2.0` and `v0.1.0` remain tagged, and no tag is moved or deleted;
   - every client adopts `v0.2.2`, which fixes a defect that all three earlier releases carry.
 
   Write it as of the tag. The README is committed before the tag exists, and is true once it does.
 - **Using it.** The item at `:93-94` names "the three fixes of `v0.2.1`". Extend it to name
-  `v0.2.2`'s fix too, still linking §9.
+  `v0.2.2`'s fix, and that a close never starts Ray, still linking §9.
 - **Nothing else changes.** Check every name and anchor the README mentions, as extraction prompt
   10 did.
 
 ### 2.3 `PROVENANCE.md`
 
 Add, after "Prompts 08a, 08b and 09: fixes and prose (`v0.2.1`)" (`:118`, the file's last section),
-a section **"`actor-names` prompt 01: a closed pool releases its actor names (`v0.2.2`)"**. It says:
+a section **"`actor-names` prompts 01 and 01b: a closed pool releases its actor names (`v0.2.2`)"**.
+It says:
 - **The fix has no source.** It was made here, and closed
   `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]` (opened by extraction prompt 11,
   closed on the extraction board's §4 by `actor-names` 01, `ac50a8a`). Its test module is
@@ -186,10 +220,14 @@ a section **"`actor-names` prompt 01: a closed pool releases its actor names (`v
   extraction board's §4 entry), and its `__exit__` kills none. "The freeze" says a defect found
   during the freeze is fixed here after G2. Decision U3 of `actor-names` fixed this one before it,
   as extraction U33 fixed three. SGK receives it by adopting `v0.2.2`.
-- **What changed in the package**: `SQL/ShardedPool.py` only, by addition. In this repository
-  only, the stand-in pool (`datastorekit/tests/standin_pool.py`), the new test module, the smoke
-  script and the contract's §9.3 changed too.
-- **The files 01 changed, and its log.**
+- **01b's guard has no source either.** It closed `[02-closing-a-pool-can-start-ray]`, which 01's
+  kill introduced and which no release carried (opened and closed on this campaign's board, §4).
+  SGK's `__exit__` calls no `ray.kill`, so SGK's frozen copies do not have that defect. Its tests
+  are tests 7 and 8 of the same module.
+- **What changed in the package**: `SQL/ShardedPool.py` only, by addition (64 lines: 48 by 01, 16
+  by 01b). In this repository only, the stand-in pool (`datastorekit/tests/standin_pool.py`), the
+  new test module, the smoke script (by 01) and the contract's §9.3 and §9.4 changed too.
+- **The files 01 and 01b changed, and their logs.**
 
 Change nothing above it. `PROVENANCE.md` is outside the package, so it may name SGK and its paths.
 
@@ -213,25 +251,26 @@ things.
 Each addendum states:
 - **the pin**, `datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.2`, in place of
   `v0.2.1`'s, and that the client adopts `v0.2.2` (U3 of `actor-names`, amending U37);
-- **what changed since `v0.2.1`, for that client** (below), with contract §9.3's rows as the
-  detail, linked by anchor;
+- **what changed since `v0.2.1`, for that client** (below), with contract §9.3's and §9.4's rows
+  as the detail, linked by anchor;
 - **which statements it supersedes**, each by `path:line` of the file it is in. At least: the head
   line that says `v0.2.1`, the `v0.2.1` addendum's pin and its sentence that the client adopts
   `v0.2.1`, and its gate statement;
 - **line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, and one in the
   `v0.2.1` addendum stays `v0.2.1`'s. A line this addendum cites is `v0.2.2`'s tree, whose
-  `datastorekit/` is `ac50a8a`'s and 02's.
+  `datastorekit/` is `f024fc6`'s and 02's.
 
 What each addendum says:
 
 | File | States |
 |---|---|
-| `README.md` | the pin; the four behaviours of §1.1 and the one unchanged, each linked to its row of contract §9.3; nothing any client supplies or stores changes, and no message; §1.1's measure of the 14 constructions, so no client uses a closed pool; the checklists are not re-measured (as U37), and each has its own addendum |
-| `secondarygwkit.md` | the files: at `v0.2.2` SGK's `Datastore/SQL/ShardedPool.py` and the package's differ also by 01's 48 lines, and the six files the `v0.2.1` addendum names as able to equal SGK's sources are unchanged by 01; item 8 still holds (nothing written changes, so every SGK store opens as under `v0.2.1`, and G2's rehearsal is the measurement); SGK's 7 constructions (§1.1); SGK's own stand-in and `test_quadsource_policy_main` (§1.1), as a fact and with no instruction; SGK's frozen copies carry the defect, and adoption fixes it |
+| `README.md` | the pin; the four behaviours of §1.1 and the two unchanged, each linked to its row of contract §9.3 or §9.4; nothing any client supplies or stores changes, and no message; §1.1's measure of the 14 constructions, so no client uses a closed pool; the checklists are not re-measured (as U37), and each has its own addendum |
+| `secondarygwkit.md` | the files: at `v0.2.2` SGK's `Datastore/SQL/ShardedPool.py` and the package's differ also by 01's and 01b's 64 lines, and the six files the `v0.2.1` addendum names as able to equal SGK's sources are unchanged by them; item 8 still holds (nothing written changes, so every SGK store opens as under `v0.2.1`, and G2's rehearsal is the measurement); SGK's 7 constructions (§1.1); SGK's own stand-in and `test_quadsource_policy_main` (§1.1): those tests kill nothing and start no Ray, as a fact and with no instruction; SGK's frozen copies carry 01's defect, and adoption fixes it |
 | `champbh.md` | CPBH's 3 constructions (§1.1); nothing in its item 6 or 8 changes; the fix is latent for CPBH |
 | `stochasticinstantons.md` | SI's 4 constructions (§1.1), the conftest fixture among them, which closes its pool before `ray.shutdown()`; the fix is latent for SI |
 
-**The line numbers here are the planner's at `168ecd0`.** Check each against the file before citing
+**The line numbers here are the planner's at `a4290de`** (01b changed none of the files 02
+edits, so they are also `168ecd0`'s). Check each against the file before citing
 it, and cite what you find. A statement the table does not name that is no longer true of `v0.2.2`
 is superseded too, and recorded in the log.
 
@@ -255,8 +294,8 @@ Check each, and say in the log what you found.
 2. **A name or link that does not exist.** Check every module, name, file, anchor and contract row
    that the README, `PROVENANCE.md` and the addenda mention: names by importing them in `venv/`,
    and anchors by finding the heading by GitHub's rule. The log lists each, with how it was
-   checked. Contract §9.3's heading is "9.3 `actor-names` prompt 01"; derive its anchor, and say
-   how.
+   checked. Contract §9.3's heading is "9.3 `actor-names` prompt 01" and §9.4's "9.4
+   `actor-names` prompt 01b"; derive both anchors, and say how.
 3. **The tag does not exist yet.** The README, the addenda and the gates name `v0.2.2` as of the
    tag. Nothing may say it is tagged.
 4. **No client is re-measured beyond §1.1.** Re-run §1.1's measure yourself, read-only through
@@ -268,16 +307,17 @@ Check each, and say in the log what you found.
    `uv pip install --offline --no-deps --no-build-isolation --python venv/bin/python -e .`. That
    writes a `datastorekit.egg-info/` at the root, which you delete afterwards (extraction log 10
    records both). Then run the suite in `venv/` again. Nothing else is built in the checkout.
-7. **No Ray.** This prompt starts no Ray. The smoke script is not run: no code changes.
+7. **No Ray.** This prompt starts no Ray. The smoke script is not run: no code changes. Its runs
+   at 01b's tree, verification §4.7, are the release's.
 
 ---
 
 ## 4. Verification
 
-1. **The suite.** In `venv/`, `Ran 492 tests … OK` before and after, with `pip show` saying `0.2.2`
+1. **The suite.** In `venv/`, `Ran 494 tests … OK` before and after, with `pip show` saying `0.2.2`
    after. Also at the high end: a fresh offline scratch venv (Python 3.13.16, `ray==2.55.1`,
    `sqlalchemy==2.0.46`, `setuptools`) with a `git archive` of your tree installed editable
-   (`--no-deps --no-build-isolation`) gives `Ran 492 tests … OK`. Record the `ResourceWarning`
+   (`--no-deps --no-build-isolation`) gives `Ran 494 tests … OK`. Record the `ResourceWarning`
    lines at each end: 0 in `venv/`; 0 or 4 at the high end, which is timing (log 01, correction 8).
 2. **The checks.**
    - `compare_ported_tests.py` exits 0 with "20 module(s) … 1 test(s) declared not ported".
@@ -305,8 +345,9 @@ Check each, and say in the log what you found.
      `datastorekit/tests/`, and `import datastorekit.tests` succeeds.
    - **(c)** the wheel built from `git archive v0.2.1` with only its version set to `0.2.2`: its
      `METADATA` says `0.2.2`, but the `RECORD` comparison with `v0.2.1`'s wheel shows no line
-     differing, where the release shows `SQL/ShardedPool.py`'s, and `ShardedPool` has no
-     `_kill_actors`. The check must catch a version number with no fix behind it.
+     differing, where the release shows `SQL/ShardedPool.py`'s, `ShardedPool` has no
+     `_kill_actors`, and the module has no `_ray_is_running`. The check must catch a version
+     number with no fix behind it.
 6. **The clients.** Record each client's `HEAD` and `git status --short`, at the start and the end,
    unchanged. None is written, run, imported or opened.
 
@@ -333,7 +374,7 @@ Check each, and say in the log what you found.
 
 ## 6. Stop conditions — stop and ask the user
 
-- The suite fails, or its count differs from 492, in any venv.
+- The suite fails, or its count differs from 494, in any venv.
 - The release check fails in a way (a)–(c) do not explain.
 - §1.1's measure, re-run, differs: a construction that is not a `with` block, a use of a pool after
   its block, or a client that calls `ray.kill`, `ray.get_actor` or a pool's `__exit__`.
