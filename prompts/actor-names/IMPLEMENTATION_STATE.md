@@ -1,8 +1,8 @@
 # actor-names campaign — implementation state
 
 **Last updated:** 2026-10-11 · **Status: IN PROGRESS — 3 of 3 prompts written (01, 01b, 02), 2 landed
-(01, `ac50a8a`, reviewed; 01b, this commit, not yet reviewed); U1–U3 taken 2026-10-10, as
-recommended, and U4 2026-10-11; 02 held on 01b's review, and re-measured against its tree. No
+(01, `ac50a8a`, reviewed; 01b, `f024fc6`, reviewed); U1–U3 taken 2026-10-10, as
+recommended, and U4 2026-10-11; 02 held, to be re-measured against 01b's tree. No
 issue open on this board: 01b closed `[02-closing-a-pool-can-start-ray]` (§4).**
 
 **Campaign:** [`README.md`](README.md) ·
@@ -31,7 +31,7 @@ closed by 01b in §4 below ·
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [A closed pool releases its actor names](01-a-closed-pool-releases-its-actor-names.md) | the kill at `__exit__` and on a refused open, and the closed flag (U1); the stand-in's `ray.kill` and names (U2); a test module; the smoke script's step N reversed and a collision step; contract §9.3; a dated subsection of the verification document; closes the issue | ✍️ yes, 2026-10-10 | ✅ 2026-10-10; reviewed | `ac50a8a` | [log 01](logs/01-a-closed-pool-releases-its-actor-names.md) |
-| 01b | [Closing a pool starts no Ray](01b-closing-a-pool-starts-no-ray.md) | `_ray_is_running()` and the guard in `_kill_actors`; the stand-in's patch; tests 7 and 8; the smoke run unchanged at both ends; contract §9.4; a dated subsection of the verification document; closes `[02-closing-a-pool-can-start-ray]` (U4) | ✍️ yes, 2026-10-11 | ✅ 2026-10-11; not yet reviewed | this commit | [log 01b](logs/01b-closing-a-pool-starts-no-ray.md) |
+| 01b | [Closing a pool starts no Ray](01b-closing-a-pool-starts-no-ray.md) | `_ray_is_running()` and the guard in `_kill_actors`; the stand-in's patch; tests 7 and 8; the smoke run unchanged at both ends; contract §9.4; a dated subsection of the verification document; closes `[02-closing-a-pool-can-start-ray]` (U4) | ✍️ yes, 2026-10-11 | ✅ 2026-10-11; reviewed | `f024fc6` | [log 01b](logs/01b-closing-a-pool-starts-no-ray.md) |
 | 02 | [Release `v0.2.2`](02-release-v0.2.2.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G2–G4; the tag after green CI (U3) | ✍️ yes, 2026-10-10; ⏸ held 2026-10-11 on 01b, to be re-measured against its tree | ⬜ | — | — |
 
 **Orchestrator review of prompt 01 (2026-10-10).** Dispatched from `7c97125` to one Opus
@@ -141,11 +141,100 @@ only with the user's approval. 02 (`v0.2.2`) is written next, against the tree 0
 
 The smoke script is not collected by the suite, so CI started no Ray.
 
+**Orchestrator review of prompt 01b (2026-10-11).** Dispatched from `3aa57ce` to one Opus
+subagent, with the note's four corrections and its additions. Reviewed against its commit
+`f024fc6`, with nothing landed after it. **Every check of the note's §3 passed**, and acceptance
+1–8 are met. No stop condition fired. Nothing was pushed, and the tags are `v0.1.0`, `v0.2.0` and
+`v0.2.1` only.
+
+*At dispatch.* The note's gate held at `3aa57ce`. The tree was clean, and the only worktree was
+this checkout. The suite gave `Ran 492 tests … OK` in `venv/` and at the high end (0
+`ResourceWarning` lines at each); the high-end run replaces the one of `1925898` this board does
+not rely on. The port check exited 0, and `black --check datastorekit docs` left 72 files
+unchanged. The clients were at SGK `b510bc9` (clean), CPBH `52142d7` (23 untracked entries) and
+SI `7bb3efd` (clean). `origin` had `main` at `1925898` and the three tags. No Ray process was up,
+and `RAY_ADDRESS` and `RAY_ENABLE_AUTO_CONNECT` were unset. While writing the note, the
+orchestrator built a prototype of §2.1–§2.3 in scratch exports. It gave 494 at both ends, failed
+under (a)–(c) as the prompt says, and passed the smoke run under a local Ray at both ends. It
+found:
+- test 8, in a class built on `_OneSessionCase`, runs inside `active()`, so it must call the
+  helper captured at import (correction 1);
+- (b) fails 169 entries, not 01's (a)'s 159 (correction 2); under (c) the smoke script runs no
+  step after N (correction 3); and the verification subsection goes before `## 5`, not at `:375`
+  (correction 4).
+
+*The checks.*
+1. **Scope.** `f024fc6` touches the prompt's §7 files only, and under `datastorekit/` three files.
+   The diff over `pyproject.toml`, `README.md`, `PROVENANCE.md`, `docs/adoption/`,
+   `docs/extraction/`, `.github/`, `prompts/extraction/`, prompt 02 and `orchestrator/` is empty.
+   The ignored entries are dispatch's. CPBH's and SI's `HEAD` and status are as at dispatch; SGK's
+   `HEAD` is, and it has gained one untracked directory, `prompts/dk-and-rpk-migration/` (created
+   02:09, by none of this campaign's agents; the agent found it at its start and did not touch it).
+2. **The fix, by reading.** `_ray_is_running()` (`SQL/ShardedPool.py:47-55`) is module-level and
+   returns `ray.is_initialized()`. `_kill_actors` returns before reading any handle when it is
+   false (`:446-447`), and is otherwise 01's. `__exit__`, `_close_refused_open` and the flag are
+   unchanged. The docstrings say why, and name no client.
+3. **The stand-in, by reading.** `sp_mod._ray_is_running` is patched to `lambda: True` inside
+   `active()`, after `ray.kill`'s. `ray.is_initialized` is patched nowhere in the stand-in. The
+   docstring says so. Nothing is opt-in.
+4. **The tests, by reading.** Test 7 stands in `ray.init` outermost, then restores Ray's own
+   `ray.kill` and the module's own `_ray_is_running`, each captured at import, around the close.
+   It asserts no `ray.init` call, `ray.is_initialized()` false, the pool closed and the cluster's
+   names unchanged. Test 8 asserts first that the stand-in's patch is in place, then calls the
+   captured helper (correction 1), with `ray.is_initialized` restored before `tearDown`. Read
+   before (a) was run.
+5. **Both ends.** In `venv/`, `Ran 494 tests … OK`, 0 `ResourceWarning` lines. In the review's own
+   offline high-end venv with `git archive f024fc6` installed editable, `Ran 494 tests … OK`, 0
+   lines (the agent's last run saw 4, which is timing). The port check exits 0, the two guards
+   pass (14 tests), and `black` leaves 72 files unchanged.
+6. **The breakages.** The log's (a)–(c) pass `git apply --check`, apply, and pass `-R --check`
+   against their own exports of `f024fc6`. At the high end, with `RAY_ENABLE_AUTO_CONNECT` unset:
+   - (a): test 7 alone, `Lists differ: [1, 1, 1, 1] != []`, and no Ray process during or after;
+   - (b): `failures=5, errors=165`, 170 entries: correction 2's 169, module for module, and test
+     8, whose first assertion sees the patch missing;
+   - (c): test 8 alone, `False is not True`.
+7. **Ray.** In the review's own offline venvs at both ends, each with the commit's export
+   installed editable, the smoke script (SHA-256 `e9be6ffa…c331`, unchanged) exits 0, with every
+   step `PASS`, step for step as verification §4.7 records. Step C raises `builtins.ValueError`
+   at 2.43.0 and `ray.exceptions.ActorAlreadyExistsError` at 2.55.1. Under (c) at the high end,
+   step N fails with 4 of 4 names held, steps C and 3–6 are not run, and the script exits 1. No
+   Ray process was up before or left after any run.
+8. **The documents.** Contract §9.4 has one row in §9's form; every `path:line` it cites reads
+   true at `f024fc6`, and its "Supersedes" column is true of §9.3's two rows. The head gains one
+   italic line, after §9.3's. Verification §4.7 sits after §4.6 and before `## 5`, is dated, names
+   the prompt, quotes both runs and (c), and says §4.6 stays true of 01's tree. Neither document
+   loses a line. All 10 relative links the commit adds resolve.
+9. **The close.** The issue is at the head of this board's §4 with its Closed line, and §3 says
+   none is held. The header and row, the README's header and §2 row, and `prompts/INDEX.md` are in
+   step. The index is at 4, 0 on this repository's boards, §1.3 "None open", dated.
+10. **Nothing left behind.** No Ray process. The tags are the three, and `origin` is unchanged.
+
+*Findings beyond the prompt*, recorded and not acted on:
+- The docstrings of `__exit__` and `_close_refused_open` still say the actors are killed, without
+  the guard's qualification (log 01b, observation 1). `_kill_actors`'s and the contract's §9.4
+  carry it, and the prompt kept both methods unchanged. No issue is opened.
+- SGK's `test_quadsource_policy_main.py` has a `tearDownModule` asserting `not
+  ray.is_initialized()` (`:430-431` at `b510bc9`), so under 01's tree that module would have
+  failed, not only started a Ray. This is for 02's re-measure, when it rewrites its §1.1.
+
+*Issues.* `[02-closing-a-pool-can-start-ray]` is closed. None is opened. The index is 4, none of
+them this repository's.
+
+*Residue fixed in this follow-up:*
+- "this commit" → `f024fc6` in this board's header, row and §4, the README's header and §2 row,
+  the log's header, §1, §1.5 and §8, and `prompts/INDEX.md`;
+- "reviewed" for 01b in the same places;
+- this paragraph and the notes line.
+
+`main` is ahead of `origin/main` (`1925898`) by `2c3d298`, the note `3aa57ce`, `f024fc6` and this
+record, and is pushed only with the user's approval. 02 is re-measured against the tree 01b
+leaves, and amended in a planning commit of its own, before its orchestration note.
+
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
 
 **Orchestrator notes:** [`orchestrator/prompt-01.md`](orchestrator/prompt-01.md) (`7c97125`),
-used for 01.
+used for 01; [`orchestrator/prompt-01b.md`](orchestrator/prompt-01b.md) (`3aa57ce`), used for 01b.
 
 ## 2. Gates outside this repository
 
@@ -162,7 +251,7 @@ measurement; 01 closed it there, and §4 below points to it.
 ## 4. Resolved issues
 
 - **[02-closing-a-pool-can-start-ray]** — **Closed** (2026-10-11, by `actor-names` prompt 01b,
-  this commit; [log 01b](logs/01b-closing-a-pool-starts-no-ray.md)). The guard: a module-level
+  `f024fc6`; [log 01b](logs/01b-closing-a-pool-starts-no-ray.md)). The guard: a module-level
   `_ray_is_running()` in `SQL/ShardedPool.py` returns `ray.is_initialized()`, and `_kill_actors`
   returns at once, before reading any handle, when it is false, so a close while the process is
   not connected to Ray kills nothing and never reaches Ray's `ray.kill`. The stand-in's patch:

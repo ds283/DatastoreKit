@@ -1,6 +1,6 @@
 # Log 01b — closing a pool starts no Ray
 
-**Subject:** Start no Ray when closing a pool while not connected · **Commit:** this commit ·
+**Subject:** Start no Ray when closing a pool while not connected · **Commit:** `f024fc6` ·
 **Date:** 2026-10-11 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and untagged.
 
 `[02-closing-a-pool-can-start-ray]` is fixed and closed. `SQL/ShardedPool.py` gains a module-level
@@ -42,7 +42,7 @@ conventions. §2 classifies each.
 ### 1.1 The layer (§2.1)
 
 `datastorekit/SQL/ShardedPool.py`, 16 lines added and none removed (`git diff --stat`). Line
-numbers are this commit's:
+numbers are `f024fc6`'s:
 
 - **`_ray_is_running() -> bool`** (`:47-55`), after `_INCOMPLETE_COPY_SUFFIX` (`:44`) and before
   the first class (`_RelocationPlan`, `:58`). It returns `ray.is_initialized()` (`:55`). Its
@@ -110,7 +110,7 @@ starting Ray.
 
 - **This board**: the header (2 landed; 01b not yet reviewed; no issue open on this board), the
   "Owns" line, 01b's row, §3 (no issue held), and §4. The issue's entry moves from §3 to the head
-  of §4, indented under a "**Closed** (2026-10-11, by `actor-names` prompt 01b, this commit)"
+  of §4, indented under a "**Closed** (2026-10-11, by `actor-names` prompt 01b, `f024fc6`)"
   paragraph. That paragraph names the guard, the stand-in's patch, the two tests and the smoke runs.
 - **`docs/OPEN_ISSUES.md`**: the header (**4 open**: 0 on this repository's boards, 4 inherited),
   and §1.3's table replaced by a dated "None open" line.
@@ -493,7 +493,7 @@ the smoke run sees (c).
 
 ## 8. State handed to the next prompt
 
-- **`HEAD`** is this commit, unpushed and untagged. `origin/main` is `1925898`, and the tags are
+- **`HEAD`** is `f024fc6`, unpushed and untagged. `origin/main` is `1925898`, and the tags are
   `v0.1.0`, `v0.2.0` and `v0.2.1`, unchanged. `pyproject.toml` is at `0.2.1`. Prompt 02 is
   unchanged, and is re-measured against this tree before its orchestration note (README §2).
 - **The suite** is 494, in `venv/` and at the high end. The port check passes over 20 modules with
