@@ -23,7 +23,11 @@ code, every factory, the ``SerialPoolBroker`` and SQLite on disk. What is stood 
   does nothing, and anything that is not a stand-in handle raises ``ValueError``, as Ray refuses
   what is not an actor handle. A call through a killed handle runs nothing, is not added to the
   call log, runs no hook, and returns a ``StandinRef`` that raises ``StandinActorDied`` naming
-  the actor and the method.
+  the actor and the method;
+- whether the process is connected to Ray, as the pool sees it. ``ShardedPool``'s
+  ``_ray_is_running`` is true inside ``active()``, since a stand-in cluster is a Ray session, so
+  the pool's kills reach the stand-in ``ray.kill``. ``ray.is_initialized()`` is left as it is,
+  and stays false: the tests assert it.
 
 **The one way it is stricter than Ray.** Ray also frees an actor's name when the last handle to
 it is collected; the stand-in frees a name only when its handle is killed. So a test that drops a
@@ -290,6 +294,10 @@ class StandinCluster:
         with contextlib.ExitStack() as stack:
             stack.enter_context(mock.patch.object(ray, "get", standin_get))
             stack.enter_context(mock.patch.object(ray, "kill", standin_kill))
+            # a stand-in cluster is a Ray session: the pool's kills are made
+            stack.enter_context(
+                mock.patch.object(sp_mod, "_ray_is_running", lambda: True)
+            )
             stack.enter_context(
                 mock.patch.object(
                     sp_mod, "Datastore", _StandinActorClass(DatastoreClass, self)

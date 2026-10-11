@@ -44,6 +44,17 @@ _SQLITE_JOURNAL_SUFFIXES = ("-journal", "-wal", "-shm")
 _INCOMPLETE_COPY_SUFFIX = ".incomplete-copy"
 
 
+def _ray_is_running() -> bool:
+    """
+    Whether this process is connected to Ray: ray.is_initialized(), which is not one of Ray's
+    auto-init calls. ShardedPool._kill_actors kills nothing when it is false: no actor of this
+    process can then be alive, and Ray's ray.kill, which is one of its auto-init calls, would run
+    ray.init() first and so start a local Ray. It is a function of the module, not a method, so
+    that a test's stand-in can stand it in, as it stands in the module's random.
+    """
+    return ray.is_initialized()
+
+
 class _RelocationPlan(NamedTuple):
     """What copy_store / move_store will do, fixed before anything is written."""
 
@@ -428,7 +439,12 @@ class ShardedPool:
         pool sets it to None, and an open refused before the broker was made never set it). No
         actor is looked up by name, so an open refused because another pool holds the names
         kills nothing of that pool's. Nothing this meets is raised.
+
+        When this process is not connected to Ray (_ray_is_running() is false), it kills
+        nothing and returns at once, so that closing a pool never starts Ray.
         """
+        if not _ray_is_running():
+            return
         shards = self._shards if isinstance(self._shards, dict) else {}
         handles = list(shards.values())
         broker = getattr(self, "_broker", None)

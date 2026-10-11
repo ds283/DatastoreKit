@@ -19,7 +19,21 @@ at once still collide.
    the first pool still serves a get, and once it is closed an open works;
 5. a second ``__exit__`` raises nothing and calls no actor;
 6. a closed pool's handles are dead: a call through one raises ``StandinActorDied`` on
-   ``ray.get``.
+   ``ray.get``;
+7. a pool closed while this process is not connected to Ray starts no Ray (``actor-names`` prompt
+   01b; ``[02-closing-a-pool-can-start-ray]``): with Ray's own ``ray.kill`` and the pool's own
+   ``_ray_is_running`` restored, as a stand-in that does not stand in ``ray.kill`` leaves them,
+   and ``ray.init`` replaced by a function that records its call and raises, ``__exit__`` returns,
+   ``ray.init`` is never called, the actors are not killed, and Ray is not initialised;
+8. the pool's ``_ray_is_running`` follows ``ray.is_initialized()``: true when it is true, false
+   when it is false (``actor-names`` prompt 01b).
+
+Ray's ``ray.kill`` is one of its auto-init calls: when the process is not connected to Ray it runs
+``ray.init()`` first. So ``_kill_actors`` kills nothing when ``_ray_is_running()`` is false. The
+stand-in makes ``_ray_is_running`` true inside ``active()``, so tests 7 and 8 use the module's own
+function, captured when this module is imported, outside any ``active()``. Test 7's replacement of
+``ray.init`` is what keeps it from starting Ray, even if the guard is removed: Ray's auto-init calls
+``ray.init()`` through the ``ray`` module's attribute.
 
 Each test opens its pools in one ``StandinCluster``, which stands for one Ray session: it reserves
 each actor's name until the handle is killed, and refuses a call to a killed handle
@@ -34,6 +48,7 @@ import io
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import ray
 
@@ -50,6 +65,11 @@ NOT_REPLICATED = (
 )
 POSITION = 0.25
 KEYPOINT_TABLE = "keypoint"
+
+# Ray's own ray.kill and the pool's own _ray_is_running, captured when this module is imported,
+# outside any StandinCluster.active(), which stands in both
+RAY_KILL = ray.kill
+RAY_IS_RUNNING = sp.sp_mod._ray_is_running
 
 
 def tearDownModule():
@@ -197,6 +217,45 @@ class TestAfterExit(_OneSessionCase):
                 self.assertIn(handle.name, str(died.exception))
                 self.assertIn("read_largest_store_ids", str(died.exception))
         self.assertEqual(len(self.cluster.calls), calls)
+
+
+class TestClosingAPoolStartsNoRay(_OneSessionCase):
+    def test_a_pool_closed_while_not_connected_to_ray_starts_no_ray(self):
+        pool = self.open()
+        self.keypoint_serial(pool)
+        held = dict(self.cluster.names)
+
+        inits = []
+
+        def refused_init(*args, **kwargs):
+            inits.append(1)
+            raise RuntimeError("ray.init() called while closing a pool")
+
+        # ray.init is stood in first and restored last, so that Ray's own ray.kill is never in
+        # place without it: Ray's auto-init would call it, and this replacement refuses
+        returned = False
+        with mock.patch.object(ray, "init", refused_init):
+            with mock.patch.object(ray, "kill", RAY_KILL):
+                with mock.patch.object(sp.sp_mod, "_ray_is_running", RAY_IS_RUNNING):
+                    self.close(pool)
+                    returned = True
+
+        self.assertEqual(inits, [])
+        self.assertTrue(returned)
+        self.assertFalse(ray.is_initialized())
+        # the pool is marked closed, and its actors were not killed: their names are still held
+        self.assertTrue(pool._closed)
+        self.assertEqual(self.cluster.names, held)
+
+    def test_ray_is_running_follows_ray_is_initialized(self):
+        # inside active(), the module's attribute is the stand-in's; the captured function is
+        # the module's own
+        self.assertIsNot(sp.sp_mod._ray_is_running, RAY_IS_RUNNING)
+
+        with mock.patch.object(ray, "is_initialized", lambda: True):
+            self.assertIs(RAY_IS_RUNNING(), True)
+        with mock.patch.object(ray, "is_initialized", lambda: False):
+            self.assertIs(RAY_IS_RUNNING(), False)
 
 
 if __name__ == "__main__":

@@ -9,6 +9,8 @@ the tree 01 left (`168ecd0`). **02 is held** (2026-10-11): checking its facts, t
 found that a pool closed while its process is not connected to Ray starts a local Ray, which
 `[02-closing-a-pool-can-start-ray]` records. The user chose to fix it before the release (U4).
 **Prompt 01b is written** (2026-10-11) to fix it; 02 is re-measured against the tree 01b leaves.
+**Prompt 01b landed** on 2026-10-11 (this commit; [log](logs/01b-closing-a-pool-starts-no-ray.md)),
+and closed `[02-closing-a-pool-can-start-ray]`; it is not yet reviewed.
 
 ## 0. Why this campaign exists
 
@@ -102,7 +104,7 @@ there; `test_refused_open_closes_engines` already uses it (`:45`, `:238`).
 | # | Prompt | Covers | Status |
 |---|---|---|---|
 | 01 | [`01-a-closed-pool-releases-its-actor-names.md`](01-a-closed-pool-releases-its-actor-names.md) | `ShardedPool.__exit__` kills its actors after closing them, and a second `__exit__` does nothing; a refused open kills what it made; the stand-in stands in `ray.kill`, reserves names and refuses calls to killed handles; a test module that a revert fails; the smoke script's step N reversed, and a step that two open pools still collide, run under real Ray at both ends; contract §9.3; a dated subsection of the verification document. **Closes** `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]`. | **written** 2026-10-10; U1, U2 taken; **landed** 2026-10-10 (`ac50a8a`), reviewed; closed the issue |
-| 01b | [`01b-closing-a-pool-starts-no-ray.md`](01b-closing-a-pool-starts-no-ray.md) | `_kill_actors` kills nothing, and so starts no Ray, when the process is not connected to Ray (a module-level `_ray_is_running()`); the stand-in stands it in inside `active()`; two tests; the smoke run, unchanged, at both ends; contract §9.4; a dated subsection of the verification document. **Closes** `[02-closing-a-pool-can-start-ray]`. | **written** 2026-10-11; U4 taken |
+| 01b | [`01b-closing-a-pool-starts-no-ray.md`](01b-closing-a-pool-starts-no-ray.md) | `_kill_actors` kills nothing, and so starts no Ray, when the process is not connected to Ray (a module-level `_ray_is_running()`); the stand-in stands it in inside `active()`; two tests; the smoke run, unchanged, at both ends; contract §9.4; a dated subsection of the verification document. **Closes** `[02-closing-a-pool-can-start-ray]`. | **written** 2026-10-11; U4 taken; **landed** 2026-10-11 (this commit), not yet reviewed; closed the issue |
 | 02 | [`02-release-v0.2.2.md`](02-release-v0.2.2.md) | `pyproject.toml` at `0.2.2`, `README.md`, `PROVENANCE.md`; dated addenda to `docs/adoption/` for the new pin; both ends locally and in CI; **tag `v0.2.2`** on its commit after green CI, not by the prompt. Shaped by U3. | **written** 2026-10-10; ⏸ **held** 2026-10-11 on 01b, and re-measured against its tree before its orchestration note |
 
 **Order.** 01 → 01b → 02. 02 releases what 01 and 01b leave. It was written after 01 was reviewed,
