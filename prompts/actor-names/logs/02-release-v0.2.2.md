@@ -1,6 +1,6 @@
 # Log 02 — release `v0.2.2`
 
-**Subject:** Make the package ready to be released as v0.2.2 · **Commit:** this commit ·
+**Subject:** Make the package ready to be released as v0.2.2 · **Commit:** `6d8ee9a` ·
 **Date:** 2026-10-11 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and untagged.
 
 The package is ready to be released as **`v0.2.2`** (U3), the release every client adopts in
@@ -865,13 +865,13 @@ release shows `SQL/ShardedPool.py`'s, `ShardedPool` has no `_kill_actors`, and t
 
 ## 9. State handed to the next prompt
 
-- `HEAD` is this commit, unpushed and untagged. The tree is clean apart from dispatch's ignored
+- `HEAD` is `6d8ee9a`, unpushed and untagged. The tree is clean apart from dispatch's ignored
   entries. `venv/` has `datastorekit 0.2.2` installed editable from this checkout, its `egg-info`
   removed.
 - **Not pushed, not tagged.** `origin/main` is `2fd3ba2`, and the tags are `v0.1.0`, `v0.2.0` and
   `v0.2.1`.
-- **After the review**, this commit is pushed as `main`, fast-forwarding over `a4290de`,
-  `ce2070b`, `394a974` and the review. `v0.2.2` is made on this commit, annotated, only once CI
+- **After the review**, `6d8ee9a` is pushed as `main`, fast-forwarding over `a4290de`,
+  `ce2070b`, `394a974` and the review. `v0.2.2` is made on `6d8ee9a`, annotated, only once CI
   passes there at both ends (U23, U28). If CI fails, a fix prompt lands first, and no tag is made
   on a commit whose CI is red.
 - **The suite is 494** in `venv/` and at the high end (0 `ResourceWarning` lines at each).

@@ -1,9 +1,9 @@
 # actor-names campaign — implementation state
 
 **Last updated:** 2026-10-11 · **Status: IN PROGRESS — 3 of 3 prompts written (01, 01b, 02), 3 landed
-(01, `ac50a8a`, reviewed; 01b, `f024fc6`, reviewed; 02, this commit, not yet reviewed); U1–U3
+(01, `ac50a8a`, reviewed; 01b, `f024fc6`, reviewed; 02, `6d8ee9a`, reviewed); U1–U3
 taken 2026-10-10, as recommended, and U4 2026-10-11. 02 makes the package ready to be released as
-`v0.2.2`; the tag waits for 02's review and for CI to pass on its commit at both ends. No issue
+`v0.2.2`; the tag waits for CI to pass on its commit at both ends. No issue
 open on this board: 01b closed `[02-closing-a-pool-can-start-ray]` (§4).**
 
 **Campaign:** [`README.md`](README.md) ·
@@ -33,7 +33,7 @@ closed by 01b in §4 below ·
 |---|---|---|---|---|---|---|
 | 01 | [A closed pool releases its actor names](01-a-closed-pool-releases-its-actor-names.md) | the kill at `__exit__` and on a refused open, and the closed flag (U1); the stand-in's `ray.kill` and names (U2); a test module; the smoke script's step N reversed and a collision step; contract §9.3; a dated subsection of the verification document; closes the issue | ✍️ yes, 2026-10-10 | ✅ 2026-10-10; reviewed | `ac50a8a` | [log 01](logs/01-a-closed-pool-releases-its-actor-names.md) |
 | 01b | [Closing a pool starts no Ray](01b-closing-a-pool-starts-no-ray.md) | `_ray_is_running()` and the guard in `_kill_actors`; the stand-in's patch; tests 7 and 8; the smoke run unchanged at both ends; contract §9.4; a dated subsection of the verification document; closes `[02-closing-a-pool-can-start-ray]` (U4) | ✍️ yes, 2026-10-11 | ✅ 2026-10-11; reviewed | `f024fc6` | [log 01b](logs/01b-closing-a-pool-starts-no-ray.md) |
-| 02 | [Release `v0.2.2`](02-release-v0.2.2.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G2–G4; the tag after green CI (U3) | ✍️ yes, 2026-10-10; held 2026-10-11 on 01b; re-measured and amended 2026-10-11 against `a4290de` | ✅ 2026-10-11; not yet reviewed; untagged | this commit | [log 02](logs/02-release-v0.2.2.md) |
+| 02 | [Release `v0.2.2`](02-release-v0.2.2.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G2–G4; the tag after green CI (U3) | ✍️ yes, 2026-10-10; held 2026-10-11 on 01b; re-measured and amended 2026-10-11 against `a4290de` | ✅ 2026-10-11; reviewed; awaiting CI for `v0.2.2` | `6d8ee9a` | [log 02](logs/02-release-v0.2.2.md) |
 
 **Orchestrator review of prompt 01 (2026-10-10).** Dispatched from `7c97125` to one Opus
 subagent, with the note's eight corrections and its additions. Reviewed against its commit
@@ -241,11 +241,110 @@ leaves, and amended in a planning commit of its own, before its orchestration no
 
 The smoke script is not collected by the suite, so CI started no Ray.
 
+**Orchestrator review of prompt 02 (2026-10-11).** Dispatched from `394a974` to one Opus
+subagent, with the note's three corrections and its additions. Reviewed against its commit
+`6d8ee9a`, with nothing landed after it. **Every check of the note's §3 passed**, and acceptance
+1–6 are met. No stop condition fired. Nothing was pushed, and the tags are `v0.1.0`, `v0.2.0` and
+`v0.2.1` only.
+
+*At dispatch.* The note's gate held at `394a974`. The tree was clean, and the only worktree was
+this checkout. The suite gave `Ran 494 tests … OK` in `venv/` and at the high end, 0
+`ResourceWarning` lines at each. The port check exited 0, and `black --check datastorekit docs`
+left 72 files unchanged. The clients were at SGK `b510bc9` (one untracked entry,
+`prompts/dk-and-rpk-migration/`), CPBH `52142d7` (23 untracked entries) and SI `7bb3efd` (clean).
+`origin` had `main` at `2fd3ba2` and the three tags. No Ray process was up, and `RAY_ADDRESS` and
+`RAY_ENABLE_AUTO_CONNECT` were unset. While writing the note, the orchestrator built the release
+and the three breakages' wheels offline from exports, and re-ran §1.1's measure through `git`;
+each matched the prompt. It found:
+- the prompt's reinstall of `venv/` (hazard 6) uses `--no-build-isolation`, and `venv/` has no
+  `setuptools`, so it fails; extraction prompt 10's form works offline (correction 1);
+- each new italic line moves every later line of its adoption file, so each `v0.2.2` addendum must
+  say that the `v0.2.1` addendum's citations are read at `33778b0` (correction 2);
+- breakage (c) holds as written, and its 20 `RECORD` lines are to be recorded (correction 3).
+
+*The checks.*
+1. **Scope.** `6d8ee9a` touches the note's list only: `pyproject.toml`, `README.md`,
+   `PROVENANCE.md`, the four files under `docs/adoption/`, the extraction board, the log, this
+   board, the campaign README and `prompts/INDEX.md`. The diff over `datastorekit/`, the contract,
+   the verification document, `docs/extraction/`, `.github/`, `CLAUDE.md`, `LICENSE`, `.gitignore`
+   and `orchestrator/` is empty. No wheel, `build/`, `dist/` or `*.egg-info`; the ignored entries
+   are dispatch's. Each client's `HEAD` and status are as at dispatch.
+2. **Additive.** `git diff` under `docs/adoption/` has no `-` line. `pyproject.toml`'s diff is the
+   version line alone. The extraction board's diff is G2–G4's rows alone: the titles as the note
+   gives them, every earlier sentence kept, and one dated "ready to be tagged" sentence each,
+   linking the client's new addendum.
+3. **The release.** From `git archive 6d8ee9a`, built offline and installed into a fresh high-end
+   venv: `datastorekit-0.2.2-py3-none-any.whl`, 25 entries, none under `tests/`, the licence;
+   `METADATA` `Version: 0.2.2` and the three `Requires-` lines. From outside the repository with
+   `-I`: the package and its 19 submodules import from `site-packages`; `0.2.2`; `_kill_actors`,
+   01's `__exit__` docstring, and `_ray_is_running` returning `ray.is_initialized()`;
+   `datastorekit.tests` refused; `sharded_store --help` exits 0. Against the review's own `v0.2.1`
+   wheel, the same 20 `RECORD` paths, and only `SQL/ShardedPool.py`'s differs.
+4. **`README.md` and `PROVENANCE.md`, by reading.** The `v0.2.2` Status paragraph is above
+   `v0.2.1`'s, which is unchanged. It names 01's fix and its consequences, says two open pools
+   still collide, gives 01b's guard as "a property the release keeps, not a second fix", says no
+   API, nothing written and no message changes, and links §9.3 and §9.4 by anchor. The pin is
+   `v0.2.2`, the three earlier tags "remain tagged", and nothing says `v0.2.2` is tagged. "Using
+   it"'s §9 item names `v0.2.2`. `PROVENANCE.md`'s new `###` section follows "Prompts 08a, 08b
+   and 09", says what the prompt's §2.3 lists, and cites SGK's three lines, which read true at
+   `6f7f291` and `b510bc9`.
+5. **The addenda, by reading.** Each italic line follows extraction prompt 10's, and each addendum
+   follows the `v0.2.1` one under a `---` of its own (in the checklists, before the appendix's
+   rule). Each is dated, names the prompt, gives the pin and `actor-names` U3, says what changed
+   for its client as the prompt's row says, and links §9.3 or §9.4. Every superseded `path:line`,
+   31 in the four tables, was read in the committed file and says what its row claims. Correction
+   2's sentence is in each, with k = 5 for the README and 6 for each checklist (the checklists'
+   italic lines wrap to five lines), and k is the italic block's length in each. SGK's addendum
+   states its stand-in as a fact, and leaves standing in `_ray_is_running` and `ray.kill` to SGK.
+6. **Names and links, by running.** The review's own extraction over the six documents and the
+   extraction board's §2: 81 relative links, every file found and every anchor a heading by
+   GitHub's rule. The 16 dotted `datastorekit.` names the documents give as importable resolve in
+   the review's release venv (`datastorekit.tests` is named only as not shipped).
+7. **Both ends.** In `venv/`, `pip show datastorekit` says `0.2.2`, no `egg-info` is at the root,
+   and `Ran 494 tests … OK`, 0 `ResourceWarning` lines. In the review's own offline high-end venv
+   with `git archive 6d8ee9a` installed editable, `Ran 494 tests … OK`, **4** lines (timing, as
+   log 01's correction 8). The port check exits 0, and `black` leaves 72 files unchanged.
+8. **The breakages.** The log's three diffs, extracted as recorded, pass `git apply --check`,
+   apply, and pass `-R --check` against their own exports ((a) and (b) of `6d8ee9a`, (c) of
+   `v0.2.1`). Built offline and installed at the high pins: (a) gives
+   `datastorekit-0.2.1-py3-none-any.whl` and metadata `0.2.1`; (b) gives 72 entries, 47 under
+   `datastorekit/tests/`, and `import datastorekit.tests` succeeds from `site-packages`; (c) says
+   `Version: 0.2.2`, but every one of its 20 `RECORD` lines equals `v0.2.1`'s, and it has neither
+   `_kill_actors` nor `_ray_is_running`.
+9. **The records.** The log has every section of README §5.1 and the prompt's §5 item 6
+   additions, the three corrections and the additions classified, and the four supersession
+   tables. This board's header and row, the README's header and §2 row, and `prompts/INDEX.md`
+   are in step. `docs/OPEN_ISSUES.md` is unchanged at 4.
+10. **Nothing left behind.** No Ray process. The tags are the three, and `origin` is unchanged.
+
+*Findings beyond the prompt*, recorded and not acted on:
+- The agent superseded, besides the prompt's table, each `v0.2.1` addendum's statement that its
+  citations are "this file's as committed with this addendum", each checklist's `v0.2.1` row
+  giving the package "at `v0.2.1`", and in the README and SGK's checklist the `v0.2.1` addendum's
+  line-citation and gate statements (log 02 §2). Each was read, and each is right to supersede.
+- The note's §1 said six ignored `__pycache__/` directories; there are five, as the agent
+  observed. The note was wrong, not the tree; dispatch's and the end's lists are the same.
+- Log 02 §9 says the push of `6d8ee9a` carries "the review". It does not: `6d8ee9a` is pushed as
+  `main` alone (the note's §5), and this record follows with the rest of `main`.
+
+*Issues.* None is opened. The index is 4, none of them this repository's.
+
+*Residue fixed in this follow-up:*
+- "this commit" → `6d8ee9a` in this board's header and row, the README's header and §2 row, the
+  log's header and §9, and `prompts/INDEX.md`;
+- "reviewed; awaiting CI for `v0.2.2`" for 02 in the same places;
+- this paragraph and the notes line.
+
+`main` is ahead of `origin/main` (`2fd3ba2`) by `a4290de`, `ce2070b`, the note `394a974`,
+`6d8ee9a` and this record. `6d8ee9a` is pushed as `main` only with the user's approval, and
+`v0.2.2` is made on it only after CI passes there at both ends, with approval again.
+
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
 
 **Orchestrator notes:** [`orchestrator/prompt-01.md`](orchestrator/prompt-01.md) (`7c97125`),
-used for 01; [`orchestrator/prompt-01b.md`](orchestrator/prompt-01b.md) (`3aa57ce`), used for 01b.
+used for 01; [`orchestrator/prompt-01b.md`](orchestrator/prompt-01b.md) (`3aa57ce`), used for 01b;
+[`orchestrator/prompt-02.md`](orchestrator/prompt-02.md) (`394a974`), used for 02.
 
 ## 2. Gates outside this repository
 
