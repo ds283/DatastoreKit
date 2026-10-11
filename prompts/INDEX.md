@@ -4,7 +4,7 @@ One line per campaign under `prompts/`. It is an index: the campaign's `README.m
 and its `IMPLEMENTATION_STATE.md` the status; if this file and a board disagree, the board is
 right.
 
-**Last updated:** 2026-10-12 · 4 campaigns: 1 planned, 3 closed.
+**Last updated:** 2026-10-12 · 5 campaigns: 1 planned, 1 open board with no prompts, 3 closed.
 
 | Campaign | Status | Opened → last board update | Owns | Open issues |
 |---|---|---|---|---|
@@ -12,3 +12,4 @@ right.
 | [`actor-names`](actor-names/IMPLEMENTATION_STATE.md) | **closed** 2026-10-11: 3 of 3 written prompts landed (01, `ac50a8a`; 01b, `f024fc6`, closing a pool starts no Ray; 02, `6d8ee9a`, tagged `v0.2.2`), each reviewed, and the tag made after CI was green at both ends; U1–U3 taken 2026-10-10, U4 2026-10-11 | 2026-10-10 → 2026-10-11 | a closed pool, and a refused open, releasing their Ray actors' names; the stand-in pool reserving names; closing a pool never starting Ray (U4); the release `v0.2.2` (U3) | §1.3; 0 (01b closed `[02-closing-a-pool-can-start-ray]`, 2026-10-11; 01 closed `[11-a-closed-pool-holds-its-actor-names-until-it-is-collected]`, on the extraction board) |
 | [`factory-defaults`](factory-defaults/IMPLEMENTATION_STATE.md) | **closed** 2026-10-11: 2 of 2 written prompts landed (01, `f5d8957`, the base defaults `store`, `validate` and `validate_on_startup`; 02, `0de2b16`, tagged `v0.2.3`), each reviewed, and the tag made after CI was green at both ends; U1–U5 taken 2026-10-11, as recommended, the change and the version being the user's ruling | 2026-10-11 → 2026-10-11 | a factory base that does not refuse a registered instance (U1, revisiting extraction U32 in part); its tests and a smoke step under Ray; contract §9.5; the release `v0.2.3` (U5) | none; 0 |
 | [`object-timestamp`](object-timestamp/IMPLEMENTATION_STATE.md) | **planned** 2026-10-12: 1 of 2 prompts written (01); 0 landed; U1–U6 taken 2026-10-12, as recommended, the change being the user's ruling | 2026-10-12 → 2026-10-12 | `DatastoreObject` carrying an optional, read-only `timestamp` that a factory fills from the row (U1); its tests; contract §9.6; the release `v0.3.0` (U6) | none; 0 |
+| [`inherited-issues`](inherited-issues/IMPLEMENTATION_STATE.md) | **open** 2026-10-12: a board with no prompts, holding the issues SGK handed over (`dk-and-rpk-migration` 09, SGK `5943492`) until a campaign takes each over | 2026-10-12 → 2026-10-12 | the four inherited issues, each in full and measured against the package at `6465a6a` | §1.2; 4 |

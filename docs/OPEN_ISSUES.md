@@ -3,7 +3,7 @@
 One line per open issue, pointing at the board that holds it. The board is right if the two
 disagree. See `CLAUDE.md` for the maintenance rule.
 
-**Last updated:** 2026-10-11 · **4 open**: 0 on this repository's boards, 4 inherited (§1.2).
+**Last updated:** 2026-10-12 · **4 open**, all on this repository's boards (§1.2).
 
 ## 1. By campaign
 
@@ -11,19 +11,18 @@ disagree. See `CLAUDE.md` for the maintenance rule.
 
 None open (2026-10-10: its one issue was closed by `actor-names` prompt 01).
 
-### 1.2 Inherited from SecondaryGWKit, on SGK's boards
+### 1.2 `inherited-issues` ([board](../prompts/inherited-issues/IMPLEMENTATION_STATE.md)): issues handed over by SGK, 2026-10-12
 
-These are open issues in the layer's code as SGK carries it. They move here with the code, but
-their measurements stay on SGK's boards, in `/Users/ds283/Documents/Code/SecondaryGWKit/prompts/`.
-The extraction campaign does not act on them (its README §1). Each is re-checked against the
-package once 01 lands, and taken over by a board here when a campaign is planned to address it.
+Opened in SGK while the layer was SGK's code, and handed to this repository by SGK's
+`dk-and-rpk-migration` prompt 09 (SGK `5943492`). The board holds each in full, measured against
+the package. None is assigned to a campaign.
 
-| Issue | SGK board | Hook |
-|---|---|---|
-| `[00-a-drop-action-drops-a-replicated-table-outside-the-in-flight-record]` | `a3-v2-readiness` | Actors drop a replicated table in their constructors, outside the in-flight record, so an interrupted drop leaves shards the check at open refuses |
-| `[00-a-new-stores-first-open-can-leave-a-primary-without-its-shards]` | `a3-v2-readiness` | An interrupted first open leaves a primary whose next open is refused for a missing shard |
-| `[00-the-inventory-cannot-see-a-serial-split]` | `datastore-integrity` | The inventory compares replicated classes by key, tags, `validated` and count, not by serial |
-| `[01-cross-filesystem-move-advice-says-delete-by-hand]` | `store-retirement` | A failed cross-filesystem move advises deleting the source by hand |
+| Issue | Hook |
+|---|---|
+| `[00-a-drop-action-drops-a-replicated-table-outside-the-in-flight-record]` | Actors drop a replicated table in their constructors, outside the in-flight record, so an interrupted drop leaves shards the check at open refuses |
+| `[00-a-new-stores-first-open-can-leave-a-primary-without-its-shards]` | An interrupted first open leaves a primary whose next open is refused for a missing shard |
+| `[00-the-inventory-cannot-see-a-serial-split]` | The inventory compares replicated classes by key, tags, `validated` and count, not by serial |
+| `[01-cross-filesystem-move-advice-says-delete-by-hand]` | A failed cross-filesystem move advises deleting the source by hand, though `delete_store` exists |
 
 ### 1.3 `actor-names` ([board](../prompts/actor-names/IMPLEMENTATION_STATE.md)): campaign closed 2026-10-11 (`v0.2.2`)
 
