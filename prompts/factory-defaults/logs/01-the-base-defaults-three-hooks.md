@@ -1,8 +1,8 @@
 # Log 01 — the base defaults three hooks
 
-**Subject:** Default store, validate and validate_on_startup in the factory base · **Commit:** this
-commit · **Date:** 2026-10-11 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and
-untagged; not yet reviewed.
+**Subject:** Default store, validate and validate_on_startup in the factory base · **Commit:**
+`f5d8957` · **Date:** 2026-10-11 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and
+untagged; reviewed 2026-10-11 (the board's §1).
 
 `SQLAFactoryBase` keeps `register` and `build` as its only abstract hooks, and defaults `store`,
 `validate` and `validate_on_startup` as it defaults `revalidate`, `owned_serials` and
@@ -43,7 +43,7 @@ conventions. §2 classifies each.
 ### 1.1 The base (§2.1)
 
 `datastorekit/SQL/factory_base.py`, 24 lines added and 6 removed (`git diff --numstat`). Line
-numbers are this commit's:
+numbers are `f5d8957`'s:
 
 - `register` (`:6-9`) and `build` (`:11-14`) keep `@staticmethod @abstractmethod`, unchanged. The
   import of `abstractmethod` stays, and the class is still `SQLAFactoryBase(ABC)`. Its
@@ -161,7 +161,7 @@ No instance is made at import. `_defines` is imported alone from `test_neutral_c
 ### 1.7 The records
 
 - **This campaign's board**: the header (in progress; 01 landed, not yet reviewed) and 01's row
-  (landed, this commit, the log). The decisions table, §2, §3 and §4 are unchanged: no issue is
+  (landed, `f5d8957`, the log). The decisions table, §2, §3 and §4 are unchanged: no issue is
   held.
 - **This campaign's README**: a sentence in its header, and §2's row for 01 (landed).
 - **`prompts/INDEX.md`**: the header (1 in progress, 2 closed) and the campaign's status.
@@ -321,7 +321,7 @@ checkout); not measured further.
 
 Each from its own fresh export of the working tree and fresh offline venv, from the export's root,
 as `env -u PYTHONPATH <venv>/bin/python docs/extraction/ray_smoke_run.py` under `/usr/bin/time -p`.
-The script is this commit's (SHA-256 `03203679…a92a`, equal in each export). The full output of
+The script is `f5d8957`'s (SHA-256 `03203679…a92a`, equal in each export). The full output of
 each is in `docs/extraction-verification.md` §4.8.
 
 | Run | Started | Ray's session directory | `ray.init` | Steps (1, 2, N, C, 3, 4, 5, 6, I) | In all | Exit | Ray before; after (script; mine) |
@@ -589,7 +589,7 @@ index 3defd1a..e0733b5 100644
 
 ## 8. State handed to the next prompt
 
-- **`HEAD`** is this commit, unpushed and untagged. `origin/main` is `460b012`; the tags are
+- **`HEAD`** is `f5d8957`, unpushed and untagged. `origin/main` is `460b012`; the tags are
   `v0.1.0`, `v0.2.0`, `v0.2.1` and `v0.2.2`, unchanged. `pyproject.toml` is at `0.2.2`.
 - **The suite** is 504, in `venv/` and at the high end. The port check passes over 20 modules with
   1 test declared not ported. `black` leaves 74 files unchanged.
