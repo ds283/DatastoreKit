@@ -1,6 +1,6 @@
 # Log 01 — the object carries a timestamp
 
-**Subject:** Give DatastoreObject an optional, read-only timestamp · **Commit:** this commit ·
+**Subject:** Give DatastoreObject an optional, read-only timestamp · **Commit:** `1b2f91a` ·
 **Date:** 2026-10-12 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and untagged; not
 yet reviewed.
 
@@ -42,7 +42,7 @@ conventions. §2 classifies each.
 ### 1.1 The object (§2.1)
 
 `datastorekit/object.py`, 18 lines added and 1 removed (`git diff --numstat`). Line numbers are
-this commit's:
+`1b2f91a`'s:
 
 - `from datetime import datetime` (`:1`), before the existing `typing` import.
 - `__init__(self, store_id: Optional[int], *, timestamp: Optional[datetime] = None)` (`:10-14`),
@@ -153,7 +153,7 @@ records, the same in this checkout and in each export). It passed every step at 
 ### 1.7 The records
 
 - **This campaign's board**: the header (in progress; 01 landed, not yet reviewed) and 01's row
-  (landed, this commit, the log). The decisions table, §2, §3 and §4 are unchanged: no issue is
+  (landed, `1b2f91a`, the log). The decisions table, §2, §3 and §4 are unchanged: no issue is
   held.
 - **This campaign's README**: a sentence in its header, and §2's row for 01 (landed).
 - **`prompts/INDEX.md`**: the header (1 in progress) and the campaign's status.
@@ -590,7 +590,7 @@ test support, not of the layer: test 2 compares with the row, not with any `date
 
 ## 8. State handed to the next prompt
 
-- **`HEAD`** is this commit, unpushed and untagged. The local `origin/main` ref is `2a86f92`; the
+- **`HEAD`** is `1b2f91a`, unpushed and untagged. The local `origin/main` ref is `2a86f92`; the
   tags are `v0.1.0`, `v0.2.0`, `v0.2.1`, `v0.2.2` and `v0.2.3`, unchanged. `pyproject.toml` is at
   `0.2.3`.
 - **The suite** is 509, in `venv/` and at the high end. The port check passes over 20 modules with

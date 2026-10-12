@@ -4,8 +4,8 @@
 StochasticInstantons session (§0). **Prompt 01 is written** (2026-10-12). The user took U1–U6 as
 recommended the same day (§6.2). Prompt 02, the release, is written after 01 has landed and been reviewed, against the
 tree 01 leaves.
-**Prompt 01 landed** on 2026-10-12 (this commit; [log](logs/01-the-object-carries-a-timestamp.md));
-it is not yet reviewed.
+**Prompt 01 landed** on 2026-10-12 (`1b2f91a`; [log](logs/01-the-object-carries-a-timestamp.md)),
+and was reviewed the same day.
 
 ## 0. Why this campaign exists
 
@@ -175,7 +175,7 @@ back to the SI session when the release is tagged:
 
 | # | Prompt | Covers | Status |
 |---|---|---|---|
-| 01 | [`01-the-object-carries-a-timestamp.md`](01-the-object-carries-a-timestamp.md) | `DatastoreObject` takes a keyword-only `timestamp` and exposes it read-only (U1); `TestTheVersionObject`'s expected dict (U2); a neutral stamped class and factory outside the registry, and `tests/test_object_timestamp.py` (U3); the smoke script unchanged under real Ray at both ends (U4); contract §9.6; a dated subsection of the verification document. | **landed** 2026-10-12 (this commit; [log](logs/01-the-object-carries-a-timestamp.md)), not yet reviewed; U1–U4 taken |
+| 01 | [`01-the-object-carries-a-timestamp.md`](01-the-object-carries-a-timestamp.md) | `DatastoreObject` takes a keyword-only `timestamp` and exposes it read-only (U1); `TestTheVersionObject`'s expected dict (U2); a neutral stamped class and factory outside the registry, and `tests/test_object_timestamp.py` (U3); the smoke script unchanged under real Ray at both ends (U4); contract §9.6; a dated subsection of the verification document. | **landed** 2026-10-12 (`1b2f91a`; [log](logs/01-the-object-carries-a-timestamp.md)), reviewed; U1–U4 taken |
 | 02 | Release `v0.3.0` (planned) | `pyproject.toml`, `README.md`, `PROVENANCE.md`; dated addenda to `docs/adoption/` (the README and the three checklists: SI's supersedes item 2's `DatastoreObject.timestamp` paragraph and item 4's line); the extraction board's G2–G4; both ends locally and in CI; **the tag** on its commit after green CI, not by the prompt. | ⬜ written after 01's review |
 
 **Order.** 01 → 02. 02 releases what 01 leaves. Each is landed and reviewed on its own (U5).
