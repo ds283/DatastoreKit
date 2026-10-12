@@ -248,6 +248,18 @@ the log (but where §1.6 quotes what the board said), in the README and in `prom
 "reviewed; awaiting CI for `v0.3.0`" for 02 here, in README §2 and its header, and in
 `prompts/INDEX.md`; the notes line; and the stray `__pycache__/` of check 1, which is not tracked.
 
+*The push (2026-10-12).* With the user's approval, `2f5417e` was pushed as `main`
+(`git push origin 2f5417e:refs/heads/main`), moving `origin/main` from `75c237e` to `2f5417e`, a
+fast-forward over `778c95a`, `b56fdde` and `2f5417e`, with no tag; `30d2fc8`, the review's record,
+stayed local. CI passed on `2f5417e` at both ends,
+[run 38220924369](https://github.com/ds283/DatastoreKit/actions/runs/38220924369):
+- low: Python 3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39, `Ran 509 tests in 246.964s` / `OK`, and
+  `black` leaving 76 files unchanged;
+- high: 3.13.16 / 2.55.1 / 2.0.46, `Ran 509 tests in 165.180s` / `OK`;
+- 0 `ResourceWarning` lines in the run's log; SQLite 3.45.1 at both.
+
+`v0.3.0` may now be made on `2f5417e`, with the user's approval (U23, U28).
+
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
 
