@@ -1,9 +1,8 @@
 # object-timestamp campaign — implementation state
 
-**Last updated:** 2026-10-12 · **Status: IN PROGRESS — 2 of 2 prompts written (01, 02), 2 landed (01,
-`1b2f91a`, reviewed; 02, `2f5417e`, the release `v0.3.0`, reviewed; awaiting CI for `v0.3.0`);
-U1–U6 taken 2026-10-12, as recommended; `v0.3.0` is made on `2f5417e` only once CI passes there at
-both ends.**
+**Last updated:** 2026-10-12 · **Status: CLOSED 2026-10-12 — 2 of 2 prompts written and landed (01,
+`1b2f91a`; 02, `2f5417e`), each reviewed; `v0.3.0` made, annotated, on `2f5417e` (tag object
+`bf0a3b2`) after CI passed there at both ends; U1–U6 taken 2026-10-12, as recommended.**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** no issue. It carries out the user's ruling of 2026-10-12 (README §0) ·
@@ -31,7 +30,7 @@ both ends.**
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [The object carries a timestamp](01-the-object-carries-a-timestamp.md) | `object.py` (U1); `TestTheVersionObject`'s dict (U2); the stamped class, `test_object_timestamp.py` (U3); the smoke run at both ends (U4); contract §9.6; verification §4.9 | ✍️ yes, 2026-10-12 | ✅ 2026-10-12; reviewed | `1b2f91a` | [log 01](logs/01-the-object-carries-a-timestamp.md) |
-| 02 | [Release `v0.3.0`](02-release-v0.3.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G3 and G4; the tag after green CI (U6) | ✍️ yes, 2026-10-12 | ✅ 2026-10-12; reviewed; awaiting CI for `v0.3.0`; not tagged, not pushed | `2f5417e` | [log 02](logs/02-release-v0.3.0.md) |
+| 02 | [Release `v0.3.0`](02-release-v0.3.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G3 and G4; the tag after green CI (U6) | ✍️ yes, 2026-10-12 | ✅ 2026-10-12; reviewed; tagged `v0.3.0` after green CI | `2f5417e` | [log 02](logs/02-release-v0.3.0.md) |
 
 **Planning note (2026-10-12, at `83068cb`).** The brief's four points of §3 were re-measured
 (README §0.1). Points 2–4 hold. Point 1 holds for the layer, but the suite pins `vars()` of the
@@ -258,7 +257,10 @@ stayed local. CI passed on `2f5417e` at both ends,
 - high: 3.13.16 / 2.55.1 / 2.0.46, `Ran 509 tests in 165.180s` / `OK`;
 - 0 `ResourceWarning` lines in the run's log; SQLite 3.45.1 at both.
 
-`v0.3.0` may now be made on `2f5417e`, with the user's approval (U23, U28).
+*The tag (2026-10-12).* With the user's approval, `v0.3.0` was made, annotated, on `2f5417e`
+(tag object `bf0a3b2`), and pushed; `git ls-remote origin` gives `refs/tags/v0.3.0^{}` as
+`2f5417e`. The extraction board's G3 and G4 record it. The campaign is closed in the commit that
+records this.
 
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
@@ -269,7 +271,8 @@ used for 01; [`orchestrator/prompt-02.md`](orchestrator/prompt-02.md) (`b56fdde`
 ## 2. Gates outside this repository
 
 None of this campaign's own. The extraction campaign's G2–G4 are recorded on its board (README §7).
-When the release is tagged, its tag object and commit are given to the user for SI's prompt 08.
+`v0.3.0` is tagged (tag object `bf0a3b2` → `2f5417e`, 2026-10-12); both were given to the user for
+SI's prompt 08.
 
 ## 3. Active and unresolved issues
 

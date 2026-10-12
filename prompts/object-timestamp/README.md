@@ -7,8 +7,9 @@ tree 01 leaves.
 **Prompt 01 landed** on 2026-10-12 (`1b2f91a`; [log](logs/01-the-object-carries-a-timestamp.md)),
 and was reviewed the same day. **Prompt 02 is written** (2026-10-12, against `75c237e`).
 **Prompt 02 landed** on 2026-10-12 (`2f5417e`; [log](logs/02-release-v0.3.0.md)): the package is
-ready to be released as `v0.3.0`. It was reviewed the same day; it is not tagged and not pushed,
-and awaits CI for `v0.3.0`.
+ready to be released as `v0.3.0`. It was reviewed the same day, and `v0.3.0` was made on it,
+annotated (tag object `bf0a3b2`), after CI passed there at both ends. **The campaign is closed**
+(2026-10-12).
 
 ## 0. Why this campaign exists
 
@@ -179,7 +180,7 @@ back to the SI session when the release is tagged:
 | # | Prompt | Covers | Status |
 |---|---|---|---|
 | 01 | [`01-the-object-carries-a-timestamp.md`](01-the-object-carries-a-timestamp.md) | `DatastoreObject` takes a keyword-only `timestamp` and exposes it read-only (U1); `TestTheVersionObject`'s expected dict (U2); a neutral stamped class and factory outside the registry, and `tests/test_object_timestamp.py` (U3); the smoke script unchanged under real Ray at both ends (U4); contract §9.6; a dated subsection of the verification document. | **landed** 2026-10-12 (`1b2f91a`; [log](logs/01-the-object-carries-a-timestamp.md)), reviewed; U1–U4 taken |
-| 02 | [`02-release-v0.3.0.md`](02-release-v0.3.0.md) | `pyproject.toml`, `README.md`, `PROVENANCE.md`; dated addenda to `docs/adoption/` (the README and the three checklists: SI's supersedes item 2's `DatastoreObject.timestamp` paragraph and item 4's line); the extraction board's G3 and G4 (G2 holds, and is unchanged); both ends locally and in CI; **the tag** on its commit after green CI, not by the prompt. | **landed** 2026-10-12 (`2f5417e`; [log](logs/02-release-v0.3.0.md)), reviewed; awaiting CI for `v0.3.0`; not tagged, not pushed; U6 taken |
+| 02 | [`02-release-v0.3.0.md`](02-release-v0.3.0.md) | `pyproject.toml`, `README.md`, `PROVENANCE.md`; dated addenda to `docs/adoption/` (the README and the three checklists: SI's supersedes item 2's `DatastoreObject.timestamp` paragraph and item 4's line); the extraction board's G3 and G4 (G2 holds, and is unchanged); both ends locally and in CI; **the tag** on its commit after green CI, not by the prompt. | **landed** 2026-10-12 (`2f5417e`; [log](logs/02-release-v0.3.0.md)), reviewed; tagged `v0.3.0` (`bf0a3b2`) after green CI, [run 38220924369](https://github.com/ds283/DatastoreKit/actions/runs/38220924369); U6 taken |
 
 **Order.** 01 → 02. 02 releases what 01 leaves. Each is landed and reviewed on its own (U5).
 
