@@ -1,8 +1,7 @@
 # object-timestamp campaign — implementation state
 
-**Last updated:** 2026-10-12 · **Status: IN PROGRESS — 1 of 2 prompts written (01), 1 landed (01,
-`1b2f91a`, reviewed); U1–U6 taken 2026-10-12, as recommended; 02 is written next, against the tree
-01 leaves.**
+**Last updated:** 2026-10-12 · **Status: IN PROGRESS — 2 of 2 prompts written (01, 02), 1 landed (01,
+`1b2f91a`, reviewed); U1–U6 taken 2026-10-12, as recommended; 02 is ready to be dispatched.**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** no issue. It carries out the user's ruling of 2026-10-12 (README §0) ·
@@ -30,7 +29,7 @@
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [The object carries a timestamp](01-the-object-carries-a-timestamp.md) | `object.py` (U1); `TestTheVersionObject`'s dict (U2); the stamped class, `test_object_timestamp.py` (U3); the smoke run at both ends (U4); contract §9.6; verification §4.9 | ✍️ yes, 2026-10-12 | ✅ 2026-10-12; reviewed | `1b2f91a` | [log 01](logs/01-the-object-carries-a-timestamp.md) |
-| 02 | Release `v0.3.0` (planned) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G2–G4; the tag after green CI (U6) | ⬜ | ⬜ | — | — |
+| 02 | [Release `v0.3.0`](02-release-v0.3.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G3 and G4; the tag after green CI (U6) | ✍️ yes, 2026-10-12 | ⬜ | — | — |
 
 **Planning note (2026-10-12, at `83068cb`).** The brief's four points of §3 were re-measured
 (README §0.1). Points 2–4 hold. Point 1 holds for the layer, but the suite pins `vars()` of the
