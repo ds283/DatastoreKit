@@ -19,6 +19,11 @@ before it, the `v0.2.1` addendum included, is unchanged and true of the release 
 by client and what changed since `v0.2.2`, and supersedes the statements it names. The text before
 it, the `v0.2.1` and `v0.2.2` addenda included, is unchanged and true of the release each names.*
 
+*Added by `object-timestamp` prompt 02 on 2026-10-12: the section
+[Addendum: v0.3.0](#addendum-v030-object-timestamp-prompt-02-2026-10-12) at the end gives the pins
+by client and what changed since `v0.2.3`, and supersedes the statements it names. The text before
+it, the three earlier addenda included, is unchanged and true of the release each names.*
+
 This directory holds one **adoption checklist** per client project, and what the three share.
 Each checklist says what its client must do to depend on `datastorekit` at `v0.2.0`: what it
 deletes, which imports it rewrites, what leaves its copy of the layer, what its factories, call
@@ -468,3 +473,125 @@ addendum reads at `33778b0` or five lines later, are read at `33778b0`, or ten l
 | `docs/adoption/README.md:365` | "all three adopt `v0.2.2` (U37; `actor-names` U3)" | as `:289-290` |
 | `docs/adoption/README.md:366` | "the pin `…@v0.2.2`, above" | as `:293` |
 | `docs/adoption/README.md:367` | "G2, G3 and G4 each hold when that client has adopted `v0.2.2` (U37; `actor-names` U3)" | G2 holds when SGK has adopted `v0.2.2` or later, and G3 and G4 when CPBH and SI have adopted `v0.2.3` (U37; `actor-names` U3; `factory-defaults` U5) |
+
+---
+
+## Addendum: v0.3.0 (object-timestamp prompt 02, 2026-10-12)
+
+*Written by `object-timestamp` prompt 02 on 2026-10-12, and added after `factory-defaults` prompt
+02's `v0.2.3` addendum. 07a's text and the `v0.2.1`, `v0.2.2` and `v0.2.3` addenda stay as written,
+each true of the release it names (`CLAUDE.md` rule 6). No checklist was re-measured (as decision
+U37); the clients' stored objects below were read through `git` only.*
+
+**The pins, by client.** The clients' pins differ three ways (decision U6 of the `object-timestamp`
+campaign, which amends `factory-defaults` decision U5 for CPBH and SI, and keeps it for SGK):
+- **SI adopts `v0.3.0`** in place of `v0.2.3`, when it is next active, and G4 reads "SI has adopted
+  `v0.3.0`":
+
+  ```text
+  datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.3.0
+  ```
+
+- **CPBH may stay on `v0.2.3` or move to `v0.3.0`**, as CPBH chooses, and G3 reads "CPBH has
+  adopted `v0.2.3` or later".
+- **SGK may stay on `v0.2.2` or move to `v0.2.3` or `v0.3.0`**, as SGK chooses, and G2 reads, as
+  before, "SGK has adopted `v0.2.2` or later". G2 holds (2026-10-12, the extraction board).
+
+A move is a commit of the client's own. Neither CPBH nor SGK reads the value back, and nothing they
+call changes (below).
+
+`v0.3.0` carries `key_on_version`, `v0.2.0`'s feature, `v0.2.1`'s three fixes, `v0.2.2`'s fix and
+`v0.2.3`'s change, unchanged.
+
+**What changed since `v0.2.3`.** Only `datastorekit/object.py` changed in the package, by
+`object-timestamp` prompt 01 (`1b2f91a`), on the user's ruling: 18 lines added and 1 removed.
+`store_id` and `available` are `v0.2.3`'s. The release adds API, a constructor argument and a
+property of a public class, so it is minor (U6). Nothing a client supplies changes, nothing the
+layer writes or reads changes, and no message, refusal or exception of the layer's changes. The
+detail is the one row of
+[`docs/client-contract.md` §9.6](../client-contract.md#96-object-timestamp-prompt-01),
+"`DatastoreObject.timestamp`":
+
+| What | At `v0.2.3` | At `v0.3.0` |
+|---|---|---|
+| `DatastoreObject(store_id, timestamp=t)` | `TypeError`: an unexpected keyword argument | accepted: `timestamp` is keyword-only, `None` by default, and kept as `self._timestamp` (`datastorekit/object.py:10-14`) |
+| `obj.timestamp` | `AttributeError`: the base has no such attribute | what the object was given, or `None`: a read-only property (`datastorekit/object.py:27-38`), with no setter and no deleter |
+| Who fills it | — | a factory, from the row it read: one that reads a row of a class whose `register()` declares `"timestamp": True` may pass the row's `timestamp`. **The layer never sets it and never reads it.** It is `None` for an object not yet stored, one built from an insert, one whose factory does not pass it, and one whose table has no such column |
+| *Now met:* `vars()` of a stored object | `_my_id`, and the subclass's own attributes | one more key, `_timestamp`, `None` unless given |
+| *Now met:* a subclass that assigns or deletes `self.timestamp` | sets or deletes an attribute of its own | `AttributeError`: the property has no setter or deleter |
+| *Unchanged:* a second positional argument | `TypeError` | `TypeError`, with the same message |
+
+**Nothing any client supplies or stores changes.** A store that opened under `v0.2.3` opens under
+`v0.3.0`, and a store refused under `v0.2.3` is refused under `v0.3.0`, by the same exception and
+message. An object pickled under an earlier release and unpickled under `v0.3.0` would have no
+`_timestamp`, and reading its `timestamp` would raise `AttributeError`; no client writes a pickled
+`DatastoreObject` to disk (below).
+
+**What the clients do with it.** `object-timestamp` read the three clients through `git` only: a
+script parsed every `.py` file outside each client's `prompts/`, `.prompts/`, `docs/` and
+`.documents/`, from `git show <commit>:<path>`, with `ast`, importing and running nothing of a
+client, and found where `DatastoreObject` comes from, the classes descending from it by name, every
+`DatastoreObject.__init__(…)` call by its arguments, and every `timestamp` defined or assigned on a
+class. The planner measured it, and prompt 02 re-ran it, on 2026-10-12:
+
+| Client, commit | `DatastoreObject` from | Descendants | `DatastoreObject.__init__` calls: `store_id` alone / with `timestamp=` / other | `timestamp` defined or assigned on a descendant |
+|---|---|---|---|---|
+| SGK `d03a643`, and `e3a7077`, then `cf978c6` (its `HEAD` when read) | the package (`from datastorekit import DatastoreObject`, 19 imports) | 30 | 38 / 0 / 0 | none; no `timestamp` on any class |
+| CPBH `64ef9aa`, and `cb0c675`, then `0f1c25b` (its `HEAD` when read) | its own (`Datastore/object.py:19`), which takes `store_id` alone | 31 | 19 / 0 / 0 | none; no `timestamp` on any class |
+| SI `7bb3efd` | its own (`Datastore/object.py:20`), whose `__init__` takes `timestamp` positional-or-keyword (`:25-30`) and whose `timestamp` is a read-only property (`:43-45`) | 34 | 9 / 14 / 0; and ten calls in deeper descendants pass `timestamp=` through, by keyword | none. Its own `DatastoreObject` defines one (`:30`, `:44`) and leaves with its layer; the other 17 sites (`def timestamp` on four plot adapters and one test stand-in, and `self.timestamp = …` in twelve test stand-ins) are on classes that do not descend from it |
+
+- **SI**: its 14 direct calls and its ten pass-throughs (its checklist, item 2) pass `timestamp=` by
+  keyword, so each works under `v0.3.0` as it stands once its import is rewritten. Its reads of
+  `.timestamp` get what its factories pass, as today: 18 of its factory modules pass `timestamp=`,
+  and the layer fills nothing. Its plot adapters and test stand-ins are not `DatastoreObject`s, and
+  are unaffected. `v0.3.0` removes the obligation of its checklist's item 2 paragraph on
+  `DatastoreObject.timestamp`, and `DatastoreObject.timestamp` no longer leaves the layer (item 4).
+- **CPBH and SGK** pass `store_id` alone, and define or assign no `timestamp` on a descendant.
+  `v0.3.0` changes nothing they meet but one key in `vars()`, which neither reads: CPBH's one
+  `vars(` is of a module (`Datastore/tests/test_compare_stores.py:735`), and SGK's two `__dict__`s
+  are of classes.
+- **No client writes a pickled `DatastoreObject` to disk.** A `git grep` of `pickle`, `joblib`,
+  `shelve` and `dill` dumps finds in-memory round trips, commented-out lines, and SI's one
+  `joblib.dump` (`regression_InstantonOutputs.py:370`), of regression models.
+- **The pins, as read:** SGK's `requirements.txt:17` pins `v0.2.2` at `e3a7077` and `cf978c6`;
+  CPBH has no `datastorekit` line at `0f1c25b`, and SI none at `7bb3efd`.
+
+**The checklists are not re-measured** (as U37). Each has an addendum of its own, after its `v0.2.3`
+addendum: [SGK's](secondarygwkit.md#addendum-v030-object-timestamp-prompt-02-2026-10-12),
+[CPBH's](champbh.md#addendum-v030-object-timestamp-prompt-02-2026-10-12) and
+[SI's](stochasticinstantons.md#addendum-v030-object-timestamp-prompt-02-2026-10-12).
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`), one in the `v0.2.1` addendum stays `v0.2.1`'s (`33778b0`), one in the `v0.2.2`
+addendum `v0.2.2`'s (`6d8ee9a`), and one in the `v0.2.3` addendum `v0.2.3`'s (`0de2b16`). A
+`datastorekit/` line in this addendum is `v0.3.0`'s, whose `datastorekit/` is the tree of
+`object-timestamp` prompt 01's commit `1b2f91a`; prompt 02 does not change it. A client's line is
+that client's at the commit named.
+
+**What this addendum supersedes**, in this file. Each `path:line` below is this file's as committed
+with this addendum. In the file as `factory-defaults` prompt 02 left it (`0de2b16`), every line after
+`:21` is five lines earlier, since this addendum's italic line at the head adds five (N = 5). So:
+- the `v0.2.3` addendum's citations, which are that file's, are read at `0de2b16`, or **5** lines
+  later here (all but `:12-15`, which is above the insert);
+- the `v0.2.2` addendum's, which the `v0.2.3` addendum reads at `6d8ee9a` or five lines later, are
+  read at `6d8ee9a`, or **10** lines later here (all but `:7-10`);
+- the `v0.2.1` addendum's, which the `v0.2.3` addendum reads at `33778b0` or ten lines later, are
+  read at `33778b0`, or **15** lines later here (all but `:3`).
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/README.md:17-20` | the `v0.2.3` addendum, "at the end", gives "the pins by client" | it gives `v0.2.3`'s pins and changes, true of `v0.2.3`; this addendum, now at the end, gives the pins of `v0.3.0` |
+| `docs/adoption/README.md:387-396` | "CPBH and SI adopt `v0.2.3`", G3 and G4 reading "CPBH has adopted `v0.2.3`" and "SI has adopted `v0.2.3`", the pin `…@v0.2.3`; and SGK "may stay on `v0.2.2` or move to `v0.2.3`" | SI adopts `v0.3.0`, and G4 reads "SI has adopted `v0.3.0`"; CPBH may stay on `v0.2.3` or move to `v0.3.0`, and G3 reads "CPBH has adopted `v0.2.3` or later"; SGK may stay on `v0.2.2` or move to `v0.2.3` or `v0.3.0`, and G2's reading is unchanged (`object-timestamp` U6); "The pins, by client", above |
+| `docs/adoption/README.md:398-399` | "`v0.2.3` carries `key_on_version`, `v0.2.0`'s feature, `v0.2.1`'s three fixes and `v0.2.2`'s fix, unchanged" | true of `v0.2.3`; `v0.3.0` carries those and `v0.2.3`'s change, unchanged |
+| `docs/adoption/README.md:454-460` | the `v0.2.3` addendum's `path:line`s are "this file's as committed with this addendum", and the earlier addenda's are read five and ten lines later | they are read at `0de2b16`, or five lines later here; the `v0.2.2` addendum's ten, and the `v0.2.1` addendum's fifteen; above |
+| `docs/adoption/README.md:467` | the row for `:289-290`: "CPBH and SI adopt `v0.2.3`, and SGK may stay on `v0.2.2` or move (`factory-defaults` U5)" | as `:387-396` |
+| `docs/adoption/README.md:468` | the row for `:293`: "for CPBH and SI the pin `…@v0.2.3`; for SGK `…@v0.2.2` or `…@v0.2.3`" | for SI the pin `…@v0.3.0`; for CPBH `…@v0.2.3` or `…@v0.3.0`; for SGK `…@v0.2.2`, `…@v0.2.3` or `…@v0.3.0` |
+| `docs/adoption/README.md:469` | the row for `:351-355`: the `v0.2.2` addendum's citations "are read at `6d8ee9a`, or five lines later here" | at `6d8ee9a`, or ten lines later here (all but `:7-10`) |
+| `docs/adoption/README.md:470-471` | the rows for `:360` and `:361`, "as `:289-290`" and "as `:293`" | as `:467` and `:468` |
+| `docs/adoption/README.md:472` | the row for `:364`: "at `v0.2.3`, each checklist with its three addenda" | at `v0.3.0`, each checklist with its four addenda |
+| `docs/adoption/README.md:473-474` | the rows for `:365` and `:366`, "as `:289-290`" and "as `:293`" | as `:467` and `:468` |
+| `docs/adoption/README.md:475` | the row for `:367`: "G2 holds when SGK has adopted `v0.2.2` or later, and G3 and G4 when CPBH and SI have adopted `v0.2.3` (U37; `actor-names` U3; `factory-defaults` U5)" | G2 holds when SGK has adopted `v0.2.2` or later, as before; G3 when CPBH has adopted `v0.2.3` or later, and G4 when SI has adopted `v0.3.0` (U37; `actor-names` U3; `factory-defaults` U5; `object-timestamp` U6) |
+
+**Not superseded:** §2's module-map row for `DatastoreObject` (`:86`), "`Datastore` (the package
+root: `DatastoreObject`)" → `datastorekit`, maps a module, which `v0.3.0` does not move; it stays
+true.

@@ -238,3 +238,35 @@ real Ray; and the contract gained §9.5 and its five markers, the verification d
   U32).
 
 The log is `prompts/factory-defaults/logs/01-the-base-defaults-three-hooks.md`.
+
+### `object-timestamp` prompt 01: the object carries a timestamp (`v0.3.0`)
+
+**The change has no source in SGK.** SGK's `Datastore/object.py` at `6f7f291` (the file map's
+source of `datastorekit/object.py`) takes `store_id` alone, and the package carried it over.
+StochasticInstantons (SI), checked out at `/Users/ds283/Documents/Code/StochasticInstantons` and
+read through `git` only, has a
+`DatastoreObject` of its own, `Datastore/object.py`. That file was added at SI `3e56d39`
+(2026-06-15) taking `store_id` alone; since SI `51b04f8` (2026-06-21, "Surface row-creation
+timestamps via DatastoreObject") it has taken a `timestamp` and exposed it as a read-only property.
+SI asked the package for the same (`prompts/object-timestamp/README.md` §0, the brief). Decision U1
+of `prompts/object-timestamp/README.md` §6.2, on the user's ruling (2026-10-12), adds it, carried
+out by `object-timestamp` prompt 01 (`1b2f91a`): **keyword-only**, where SI's is
+positional-or-keyword. The layer never sets the value and never reads it; a factory that reads a
+row may pass the row's `timestamp`. It fixes no defect. Its test module is
+`datastorekit/tests/test_object_timestamp.py`, and `docs/client-contract.md` §9.6 gives the detail.
+
+**What changed in the package**: `datastorekit/object.py` only (18 lines added and 1 removed,
+`git diff --numstat 0de2b16 1b2f91a -- datastorekit/object.py`): the `datetime` import, the
+keyword-only `timestamp` argument of `__init__` and its assignment to `self._timestamp`, and the
+read-only `timestamp` property with its docstring. `store_id` and `available` are unchanged. In
+this repository only, outside the wheel, one expected dict of
+`datastorekit/tests/test_declared_facts.py` (`TestTheVersionObject`, decision U2) gained
+`"_timestamp": None`; `datastorekit/tests/client/stamped.py` and its test module are new; and the
+contract gained §9.6, and the verification document §4.9. The suite went from 504 to 509.
+
+**The files 01 changes:**
+- `datastorekit/object.py`; `datastorekit/tests/test_declared_facts.py`; the new
+  `datastorekit/tests/client/stamped.py` and `datastorekit/tests/test_object_timestamp.py`;
+- `docs/client-contract.md` (§9.6); `docs/extraction-verification.md` (§4.9).
+
+The log is `prompts/object-timestamp/logs/01-the-object-carries-a-timestamp.md`.

@@ -7,6 +7,16 @@ one shard by a shard key, and checks the store's integrity each time it is opene
 
 ## Status
 
+**`v0.3.0`** is a minor release with one change (`object-timestamp` prompt 01, on the user's
+ruling): `DatastoreObject` takes an optional, keyword-only `timestamp` argument and exposes it as a
+read-only `timestamp` property. The layer never sets it and never reads it: a factory that reads a
+row of a class registered with `"timestamp": True` may pass the row's value, and it is `None`
+otherwise. What a client can now meet is one more key, `_timestamp`, in an object's `vars()`, and
+`AttributeError` from a subclass that assigns `self.timestamp`. Nothing the layer writes or reads
+changes, and no message, refusal or exception of the layer's. The release adds API, so it is a
+minor release. [`docs/client-contract.md`](docs/client-contract.md)
+[§9.6](docs/client-contract.md#96-object-timestamp-prompt-01) gives the detail.
+
 **`v0.2.3`** is a release with one change (`factory-defaults` prompt 01, on the user's ruling):
 `SQLAFactoryBase` keeps `register` and `build` abstract and defaults `store`, `validate` and
 `validate_on_startup`, so a factory class that defines the two can be instantiated and its
@@ -80,13 +90,13 @@ separate unit of work.
 A client depends on a tagged release, pinned in its `requirements.txt`:
 
 ```text
-datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.3
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.3.0
 ```
 
-`v0.2.2`, `v0.2.1`, `v0.2.0` and `v0.1.0` remain tagged, and no tag is moved or deleted. ChamPBH
-and StochasticInstantons adopt `v0.2.3`, with which their registries of factory instances work as
-they stand; SecondaryGWKit, which registers factory classes, may stay on `v0.2.2` or move, in a
-commit of its own, as it chooses.
+`v0.2.3`, `v0.2.2`, `v0.2.1`, `v0.2.0` and `v0.1.0` remain tagged, and no tag is moved or
+deleted. StochasticInstantons adopts `v0.3.0`. ChamPBH may stay on `v0.2.3` and SecondaryGWKit on
+`v0.2.2`, or either may move, in a commit of its own, as it chooses: neither reads the value back,
+and nothing they call changes.
 
 An editable install (`pip install -e`) is for developing this package, never for a client's
 production runs: a production run must be reproducible from its pin.
@@ -120,9 +130,11 @@ the layer does with it, and what happens when it is wrong or absent.
   ([§8](docs/client-contract.md#8-version-keyed-lookups-v020-prompt-06)).
 - **What changed after `v0.2.0`**: the three fixes of `v0.2.1`, and the fix of `v0.2.2`, that a
   closed pool releases its actors' names, with the property it keeps, that closing a pool never
-  starts Ray; and the change of `v0.2.3`, that the base defaults `store`, `validate` and
-  `validate_on_startup`, so a factory may be an instance; each with what the layer now does and the
-  test that pins it ([§9](docs/client-contract.md#9-changes-after-v020)).
+  starts Ray; the change of `v0.2.3`, that the base defaults `store`, `validate` and
+  `validate_on_startup`, so a factory may be an instance; and the change of `v0.3.0`, that a stored
+  object may carry its row's `timestamp`, which a factory passes and the layer never sets or reads
+  ([§9.6](docs/client-contract.md#96-object-timestamp-prompt-01)); each with what the layer now
+  does and the test that pins it ([§9](docs/client-contract.md#9-changes-after-v020)).
 
 The worked example is the neutral test client, [`datastorekit/tests/client/`](datastorekit/tests/client/).
 Its registry module, [`datastorekit/tests/client/registry.py`](datastorekit/tests/client/registry.py),

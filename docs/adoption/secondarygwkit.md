@@ -30,6 +30,12 @@ addendum, gives SGK's pin, `v0.2.2` or `v0.2.3` as SGK chooses, and what changed
 `v0.2.2`, and supersedes the statements it names. The text before it, the `v0.2.1` and `v0.2.2`
 addenda included, is unchanged and true of the release each names.*
 
+*Added by `object-timestamp` prompt 02 on 2026-10-12: the section
+[Addendum: v0.3.0](#addendum-v030-object-timestamp-prompt-02-2026-10-12), after the `v0.2.3`
+addendum, gives SGK's pin, `v0.2.2`, `v0.2.3` or `v0.3.0` as SGK chooses, and what changed for SGK
+since `v0.2.3`, and supersedes the statements it names. The text before it, the three earlier
+addenda included, is unchanged and true of the release each names.*
+
 Unless another commit is named, a `path:line` is SGK's at `b510bc9`, and one under
 `datastorekit/` is the package's at `v0.2.0`.
 
@@ -623,6 +629,97 @@ addendum reads at `33778b0` or six lines later, are read at `33778b0`, or twelve
 | `docs/adoption/secondarygwkit.md:537` | at `v0.2.2`, "also the four of contract §9.3, none of which changes what SGK's calls use" | at `v0.2.3` also the change of contract §9.5, which changes nothing SGK's calls use, since SGK registers classes; "SGK instantiates no factory", above |
 | `docs/adoption/secondarygwkit.md:538` | item 8's reasoning "extended to `v0.2.2`" | extended to `v0.2.3`; "Item 8 still holds", above |
 | `docs/adoption/secondarygwkit.md:539` | "G2 holds when SGK has adopted `v0.2.2` (U37; `actor-names` U3)" | G2 holds when SGK has adopted `v0.2.2` or later (U37; `actor-names` U3; `factory-defaults` U5) |
+
+---
+
+## Addendum: v0.3.0 (object-timestamp prompt 02, 2026-10-12)
+
+*Written by `object-timestamp` prompt 02 on 2026-10-12, and added after `factory-defaults` prompt
+02's `v0.2.3` addendum. 07a's text and the `v0.2.1`, `v0.2.2` and `v0.2.3` addenda stay as written,
+each true of the release it names (`CLAUDE.md` rule 6). SGK was not re-measured (as decision U37);
+what this section says of SGK comes from 07a's measurements and from reads through `git` only, at
+`b510bc9` and at the commits named.*
+
+**The pin.** SGK may stay on **`v0.2.2`** or move to **`v0.2.3`** or **`v0.3.0`**, as SGK chooses,
+a move being a commit of its own (decision U6 of the `object-timestamp` campaign, which keeps
+`factory-defaults` decision U5 for SGK). G2's reading is unchanged, "SGK has adopted `v0.2.2` or
+later", and **G2 holds** (2026-10-12, recorded on the extraction board at `6465a6a`): SGK adopted
+`v0.2.2`, which its `requirements.txt:17` pins at `e3a7077` and `cf978c6`.
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.2
+```
+
+or
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.2.3
+```
+
+or
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.3.0
+```
+
+`v0.3.0` carries `v0.2.1`'s three fixes, `v0.2.2`'s fix and `v0.2.3`'s change unchanged.
+
+**What changed for SGK since `v0.2.3`.** The change is
+[`docs/client-contract.md` §9.6](../client-contract.md#96-object-timestamp-prompt-01)'s, and
+[`README.md`'s addendum](README.md#addendum-v030-object-timestamp-prompt-02-2026-10-12) gives it for
+every client: the package's `DatastoreObject` takes an optional, keyword-only `timestamp` and
+exposes it as a read-only property, and the layer never sets it and never reads it. Nothing SGK
+supplies changes, nothing the layer writes or reads changes, and no message, refusal or exception
+of the layer's. **Nothing changes for SGK but one key in `vars()`.**
+- **SGK passes `store_id` alone.** Read by an `ast` read of every `.py` file through `git show`,
+  outside `prompts/`, `.prompts/`, `docs/` and `.documents/`, at `d03a643` (the planner's), and
+  at `e3a7077`, then `cf978c6` (SGK's `HEAD` when read, 2026-10-12, branch `handover-remedial`),
+  the same at each: SGK imports `DatastoreObject` from the package (`from datastorekit import
+  DatastoreObject`, 19 imports) and has no class of its own by that name; 30 classes descend from it; the 38 calls
+  `DatastoreObject.__init__(…)` each pass `store_id` alone; and no class defines or assigns
+  `timestamp`. Each call is accepted under `v0.3.0` as under `v0.2.2` and `v0.2.3`.
+- **One key more in `vars()`.** Every `DatastoreObject` has `_timestamp`, `None` unless given, in
+  its `vars()`. SGK reads no stored object's `vars()` or `__dict__`: its two `__dict__` reads are of
+  classes (`ComputeTargets/tests/test_cosmology_representation_key.py:218`, `:221`, at `e3a7077`).
+- **Item 8 still holds: no SGK store is refused.** Nothing the layer writes or reads changes
+  (contract [§9.6](../client-contract.md#96-object-timestamp-prompt-01)), so every SGK store opens
+  under `v0.3.0` as under `v0.2.3` and `v0.2.2`, and so as under `v0.2.0`. G2's rehearsal, at
+  `v0.2.2`, is the measurement.
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`), one in the `v0.2.1` addendum stays `v0.2.1`'s (`33778b0`), and one in the `v0.2.2`
+addendum stays `v0.2.2`'s (`6d8ee9a`). The `v0.2.3` addendum cites none, and neither does this
+addendum; one cited here would be `v0.3.0`'s, whose `datastorekit/` is the tree of
+`object-timestamp` prompt 01's commit `1b2f91a`. An SGK line is SGK's at the commit named.
+
+**What this addendum supersedes**, in this file. Each `path:line` below is this file's as committed
+with this addendum. In the file as `factory-defaults` prompt 02 left it (`0de2b16`), every line after
+`:32` is six lines earlier, since this addendum's italic line under the title adds six (N = 6). So:
+- the `v0.2.3` addendum's citations, which are that file's, are read at `0de2b16`, or **6** lines
+  later here (all but `:21-25`, which is above the insert);
+- the `v0.2.2` addendum's, which the `v0.2.3` addendum reads at `6d8ee9a` or six lines later, are
+  read at `6d8ee9a`, or **12** lines later here (all but `:16-19`);
+- the `v0.2.1` addendum's, which the `v0.2.3` addendum reads at `33778b0` or twelve lines later, are
+  read at `33778b0`, or **18** lines later here (all but `:6`).
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/secondarygwkit.md:27-31` | the `v0.2.3` addendum gives "SGK's pin, `v0.2.2` or `v0.2.3` as SGK chooses" | it gives `v0.2.3`'s pins and changes, true of `v0.2.3`; this addendum gives SGK's pins at `v0.3.0`: `v0.2.2`, `v0.2.3` or `v0.3.0`, as SGK chooses |
+| `docs/adoption/secondarygwkit.md:557-559` | in part: "SGK may stay on **`v0.2.2`** or move to **`v0.2.3`**, as SGK chooses" | SGK may stay on `v0.2.2` or move to `v0.2.3` or `v0.3.0`, as SGK chooses (`object-timestamp` U6); "The pin", above. The rest of the sentence stands: a move is a commit of SGK's own, and G2 reads "SGK has adopted `v0.2.2` or later" |
+| `docs/adoption/secondarygwkit.md:561-569` | the pins `…@v0.2.2` or `…@v0.2.3` | `…@v0.2.2`, `…@v0.2.3` or `…@v0.3.0`, above |
+| `docs/adoption/secondarygwkit.md:609-615` | the `v0.2.3` addendum's `path:line`s are "this file's as committed with this addendum", and the earlier addenda's are read six and twelve lines later | they are read at `0de2b16`, or six lines later here; the `v0.2.2` addendum's twelve, and the `v0.2.1` addendum's eighteen; above |
+| `docs/adoption/secondarygwkit.md:623` | in part, the row for `:460-461`: SGK "may stay on `v0.2.2` or move to `v0.2.3` (`factory-defaults` U5)" | or move to `v0.2.3` or `v0.3.0` (`object-timestamp` U6). The row's G2 reading stands |
+| `docs/adoption/secondarygwkit.md:624` | the row for `:464`: "`…@v0.2.2` or `…@v0.2.3`, as SGK chooses, above" | as `:561-569` |
+| `docs/adoption/secondarygwkit.md:625` | the row for `:523-527`: the `v0.2.2` addendum's citations "are read at `6d8ee9a`, or six lines later here" | at `6d8ee9a`, or twelve lines later here (all but `:16-19`) |
+| `docs/adoption/secondarygwkit.md:626-627` | the rows for `:532` and `:533`, "as `:460-461`" and "as `:464`" | as `:623` and `:624` |
+| `docs/adoption/secondarygwkit.md:628` | the row for `:536`: "at `v0.2.2` or `v0.2.3`, with the three addenda" | at `v0.2.2`, `v0.2.3` or `v0.3.0`, with the four addenda |
+| `docs/adoption/secondarygwkit.md:629` | the row for `:537`: at `v0.2.3` "also the change of contract §9.5, which changes nothing SGK's calls use" | at `v0.3.0` also the change of contract §9.6, which changes nothing SGK's calls use, since SGK passes `store_id` alone; "SGK passes `store_id` alone", above |
+| `docs/adoption/secondarygwkit.md:630` | the row for `:538`: item 8's reasoning "extended to `v0.2.3`" | extended to `v0.3.0`; "Item 8 still holds", above |
+
+**Standing, not superseded:** `:559`'s "G2 reads 'SGK has adopted `v0.2.2` or later'", and the row
+`:631`, "G2 holds when SGK has adopted `v0.2.2` or later (U37; `actor-names` U3; `factory-defaults`
+U5)". Each is `object-timestamp` U6's reading too, and G2 holds (2026-10-12, the extraction board,
+recorded at `6465a6a`).
 
 ---
 
