@@ -1016,6 +1016,179 @@ sys 1.35
 exit=1
 ```
 
+### 4.9 The smoke run after `object-timestamp` prompt 01 (2026-10-12)
+
+*Added by [`object-timestamp` prompt 01](../prompts/object-timestamp/01-the-object-carries-a-timestamp.md)
+(log [`01-the-object-carries-a-timestamp.md`](../prompts/object-timestamp/logs/01-the-object-carries-a-timestamp.md)),
+under `CLAUDE.md` rule 6. §4.1–§4.8 above are of their own trees, and stay true of them. This
+subsection is of `object-timestamp` prompt 01's tree, where `DatastoreObject` takes a keyword-only
+`timestamp` and exposes it as a read-only property, which the layer never sets and never reads
+(`docs/client-contract.md` §9.6). Every object a real actor answers is then a `DatastoreObject`
+with one more attribute, `_timestamp`, crossing Ray's serialisation; the run shows that nothing it
+does changes under real Ray (decision U4: no new step).*
+
+**The script is unchanged** since `factory-defaults` prompt 01 (§4.8): SHA-256
+`032036798e101d610a4ac0185ea4eaa7f1db0fe58f52c48ad9f3707548a6a92a`, the same in this checkout and
+in each export. Its steps are §4.8's: 1, 2, N, C, 3, 4, 5, 6 and I.
+
+Each end ran from a fresh offline venv with a fresh export of the working tree installed editable
+(`--no-deps --no-build-isolation`, after `ray`, `sqlalchemy` and `setuptools`), with `PYTHONPATH`
+unset, from the export's root, as `env -u PYTHONPATH <venv>/bin/python
+docs/extraction/ray_smoke_run.py` under `/usr/bin/time -p`, one after the other and with no suite
+running. `<scratch-ot01>` is the prompt's scratch directory (`<session scratchpad>/agent01`).
+`RAY_ADDRESS` and `RAY_ENABLE_AUTO_CONNECT` were unset, and there was no
+`/tmp/ray/ray_current_cluster`, before and after each run. **Another session's Ray instance** was
+up earlier in the prompt: at 01:29:36 the script's rule found 24 Ray processes (a `gcs_server` and
+a `raylet` under another repository's venv, a `SerialPoolBroker`, `Datastore` actors and workers;
+its session directory `/tmp/ray/session_2026-10-12_01-12-29_749310_88798`). This prompt did not
+touch it, and started no Ray while it was up. It had gone by 01:40:20, when the rule found 0, and
+the runs were taken after that.
+
+| | Low end | High end |
+|---|---|---|
+| Python / Ray / SQLAlchemy / SQLite | 3.12.15 / 2.43.0 / 2.0.39 / 3.53.4 | 3.13.16 / 2.55.1 / 2.0.46 / 3.53.4 |
+| Started (BST) | 01:40:40 | 01:41:04 |
+| `ray.init` | 3.7 s | 6.7 s |
+| The script, in all | 17.2 s (`time -p`: real 17.38) | 25.9 s (real 26.67) |
+| Steps | every one `PASS` (1, 2, N, C, 3, 4, 5, 6, I) | every one `PASS` |
+| Exit code | 0 | 0 |
+| Ray's session directory | `/tmp/ray/session_2026-10-12_01-40-42_088960_8945` | `/tmp/ray/session_2026-10-12_01-41-06_472413_9379` |
+| Ray processes before and after (the script's own check, and the log's, by the same rule) | 0 and 0 | 0 and 0 |
+
+**What it shows.** At both ends every step gives §4.8's results: step 1 writes every class, steps
+2, C, 3, 4 and 6 find serials `[1, 2]`, step C's refusal is `builtins.ValueError` at Ray 2.43.0
+and `ray.exceptions.ActorAlreadyExistsError` at 2.55.1, step 5 is refused as before, and step I's
+three gets insert (serial 1 in each table) and are found again after a reopen; after each pool's
+`__exit__`, none of its names is held. So under real Ray every object the actors answer, each now
+carrying `_timestamp` (`None`, since no factory of the neutral client's registry passes one), came
+back through Ray's serialisation and served the steps as at `v0.2.3`. A stamped object is not sent
+through Ray: the suite's `tests/test_object_timestamp.py` gets one through the stand-in pool, which
+pickles every result, and round-trips one through `ray.cloudpickle` (U4).
+
+#### 4.9.1 The output, low end
+
+```text
+2026-10-12 01:40:44,998	INFO worker.py:1841 -- Started a local Ray instance.
+Environment:
+    Python       3.12.15 (<scratch-ot01>/smoke-lo/venv/bin/python)
+    Ray          2.43.0
+    SQLAlchemy   2.0.39
+    SQLite       3.53.4
+    datastorekit 0.2.3
+    imported from <scratch-ot01>/smoke-lo/tree/datastorekit/__init__.py
+Ray processes before: 0
+Ray started in 3.7 s, at 127.0.0.1; session directory /tmp/ray/session_2026-10-12_01-40-42_088960_8945
+step 1: write every class (read-write)
+PASS  step 1 (0.6 s): wrote store_tag 3, keypoint 3, dial_setting 2, knob_setting 1, gauge_setting 2, routing_rule 2, ephemeral_probe 1, keypoint_alias 3, Gadget 2, Tessera 6, Sample 4, Trace 2, Weave 1
+step 2: keyed vectorized get, the caller's dicts
+    after __exit__, the pool referenced: 0 of 4 held
+PASS  step 2 (0.0 s): serials [1, 2] (step 1's), the caller's dicts unchanged
+step N: a closed pool releases its names
+    a second read-write open, the first pool referenced: opened in 1.2 s
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step N (1.2 s): after __exit__, the pool referenced, 0 of 4 held; a second read-write open worked at once (1.2 s); after its __exit__, 0 of 4 held
+step C: two open pools collide
+    the second open raised builtins.ValueError: The name SerialPoolBroker (namespace=None) is already taken. Please use a different name or get the existing actor using ray.get_actor('SerialPoolBroker', namespace='None')
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step C (1.3 s): the second open raised builtins.ValueError naming SerialPoolBroker; the first pool then: serials [1, 2], the caller's dicts unchanged; after its __exit__, 0 of 4 held
+step 3: reopen read-write, the same get
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step 3 (1.2 s): serials [1, 2], the caller's dicts unchanged
+step 4: read-only pool, the same get
+    after __exit__, the pool referenced: 0 of 3 held
+    after del and gc.collect(): 0 of 3 held, after 0.0 s
+PASS  step 4 (1.2 s): read-only: serials [1, 2], the caller's dicts unchanged
+step 5: refused open, Weave left out
+    the constructor printed, as not supplied: ['Weave']
+    after the exception is dropped: 0 of 4 held
+PASS  step 5 (0.0 s): builtins.RuntimeError: Mismatch between sharded tables supplied to the constructor and read from the existing ShardedPool; 0 of 4 held
+step 6: read-write open after the refusal
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step 6 (2.0 s): read-write open after the refusal: serials [1, 2], the caller's dicts unchanged
+step I: a registry of instances
+    the registry's instances: scalar_left: scalar_entry_factory('left_value'), scalar_right: scalar_entry_factory('right_value'), gauge_setting: gauge_setting_factory()
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+    a new store, each inserted: {'scalar_left': 1, 'scalar_right': 1, 'gauge_setting': 1}
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step I (2.7 s): serials {'scalar_left': 1, 'scalar_right': 1, 'gauge_setting': 1}, inserted, and found again after a reopen; after each __exit__, 0 of 4 held
+ray.shutdown(); waited 0.1 s for its processes
+Ray processes after: 0
+Summary: every step passed; 0 Ray process(es) left; 17.2 s in all
+real 17.38
+user 3.97
+sys 1.15
+exit=0
+```
+
+#### 4.9.2 The output, high end
+
+```text
+2026-10-12 01:41:11,720	INFO worker.py:2012 -- Started a local Ray instance.
+<scratch-ot01>/smoke-hi/venv/lib/python3.13/site-packages/ray/_private/worker.py:2051: FutureWarning: Tip: In future versions of Ray, Ray will no longer override accelerator visible devices env var if num_gpus=0 or num_gpus=None (default). To enable this behavior and turn off this error message, set RAY_ACCEL_ENV_VAR_OVERRIDE_ON_ZERO=0
+  warnings.warn(
+Environment:
+    Python       3.13.16 (<scratch-ot01>/smoke-hi/venv/bin/python)
+    Ray          2.55.1
+    SQLAlchemy   2.0.46
+    SQLite       3.53.4
+    datastorekit 0.2.3
+    imported from <scratch-ot01>/smoke-hi/tree/datastorekit/__init__.py
+Ray processes before: 0
+Ray started in 6.7 s, at 127.0.0.1; session directory /tmp/ray/session_2026-10-12_01-41-06_472413_9379
+step 1: write every class (read-write)
+PASS  step 1 (1.3 s): wrote store_tag 3, keypoint 3, dial_setting 2, knob_setting 1, gauge_setting 2, routing_rule 2, ephemeral_probe 1, keypoint_alias 3, Gadget 2, Tessera 6, Sample 4, Trace 2, Weave 1
+step 2: keyed vectorized get, the caller's dicts
+    after __exit__, the pool referenced: 0 of 4 held
+PASS  step 2 (0.2 s): serials [1, 2] (step 1's), the caller's dicts unchanged
+step N: a closed pool releases its names
+    a second read-write open, the first pool referenced: opened in 2.3 s
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step N (2.4 s): after __exit__, the pool referenced, 0 of 4 held; a second read-write open worked at once (2.3 s); after its __exit__, 0 of 4 held
+step C: two open pools collide
+    the second open raised ray.exceptions.ActorAlreadyExistsError: The name SerialPoolBroker (namespace=None) is already taken. Please use a different name or get the existing actor using ray.get_actor('SerialPoolBroker', namespace='None')
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step C (2.0 s): the second open raised ray.exceptions.ActorAlreadyExistsError naming SerialPoolBroker; the first pool then: serials [1, 2], the caller's dicts unchanged; after its __exit__, 0 of 4 held
+step 3: reopen read-write, the same get
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step 3 (1.9 s): serials [1, 2], the caller's dicts unchanged
+step 4: read-only pool, the same get
+    after __exit__, the pool referenced: 0 of 3 held
+    after del and gc.collect(): 0 of 3 held, after 0.0 s
+PASS  step 4 (1.7 s): read-only: serials [1, 2], the caller's dicts unchanged
+step 5: refused open, Weave left out
+    the constructor printed, as not supplied: ['Weave']
+    after the exception is dropped: 0 of 4 held
+PASS  step 5 (0.0 s): builtins.RuntimeError: Mismatch between sharded tables supplied to the constructor and read from the existing ShardedPool; 0 of 4 held
+step 6: read-write open after the refusal
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step 6 (2.5 s): read-write open after the refusal: serials [1, 2], the caller's dicts unchanged
+step I: a registry of instances
+    the registry's instances: scalar_left: scalar_entry_factory('left_value'), scalar_right: scalar_entry_factory('right_value'), gauge_setting: gauge_setting_factory()
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+    a new store, each inserted: {'scalar_left': 1, 'scalar_right': 1, 'gauge_setting': 1}
+    after __exit__, the pool referenced: 0 of 4 held
+    after del and gc.collect(): 0 of 4 held, after 0.0 s
+PASS  step I (4.4 s): serials {'scalar_left': 1, 'scalar_right': 1, 'gauge_setting': 1}, inserted, and found again after a reopen; after each __exit__, 0 of 4 held
+ray.shutdown(); waited 0.0 s for its processes
+Ray processes after: 0
+Summary: every step passed; 0 Ray process(es) left; 25.9 s in all
+real 26.67
+user 5.07
+sys 1.75
+exit=0
+```
+
 
 ---
 

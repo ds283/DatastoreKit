@@ -641,7 +641,12 @@ class TestTheVersionObject(unittest.TestCase):
 
                         self.assertIs(type(fresh), type(version))
                         self.assertEqual(
-                            {"_my_id": 1, "label": "standin", "_deserialized": True},
+                            {
+                                "_my_id": 1,
+                                "_timestamp": None,
+                                "label": "standin",
+                                "_deserialized": True,
+                            },
                             vars(version),
                         )
 
