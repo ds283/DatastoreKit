@@ -136,6 +136,15 @@ Residue fixed in the commit that records this review: "this commit" → `1b2f91a
 the log, in the README and in `prompts/INDEX.md`; "reviewed" for 01 here, in README §2 and in
 `prompts/INDEX.md`; the notes line.
 
+*The push (2026-10-12).* With the user's approval, `main` was pushed, moving `origin/main` from
+`2a86f92` to `d88615e` (a fast-forward of three commits, `2abea79`, `1b2f91a` and `d88615e`, with
+no tag). CI passed there at both ends,
+[run 38190920683](https://github.com/ds283/DatastoreKit/actions/runs/38190920683):
+- low: Python 3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39, `Ran 509 tests in 175.661s` / `OK`, and
+  `black` leaving 76 files unchanged;
+- high: 3.13.16 / 2.55.1 / 2.0.46, `Ran 509 tests in 163.609s` / `OK`;
+- 0 `ResourceWarning` lines in the run's log; SQLite 3.45.1 at both.
+
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
 
