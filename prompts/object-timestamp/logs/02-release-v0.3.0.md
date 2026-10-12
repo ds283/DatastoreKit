@@ -1,6 +1,6 @@
 # Log 02 — release `v0.3.0`
 
-**Subject:** Make the package ready to be released as v0.3.0 · **Commit:** this commit ·
+**Subject:** Make the package ready to be released as v0.3.0 · **Commit:** `2f5417e` ·
 **Date:** 2026-10-12 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and untagged; not
 yet reviewed.
 
@@ -33,7 +33,7 @@ issue was opened, and the index stays at **4**.
 
 Prompt: [`../02-release-v0.3.0.md`](../02-release-v0.3.0.md), with the orchestrator's dispatch note
 §0: six corrections, its additions, its checked facts and its conventions. §2 classifies each. Line
-numbers under `datastorekit/` are `v0.3.0`'s tree (`1b2f91a`'s `datastorekit/`, which this commit
+numbers under `datastorekit/` are `v0.3.0`'s tree (`1b2f91a`'s `datastorekit/`, which `2f5417e`
 does not change) unless another tree is named.
 
 `<scratch>` below is `<session scratchpad>/agent02`, outside the repository.
@@ -214,13 +214,13 @@ that board (`git diff --numstat`: 2/2):
 9. **The exports are of the working tree before the records were written**, made with `git archive
    $(git stash create)`: commit object `2337dff`, whose tree equalled the working tree then (`git
    diff --quiet 2337dff` held). `git stash create` writes no ref, and `git stash list` stayed empty.
-   That tree differs from this commit's in the records (this log, this board, this campaign's
+   That tree differs from `2f5417e`'s in the records (this log, this board, this campaign's
    README, `prompts/INDEX.md`) and in four later edits to lines this prompt added under
    `docs/adoption/`: SI's row for `:86-87` reworded (so that its `:84-86` follows this file's path,
    not `datastorekit/object.py`'s); SGK's `cf978c6` added to the SGK addendum's measure bullet and
    pin sentence, and to the README addendum's table row and pins bullet, with one bullet rewrapped.
-   None is in the wheel. `pyproject.toml` and `datastorekit/` are this commit's, so (a)'s and (b)'s
-   diffs apply to an export of this commit as recorded. The suite in `venv/` was run on the final
+   None is in the wheel. `pyproject.toml` and `datastorekit/` are `2f5417e`'s, so (a)'s and (b)'s
+   diffs apply to an export of `2f5417e` as recorded. The suite in `venv/` was run on the final
    tree (§5.1). **IMPLEMENTATION CHOICE.**
 10. **Checks not asked for.** The cross-release pickle the README addendum states: a
     `DatastoreObject(3)` pickled under (c)'s install (`v0.2.3`'s code) and unpickled under the
@@ -283,7 +283,7 @@ that board (`git diff --numstat`: 2/2):
 
 ## 4. The supersession tables
 
-Each is as committed in its addendum. Line numbers are each file's at this commit.
+Each is as committed in its addendum. Line numbers are each file's at `2f5417e`.
 
 ### 4.1 `docs/adoption/README.md`
 
@@ -831,7 +831,7 @@ SGK's and CPBH's `HEAD`s moved by other sessions' commits (§2 item 4); SI is un
 **The method.**
 1. Each diff below was made with `diff -u` of `pyproject.toml` before and after the one change,
    labelled `a/` and `b/`, and is recorded exactly as applied (`<scratch>/breaks/`).
-2. Each has its own export: `git archive 2337dff` (whose `pyproject.toml` is this commit's) into
+2. Each has its own export: `git archive 2337dff` (whose `pyproject.toml` is `2f5417e`'s) into
    `<scratch>/exports/break-a` and `break-b`, and `git archive v0.2.3` into `break-c`.
 3. In each export, `git apply --check` passed on the clean export, `git apply` applied it, and
    `git apply -R --check` passed on the applied one.
@@ -1034,13 +1034,13 @@ check catches a version number with no change behind it.
 
 ## 9. State handed to the next prompt
 
-- `HEAD` is this commit, unpushed and untagged. The tree is clean apart from dispatch's ignored
+- `HEAD` is `2f5417e`, unpushed and untagged. The tree is clean apart from dispatch's ignored
   entries. `venv/` has `datastorekit 0.3.0` installed editable from this checkout, its `egg-info`
   removed.
 - **Not pushed, not tagged.** `origin/main` is `75c237e`, and the tags are `v0.1.0`, `v0.2.0`,
   `v0.2.1`, `v0.2.2` and `v0.2.3`.
-- **After the review**, this commit is pushed as `main`, fast-forwarding over `778c95a`, `b56fdde`
-  and the review. `v0.3.0` is made on this commit, annotated, only once CI passes there at both ends
+- **After the review**, `2f5417e` is pushed as `main`, fast-forwarding over `778c95a`, `b56fdde`
+  and the review. `v0.3.0` is made on `2f5417e`, annotated, only once CI passes there at both ends
   (U23, U28). If CI fails, a fix prompt lands first, and no tag is made on a commit whose CI is red.
 - **The suite is 509** in `venv/` and at the high end (0 `ResourceWarning` lines at each).
   `compare_ported_tests.py`: 20 modules and one test declared not ported, exit 0. `black --check

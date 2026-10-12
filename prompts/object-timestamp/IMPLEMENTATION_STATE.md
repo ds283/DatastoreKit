@@ -1,9 +1,9 @@
 # object-timestamp campaign — implementation state
 
 **Last updated:** 2026-10-12 · **Status: IN PROGRESS — 2 of 2 prompts written (01, 02), 2 landed (01,
-`1b2f91a`, reviewed; 02, this commit, the release `v0.3.0`, not yet reviewed); U1–U6 taken
-2026-10-12, as recommended; `v0.3.0` is made on 02's commit, after its review, only once CI passes
-there at both ends.**
+`1b2f91a`, reviewed; 02, `2f5417e`, the release `v0.3.0`, reviewed; awaiting CI for `v0.3.0`);
+U1–U6 taken 2026-10-12, as recommended; `v0.3.0` is made on `2f5417e` only once CI passes there at
+both ends.**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** no issue. It carries out the user's ruling of 2026-10-12 (README §0) ·
@@ -31,7 +31,7 @@ there at both ends.**
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [The object carries a timestamp](01-the-object-carries-a-timestamp.md) | `object.py` (U1); `TestTheVersionObject`'s dict (U2); the stamped class, `test_object_timestamp.py` (U3); the smoke run at both ends (U4); contract §9.6; verification §4.9 | ✍️ yes, 2026-10-12 | ✅ 2026-10-12; reviewed | `1b2f91a` | [log 01](logs/01-the-object-carries-a-timestamp.md) |
-| 02 | [Release `v0.3.0`](02-release-v0.3.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G3 and G4; the tag after green CI (U6) | ✍️ yes, 2026-10-12 | ✅ 2026-10-12; not tagged, not pushed | this commit | [log 02](logs/02-release-v0.3.0.md) |
+| 02 | [Release `v0.3.0`](02-release-v0.3.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda; the extraction board's G3 and G4; the tag after green CI (U6) | ✍️ yes, 2026-10-12 | ✅ 2026-10-12; reviewed; awaiting CI for `v0.3.0`; not tagged, not pushed | `2f5417e` | [log 02](logs/02-release-v0.3.0.md) |
 
 **Planning note (2026-10-12, at `83068cb`).** The brief's four points of §3 were re-measured
 (README §0.1). Points 2–4 hold. Point 1 holds for the layer, but the suite pins `vars()` of the
@@ -146,11 +146,113 @@ no tag). CI passed there at both ends,
 - high: 3.13.16 / 2.55.1 / 2.0.46, `Ran 509 tests in 163.609s` / `OK`;
 - 0 `ResourceWarning` lines in the run's log; SQLite 3.45.1 at both.
 
+**Orchestrator review of prompt 02 (2026-10-12).** Dispatched from `b56fdde` to one Opus
+subagent, with the note's six corrections and its additions. Reviewed against its commit
+`2f5417e`, with nothing landed after it. **Every check of the note's §3 passed**, and acceptance
+1–6 are met. No stop condition fired. Nothing was pushed by this campaign, and the tags are
+`v0.1.0`, `v0.2.0`, `v0.2.1`, `v0.2.2` and `v0.2.3` only.
+
+*At dispatch.* `HEAD` `b56fdde`, the tree clean, one worktree. `origin/main` `75c237e` by `git
+ls-remote` at the note's writing and at the review. The note's baseline at `778c95a`: `Ran 509
+tests … OK` in `venv/` (0 `ResourceWarning` lines) and at the high end (0); the port check exit 0;
+`black --check datastorekit docs` 76 files. No Ray process. While the note was written the
+orchestrator built `0.3.0` wheels offline from exports, ran the release probe and breakages
+(a)–(c) at the high pins, and re-ran the prompt's §1.1 measure through `git` at SGK `d03a643` and
+`e3a7077`, CPBH `64ef9aa` and `cb0c675`, and SI `7bb3efd`, each exactly the prompt's table. It
+found that hazard 6's reinstall is refused in `venv/` (no `setuptools`; correction 1, as at
+`factory-defaults` 02), that SGK's G2 statement is still true and is not to be superseded
+(correction 2), that SI's checklist `:80-81` (at `0de2b16`) is superseded too (correction 3), that
+SGK's and CPBH's `HEAD`s had moved (correction 4), that SI's `Datastore/object.py` was added at SI
+`3e56d39` and gained its `timestamp` at `51b04f8` (correction 5), and the line shifts as numbers
+(correction 6). The clients moved under other sessions throughout: SGK `e3a7077` → `cf978c6`
+(clean), CPBH `cb0c675` → `0f1c25b` (23 untracked entries), SI `7bb3efd` (3 entries) throughout.
+
+*The checks.*
+1. **Scope.** `2f5417e` touches the prompt's §7 files only: `pyproject.toml`, `README.md`,
+   `PROVENANCE.md`, the four files under `docs/adoption/`, the extraction board, the log, this
+   board, the campaign README and `prompts/INDEX.md`. The diff over `datastorekit/`,
+   `docs/client-contract.md`, `docs/extraction-verification.md`, `docs/extraction/`, `.github/`,
+   `CLAUDE.md`, `LICENSE`, `.gitignore` and `docs/OPEN_ISSUES.md` is empty. No wheel, `build/`,
+   `dist/` or `egg-info` in the checkout. `git status --short --ignored` showed one entry more than
+   at dispatch, `datastorekit/tools/__pycache__/` (three `cpython-312` files written at 03:05 by
+   the agent's name check in `venv/`); ignored bytecode, removed by the review.
+2. **Additive.** `git diff b56fdde 2f5417e -- docs/adoption/` has no `-` line (127, 97, 88 and 98
+   lines added). `pyproject.toml`'s diff is `:7` alone. The extraction board's diff is G3's and
+   G4's rows alone: G3's title gains "or later" and "`object-timestamp` U6", G4's `v0.3.0` and the
+   same, each row one dated italic sentence, every earlier sentence kept; G1 and G2 unchanged.
+3. **The release.** From `git archive 2f5417e`, `uv build --offline --wheel` gives
+   `datastorekit-0.3.0-py3-none-any.whl`, 99,488 bytes: 25 entries, none under `tests/`, the
+   licence; `METADATA` `Version: 0.3.0`, `Requires-Python: >=3.12`, `ray>=2.43`,
+   `sqlalchemy<2.1,>=2.0.39`. Installed offline into a fresh 3.13.16 venv at `ray==2.55.1` and
+   `sqlalchemy==2.0.46` and run from outside the repository with `python -I`: imported from
+   `site-packages`; metadata `0.3.0`; `timestamp` `KEYWORD_ONLY`, default `None`; `fset` and
+   `fdel` `None`; the stamped object returns its `t`, the unstamped `None`, `vars()` `{'_my_id':
+   3, '_timestamp': None}`; the positional `TypeError` and the assignment's `AttributeError` with
+   the messages the note gives, and a subclass's assignment and deletion refused; `pickle`
+   round-trips; `datastorekit.tests` refused; `sharded_store --help` exit 0. Against the review's
+   own `v0.2.3` wheel, of the 20 `RECORD` lines under `datastorekit/` only `object.py`'s differs.
+   The file list is the log's.
+4. **`README.md` and `PROVENANCE.md`, by reading.** The `v0.3.0` status paragraph above
+   `v0.2.3`'s, which is unchanged, says each thing the note's check 4 lists and links §9.6 by
+   anchor. The pin is `v0.3.0`; the sentence replacing `:86-89` names the five earlier tags, SI's
+   adoption and CPBH's and SGK's permission, names no client path, advises neither way, and does not
+   say `v0.3.0` is tagged. "What changed after `v0.2.0`" adds `v0.3.0`'s change, linking §9.6 and
+   still §9. `PROVENANCE.md`'s new `###` section follows the `factory-defaults` section and says
+   what check 4 asks, with correction 5's commits; one sentence is wrapped short ("read through
+   `git` only, has a" ends a line), which renders the same.
+5. **The addenda, by reading.** In each of the four files the italic line follows
+   `factory-defaults` 02's, and the addendum, unnumbered and dated 2026-10-12, sits after the
+   `v0.2.3` addendum's table between two `---` rules (in the README, at the end). Each gives its
+   pin per U6; says what changed for its client, linking §9.6; cites every superseded statement by a
+   `path:line` that the review read in the committed file (the README's `:387-396`, `:398-399`,
+   `:454-460`, `:467-475`; SGK's `:557-569`, `:609-615`, `:623-630`; CPBH's `:546-552`, `:598-604`,
+   `:612-618`; SI's `:44-45`, `:86-88`, `:104`, `:106`, `:111`, `:160`, `:515-521`, `:563-569`,
+   `:577-583`); and states N = 5, 10, 15 in the README and 6, 12, 18 in each checklist, the lines
+   the italic lines added. SGK's names `:559` and `:631` as standing and says G2 holds (correction
+   2); SI's supersedes `:86-87` in a row of its own (correction 3), and says its 24 sites work as
+   they stand, that its factories go on passing the value, and that item 2 asks nothing more and
+   item 4's line no longer leaves the layer; CPBH's and SGK's say nothing changes that they meet,
+   with no instruction to either. The claims about the clients re-read through `git`: SGK's two
+   `__dict__` reads at `e3a7077` are of classes; SI's one `__dict__` outside its records is in a
+   docstring (`tests/test_plot_extraction_golden.py:114`), so "no SI `.py` file … reads a
+   `__dict__`" holds; CPBH's item 5 table is `:189-207` and item 8's `ReplicatedDivergence` point
+   `:351-354`, as its addendum cites.
+6. **Names and links.** The review's own extraction of every relative link in `README.md`,
+   `PROVENANCE.md`, the four adoption files and the extraction board's §2: 128 links, each file
+   found and each anchor a heading by GitHub's rule, 0 bad. The new anchors
+   (`#addendum-v030-object-timestamp-prompt-02-2026-10-12` in each file,
+   `#96-object-timestamp-prompt-01`, `#9-changes-after-v020`) all resolve. The diff adds no dotted
+   `datastorekit.` name.
+7. **Both ends.** In `venv/`: `pip show datastorekit` `0.3.0`; no `datastorekit.egg-info/`; `Ran
+   509 tests in 96.318s` / `OK`, 0 `ResourceWarning` lines. In a fresh high-end venv (3.13.16 /
+   2.55.1 / 2.0.46) with `git archive 2f5417e` installed editable and run from the export's root:
+   `Ran 509 tests in 99.296s` / `OK`, 0 lines. The port check: "OK: 20 module(s) … 1 test(s)
+   declared not ported". `black --check datastorekit docs`: 76 files.
+8. **The breakages.** (a)–(c) extracted from the log's §6, each passing `git apply --check` and
+   `-R --check` against its own export (of `2f5417e` for (a) and (b), of `v0.2.3` for (c)), built
+   offline and probed at the high pins: (a) `Version: 0.2.3` and metadata `0.2.3`, `RECORD`
+   differing from `v0.2.3`'s in `object.py` only; (b) 76 entries, 51 under `datastorekit/tests/`,
+   `import datastorekit.tests` succeeding; (c) `Version: 0.3.0`, all 20 `RECORD` lines equal to
+   `v0.2.3`'s, `store_id` alone in the signature, no property, and `TypeError` on the keyword.
+   Each as the log records and the note's table predicts.
+9. **The records.** The log in §5.1's form, with the release check, the documents' check, the
+   names and links, §1.1's measure re-run at every commit read, (a)–(c), the clients at both ends,
+   the six corrections and the additions, and the four supersession tables; this board's header and
+   row, the README's header and §2 row, and `prompts/INDEX.md`; `docs/OPEN_ISSUES.md` unchanged at
+   4.
+10. **Nothing left behind.** No Ray process before or after any check. `git tag -l` is the five
+    tags; `origin` holds `75c237e`.
+
+Residue fixed in the commit that records this review: "this commit" → `2f5417e` on this board, in
+the log (but where §1.6 quotes what the board said), in the README and in `prompts/INDEX.md`;
+"reviewed; awaiting CI for `v0.3.0`" for 02 here, in README §2 and its header, and in
+`prompts/INDEX.md`; the notes line; and the stray `__pycache__/` of check 1, which is not tracked.
+
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
 
 **Orchestrator notes:** [`orchestrator/prompt-01.md`](orchestrator/prompt-01.md) (`2abea79`),
-used for 01.
+used for 01; [`orchestrator/prompt-02.md`](orchestrator/prompt-02.md) (`b56fdde`), used for 02.
 
 ## 2. Gates outside this repository
 
