@@ -1,7 +1,7 @@
 # fingerprint campaign — implementation state
 
 **Last updated:** 2026-10-12 · **Status: PLANNED — 1 of 2 prompts written (01), 0 landed; U1–U6
-put to the user 2026-10-12, not yet taken; 01 is held until U1–U5 are.**
+taken 2026-10-12 (U1 amended by the user, the rest as recommended); 01 is ready to be dispatched.**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** no issue. It carries out the user's ruling of 2026-10-12, SGK's D3 (README §0) ·
@@ -13,22 +13,22 @@ put to the user 2026-10-12, not yet taken; 01 is held until U1–U5 are.**
 
 ### Decisions
 
-**Put to the user (README §6.2), 2026-10-12:**
+**Put to the user (README §6.2), U1–U6 taken 2026-10-12:**
 
 | Decision | Recommendation | Status |
 |---|---|---|
-| **U1** the module and its functions | `datastorekit/store_fingerprint.py`; `fingerprint_of(inventory, *, fingerprint_format, taken=None)`, the format a required keyword-only `int` ≥ 1; `compare_fingerprints` and `listing_lines` with SGK's signatures; the helpers private; prose rewritten, SGK's history left out; `canonical_json` imported at module scope | the move: **the user's ruling** 2026-10-12; its form: open |
-| **U2** the version | `ENCODING_FORMAT = 1`; `encoding_format` beside the digest, outside the hashed object; a mismatch of either version refused, one entry each (`format`, SGK's verbatim; `encoding`, new); the listing's first line gains ` encoding_format <e>` at its end | open |
-| **U3** the bump rule | any change that can give the same store, specs and client format a different fingerprint, or change what the comparison or listing reads; eight items, stated beside the constant and in contract §9.7; a bump adds a golden beside the old | open |
-| **U4** the tests | `tests/test_store_fingerprint.py`, eight tests over the neutral full store; a golden `tests/data/store_fingerprint-neutral-1-encoding-1.json`, keyed on `NEUTRAL_FORMAT` and `ENCODING_FORMAT`; no Ray | open |
-| **U5** the equivalence check | SGK's five functions extracted by `git show c8a7f14` into scratch, run beside the package's on the neutral store (formats 1 and 6; 27 changed stores); recorded in 01's log; nothing of SGK imported or committed (amends §5 rule 5 for this one read) | open |
-| **U6** the shape, release and adoption | two prompts; `v0.4.0`, minor (added API); SGK adopts it (its E1, 03, 06), its addendum naming what changes for it; ChamPBH and SI may stay | open (needed by 02) |
+| **U1** the module and its functions | `datastorekit/store_fingerprint.py`; `fingerprint_of(inventory, fingerprint_format, taken=None)`, the format a required `int` ≥ 1, positional or by keyword; `compare_fingerprints` and `listing_lines` with SGK's signatures; the helpers private; prose rewritten, SGK's history left out; `canonical_json` imported at module scope | the move: **the user's ruling** 2026-10-12; its form: **taken** 2026-10-12, **amended by the user** from the recommended keyword-only format to a plain signature; SGK rewrites its positional `fingerprint_of(inventory, taken)` |
+| **U2** the version | `ENCODING_FORMAT = 1`; `encoding_format` beside the digest, outside the hashed object; a mismatch of either version refused, one entry each (`format`, SGK's verbatim; `encoding`, new); the listing's first line gains ` encoding_format <e>` at its end | **taken** 2026-10-12 |
+| **U3** the bump rule | any change that can give the same store, specs and client format a different fingerprint, or change what the comparison or listing reads; eight items, stated beside the constant and in contract §9.7; a bump adds a golden beside the old | **taken** 2026-10-12 |
+| **U4** the tests | `tests/test_store_fingerprint.py`, eight tests over the neutral full store; a golden `tests/data/store_fingerprint-neutral-1-encoding-1.json`, keyed on `NEUTRAL_FORMAT` and `ENCODING_FORMAT`; no Ray | **taken** 2026-10-12 |
+| **U5** the equivalence check | SGK's five functions extracted by `git show c8a7f14` into scratch, run beside the package's on the neutral store (formats 1 and 6; 27 changed stores); recorded in 01's log; nothing of SGK imported or committed (amends §5 rule 5 for this one read) | **taken** 2026-10-12 |
+| **U6** the shape, release and adoption | two prompts; `v0.4.0`, minor (added API); SGK adopts it (its E1, 03, 06), its addendum naming what changes for it; ChamPBH and SI may stay | **taken** 2026-10-12 (needed by 02) |
 
 ## 1. Prompts
 
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
-| 01 | [The fingerprint moves into the package](01-the-fingerprint-moves-into-the-package.md) | `store_fingerprint.py` (U1–U3); `test_store_fingerprint.py` and the golden (U4); the equivalence check (U5); contract §9.7 | ✍️ yes, 2026-10-12; ⏸ held for U1–U5 | ⬜ | — | — |
+| 01 | [The fingerprint moves into the package](01-the-fingerprint-moves-into-the-package.md) | `store_fingerprint.py` (U1–U3); `test_store_fingerprint.py` and the golden (U4); the equivalence check (U5); contract §9.7 | ✍️ yes, 2026-10-12, revised for U1 the same day | ⬜ | — | — |
 | 02 | Release `v0.4.0` (planned) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SGK's saying what it must do); the tag after green CI (U6) | ⬜ | ⬜ | — | — |
 
 **Planning note (2026-10-12, at `5f972be`).** The brief's citations into SGK hold at `c8a7f14`,

@@ -1,9 +1,10 @@
 # Campaign — fingerprint
 
 **Written:** 2026-10-12 by Claude Opus 5.5, at the user's request, from a brief written in a
-SecondaryGWKit session (§0). **Prompt 01 is written** (2026-10-12), against the decisions as
-recommended; it is not dispatched until the user has taken U1–U6 (§6.2). Prompt 02, the release,
-is written after 01 has landed and been reviewed, against the tree 01 leaves.
+SecondaryGWKit session (§0). **Prompt 01 is written** (2026-10-12). The user took U2–U6 as
+recommended the same day, and U1 amended to a plain signature (§6.2); 01 was revised to match, and
+is ready to be dispatched. Prompt 02, the release, is written after 01 has landed and been
+reviewed, against the tree 01 leaves.
 
 ## 0. Why this campaign exists
 
@@ -157,10 +158,10 @@ None that changes the request. To be reported back to the SGK session with the t
    unchanged since `d88615e`; only `pyproject.toml`'s version moved. SGK's plan already moves its
    pin through `v0.2.3` and `v0.3.0` to this release.
 2. **The signature.** The brief writes `fingerprint_of(inventory, taken=None)` with the format as
-   a parameter. U1 makes both keyword-only, the format required:
-   `fingerprint_of(inventory, *, fingerprint_format, taken=None)`. SGK's positional
-   `fingerprint_of(inventory, taken)` (`test_store_fingerprint.py:378`) must be rewritten; under
-   a positional format argument it would pass its `taken` dict as the format.
+   a parameter. U1 makes it `fingerprint_of(inventory, fingerprint_format, taken=None)`, the
+   format required and checked to be an integer. SGK's positional
+   `fingerprint_of(inventory, taken)` (`test_store_fingerprint.py:378`) must be rewritten: it
+   would pass its `taken` dict as the format, which the check refuses with `TypeError`.
 3. **The name.** SGK's audit calls the version `inventory_format`. U2 names it `encoding_format`,
    since it versions the encoding and the algorithm and not the inventory's whole structure (whose
    timestamps, problem texts and members are outside every digest).
@@ -210,8 +211,8 @@ None that changes the request. To be reported back to the SGK session with the t
 
 | # | Prompt | Covers | Status |
 |---|---|---|---|
-| 01 | [`01-the-fingerprint-moves-into-the-package.md`](01-the-fingerprint-moves-into-the-package.md) | `datastorekit/store_fingerprint.py`: the moved functions, the client's format as a keyword-only argument (U1); `ENCODING_FORMAT`, `encoding_format` beside the digest, both versions refused on mismatch, the listing's first line (U2); the bump rule (U3); `tests/test_store_fingerprint.py` and the golden (U4); the equivalence check against SGK's code, in scratch (U5); contract §9.7. | **written** 2026-10-12; held for U1–U5 |
-| 02 | Release `v0.4.0` (planned) | `pyproject.toml`, `README.md`, `PROVENANCE.md` (the module's source, SGK `c8a7f14`); dated addenda to `docs/adoption/` (the README and the three checklists; SGK's says what it must do to adopt); both ends locally and in CI; **the tag** on its commit after green CI, not by the prompt. | not written; needs U6 |
+| 01 | [`01-the-fingerprint-moves-into-the-package.md`](01-the-fingerprint-moves-into-the-package.md) | `datastorekit/store_fingerprint.py`: the moved functions, the client's format as a required argument (U1); `ENCODING_FORMAT`, `encoding_format` beside the digest, both versions refused on mismatch, the listing's first line (U2); the bump rule (U3); `tests/test_store_fingerprint.py` and the golden (U4); the equivalence check against SGK's code, in scratch (U5); contract §9.7. | **written** 2026-10-12; U1–U5 taken |
+| 02 | Release `v0.4.0` (planned) | `pyproject.toml`, `README.md`, `PROVENANCE.md` (the module's source, SGK `c8a7f14`); dated addenda to `docs/adoption/` (the README and the three checklists; SGK's says what it must do to adopt); both ends locally and in CI; **the tag** on its commit after green CI, not by the prompt. | not written; U6 taken |
 
 **Order.** 01 → 02. 02 releases what 01 leaves. Each is landed and reviewed on its own.
 
@@ -280,17 +281,18 @@ and tag with the user's approval) and U36 (a fix release is patch-level; U6 read
 
 ### 6.2 Decisions this campaign needs
 
-- **U1: the module and its functions.** *(The move is the user's ruling, 2026-10-12. Its form is
-  open.)* **Recommended:**
+- **U1: the module and its functions.** *(The move is the user's ruling, 2026-10-12. Its form
+  taken 2026-10-12, amended by the user: a plain signature, not a keyword-only format; SGK fixes its
+  own call sites.)* **Taken:**
   - a module **`datastorekit/store_fingerprint.py`**, beside `store_inventory.py` and
     `store_reader.py`, whose names it follows. It imports the standard library and
     `canonical_json` from `datastorekit.store_inventory` **at module scope**. Nothing is added to
     `datastorekit/__init__.py`;
-  - **`fingerprint_of(inventory, *, fingerprint_format, taken=None)`**: `fingerprint_format`
-    keyword-only and required, an `int` of at least 1 (a `bool` or anything else raises
-    `TypeError`, an `int` below 1 `ValueError`, each naming the value); `taken` keyword-only, a
-    mapping copied with `dict()`, or `None`. Its body otherwise SGK's, with `fingerprint_format`
-    where SGK's reads `FINGERPRINT_FORMAT`;
+  - **`fingerprint_of(inventory, fingerprint_format, taken=None)`**: `fingerprint_format`
+    positional-or-keyword and required, an `int` of at least 1 (a `bool` or anything else raises
+    `TypeError`, an `int` below 1 `ValueError`, each naming the value); `taken` a mapping copied
+    with `dict()`, or `None`. Its body otherwise SGK's, with `fingerprint_format` where SGK's reads
+    `FINGERPRINT_FORMAT`;
   - **`compare_fingerprints(recorded, current)`** and **`listing_lines(inventory, fingerprint)`**:
     SGK's signatures, and SGK's bodies but for U2;
   - `_sha256_lines`, `_tag_sets`, `_tags_text`, `_difference` and `_presence`: SGK's, private;
@@ -300,13 +302,13 @@ and tag with the user's approval) and U36 (a fix release is patch-level; U6 read
     module. The `taken` docstring says it is the caller's mapping, outside every digest, and names
     no keys.
 
-  **Why keyword-only and required.** The client's format is what the overall digest hashes, so
-  forgetting it must fail, not default. A positional format would take SGK's existing positional
-  `fingerprint_of(inventory, taken)` (`test_store_fingerprint.py:378`) and hash its `taken` dict as
-  the format; keyword-only raises `TypeError` there instead. It can be relaxed later without
-  breaking a caller; the reverse cannot. **Why validate:** the format sits in the hashed object,
-  and `canonical_json` would accept a string or a bool there silently, giving a digest that no
-  integer format reproduces. SGK's sidecar check already requires an integer.
+  **Why required.** The client's format is what the overall digest hashes, so forgetting it must
+  fail, not default. **Why validate:** the format sits in the hashed object, and `canonical_json`
+  would accept a string or a bool there silently, giving a digest that no integer format
+  reproduces. SGK's sidecar check already requires an integer. The check also makes SGK's one
+  positional `fingerprint_of(inventory, taken)` (`test_store_fingerprint.py:378`) fail loudly, with
+  `TypeError`, rather than hash its `taken` dict as the format; SGK rewrites that call when it
+  adopts (§0.2, point 2).
 
   **Why module scope.** SGK imported `canonical_json` lazily for its own reason, that `import
   RunRegistry` must not load sqlalchemy. In the package, sqlalchemy is a dependency, and
@@ -317,12 +319,13 @@ and tag with the user's approval) and U36 (a fix release is patch-level; U6 read
   (its `[stores]` extra does, SGK's audit §5.3), and a client that wants its fingerprinter cheap to
   import can import inside it.
 
-  **Rejected:** a positional or defaulted format; the name `fingerprint.py` (the package names its
-  store modules `store_*`); putting the functions in `store_inventory.py`, which would join layer C
-  to the module whose float-formatting guard (`tests/test_store_inventory.py:446-500`) and
-  docstring are about layer B; exporting from `datastorekit/__init__.py`, which exports only
-  `DatastoreObject`; a lazy import.
-- **U2: the version, where it sits, and what reads it.** **Recommended:**
+  **Rejected:** a keyword-only format (the planner's first recommendation, 2026-10-12: it shaped
+  the package's signature around one client's existing call site, which is the client's to fix);
+  a defaulted format; the name `fingerprint.py` (the package names its store modules `store_*`);
+  putting the functions in `store_inventory.py`, which would join layer C to the module whose
+  float-formatting guard (`tests/test_store_inventory.py:446-500`) and docstring are about layer B;
+  exporting from `datastorekit/__init__.py`, which exports only `DatastoreObject`; a lazy import.
+- **U2: the version, where it sits, and what reads it.** *(Taken 2026-10-12, as recommended.)* **Recommended:**
   - a module constant **`ENCODING_FORMAT = 1`**, public, with its bump rule (U3) beside it;
   - every fingerprint carries **`"encoding_format": ENCODING_FORMAT`**, a key of the fingerprint's
     dictionary beside `fingerprint_format` and `digest`. It is **not** in the object the overall
@@ -348,7 +351,7 @@ and tag with the user's approval) and U36 (a fix release is patch-level; U6 read
   fingerprint without `encoding_format` as version 1 (a version-aware reader, which SGK's standing
   rule refuses and nothing asks for); the field before `digest` in the listing (it breaks SGK's
   `parse_listing`).
-- **U3: when `ENCODING_FORMAT` is bumped.** **Recommended:** the rule is stated twice, in the same
+- **U3: when `ENCODING_FORMAT` is bumped.** *(Taken 2026-10-12, as recommended.)* **Recommended:** the rule is stated twice, in the same
   words: in a comment beside the constant, and in contract §9.7. **`ENCODING_FORMAT` is bumped by
   any change that can make the same store, read with the same specs and the same client format,
   give a different fingerprint, or make `compare_fingerprints` or `listing_lines` read one
@@ -372,7 +375,7 @@ and tag with the user's approval) and U36 (a fix release is patch-level; U6 read
   in the contract (the next editor of `store_inventory.py` reads the code); "any change to
   `store_inventory.py`" (most of its changes, such as the refusals of `bc8bffc`, move no digest,
   and a needless bump makes every client recompute).
-- **U4: the tests.** **Recommended:** a new module, `datastorekit/tests/test_store_fingerprint.py`,
+- **U4: the tests.** *(Taken 2026-10-12, as recommended.)* **Recommended:** a new module, `datastorekit/tests/test_store_fingerprint.py`,
   always run, with no Ray, every store from `tests/real_store_fixtures.build_full_store` in a
   `tempfile` directory; and a golden fingerprint of the neutral store,
   `datastorekit/tests/data/store_fingerprint-neutral-1-encoding-1.json`. The neutral client's
@@ -398,8 +401,9 @@ and tag with the user's approval) and U36 (a fix release is patch-level; U6 read
   6. **the versions**: a client-format mismatch gives exactly SGK's one `format` entry; an encoding
      mismatch one `encoding` entry; both, two entries in that order; a fingerprint without
      `encoding_format` one `encoding` entry; equal versions compare as before;
-  7. **the arguments**: `fingerprint_format` positional, missing, a `bool`, a string, a float or
-     `0` is refused as U1 says; the fingerprint's `fingerprint_format` is the one given, and a
+  7. **the arguments**: `fingerprint_format` missing, a `bool`, a string, a float, a mapping (a
+     `taken` passed in its place) or `0` is refused as U1 says; given positionally or by keyword,
+     it gives the same fingerprint; the fingerprint's `fingerprint_format` is the one given, and a
      different format gives a different overall digest with every class's entries unchanged;
   8. **purity**: `fingerprint_of`, `compare_fingerprints` and `listing_lines` open nothing and
      change neither argument; in a fresh interpreter, importing `datastorekit.store_fingerprint`
@@ -410,7 +414,7 @@ and tag with the user's approval) and U36 (a fix release is patch-level; U6 read
   `reference_digest`, parent sets and the shard choice, which only a store exercises); keying the
   golden on `ENCODING_FORMAT` alone (a change to the neutral client would then look like an
   encoding change); a smoke step under Ray (nothing crosses an actor).
-- **U5: the equivalence check against SGK's code.** **Recommended:** 01 extracts SGK's five
+- **U5: the equivalence check against SGK's code.** *(Taken 2026-10-12, as recommended.)* **Recommended:** 01 extracts SGK's five
   functions with `git show c8a7f14:RunRegistry/stores.py`, lines `1164-1400`, into a scratch file
   outside this repository, prepends the imports they name and `FINGERPRINT_FORMAT`, and runs them
   beside the package's on the neutral store: at formats 1 and 6, every field of SGK's fingerprint
@@ -421,7 +425,7 @@ and tag with the user's approval) and U36 (a fix release is patch-level; U6 read
   here, leaving it all to SGK's R1 (a defect would then be found a campaign later, in another
   repository, after a tag); a committed copy of SGK's code as a test oracle (it names SGK's history
   in the package, and would be a second copy to keep).
-- **U6: the shape, the release, and who adopts it.** *(Needed by 02, not 01.)* **Recommended:**
+- **U6: the shape, the release, and who adopts it.** *(Taken 2026-10-12, as recommended. Needed by 02, not 01.)* **Recommended:**
   - **two prompts**, as the last three campaigns: 01 the module and its evidence, 02 the release,
     written after 01 is reviewed;
   - **`v0.4.0`**, minor: the release adds a module and a constant. That is added API, which
@@ -429,7 +433,8 @@ and tag with the user's approval) and U36 (a fix release is patch-level; U6 read
     and which made `v0.2.0` and `v0.3.0` minor;
   - **SGK adopts it**, by moving its pin from `v0.2.2` (its prompt 03) and calling the package's
     function from its client module (its prompt 06). The SGK addendum says what changes for it:
-    the keyword-only format; `encoding_format` in every fingerprint; the comparison's `encoding`
+    the required format, and its positional `fingerprint_of(inventory, taken)` to rewrite;
+    `encoding_format` in every fingerprint; the comparison's `encoding`
     entry; the listing's first line; the two tests of SGK's that pin the shape and the golden
     (§0.2, point 5); and that nothing in `v0.2.3` and `v0.3.0` asks anything of SGK;
   - **ChamPBH and SI may stay on their pins or move**, each in a commit of its own: nothing they

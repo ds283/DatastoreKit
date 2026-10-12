@@ -2,12 +2,12 @@
 
 **Campaign:** [`README.md`](README.md) · **Board:** [`IMPLEMENTATION_STATE.md`](IMPLEMENTATION_STATE.md)
 
-*Written 2026-10-12 against `5f972be`, whose `datastorekit/` is `2f5417e`'s (`v0.3.0`), against
-the decisions as recommended.*
+*Written 2026-10-12 against `5f972be`, whose `datastorekit/` is `2f5417e`'s (`v0.3.0`). Revised
+the same day for U1 as the user took it: a plain signature, the format positional-or-keyword.*
 
 **Gate:**
-- U1–U5 are taken (README §6.2). If any was taken otherwise than as recommended, this prompt is
-  rewritten first; do not run it as it stands.
+- U1–U5 are taken (README §6.2): by the user on 2026-10-12, U2–U5 as recommended and U1 amended
+  to a plain signature, which this prompt follows.
 - `git status` is clean in this repository, and `origin/main` is an ancestor of `main`.
 - `datastorekit/` is `2f5417e`'s: `git diff --stat 2f5417e HEAD -- datastorekit` is empty.
 - The suite gives `Ran 509 tests … OK` in `venv/`.
@@ -62,7 +62,7 @@ Line numbers are at `5f972be` here and `c8a7f14` in SGK, measured on 2026-10-12.
 ## 1. What is wanted
 
 After this prompt, **the package computes a store's fingerprint**:
-- `datastorekit.store_fingerprint.fingerprint_of(inventory, *, fingerprint_format, taken=None)`
+- `datastorekit.store_fingerprint.fingerprint_of(inventory, fingerprint_format, taken=None)`
   gives, for an inventory and a client's format, exactly what SGK's `fingerprint_of` gives at that
   format, plus one key, `encoding_format`;
 - `compare_fingerprints(recorded, current)` gives SGK's answer whenever both fingerprints carry
@@ -116,8 +116,8 @@ as follows:
    fingerprint beside the old in the same commit, and that a change to a client's specs or registry
    is the client's format, never this one. Keep it in step with §2.5's §9.7: the same items, in the
    same order.
-4. **`fingerprint_of(inventory, *, fingerprint_format: int, taken: Optional[Mapping[str, Any]] =
-   None) -> dict`**. Before reading the inventory: a `fingerprint_format` that is a `bool`, or not
+4. **`fingerprint_of(inventory, fingerprint_format: int, taken: Optional[Mapping[str, Any]] =
+   None) -> dict`**: no `*`; the format is required, and has no default. Before reading the inventory: a `fingerprint_format` that is a `bool`, or not
    an `int`, raises `TypeError`; an `int` below 1 raises `ValueError`. Each message names the
    function, the argument and the value given. Then SGK's body, with `fingerprint_format` where SGK
    reads `FINGERPRINT_FORMAT`, and the returned dict gaining `"encoding_format": ENCODING_FORMAT`
@@ -201,8 +201,11 @@ README §6.2 U4, each restating SGK's in substance over the neutral store:
    `encoding_format`, one `encoding` entry with `recorded` `None`; equal versions, `[]`. And on the
    neutral store: the baseline compared with itself re-stamped with another `encoding_format` gives
    only the `encoding` entry, though every digest is equal.
-7. **The arguments.** `fingerprint_of(inventory, 1)` raises `TypeError`; so do a missing
-   `fingerprint_format`, `True`, `"1"` and `1.0`; `0` and `-1` raise `ValueError`. At
+7. **The arguments.** `fingerprint_of(inventory, 1)` and `fingerprint_of(inventory,
+   fingerprint_format=1)` give equal fingerprints. A missing `fingerprint_format` raises
+   `TypeError`; so do `True`, `"1"`, `1.0` and a `taken`-shaped dict passed in its place
+   (`fingerprint_of(inventory, {"when": "now"})`, the call SGK must rewrite); `0` and `-1` raise
+   `ValueError`. At
    `fingerprint_format=2` every class's entries equal the baseline's, and the overall digest
    differs.
 8. **Purity and imports.** `fingerprint_of`, `compare_fingerprints` and `listing_lines` leave their
@@ -305,7 +308,8 @@ Check each, and say in the log what you found.
      might think harmless. Say whether the tests catch it, and why: `Record.tags` is already sorted,
      so it may change nothing; if it changes nothing, record that it is equivalent, not a gap.
    - **(g)** `_sha256_lines` omitting the newline after the last line: tests 4 and 5 fail.
-   - **(h)** `fingerprint_format` given a default of `1`: test 7 fails.
+   - **(h)** `fingerprint_format` given a default of `1`: test 7 fails (the missing format).
+   - **(j)** the integer check removed: test 7 fails (the dict, the string and the bool are hashed).
    - **(i)** `problems` counted by the whole problem string, not its name: test 2's orphan case
      fails (its `problems` dict).
 5. **The documents.** Every name §2.5 cites exists at your tree: functions and fields by importing
