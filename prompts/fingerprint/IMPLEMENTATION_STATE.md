@@ -1,8 +1,9 @@
 # fingerprint campaign — implementation state
 
-**Last updated:** 2026-10-14 · **Status: IN PROGRESS — 2 of 2 prompts written (01; 02, 2026-10-14), 2 landed
-(01, `d1b61d6`, reviewed 2026-10-14; 02, `c8570e8`, 2026-10-14, reviewed; CI green at both ends,
-run 38538726292; `v0.4.0` not yet tagged); U1–U6 taken 2026-10-12 (U1 amended by the user, the rest as recommended).**
+**Last updated:** 2026-10-14 · **Status: CLOSED 2026-10-14 — 2 of 2 prompts written and landed (01,
+`d1b61d6`; 02, `c8570e8`), each reviewed; `v0.4.0` made, annotated, on `c8570e8` (tag object
+`8e7c1d7`) after CI passed there at both ends; U1–U6 taken 2026-10-12 (U1 amended by the user, the
+rest as recommended).**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** no issue. It carries out the user's ruling of 2026-10-12, SGK's D3 (README §0) ·
@@ -30,7 +31,7 @@ run 38538726292; `v0.4.0` not yet tagged); U1–U6 taken 2026-10-12 (U1 amended 
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [The fingerprint moves into the package](01-the-fingerprint-moves-into-the-package.md) | `store_fingerprint.py` (U1–U3); `test_store_fingerprint.py` and the golden (U4); the equivalence check (U5); contract §9.7 | ✍️ yes, 2026-10-12, revised for U1 the same day | ✅ 2026-10-14; reviewed 2026-10-14 | `d1b61d6` | [log](logs/01-the-fingerprint-moves-into-the-package.md) |
-| 02 | [Release `v0.4.0`](02-release-v0.4.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SGK's saying what it must do); the extraction board's G4; the tag after green CI (U6) | ✍️ yes, 2026-10-14, against `203ecd0` | ✅ 2026-10-14; reviewed 2026-10-14; pushed, CI green at both ends (run 38538726292); untagged | `c8570e8` | [log](logs/02-release-v0.4.0.md) |
+| 02 | [Release `v0.4.0`](02-release-v0.4.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SGK's saying what it must do); the extraction board's G4; the tag after green CI (U6) | ✍️ yes, 2026-10-14, against `203ecd0` | ✅ 2026-10-14; reviewed 2026-10-14; CI green at both ends (run 38538726292); tagged `v0.4.0` | `c8570e8` | [log](logs/02-release-v0.4.0.md) |
 
 **Planning note (2026-10-12, at `5f972be`).** The brief's citations into SGK hold at `c8a7f14`,
 and `RunRegistry/` is unchanged to SGK's `a5a6f6d`. A prototype module in a scratch export,
@@ -244,6 +245,11 @@ SQLAlchemy 2.0.46, SQLite 3.45.1, `Ran 530 tests … OK`, 4 `ResourceWarning` li
 SQLite connections reported from SQLAlchemy: timing, `actor-names` log 01 correction 8). `v0.4.0`
 may be made on `c8570e8`, with the user's approval.
 
+*The tag (2026-10-14).* With the user's approval, `v0.4.0` was made, annotated, on `c8570e8`
+(tag object `8e7c1d7`), and pushed; `git ls-remote origin` gives `refs/tags/v0.4.0^{}` as
+`c8570e8`. The extraction board's G4 records it. The campaign is closed in the commit that records
+this.
+
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
 
@@ -253,8 +259,13 @@ used for 01; [`orchestrator/prompt-02.md`](orchestrator/prompt-02.md) (`692b943`
 ## 2. Gates outside this repository
 
 None of this campaign's own. SGK's `runregistry-extraction` gate E1 waits on the tag (README §7).
-When it is made, its tag object, its commit and the SGK addendum are given to the user. SGK's R1
-result (the fingerprint taken both ways) is recorded here when SGK reports it.
+*(2026-10-14: `v0.4.0` is made, annotated, on `c8570e8` (tag object `8e7c1d7`), after CI passed
+there at both ends, [run 38538726292](https://github.com/ds283/DatastoreKit/actions/runs/38538726292).
+The tag object, the commit and the SGK addendum,
+[`docs/adoption/secondarygwkit.md`](../../docs/adoption/secondarygwkit.md#addendum-v040-fingerprint-prompt-02-2026-10-14),
+are given to the user for SGK's E1.)* SGK's R1 result (the fingerprint taken both ways) is recorded
+here when SGK reports it, in a records commit of its own; a difference is a defect of this
+package, opened in §3.
 
 ## 3. Active and unresolved issues
 
