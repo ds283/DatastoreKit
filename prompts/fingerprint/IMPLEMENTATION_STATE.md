@@ -1,8 +1,8 @@
 # fingerprint campaign — implementation state
 
 **Last updated:** 2026-10-14 · **Status: IN PROGRESS — 2 of 2 prompts written (01; 02, 2026-10-14), 2 landed
-(01, `d1b61d6`, reviewed 2026-10-14; 02, this commit, 2026-10-14, not yet reviewed; `v0.4.0` not yet
-tagged); U1–U6 taken 2026-10-12 (U1 amended by the user, the rest as recommended).**
+(01, `d1b61d6`, reviewed 2026-10-14; 02, `c8570e8`, 2026-10-14, reviewed; awaiting CI for `v0.4.0`,
+not yet tagged); U1–U6 taken 2026-10-12 (U1 amended by the user, the rest as recommended).**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** no issue. It carries out the user's ruling of 2026-10-12, SGK's D3 (README §0) ·
@@ -30,7 +30,7 @@ tagged); U1–U6 taken 2026-10-12 (U1 amended by the user, the rest as recommend
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [The fingerprint moves into the package](01-the-fingerprint-moves-into-the-package.md) | `store_fingerprint.py` (U1–U3); `test_store_fingerprint.py` and the golden (U4); the equivalence check (U5); contract §9.7 | ✍️ yes, 2026-10-12, revised for U1 the same day | ✅ 2026-10-14; reviewed 2026-10-14 | `d1b61d6` | [log](logs/01-the-fingerprint-moves-into-the-package.md) |
-| 02 | [Release `v0.4.0`](02-release-v0.4.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SGK's saying what it must do); the extraction board's G4; the tag after green CI (U6) | ✍️ yes, 2026-10-14, against `203ecd0` | ✅ 2026-10-14; not yet reviewed; unpushed, untagged | this commit | [log](logs/02-release-v0.4.0.md) |
+| 02 | [Release `v0.4.0`](02-release-v0.4.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SGK's saying what it must do); the extraction board's G4; the tag after green CI (U6) | ✍️ yes, 2026-10-14, against `203ecd0` | ✅ 2026-10-14; reviewed 2026-10-14; awaiting CI for `v0.4.0`; unpushed, untagged | `c8570e8` | [log](logs/02-release-v0.4.0.md) |
 
 **Planning note (2026-10-12, at `5f972be`).** The brief's citations into SGK hold at `c8a7f14`,
 and `RunRegistry/` is unchanged to SGK's `a5a6f6d`. A prototype module in a scratch export,
@@ -148,11 +148,97 @@ release check. The suite stays at **530** at both ends. §1.1's measure reproduc
 `a5a6f6d` and `c8a7f14`, CPBH `2792a85` and SI `5fb4a1d`. No issue was opened; nothing was pushed
 or tagged. See the [log](logs/02-release-v0.4.0.md).
 
+**Orchestrator review of prompt 02 (2026-10-14).** Prompt 02 was written by the orchestrator
+against `203ecd0` (`226d2e0`): the plan left it to be written after 01's review, and it had not
+been. The note (`692b943`) was dispatched to one Opus subagent, with its four corrections and its
+additions. Reviewed against its commit `c8570e8`, with nothing landed after it. **Every check of
+the note's §3 passed**, and acceptance 1–6 are met. No stop condition fired. Nothing was pushed
+by this campaign, and the tags are `v0.1.0` to `v0.3.0` only.
+
+*At dispatch.* The tree was clean, one worktree, at `692b943`; `origin/main` `5f972be` by
+`git ls-remote`, at dispatch and at the review. At `226d2e0` the suite gave `Ran 530 tests … OK`
+in `venv/` and at the high end (0 `ResourceWarning` lines each), the port check exited 0, and
+`black --check datastorekit docs` left 78 files. No Ray process was up, and `RAY_ADDRESS` was
+unset. Writing 02, the orchestrator probed the release offline (a `0.4.0` wheel of 26 entries,
+differing from `v0.3.0`'s only by `store_fingerprint.py`'s `RECORD` line, run from outside the
+repository) and (a)–(c), and read the clients' fingerprint calls by `ast` through `git`. That
+read found two things the plan had not named, which 02 put into SGK's addendum: SGK's
+`fingerprint_store` passes `taken` positionally (`RunRegistry/stores.py:1500`), as the test at
+`:378` does; and every fingerprint SGK holds lacks `encoding_format`, so the package's comparison
+refuses each. The note's corrections gave the line shifts as numbers (1), the full list of
+`v0.3.0` statements superseded and standing, with SGK rows `:716` and `:717` the prompt's table
+missed (2), the extraction board's rows (3) and SGK's citations (4). The clients were SGK
+`a5a6f6d` (clean), CPBH `2792a85` (23 entries) and SI `5fb4a1d` (clean) at dispatch and at the
+review.
+
+*The checks.*
+1. **Scope.** `c8570e8` touches the prompt's §7 files only: `pyproject.toml`, `README.md`,
+   `PROVENANCE.md`, the four adoption files, the extraction board and the records. The diff over
+   `datastorekit/`, the contract, the verification document, `docs/extraction/`, `.github/`,
+   `CLAUDE.md`, `docs/OPEN_ISSUES.md` and `orchestrator/` is empty.
+2. **Additive.** `git diff` of `docs/adoption/` has no `-` line; `pyproject.toml`'s is the version
+   line alone; the extraction board's is G4's row alone, its title changed to "SI adopted `v0.3.0`
+   or later (…; `fingerprint` U6)" and one dated sentence appended, its earlier text a prefix of
+   the new.
+3. **The release.** The review's own wheel, from `git archive c8570e8`, built and installed
+   offline at the high end (3.13.16 / 2.55.1 / 2.0.46): `datastorekit-0.4.0-py3-none-any.whl`,
+   104,424 bytes, 26 entries, none under `tests/`, its file list the log's; `METADATA` 0.4.0,
+   `>=3.12`, `ray>=2.43`, `sqlalchemy<2.1,>=2.0.39`. From outside the repository: `0.4.0`,
+   `ENCODING_FORMAT` 1, the signature, the hand-built inventory's six keys, recomputed digest,
+   refusals, `encoding` entry and listing as the note's facts; no `ray` loaded;
+   `datastorekit.tests` refused; `sharded_store --help` exits 0. Against the review's own `v0.3.0`
+   wheel, the 20 `RECORD` lines are equal and only `store_fingerprint.py`'s is added
+   (`OIGFxRU6…vNg`, 16,093 bytes).
+4. **`README.md` and `PROVENANCE.md`, by reading.** As §2.2 and §2.3: the `v0.4.0` status
+   paragraph linking §9.7; the pin `v0.4.0` and the six earlier tags remaining, SGK adopting
+   `v0.4.0` and CPBH and SI each free to stay on `v0.3.0` or move, advising neither; the
+   store-fingerprint item and the extended "What changed"; the new `###` section naming the source
+   at `c8a7f14` with the extract's full SHA-256, the differences by decision and 01's equivalence
+   result. Nothing says `v0.4.0` is tagged.
+5. **The addenda, by reading.** Each italic line follows `object-timestamp` 02's; each addendum is
+   placed, dated and named as the additions say. N = 5 in the README and 6 in each checklist, and
+   each file's shifts (N, k + N, 2k + N, 3k + N) match the lines added (old `:486` → `:491` in the
+   README, `:643` → `:649` in SGK's). SGK's keeps the pin ("nothing SGK calls") apart from the call
+   (seven items), names three options for the fingerprints it holds and takes none, ends with a
+   "For SGK's prompt 03" table, supersedes `:722` and `:723` (correction 2's `:716`, `:717`), and
+   leaves G2 standing; a sample of its SGK citations (`stores.py:1879-1886`, `__init__.py:379-392`,
+   `__main__.py:313-318`, `:335-337`, `:414-423`, `stores.py:1541-1543`, the plan's `:244-246` and
+   `:255`, the verification document's `:152-157`, the audit's `:204-214`, `GOLDEN` `:74-78`) holds
+   at `a5a6f6d`, and none of SGK's six golden files has `encoding_format`. CPBH's and SI's say
+   nothing they call changes; G3's reading stands; SI's supersedes G4 and leaves its
+   `DatastoreObject.timestamp` rows standing.
+6. **Names and links.** The review's own scan: 201 relative links in the six documents and the
+   extraction board, 0 bad; every dotted `datastorekit.` name imports in the release venv but
+   `datastorekit.tests`, which the wheel leaves out by design.
+7. **Both ends.** `venv/`: `pip show` 0.4.0, `Ran 530 tests … OK`, 0 `ResourceWarning` lines, no
+   `egg-info`. A fresh high-end venv with `git archive c8570e8` installed editable: `Ran 530 tests
+   … OK`, 0 lines. The port check exits 0; `black --check datastorekit docs` leaves 78 files.
+8. **The breakages.** (a)–(c) extracted from the log, each `git apply --check` and `-R --check`
+   clean, each built from its own export: (a) `Version: 0.3.0`, the module present; (b) 78
+   entries, 52 under `tests/`, `datastorekit.tests` importable; (c) 25 entries, the 20 `RECORD`
+   lines equal and none added, `ModuleNotFoundError` on the module. Each as the log records.
+9. **The records.** The log in §5.1's form, with the release check, the documents' check, the names
+   and links, §1.1's measure re-run, (a)–(c), the four supersession tables and the clients at both
+   ends; this board's header, 02's row and its note; the README's header and §2 row;
+   `prompts/INDEX.md`; `docs/OPEN_ISSUES.md` unchanged at 4.
+10. **Nothing left behind.** No Ray process. `git tag -l` is the six tags, and `origin` is
+    unchanged (`5f972be`). During check 8 a loop of the review's own ran one `uv build` from the
+    checkout, writing `build/` and `datastorekit.egg-info/` there and a wheel and venv beside the
+    repositories; the review deleted all four, and re-ran `venv/`'s suite on the clean tree (the
+    530 above). No tracked file was touched.
+
+*Residue fixed in the commit that records this review:* "this commit" → `c8570e8` on this board,
+in the log's header and §9, in the README and in `prompts/INDEX.md`; "reviewed; awaiting CI for
+`v0.4.0`" for 02 in this board's header and row, README §2 and its header, and `prompts/INDEX.md`;
+the notes line. The log's observation 2 (SGK's brief says every sidecar is a tombstone, which R0
+has since made untrue for two live stores) is for the SGK session with the tag; it is not an
+issue here.
+
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
 
 **Orchestrator notes:** [`orchestrator/prompt-01.md`](orchestrator/prompt-01.md) (`df3fec9`),
-used for 01.
+used for 01; [`orchestrator/prompt-02.md`](orchestrator/prompt-02.md) (`692b943`), used for 02.
 
 ## 2. Gates outside this repository
 

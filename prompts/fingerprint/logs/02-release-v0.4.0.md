@@ -1,8 +1,8 @@
 # Log 02 — release `v0.4.0`
 
-**Subject:** Make the package ready to be released as v0.4.0 · **Commit:** this commit ·
-**Date:** 2026-10-14 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and untagged; not
-yet reviewed.
+**Subject:** Make the package ready to be released as v0.4.0 · **Commit:** `c8570e8` ·
+**Date:** 2026-10-14 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and untagged;
+reviewed by the orchestrator, 2026-10-14 (the board, §1).
 
 The package is ready to be released as **`v0.4.0`** (U6). `pyproject.toml` says `0.4.0`, and
 nothing else in it changed. `README.md` has a `v0.4.0` status paragraph, the `v0.4.0` pin with the
@@ -1017,12 +1017,12 @@ interpreter. The check catches a version number with no change behind it.
 
 ## 9. State handed to the next prompt
 
-- `HEAD` is this commit, unpushed and untagged. The tree is clean apart from the ignored entries at
+- `HEAD` is `c8570e8`, unpushed and untagged. The tree is clean apart from the ignored entries at
   the start. `venv/` has `datastorekit 0.4.0` installed editable from this checkout, its `egg-info`
   removed.
 - **Not pushed, not tagged.** The local `origin/main` is `5f972be`, and the tags are `v0.1.0`,
   `v0.2.0`, `v0.2.1`, `v0.2.2`, `v0.2.3` and `v0.3.0`.
-- **After the review**, this commit is pushed as `main`, fast-forwarding over the campaign's
+- **After the review**, `c8570e8` is pushed as `main`, fast-forwarding over the campaign's
   planning, 01 (`d1b61d6`) and its review, 02's writing, the note and the review. So CI's run on it
   is the first on 01's code as well as on the release. `v0.4.0` is made on it, annotated, only once
   CI passes there at both ends (U23, U28). If CI fails, a fix prompt lands first, and no tag is made
