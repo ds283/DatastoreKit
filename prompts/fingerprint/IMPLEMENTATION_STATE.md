@@ -1,8 +1,8 @@
 # fingerprint campaign — implementation state
 
 **Last updated:** 2026-10-14 · **Status: IN PROGRESS — 2 of 2 prompts written (01; 02, 2026-10-14), 2 landed
-(01, `d1b61d6`, reviewed 2026-10-14; 02, `c8570e8`, 2026-10-14, reviewed; awaiting CI for `v0.4.0`,
-not yet tagged); U1–U6 taken 2026-10-12 (U1 amended by the user, the rest as recommended).**
+(01, `d1b61d6`, reviewed 2026-10-14; 02, `c8570e8`, 2026-10-14, reviewed; CI green at both ends,
+run 38538726292; `v0.4.0` not yet tagged); U1–U6 taken 2026-10-12 (U1 amended by the user, the rest as recommended).**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** no issue. It carries out the user's ruling of 2026-10-12, SGK's D3 (README §0) ·
@@ -30,7 +30,7 @@ not yet tagged); U1–U6 taken 2026-10-12 (U1 amended by the user, the rest as r
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [The fingerprint moves into the package](01-the-fingerprint-moves-into-the-package.md) | `store_fingerprint.py` (U1–U3); `test_store_fingerprint.py` and the golden (U4); the equivalence check (U5); contract §9.7 | ✍️ yes, 2026-10-12, revised for U1 the same day | ✅ 2026-10-14; reviewed 2026-10-14 | `d1b61d6` | [log](logs/01-the-fingerprint-moves-into-the-package.md) |
-| 02 | [Release `v0.4.0`](02-release-v0.4.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SGK's saying what it must do); the extraction board's G4; the tag after green CI (U6) | ✍️ yes, 2026-10-14, against `203ecd0` | ✅ 2026-10-14; reviewed 2026-10-14; awaiting CI for `v0.4.0`; unpushed, untagged | `c8570e8` | [log](logs/02-release-v0.4.0.md) |
+| 02 | [Release `v0.4.0`](02-release-v0.4.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SGK's saying what it must do); the extraction board's G4; the tag after green CI (U6) | ✍️ yes, 2026-10-14, against `203ecd0` | ✅ 2026-10-14; reviewed 2026-10-14; pushed, CI green at both ends (run 38538726292); untagged | `c8570e8` | [log](logs/02-release-v0.4.0.md) |
 
 **Planning note (2026-10-12, at `5f972be`).** The brief's citations into SGK hold at `c8a7f14`,
 and `RunRegistry/` is unchanged to SGK's `a5a6f6d`. A prototype module in a scratch export,
@@ -233,6 +233,16 @@ in the log's header and §9, in the README and in `prompts/INDEX.md`; "reviewed;
 the notes line. The log's observation 2 (SGK's brief says every sidecar is a tombstone, which R0
 has since made untrue for two live stores) is for the SGK session with the tag; it is not an
 issue here.
+
+*CI (2026-10-14).* `c8570e8` was pushed as `main` with the user's approval, fast-forwarding
+`origin/main` from `5f972be`; the records after it (`258a8c3` on) stayed local. The workflow ran on
+it, [run 38538726292](https://github.com/ds283/DatastoreKit/actions/runs/38538726292), the first CI
+run on 01's code as well as on the release: **both ends passed**. `suite (low)`: Python 3.12.15 /
+Ray 2.43.0 / SQLAlchemy 2.0.39, SQLite 3.45.1, `Ran 530 tests … OK`, 0 `ResourceWarning` lines,
+and `black` "78 files would be left unchanged". `suite (high)`: Python 3.13.16 / Ray 2.55.1 /
+SQLAlchemy 2.0.46, SQLite 3.45.1, `Ran 530 tests … OK`, 4 `ResourceWarning` lines (two unclosed
+SQLite connections reported from SQLAlchemy: timing, `actor-names` log 01 correction 8). `v0.4.0`
+may be made on `c8570e8`, with the user's approval.
 
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
