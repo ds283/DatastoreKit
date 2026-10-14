@@ -1,8 +1,8 @@
 # fingerprint campaign — implementation state
 
-**Last updated:** 2026-10-14 · **Status: IN PROGRESS — 1 of 2 prompts written (01), 1 landed (01,
-`d1b61d6`, reviewed 2026-10-14); U1–U6 taken 2026-10-12 (U1 amended by the user, the rest as
-recommended); 02 is written after 01's review.**
+**Last updated:** 2026-10-14 · **Status: IN PROGRESS — 2 of 2 prompts written (01; 02, 2026-10-14), 1 landed
+(01, `d1b61d6`, reviewed 2026-10-14); U1–U6 taken 2026-10-12 (U1 amended by the user, the rest
+as recommended).**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** no issue. It carries out the user's ruling of 2026-10-12, SGK's D3 (README §0) ·
@@ -30,7 +30,7 @@ recommended); 02 is written after 01's review.**
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [The fingerprint moves into the package](01-the-fingerprint-moves-into-the-package.md) | `store_fingerprint.py` (U1–U3); `test_store_fingerprint.py` and the golden (U4); the equivalence check (U5); contract §9.7 | ✍️ yes, 2026-10-12, revised for U1 the same day | ✅ 2026-10-14; reviewed 2026-10-14 | `d1b61d6` | [log](logs/01-the-fingerprint-moves-into-the-package.md) |
-| 02 | Release `v0.4.0` (planned) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SGK's saying what it must do); the tag after green CI (U6) | ⬜ | ⬜ | — | — |
+| 02 | [Release `v0.4.0`](02-release-v0.4.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SGK's saying what it must do); the extraction board's G4; the tag after green CI (U6) | ✍️ yes, 2026-10-14, against `203ecd0` | ⬜ | — | — |
 
 **Planning note (2026-10-12, at `5f972be`).** The brief's citations into SGK hold at `c8a7f14`,
 and `RunRegistry/` is unchanged to SGK's `a5a6f6d`. A prototype module in a scratch export,
