@@ -1,8 +1,8 @@
 # Log 01 — the fingerprint moves into the package
 
-**Subject:** Move the store fingerprint into the package, with its own version · **Commit:** this
-commit · **Date:** 2026-10-14 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and
-untagged; not yet reviewed.
+**Subject:** Move the store fingerprint into the package, with its own version · **Commit:** `d1b61d6`
+· **Date:** 2026-10-14 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and
+untagged; reviewed by the orchestrator, 2026-10-14 (the board, §1).
 
 `datastorekit/store_fingerprint.py` is new: the source's five fingerprint functions and three
 helpers (SGK `RunRegistry/stores.py:1164-1400` at `c8a7f14`), changed only as the prompt's §2.1
@@ -47,7 +47,7 @@ conventions. §2 classifies each.
 
 ### 1.1 The module (§2.1)
 
-**`datastorekit/store_fingerprint.py`**, new, 351 lines. Line numbers are this commit's.
+**`datastorekit/store_fingerprint.py`**, new, 351 lines. Line numbers are `d1b61d6`'s.
 
 - **The module docstring** (`:1-30`), written for the package: a fingerprint is a pure function of
   a `StoreInventory`; a record's canonical line is `record.canonical_json()`; a digest is SHA-256
@@ -307,7 +307,7 @@ No marker is set on any row of §1–§9.6.
 ### 1.5 The records
 
 - **This campaign's board**: the header (in progress; 01 landed, not yet reviewed), §1's row for 01
-  (landed, this commit, the log), a note under §1, and §3's line dated. The decisions table is
+  (landed, `d1b61d6`, the log), a note under §1, and §3's line dated. The decisions table is
   unchanged: no decision changed.
 - **This campaign's README**: a sentence in its header, and §2's row for 01.
 - **`prompts/INDEX.md`**: the header (1 in progress) and the campaign's line.
@@ -1167,7 +1167,7 @@ diff --git a/datastorekit/store_fingerprint.py b/datastorekit/store_fingerprint.
 
 ## 8. State handed to the next prompt
 
-- **`HEAD`** is this commit, unpushed and untagged. The local `origin/main` ref is `5f972be`; the
+- **`HEAD`** is `d1b61d6`, unpushed and untagged. The local `origin/main` ref is `5f972be`; the
   tags are `v0.1.0` to `v0.3.0`, unchanged. `pyproject.toml` is at `0.3.0`.
 - **The suite** is 530, in `venv/` and at the high end. The port check passes over 20 modules with
   1 test declared not ported. `black` leaves 78 files unchanged.
