@@ -4,7 +4,8 @@
 SecondaryGWKit session (§0). **Prompt 01 is written** (2026-10-12). The user took U2–U6 as
 recommended the same day, and U1 amended to a plain signature (§6.2); 01 was revised to match, and
 is ready to be dispatched. Prompt 02, the release, is written after 01 has landed and been
-reviewed, against the tree 01 leaves.
+reviewed, against the tree 01 leaves. **Prompt 01 landed** 2026-10-14 (its
+[log](logs/01-the-fingerprint-moves-into-the-package.md)); not yet reviewed.
 
 ## 0. Why this campaign exists
 
@@ -211,7 +212,7 @@ None that changes the request. To be reported back to the SGK session with the t
 
 | # | Prompt | Covers | Status |
 |---|---|---|---|
-| 01 | [`01-the-fingerprint-moves-into-the-package.md`](01-the-fingerprint-moves-into-the-package.md) | `datastorekit/store_fingerprint.py`: the moved functions, the client's format as a required argument (U1); `ENCODING_FORMAT`, `encoding_format` beside the digest, both versions refused on mismatch, the listing's first line (U2); the bump rule (U3); `tests/test_store_fingerprint.py` and the golden (U4); the equivalence check against SGK's code, in scratch (U5); contract §9.7. | **written** 2026-10-12; U1–U5 taken |
+| 01 | [`01-the-fingerprint-moves-into-the-package.md`](01-the-fingerprint-moves-into-the-package.md) | `datastorekit/store_fingerprint.py`: the moved functions, the client's format as a required argument (U1); `ENCODING_FORMAT`, `encoding_format` beside the digest, both versions refused on mismatch, the listing's first line (U2); the bump rule (U3); `tests/test_store_fingerprint.py` and the golden (U4); the equivalence check against SGK's code, in scratch (U5); contract §9.7. | **written** 2026-10-12; U1–U5 taken; **landed** 2026-10-14 ([log](logs/01-the-fingerprint-moves-into-the-package.md)), not yet reviewed |
 | 02 | Release `v0.4.0` (planned) | `pyproject.toml`, `README.md`, `PROVENANCE.md` (the module's source, SGK `c8a7f14`); dated addenda to `docs/adoption/` (the README and the three checklists; SGK's says what it must do to adopt); both ends locally and in CI; **the tag** on its commit after green CI, not by the prompt. | not written; U6 taken |
 
 **Order.** 01 → 02. 02 releases what 01 leaves. Each is landed and reviewed on its own.

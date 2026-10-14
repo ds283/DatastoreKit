@@ -1,7 +1,8 @@
 # fingerprint campaign — implementation state
 
-**Last updated:** 2026-10-12 · **Status: PLANNED — 1 of 2 prompts written (01), 0 landed; U1–U6
-taken 2026-10-12 (U1 amended by the user, the rest as recommended); 01 is ready to be dispatched.**
+**Last updated:** 2026-10-14 · **Status: IN PROGRESS — 1 of 2 prompts written (01), 1 landed (01,
+this commit; not yet reviewed); U1–U6 taken 2026-10-12 (U1 amended by the user, the rest as
+recommended); 02 is written after 01's review.**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** no issue. It carries out the user's ruling of 2026-10-12, SGK's D3 (README §0) ·
@@ -28,7 +29,7 @@ taken 2026-10-12 (U1 amended by the user, the rest as recommended); 01 is ready 
 
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
-| 01 | [The fingerprint moves into the package](01-the-fingerprint-moves-into-the-package.md) | `store_fingerprint.py` (U1–U3); `test_store_fingerprint.py` and the golden (U4); the equivalence check (U5); contract §9.7 | ✍️ yes, 2026-10-12, revised for U1 the same day | ⬜ | — | — |
+| 01 | [The fingerprint moves into the package](01-the-fingerprint-moves-into-the-package.md) | `store_fingerprint.py` (U1–U3); `test_store_fingerprint.py` and the golden (U4); the equivalence check (U5); contract §9.7 | ✍️ yes, 2026-10-12, revised for U1 the same day | ✅ 2026-10-14; not yet reviewed | this commit | [log](logs/01-the-fingerprint-moves-into-the-package.md) |
 | 02 | Release `v0.4.0` (planned) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SGK's saying what it must do); the tag after green CI (U6) | ⬜ | ⬜ | — | — |
 
 **Planning note (2026-10-12, at `5f972be`).** The brief's citations into SGK hold at `c8a7f14`,
@@ -41,6 +42,15 @@ guards included. Three of SGK's tests pin what the change touches (README §0.1)
 key set, its golden, and the listing's first line by word position, which U2's appended field
 keeps. Nothing was committed, and Ray was not started. The clients at planning: SGK `a5a6f6d`
 (clean), ChamPBH `5bb2be6` (23 entries in `git status --short`), SI `5fb4a1d` (clean).
+
+**Prompt 01 (2026-10-14).** `datastorekit/store_fingerprint.py` holds the source's five functions
+and three helpers, changed only as the prompt's §2.1 says (by `ast`: the five helpers equal; the
+three functions differ by the format argument and its checks, `encoding_format`, the versions
+block and the listing's first line). The golden is the planner's digest, `7656b600…d304`. The
+equivalence check against the source's extract gave **0 differences** at both ends, at formats 1
+and 6, on the baseline and 37 changed stores (correction 3's 28, and test 2's nine). The suite goes
+from 509 to **530** at both ends; each breakage (a)–(j) fails its test, and (f) is equivalent. No
+issue was opened. See the [log](logs/01-the-fingerprint-moves-into-the-package.md).
 
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
@@ -55,7 +65,7 @@ result (the fingerprint taken both ways) is recorded here when SGK reports it.
 
 ## 3. Active and unresolved issues
 
-No issue is held on this board (2026-10-12).
+No issue is held on this board (2026-10-14: prompt 01 opened none).
 
 ## 4. Resolved issues
 
