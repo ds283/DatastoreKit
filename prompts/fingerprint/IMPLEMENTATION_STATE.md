@@ -1,8 +1,8 @@
 # fingerprint campaign — implementation state
 
-**Last updated:** 2026-10-14 · **Status: IN PROGRESS — 2 of 2 prompts written (01; 02, 2026-10-14), 1 landed
-(01, `d1b61d6`, reviewed 2026-10-14); U1–U6 taken 2026-10-12 (U1 amended by the user, the rest
-as recommended).**
+**Last updated:** 2026-10-14 · **Status: IN PROGRESS — 2 of 2 prompts written (01; 02, 2026-10-14), 2 landed
+(01, `d1b61d6`, reviewed 2026-10-14; 02, this commit, 2026-10-14, not yet reviewed; `v0.4.0` not yet
+tagged); U1–U6 taken 2026-10-12 (U1 amended by the user, the rest as recommended).**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** no issue. It carries out the user's ruling of 2026-10-12, SGK's D3 (README §0) ·
@@ -30,7 +30,7 @@ as recommended).**
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [The fingerprint moves into the package](01-the-fingerprint-moves-into-the-package.md) | `store_fingerprint.py` (U1–U3); `test_store_fingerprint.py` and the golden (U4); the equivalence check (U5); contract §9.7 | ✍️ yes, 2026-10-12, revised for U1 the same day | ✅ 2026-10-14; reviewed 2026-10-14 | `d1b61d6` | [log](logs/01-the-fingerprint-moves-into-the-package.md) |
-| 02 | [Release `v0.4.0`](02-release-v0.4.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SGK's saying what it must do); the extraction board's G4; the tag after green CI (U6) | ✍️ yes, 2026-10-14, against `203ecd0` | ⬜ | — | — |
+| 02 | [Release `v0.4.0`](02-release-v0.4.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SGK's saying what it must do); the extraction board's G4; the tag after green CI (U6) | ✍️ yes, 2026-10-14, against `203ecd0` | ✅ 2026-10-14; not yet reviewed; unpushed, untagged | this commit | [log](logs/02-release-v0.4.0.md) |
 
 **Planning note (2026-10-12, at `5f972be`).** The brief's citations into SGK hold at `c8a7f14`,
 and `RunRegistry/` is unchanged to SGK's `a5a6f6d`. A prototype module in a scratch export,
@@ -133,6 +133,21 @@ and in the log; "reviewed" for 01 in this board's header and row, README §2 and
 fingerprint of this module's (one of the source's own raises `KeyError`), is by design, and goes
 into 02's SGK addendum; it is not an issue.
 
+**Prompt 02 (2026-10-14).** The package is ready to be released as `v0.4.0`: `pyproject.toml`
+says `0.4.0`; `README.md` and `PROVENANCE.md` describe it; each file under `docs/adoption/` has an
+italic head line and a dated `v0.4.0` addendum, added only (`git diff` has no `-` line), stating
+the pins (SGK adopts `v0.4.0`; CPBH may stay on `v0.3.0` and SI adopt `v0.3.0`, or either move to
+`v0.4.0`), what changed, what it supersedes by `path:line` and what stands, and how to read the
+earlier addenda's citations (N = 5 in the README, 6 in each checklist). SGK's addendum separates
+the pin, which changes nothing SGK calls, from the call, which changes seven things, and names
+SGK's options for the fingerprints it holds without choosing. The extraction board's G4 reads
+"`v0.3.0` or later". A wheel built offline from an export is `datastorekit-0.4.0-py3-none-any.whl`,
+26 entries, none under `datastorekit/tests/`; against `v0.3.0`'s, its 20 `RECORD` lines under
+`datastorekit/` are equal and `store_fingerprint.py`'s is added. Breakages (a)–(c) each fail the
+release check. The suite stays at **530** at both ends. §1.1's measure reproduces at SGK
+`a5a6f6d` and `c8a7f14`, CPBH `2792a85` and SI `5fb4a1d`. No issue was opened; nothing was pushed
+or tagged. See the [log](logs/02-release-v0.4.0.md).
+
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
 
@@ -147,7 +162,7 @@ result (the fingerprint taken both ways) is recorded here when SGK reports it.
 
 ## 3. Active and unresolved issues
 
-No issue is held on this board (2026-10-14: prompt 01 opened none).
+No issue is held on this board (2026-10-14: prompts 01 and 02 opened none).
 
 ## 4. Resolved issues
 

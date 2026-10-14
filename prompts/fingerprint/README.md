@@ -6,7 +6,9 @@ recommended the same day, and U1 amended to a plain signature (§6.2); 01 was re
 is ready to be dispatched. Prompt 02, the release, is written after 01 has landed and been
 reviewed, against the tree 01 leaves. **Prompt 01 landed** 2026-10-14 as `d1b61d6` (its
 [log](logs/01-the-fingerprint-moves-into-the-package.md)), and was reviewed the same day.
-**Prompt 02 is written** (2026-10-14, against `203ecd0`).
+**Prompt 02 is written** (2026-10-14, against `203ecd0`). **Prompt 02 landed** 2026-10-14 as this
+commit (its [log](logs/02-release-v0.4.0.md)); `v0.4.0` is tagged on it after its review and green
+CI, not by the prompt.
 
 ## 0. Why this campaign exists
 
@@ -214,7 +216,7 @@ None that changes the request. To be reported back to the SGK session with the t
 | # | Prompt | Covers | Status |
 |---|---|---|---|
 | 01 | [`01-the-fingerprint-moves-into-the-package.md`](01-the-fingerprint-moves-into-the-package.md) | `datastorekit/store_fingerprint.py`: the moved functions, the client's format as a required argument (U1); `ENCODING_FORMAT`, `encoding_format` beside the digest, both versions refused on mismatch, the listing's first line (U2); the bump rule (U3); `tests/test_store_fingerprint.py` and the golden (U4); the equivalence check against SGK's code, in scratch (U5); contract §9.7. | **written** 2026-10-12; U1–U5 taken; **landed** 2026-10-14, `d1b61d6` ([log](logs/01-the-fingerprint-moves-into-the-package.md)); **reviewed** 2026-10-14 |
-| 02 | [`02-release-v0.4.0.md`](02-release-v0.4.0.md) | `pyproject.toml`, `README.md`, `PROVENANCE.md` (the module's source, SGK `c8a7f14`); dated addenda to `docs/adoption/` (the README and the three checklists; SGK's says what it must do to adopt); the extraction board's G4 ("`v0.3.0` or later"); both ends locally and in CI; **the tag** on its commit after green CI, not by the prompt. | **written** 2026-10-14; U6 taken |
+| 02 | [`02-release-v0.4.0.md`](02-release-v0.4.0.md) | `pyproject.toml`, `README.md`, `PROVENANCE.md` (the module's source, SGK `c8a7f14`); dated addenda to `docs/adoption/` (the README and the three checklists; SGK's says what it must do to adopt); the extraction board's G4 ("`v0.3.0` or later"); both ends locally and in CI; **the tag** on its commit after green CI, not by the prompt. | **written** 2026-10-14; U6 taken; **landed** 2026-10-14, this commit ([log](logs/02-release-v0.4.0.md)); not yet reviewed; untagged |
 
 **Order.** 01 → 02. 02 releases what 01 leaves. Each is landed and reviewed on its own.
 

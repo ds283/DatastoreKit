@@ -24,6 +24,11 @@ it, the `v0.2.1` and `v0.2.2` addenda included, is unchanged and true of the rel
 by client and what changed since `v0.2.3`, and supersedes the statements it names. The text before
 it, the three earlier addenda included, is unchanged and true of the release each names.*
 
+*Added by `fingerprint` prompt 02 on 2026-10-14: the section
+[Addendum: v0.4.0](#addendum-v040-fingerprint-prompt-02-2026-10-14) at the end gives the pins by
+client and what changed since `v0.3.0`, and supersedes the statements it names. The text before it,
+the four earlier addenda included, is unchanged and true of the release each names.*
+
 This directory holds one **adoption checklist** per client project, and what the three share.
 Each checklist says what its client must do to depend on `datastorekit` at `v0.2.0`: what it
 deletes, which imports it rewrites, what leaves its copy of the layer, what its factories, call
@@ -594,4 +599,139 @@ with this addendum. In the file as `factory-defaults` prompt 02 left it (`0de2b1
 
 **Not superseded:** §2's module-map row for `DatastoreObject` (`:86`), "`Datastore` (the package
 root: `DatastoreObject`)" → `datastorekit`, maps a module, which `v0.3.0` does not move; it stays
+true.
+
+---
+
+## Addendum: v0.4.0 (fingerprint prompt 02, 2026-10-14)
+
+*Written by `fingerprint` prompt 02 on 2026-10-14, and added after `object-timestamp` prompt 02's
+`v0.3.0` addendum. 07a's text and the `v0.2.1`, `v0.2.2`, `v0.2.3` and `v0.3.0` addenda stay as
+written, each true of the release it names (`CLAUDE.md` rule 6). No checklist was re-measured (as
+decision U37); the clients' calls below were read through `git` only.*
+
+**The pins, by client** (decision U6 of the `fingerprint` campaign, which amends `object-timestamp`
+decision U6 for G4, and keeps it for G2 and G3):
+- **SGK adopts `v0.4.0`** in place of `v0.2.2`, by its `runregistry-extraction` prompt 03:
+
+  ```text
+  datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.4.0
+  ```
+
+  G2 reads, as before, "SGK has adopted `v0.2.2` or later", and holds (2026-10-12, the extraction
+  board).
+- **CPBH has adopted `v0.3.0`** (G3 holds, 2026-10-13, the extraction board), and may stay on it or
+  move to `v0.4.0`, as CPBH chooses. G3 reads, as before, "CPBH has adopted `v0.2.3` or later".
+- **SI adopts `v0.3.0` or `v0.4.0`**, as SI chooses, when it is next active, and G4 reads "SI has
+  adopted `v0.3.0` or later".
+
+A move is a commit of the client's own. Neither CPBH nor SI calls the new module, and nothing they
+call changes (below).
+
+`v0.4.0` carries `key_on_version`, `v0.2.0`'s feature, `v0.2.1`'s three fixes, `v0.2.2`'s fix,
+`v0.2.3`'s change and `v0.3.0`'s change, unchanged.
+
+**What changed since `v0.3.0`.** One module was added to the package, by `fingerprint` prompt 01
+(`d1b61d6`), on the user's ruling: `datastorekit/store_fingerprint.py` (351 lines). Every other
+file in the wheel is `v0.3.0`'s, and `datastorekit/store_inventory.py`, whose `read_inventory`
+returns what a fingerprint is taken from, is unchanged since `v0.2.2`. The release adds API, so it
+is minor (U6). The layer never calls the module: nothing the layer writes or reads changes, and no
+message, refusal or exception of the layer's. A client that does not import
+`datastorekit.store_fingerprint` meets nothing new. One that does gets what
+[`docs/client-contract.md` §9.7](../client-contract.md#97-fingerprint-prompt-01) states in full:
+
+| What | At `v0.4.0` (`datastorekit/store_fingerprint.py`) |
+|---|---|
+| `fingerprint_of(inventory, fingerprint_format, taken=None)` | pure, over what `read_inventory` returns (`:86-154`). The client's format is required, positional or by keyword, with no default; a `bool` or anything not an `int` raises `TypeError`, and an `int` below 1 `ValueError`, before anything is read (`:109-118`) |
+| The fingerprint | exactly the keys `fingerprint_format`, `encoding_format`, `classes`, `digest`, `problems` and `taken` (`:147-154`). The overall digest hashes exactly `{"fingerprint_format", "classes": {name: {"count", "digest"}}}` (`:140-146`), so `encoding_format`, `problems` and `taken` are outside every digest |
+| `compare_fingerprints(recorded, current)` | refuses two fingerprints whose `fingerprint_format` or `encoding_format` differ (`:194-227`): one entry of kind `format` and/or one of kind `encoding`, and nothing else is compared. **A fingerprint without `encoding_format` (one made by any code but this module's) is refused against one with it.** Otherwise its entries are those of the code it was moved from, SGK's (`PROVENANCE.md`) |
+| `listing_lines(inventory, fingerprint)` | its first line is `# fingerprint_format <f> digest <d> encoding_format <e>` (`:336-340`): words 2 and 4 as before, the encoding format appended as word 6. It reads `fingerprint["encoding_format"]`, so it needs a fingerprint made by this module's `fingerprint_of` (`fingerprint` log 01, §6 item 1) |
+| `ENCODING_FORMAT` | `1` (`:65`): the package's version of the encoding and the algorithm, bumped under the rule beside it (`:38-64`) and in contract §9.7. A client never bumps it, and keeps its own `fingerprint_format` |
+
+**Nothing any client supplies or stores changes.** A store that opened under `v0.3.0` opens under
+`v0.4.0`, and a store refused under `v0.3.0` is refused under `v0.4.0`, by the same exception and
+message. A digest a client takes with its own code does not move: what it reads from the package
+is unchanged.
+
+**Fingerprints a client made with its own code have no `encoding_format`**, so the package's
+`compare_fingerprints` refuses each against one of its own, with one `encoding` entry. A client
+that moves to the package's functions recomputes the fingerprints it holds with them, or keeps
+comparing those with its own code; which, and when, is the client's choice. **`ENCODING_FORMAT` is
+the package's**, bumped under contract §9.7's rule. A bump is said in the releasing addendum to
+every checklist, since every client's fingerprints then differ from those it holds. `v0.4.0` sets
+it to `1`.
+
+**What the clients do with it.** `fingerprint` read the three clients through `git` only: a script
+parsed every `.py` file outside each client's `prompts/`, `.prompts/`, `docs/` and `.documents/`,
+from `git show <commit>:<path>`, with `ast`, importing and running nothing of a client, and found
+every `def` and every call of a function named `fingerprint_of`, `compare_fingerprints` or
+`listing_lines`, with each call's positional and keyword arguments. The planner measured it, and
+prompt 02 re-ran it, on 2026-10-14:
+
+| Client, commit | Its pin | Defines | Calls |
+|---|---|---|---|
+| SGK `a5a6f6d` (its `HEAD` when read, branch `handover-remedial`), and `c8a7f14`, the same | `v0.2.2` (`requirements.txt:17`) | all three, its own (`RunRegistry/stores.py:1182`, `:1256`, `:1376`) | `fingerprint_of` 10 times: 2 with `taken` as a second, **positional**, argument (`RunRegistry/stores.py:1500`, in `fingerprint_store`; `RunRegistry/tests/test_store_fingerprint.py:378`), and 8 with the inventory alone (five in `RunRegistry/tests/test_store_fingerprint.py`, three in `ObjectFactories/tests/test_quadsource_policy_key.py`); `compare_fingerprints` 9 times, each with two positional arguments (one in `RunRegistry/stores.py`, seven in `RunRegistry/tests/test_store_fingerprint.py`, one in `RunRegistry/tests/test_store_retire.py`); `listing_lines` once (`RunRegistry/stores.py:1432`, in `write_listing`). None passes an argument by keyword |
+| CPBH `2792a85` (its `HEAD` when read, branch `read-only-plots`) | `v0.3.0` (`requirements.txt:17`); G3 holds | none | none |
+| SI `5fb4a1d` (its `HEAD` when read, branch `dk-and-rpk-migration`) | none | none | none |
+
+- **SGK.** Moving its pin changes nothing SGK calls: its three functions are its own, and what they
+  import from the package (`canonical_json`, `read_inventory`) is unchanged since `v0.2.2`. When
+  SGK calls the package's functions (its prompt 06), seven things change for it;
+  [SGK's addendum](secondarygwkit.md#addendum-v040-fingerprint-prompt-02-2026-10-14) lists them.
+  Two are beyond what the campaign's plan named: `fingerprint_store`'s own call passes `taken`
+  positionally, as the test at `:378` does, and is refused with `TypeError`; and every fingerprint
+  SGK holds lacks `encoding_format`, so the package's comparison refuses each.
+- **CPBH and SI** define and call none of the three. They meet the module only when they adopt
+  RunRegistryKit, whose `[stores]` extra will require this release (`fingerprint` README §7).
+
+**The checklists are not re-measured** (as U37). Each has an addendum of its own, after its `v0.3.0`
+addendum: [SGK's](secondarygwkit.md#addendum-v040-fingerprint-prompt-02-2026-10-14),
+[CPBH's](champbh.md#addendum-v040-fingerprint-prompt-02-2026-10-14) and
+[SI's](stochasticinstantons.md#addendum-v040-fingerprint-prompt-02-2026-10-14).
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`), one in the `v0.2.1` addendum stays `v0.2.1`'s (`33778b0`), one in the `v0.2.2`
+addendum `v0.2.2`'s (`6d8ee9a`), one in the `v0.2.3` addendum `v0.2.3`'s (`0de2b16`), and one in
+the `v0.3.0` addendum `v0.3.0`'s (`2f5417e`, whose `datastorekit/` is `1b2f91a`'s). A
+`datastorekit/` line in this addendum is `v0.4.0`'s, whose `datastorekit/` is the tree of
+`fingerprint` prompt 01's commit `d1b61d6`; prompt 02 does not change it. A client's line is that
+client's at the commit named.
+
+**What this addendum supersedes**, in this file. Each `path:line` below is this file's as committed
+with this addendum. In the file as `object-timestamp` prompt 02 left it (`2f5417e`), every line
+after `:26` is five lines earlier, since this addendum's italic line at the head adds five
+(N = 5). The `v0.3.0` addendum's italic line added five too (k = 5), and the rule it states for the
+earlier addenda still holds, each shift now N more. So:
+- the `v0.3.0` addendum's citations, which are that file's, are read at `2f5417e`, or **5** lines
+  later here (all but `:17-20`, which is above the insert);
+- the `v0.2.3` addendum's, which the `v0.3.0` addendum reads at `0de2b16` or five lines later, are
+  read at `0de2b16`, or **10** lines later here (all but `:12-15`);
+- the `v0.2.2` addendum's, which the `v0.3.0` addendum reads at `6d8ee9a` or ten lines later, are
+  read at `6d8ee9a`, or **15** lines later here (all but `:7-10`);
+- the `v0.2.1` addendum's, which the `v0.3.0` addendum reads at `33778b0` or fifteen lines later,
+  are read at `33778b0`, or **20** lines later here (all but `:3`).
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/README.md:22-25` | the `v0.3.0` addendum, "at the end", gives "the pins by client" | it gives `v0.3.0`'s pins and changes, true of `v0.3.0`; this addendum, now at the end, gives the pins of `v0.4.0` |
+| `docs/adoption/README.md:491-506` | in part, the pins: "SI adopts `v0.3.0`", G4 reading "SI has adopted `v0.3.0`", the pin `…@v0.3.0`; "CPBH may stay on `v0.2.3` or move to `v0.3.0`"; "SGK may stay on `v0.2.2` or move to `v0.2.3` or `v0.3.0`" | SGK adopts `v0.4.0` in place of `v0.2.2`, by its `runregistry-extraction` prompt 03; CPBH, which has adopted `v0.3.0`, may stay on it or move to `v0.4.0`; SI adopts `v0.3.0` or `v0.4.0`, and G4 reads "SI has adopted `v0.3.0` or later" (`fingerprint` U6); "The pins, by client", above. G2's and G3's readings stand |
+| `docs/adoption/README.md:508-509` | "`v0.3.0` carries `key_on_version`, `v0.2.0`'s feature, `v0.2.1`'s three fixes, `v0.2.2`'s fix and `v0.2.3`'s change, unchanged" | true of `v0.3.0`; `v0.4.0` carries those and `v0.3.0`'s change, unchanged |
+| `docs/adoption/README.md:576-584` | the `v0.3.0` addendum's `path:line`s are "this file's as committed with this addendum", and the earlier addenda's are read 5, 10 and 15 lines later | they are read at `2f5417e`, or 5 lines later here; the `v0.2.3` addendum's 10, the `v0.2.2` addendum's 15, and the `v0.2.1` addendum's 20; above |
+| `docs/adoption/README.md:588` | in part, the row for `:17-20`: "this addendum, now at the end, gives the pins of `v0.3.0`" | the `v0.3.0` addendum gives the pins of `v0.3.0`; this addendum is now at the end, and gives those of `v0.4.0` |
+| `docs/adoption/README.md:589` | the row for `:387-396`, giving `v0.3.0`'s pins and G4 "SI has adopted `v0.3.0`" | as `:491-506` |
+| `docs/adoption/README.md:590` | the row for `:398-399`: "`v0.3.0` carries those and `v0.2.3`'s change, unchanged" | as `:508-509` |
+| `docs/adoption/README.md:591` | the row for `:454-460`: read "at `0de2b16`, or five lines later here; the `v0.2.2` addendum's ten, and the `v0.2.1` addendum's fifteen" | at `0de2b16`, or ten lines later here; the `v0.2.2` addendum's fifteen, and the `v0.2.1` addendum's twenty; above |
+| `docs/adoption/README.md:592` | the row for `:467`: "as `:387-396`" | as `:491-506` |
+| `docs/adoption/README.md:593` | the row for `:468`: "for SI the pin `…@v0.3.0`; for CPBH `…@v0.2.3` or `…@v0.3.0`; for SGK `…@v0.2.2`, `…@v0.2.3` or `…@v0.3.0`" | for SGK the pin `…@v0.4.0`; for CPBH `…@v0.3.0` or `…@v0.4.0`; for SI `…@v0.3.0` or `…@v0.4.0` |
+| `docs/adoption/README.md:594` | the row for `:469`: the `v0.2.2` addendum's citations are read "at `6d8ee9a`, or ten lines later here" | at `6d8ee9a`, or fifteen lines later here (all but `:7-10`) |
+| `docs/adoption/README.md:595` | the rows for `:470-471`: "as `:467` and `:468`" | as `:592` and `:593` |
+| `docs/adoption/README.md:596` | the row for `:472`: "at `v0.3.0`, each checklist with its four addenda" | at `v0.4.0`, each checklist with its five addenda |
+| `docs/adoption/README.md:597` | the rows for `:473-474`: "as `:467` and `:468`" | as `:592` and `:593` |
+| `docs/adoption/README.md:598` | the row for `:475`: G2 when SGK has adopted `v0.2.2` or later; G3 when CPBH has adopted `v0.2.3` or later; "G4 when SI has adopted `v0.3.0` (U37; `actor-names` U3; `factory-defaults` U5; `object-timestamp` U6)" | G2 and G3 as before; G4 when SI has adopted `v0.3.0` or later (U37; `actor-names` U3; `factory-defaults` U5; `object-timestamp` U6; `fingerprint` U6) |
+
+**Standing, not superseded:** in `:491-506`, G2's reading, "SGK has adopted `v0.2.2` or later",
+and G3's, "CPBH has adopted `v0.2.3` or later", with G2 holding; the `v0.3.0` addendum's account of
+`DatastoreObject.timestamp` (`:511-562`), true of `v0.4.0`, whose `datastorekit/object.py` is
+`v0.3.0`'s; and its "Not superseded" (`:600-602`). §2's module map (`:91-95`) maps the modules a
+client's own layer has, and `store_fingerprint` is not one of them: the map gains no row, and stays
 true.

@@ -36,6 +36,12 @@ addendum, gives SGK's pin, `v0.2.2`, `v0.2.3` or `v0.3.0` as SGK chooses, and wh
 since `v0.2.3`, and supersedes the statements it names. The text before it, the three earlier
 addenda included, is unchanged and true of the release each names.*
 
+*Added by `fingerprint` prompt 02 on 2026-10-14: the section
+[Addendum: v0.4.0](#addendum-v040-fingerprint-prompt-02-2026-10-14), after the `v0.3.0`
+addendum, gives SGK's pin, `v0.4.0`, and what changed for SGK since `v0.3.0`: nothing SGK calls,
+until SGK calls the package's fingerprint functions. It supersedes the statements it names. The
+text before it, the four earlier addenda included, is unchanged and true of the release each names.*
+
 Unless another commit is named, a `path:line` is SGK's at `b510bc9`, and one under
 `datastorekit/` is the package's at `v0.2.0`.
 
@@ -720,6 +726,233 @@ with this addendum. In the file as `factory-defaults` prompt 02 left it (`0de2b1
 `:631`, "G2 holds when SGK has adopted `v0.2.2` or later (U37; `actor-names` U3; `factory-defaults`
 U5)". Each is `object-timestamp` U6's reading too, and G2 holds (2026-10-12, the extraction board,
 recorded at `6465a6a`).
+
+---
+
+## Addendum: v0.4.0 (fingerprint prompt 02, 2026-10-14)
+
+*Written by `fingerprint` prompt 02 on 2026-10-14, and added after `object-timestamp` prompt 02's
+`v0.3.0` addendum. 07a's text and the `v0.2.1`, `v0.2.2`, `v0.2.3` and `v0.3.0` addenda stay as
+written, each true of the release it names (`CLAUDE.md` rule 6). SGK was not re-measured (as
+decision U37); what this section says of SGK comes from reads through `git` only, at `a5a6f6d`
+(SGK's `HEAD` when read, 2026-10-14, branch `handover-remedial`) and `c8a7f14`, the same in
+`RunRegistry/` and `ObjectFactories/`. An SGK `path:line` here is SGK's at `a5a6f6d`.*
+
+**This is the note SGK's `runregistry-extraction` prompt 03 reads** (SGK's
+`prompts/runregistry-extraction/README.md:216-217`): each item below says whether it applies when
+SGK moves its pin (its 03) or when SGK calls the package's fingerprint functions (its 06). The
+table at the end gives the two side by side.
+
+**The pin.** SGK adopts **`v0.4.0`** in place of `v0.2.2`, by its `runregistry-extraction` prompt
+03, a commit of its own (decision U6 of the `fingerprint` campaign; SGK's gate E1):
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.4.0
+```
+
+G2's reading is unchanged, "SGK has adopted `v0.2.2` or later", and **G2 holds** (2026-10-12, the
+extraction board); `v0.4.0` is within it. SGK's `requirements.txt:17` pins `v0.2.2`.
+
+`v0.4.0` carries `v0.2.1`'s three fixes, `v0.2.2`'s fix, `v0.2.3`'s change and `v0.3.0`'s change,
+unchanged.
+
+**What changed since `v0.3.0`.** One module was added to the package, by `fingerprint` prompt 01
+(`d1b61d6`): `datastorekit/store_fingerprint.py`, holding SGK's `fingerprint_of`,
+`compare_fingerprints` and `listing_lines`, moved from SGK's `RunRegistry/stores.py:1164-1400` at
+`c8a7f14` (`PROVENANCE.md`), with SGK's format a required argument and the package's own version,
+`ENCODING_FORMAT`, recorded beside it. The detail is
+[`docs/client-contract.md` §9.7](../client-contract.md#97-fingerprint-prompt-01), and
+[`README.md`'s addendum](README.md#addendum-v040-fingerprint-prompt-02-2026-10-14) gives it for
+every client. Nothing the layer writes or reads changes, and no message, refusal or exception of
+the layer's: the layer never calls the module.
+
+### What moving the pin changes: nothing SGK calls
+
+- **SGK's three functions stay SGK's** until its prompt 06: `fingerprint_of`
+  (`RunRegistry/stores.py:1182`), `compare_fingerprints` (`:1256`) and `listing_lines` (`:1376`).
+  Each of SGK's 20 calls of them, found by an `ast` read of every `.py` file through `git show`,
+  outside `prompts/`, `.prompts/`, `docs/` and `.documents/` (the table is in
+  [`README.md`'s addendum](README.md#addendum-v040-fingerprint-prompt-02-2026-10-14)), calls SGK's
+  own, and no SGK file names `datastorekit.store_fingerprint`.
+- **What they read from the package is unchanged since `v0.2.2`**: `canonical_json`, imported
+  inside `fingerprint_of` and `listing_lines` (`RunRegistry/stores.py:1197`, `:1383`), and
+  `read_inventory`, imported inside `fingerprint_store` (`:1493`), both from
+  `datastorekit/store_inventory.py`, which no release since `v0.2.2` has changed. So every digest
+  and count SGK's code takes is as at `v0.2.2`, and G2's reference fingerprint (`39809dca…`, item
+  9) is taken as before.
+- **`v0.2.3` and `v0.3.0` ask nothing of SGK** (their addenda, above): SGK registers factory
+  classes, and passes `store_id` alone to `DatastoreObject`.
+- **So no SGK suite count changes with the pin** (SGK 03's acceptance 2), as read here: nothing
+  SGK runs reaches the new module, and nothing it reaches changed in a way its tests see. SGK's 03
+  measures it.
+- **Item 8 still holds: no SGK store is refused.** Nothing the layer writes or reads changes
+  (contract [§9.7](../client-contract.md#97-fingerprint-prompt-01)), so every SGK store opens under
+  `v0.4.0` as under `v0.2.2`.
+
+### What changes when SGK calls the package's functions
+
+When SGK calls `datastorekit.store_fingerprint`'s functions in place of its own (its prompt 06,
+whose plan has a `config/fingerprint.py` hand `read_inventory(primary, factories)` and SGK's format
+to the package's function, SGK's `prompts/runregistry-extraction/README.md:244-246`), seven things
+change for it. Each item names SGK's code at `a5a6f6d`. SGK's 06 moves `RunRegistry/` out of SGK
+(`:255`); an item applies to whichever code then makes the call.
+
+1. **`fingerprint_format` is required.** The package's `fingerprint_of(inventory,
+   fingerprint_format, taken=None)` has no default for it, so each of SGK's ten calls gains SGK's
+   format, `6` (`FINGERPRINT_FORMAT`, `RunRegistry/stores.py:206`), positionally or by keyword.
+   - The eight that pass the inventory alone (`RunRegistry/tests/test_store_fingerprint.py:147`,
+     `:162`, `:196`, `:336`, `:566`; `ObjectFactories/tests/test_quadsource_policy_key.py:413`,
+     `:416`, `:419`) would raise Python's `TypeError` for a missing argument.
+   - **The two that pass `taken` as the second positional argument** would pass the `taken` dict as
+     the format, which the package refuses with `TypeError`, naming its type and value, before
+     anything is read: such a call hashes nothing. One is **`fingerprint_store`'s own**
+     (`RunRegistry/stores.py:1500-1508`), so `python -m RunRegistry store fingerprint` would fail,
+     `retire_store`'s fresh fingerprint would be refused as "could not be taken"
+     (`RunRegistry/stores.py:1879-1886`), and `Run.finish(..., fingerprint=True)`, which never
+     raises for a fingerprint, would record the `TypeError` as `fingerprint_error` in place of a
+     fingerprint (`RunRegistry/__init__.py:379-392`). The other is
+     `TestGolden.test_taken_is_outside_every_digest` (`RunRegistry/tests/test_store_fingerprint.py:378`).
+     Each becomes `fingerprint_of(inventory, 6, taken)`, or passes `taken=` by keyword; which is
+     SGK's.
+2. **Every fingerprint has `encoding_format`**: six keys, where SGK's code makes five.
+   `TestGolden.test_the_shape` pins SGK's five (`RunRegistry/tests/test_store_fingerprint.py:358-374`,
+   the set at `:360-362`), and `TestGolden.test_the_golden_fingerprint` (`:350-356`) compares a
+   fresh fingerprint with `GOLDEN` (`:74-78`), one of the six golden files
+   `RunRegistry/tests/data/full_store_fingerprint*.json`, none of which has `encoding_format`; each
+   test would fail. They are SGK's to change. SGK's sidecar check, `_fingerprint_problems`
+   (`RunRegistry/stores.py:416-436`), checks four keys and allows others, so a fingerprint with
+   `encoding_format` passes it unchanged.
+3. **`compare_fingerprints` refuses on the encoding format, and every fingerprint SGK already
+   holds lacks one.** The package's comparison reads `fingerprint_format` and then
+   `encoding_format`, each with `.get()`, and if either differs gives one entry for each that
+   differs and compares nothing else. A fingerprint made by SGK's code has no `encoding_format`, so
+   against one of the package's (`encoding_format` `1`) it gives exactly one entry, of kind
+   `encoding`, whatever the two stores hold. That is so of every fingerprint SGK holds: a store
+   sidecar's `fingerprint` field, written by `store fingerprint --write` and by `Run.finish(...,
+   fingerprint=True)` (`RunRegistry/stores.py:1531-1544`, `RunRegistry/__init__.py:403-427`); a
+   run's `status.json` `fingerprint` (the same); and its six golden files. So, until a store's
+   recorded fingerprint is one of the package's:
+   - `fingerprint_store`'s comparison with the recorded fingerprint (`RunRegistry/stores.py:1510-1529`)
+     is that one `encoding` entry, for a store whose content is unchanged, and `python -m
+     RunRegistry store fingerprint` reports one difference and exits 1
+     (`RunRegistry/__main__.py:313-318`, `:335-337`);
+   - `retire_store` refuses the store, since it requires a fresh fingerprint to compare empty with
+     the recorded one (`RunRegistry/stores.py:1871-1893`; SGK's test of a mismatch,
+     `RunRegistry/tests/test_store_retire.py:460-479`);
+   - `TestFormats` (`RunRegistry/tests/test_store_fingerprint.py:434-457`) keeps its answer: its
+     fingerprints lack `encoding_format` on both sides, which compare equal, so its `format`
+     mismatch is still the one entry, with SGK's text.
+
+   **Which stores this reaches**, as read through `git`: SGK's audit
+   (`docs/runregistry-extraction-audit.md:204-214`) found each of the 14 sidecars then under
+   `var/datastores/` a tombstone, which neither `fingerprint_store` nor `retire_store` reads again.
+   Since then SGK's R0 (its prompt 02) recorded fingerprints, made by SGK's code, in the sidecars of
+   two live stores, `runregistry-extraction-02-reference` and `runregistry-extraction-02-resumed`,
+   each "retired by the user after 09" (`docs/runregistry-extraction-verification.md:152-157`;
+   `docs/runregistry-extraction/rehearsal/store_sidecars_02.txt:17`, `:69-70`, `:88`); and R1 (its
+   04) runs at 03's tree, where SGK's own code still takes fingerprints. Whether others exist is
+   SGK's to count.
+
+   **SGK's options**, each SGK's to take or not; this addendum makes no choice:
+   - **(a) Recompute each live store's recorded fingerprint with the package's code**, once SGK
+     calls it: through SGK's own `python -m RunRegistry store fingerprint <primary> --write`
+     (`RunRegistry/__main__.py:414-423`), or the next `Run.finish(..., fingerprint=True)` on that
+     store. It touches each such store's sidecar, its `fingerprint` field only
+     (`RunRegistry/stores.py:1541-1543`), replacing the recorded fingerprint and its `taken`. It
+     reaches no tombstone, no earlier run's `status.json` and no golden file.
+   - **(b) Keep comparing a recorded fingerprint with SGK's own code until it is recomputed**: SGK's
+     `compare_fingerprints` stays beside the package's, for a fingerprint without
+     `encoding_format`. It touches SGK's fingerprint code, which then holds two comparisons, and no
+     recorded fingerprint.
+   - **(c) Retire such a store before SGK calls the package's functions**, while SGK's own code
+     compares it. It touches the order of SGK's plan, which retires the R0 stores after its 09.
+4. **The listing's first line gains ` encoding_format <e>` at its end**: `# fingerprint_format <f>
+   digest <d> encoding_format <e>`. `parse_listing` (`RunRegistry/tests/test_store_fingerprint.py:114-135`)
+   reads `words[2]` and `words[4]` (`:120-122`), which are unchanged, so it reads the package's
+   listings as it reads SGK's. Nothing else in a listing changes.
+5. **`listing_lines` needs a fingerprint of the package's `fingerprint_of`**: it reads
+   `fingerprint["encoding_format"]`, so one made by SGK's code raises `KeyError` (`fingerprint` log
+   01, §6 item 1). SGK's one call, in `write_listing` (`RunRegistry/stores.py:1432`), is given
+   `fingerprint_store`'s fresh fingerprint (`RunRegistry/__main__.py:329-332`), so it holds once
+   `fingerprint_store` calls the package's `fingerprint_of`, and not if the two are mixed.
+6. **`FINGERPRINT_FORMAT` stays SGK's**: SGK's format, `6`, its history comment and its bumps
+   (`RunRegistry/stores.py:194-206`), which SGK's plan moves to its `config/fingerprint.py` (SGK's
+   `prompts/runregistry-extraction/README.md:244-246`). SGK gives it to `fingerprint_of`, and bumps
+   it when SGK's specs or registry change what the fingerprint sees. **SGK never bumps
+   `ENCODING_FORMAT`**: it is the package's, bumped under contract §9.7's rule, and a bump is said
+   in the releasing addendum to this checklist.
+7. **SGK's R1 checks SGK's digest.** SGK's R1 (its prompt 04, SGK's
+   `prompts/runregistry-extraction/README.md:220-229`) takes each store's fingerprint both ways, at
+   format 6, and requires every digest and count to be equal. `fingerprint` prompt 01's
+   equivalence check (its log, §4.3), a verbatim extract of SGK's five functions at `c8a7f14` run
+   beside the package's on the neutral client's stores, found the package's equal to SGK's code in
+   every field but `encoding_format`, which SGK's lacks. A difference in R1 is a defect of this
+   package, reported here (`fingerprint` README §7).
+
+Item 9's fingerprint statements (`:333-360`) still hold, of SGK's own code: G2's reference
+fingerprint and its command are SGK's, taken through `python -m RunRegistry store fingerprint`.
+
+### For SGK's prompt 03
+
+| Item | At the pin (03) | At the call (06) |
+|---|---|---|
+| The pin `…@v0.4.0`, in place of `v0.2.2` | SGK does it: `requirements.txt:17` | — |
+| Nothing SGK calls changes; no suite count changes; item 8 | applies, and asks nothing: SGK's own functions run, over `store_inventory`, unchanged since `v0.2.2` | — |
+| `v0.2.3`'s and `v0.3.0`'s addenda | ask nothing of SGK (above) | — |
+| (1) `fingerprint_format` required; the two positional `taken` calls | does not apply: SGK's own `fingerprint_of` is called | SGK's to do: ten calls, two of them `RunRegistry/stores.py:1500` and `RunRegistry/tests/test_store_fingerprint.py:378` |
+| (2) `encoding_format` in every fingerprint | does not apply | SGK's to do: `test_the_shape`, `test_the_golden_fingerprint` |
+| (3) the `encoding` refusal of fingerprints SGK holds | does not apply: SGK's own `compare_fingerprints` is called | SGK's choice among the options named |
+| (4) the listing's first line | does not apply | `parse_listing` unchanged |
+| (5) `listing_lines` needs the package's fingerprint | does not apply | holds if `fingerprint_store` calls the package's `fingerprint_of` |
+| (6) `FINGERPRINT_FORMAT` SGK's; never `ENCODING_FORMAT` | does not apply | SGK's, as planned for its `config/fingerprint.py` |
+| (7) R1, the fingerprint both ways | R1 runs at 03's tree (its 04) | — |
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`), one in the `v0.2.1` addendum stays `v0.2.1`'s (`33778b0`), and one in the `v0.2.2`
+addendum stays `v0.2.2`'s (`6d8ee9a`). The `v0.2.3` and `v0.3.0` addenda cite none, and neither
+does this addendum; one cited here would be `v0.4.0`'s, whose `datastorekit/` is the tree of
+`fingerprint` prompt 01's commit `d1b61d6`. An SGK line is SGK's at the commit named, and at
+`a5a6f6d` in this addendum.
+
+**What this addendum supersedes**, in this file. Each `path:line` below is this file's as committed
+with this addendum. In the file as `object-timestamp` prompt 02 left it (`2f5417e`), every line
+after `:38` is six lines earlier, since this addendum's italic line under the title adds six
+(N = 6). The `v0.3.0` addendum's italic line added six too (k = 6), and the rule it states for the
+earlier addenda still holds, each shift now N more. So:
+- the `v0.3.0` addendum's citations, which are that file's, are read at `2f5417e`, or **6** lines
+  later here (all but `:27-31`, which is above the insert);
+- the `v0.2.3` addendum's, which the `v0.3.0` addendum reads at `0de2b16` or six lines later, are
+  read at `0de2b16`, or **12** lines later here (all but `:21-25`);
+- the `v0.2.2` addendum's, which the `v0.3.0` addendum reads at `6d8ee9a` or twelve lines later,
+  are read at `6d8ee9a`, or **18** lines later here (all but `:16-19`);
+- the `v0.2.1` addendum's, which the `v0.3.0` addendum reads at `33778b0` or eighteen lines later,
+  are read at `33778b0`, or **24** lines later here (all but `:6`).
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/secondarygwkit.md:33-37` | the `v0.3.0` addendum gives "SGK's pin, `v0.2.2`, `v0.2.3` or `v0.3.0` as SGK chooses" | it gives `v0.3.0`'s pins and changes, true of `v0.3.0`; this addendum gives SGK's pin at `v0.4.0`: `v0.4.0`, by its `runregistry-extraction` prompt 03 |
+| `docs/adoption/secondarygwkit.md:649-669` | in part: "SGK may stay on **`v0.2.2`** or move to **`v0.2.3`** or **`v0.3.0`**, as SGK chooses", and the pins `…@v0.2.2`, `…@v0.2.3` or `…@v0.3.0` | SGK adopts `v0.4.0` in place of `v0.2.2`, by its `runregistry-extraction` prompt 03 (`fingerprint` U6); the pin `…@v0.4.0`; "The pin", above. The rest stands: a move is a commit of SGK's own, and G2's reading and its holding (`:651-653`) |
+| `docs/adoption/secondarygwkit.md:671` | "`v0.3.0` carries `v0.2.1`'s three fixes, `v0.2.2`'s fix and `v0.2.3`'s change unchanged" | true of `v0.3.0`; `v0.4.0` carries those and `v0.3.0`'s change, unchanged |
+| `docs/adoption/secondarygwkit.md:701-709` | the `v0.3.0` addendum's `path:line`s are "this file's as committed with this addendum", and the earlier addenda's are read 6, 12 and 18 lines later | they are read at `2f5417e`, or 6 lines later here; the `v0.2.3` addendum's 12, the `v0.2.2` addendum's 18, and the `v0.2.1` addendum's 24; above |
+| `docs/adoption/secondarygwkit.md:713` | the row for `:27-31`: "this addendum gives SGK's pins at `v0.3.0`: `v0.2.2`, `v0.2.3` or `v0.3.0`, as SGK chooses" | the `v0.3.0` addendum gives those, true of `v0.3.0`; this addendum gives `v0.4.0`, above |
+| `docs/adoption/secondarygwkit.md:714` | in part, the row for `:557-559`: "SGK may stay on `v0.2.2` or move to `v0.2.3` or `v0.3.0`, as SGK chooses (`object-timestamp` U6)" | SGK adopts `v0.4.0` (`fingerprint` U6), as `:649-669`. The row's G2 reading stands |
+| `docs/adoption/secondarygwkit.md:715` | the row for `:561-569`: "`…@v0.2.2`, `…@v0.2.3` or `…@v0.3.0`, above" | `…@v0.4.0`, above |
+| `docs/adoption/secondarygwkit.md:716` | the row for `:609-615`: read "at `0de2b16`, or six lines later here; the `v0.2.2` addendum's twelve, and the `v0.2.1` addendum's eighteen" | at `0de2b16`, or twelve lines later here; the `v0.2.2` addendum's eighteen, and the `v0.2.1` addendum's twenty-four; above |
+| `docs/adoption/secondarygwkit.md:717` | in part, the row for `:623`: "or move to `v0.2.3` or `v0.3.0` (`object-timestamp` U6)" | as `:714` |
+| `docs/adoption/secondarygwkit.md:718` | the row for `:624`: "as `:561-569`" | as `:715` |
+| `docs/adoption/secondarygwkit.md:719` | the row for `:625`: the `v0.2.2` addendum's citations are read "at `6d8ee9a`, or twelve lines later here" | at `6d8ee9a`, or eighteen lines later here (all but `:16-19`) |
+| `docs/adoption/secondarygwkit.md:720` | the rows for `:626-627`: "as `:623` and `:624`" | as `:717` and `:718` |
+| `docs/adoption/secondarygwkit.md:721` | the row for `:628`: "at `v0.2.2`, `v0.2.3` or `v0.3.0`, with the four addenda" | at `v0.4.0`, with the five addenda |
+| `docs/adoption/secondarygwkit.md:722` | the row for `:629`: "at `v0.3.0` also the change of contract §9.6, which changes nothing SGK's calls use" | at `v0.4.0` also the change of contract §9.7, which changes nothing SGK's calls use until SGK calls the package's functions, its prompt 06; "What moving the pin changes" and "What changes when SGK calls the package's functions", above |
+| `docs/adoption/secondarygwkit.md:723` | the row for `:630`: item 8's reasoning "extended to `v0.3.0`" | extended to `v0.4.0`, since nothing the layer writes or reads changes; "Item 8 still holds", above |
+
+**Standing, not superseded:** G2's reading and its holding, in the `v0.3.0` addendum's pin
+(`:651-653`, "G2's reading is unchanged, 'SGK has adopted `v0.2.2` or later', and **G2 holds**")
+and its "Standing" paragraph (`:725-728`), which are `fingerprint` U6's reading too; the `v0.3.0`
+addendum's "What changed for SGK since `v0.2.3`" (`:673-693`), true of `v0.4.0`, whose
+`datastorekit/object.py` is `v0.3.0`'s; item 9's fingerprint statements (`:333-360`), of SGK's
+own code; and item 2's import table (`:112`) and the appendix's rows (`:1230-1232`), which count
+SGK's imports of `canonical_json` and `read_inventory` at `b510bc9`, true of that commit.
 
 ---
 

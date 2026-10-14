@@ -37,6 +37,12 @@ addendum, gives CPBH's pin, `v0.2.3` or `v0.3.0` as CPBH chooses, and what chang
 `v0.2.3`, and supersedes the statements it names. The text before it, the `v0.2.1`, `v0.2.2` and
 `v0.2.3` addenda included, is unchanged and true of the release each names.*
 
+*Added by `fingerprint` prompt 02 on 2026-10-14: the section
+[Addendum: v0.4.0](#addendum-v040-fingerprint-prompt-02-2026-10-14), after the `v0.3.0`
+addendum, gives CPBH's pin, `v0.3.0` or `v0.4.0` as CPBH chooses, and what changed for CPBH since
+`v0.3.0`, and supersedes the statements it names. The text before it, the four earlier addenda
+included, is unchanged and true of the release each names.*
+
 Unless another commit is named, a `path:line` is CPBH's at `52142d7`, and one under
 `datastorekit/` is the package's at `v0.2.0`.
 
@@ -698,6 +704,93 @@ with this addendum. In the file as `factory-defaults` prompt 02 left it (`0de2b1
 | `docs/adoption/champbh.md:615-616` | the rows for `:524` and `:525`, "as `:478-479`" and "the pin `…@v0.2.3`, above" | as `:546-548` and `:550-552` |
 | `docs/adoption/champbh.md:617` | the row for `:527`: "at `v0.2.3`, with the three addenda" | at `v0.2.3` or `v0.3.0`, as CPBH chooses, with the four addenda |
 | `docs/adoption/champbh.md:618` | the row for `:528`: "G3 holds when CPBH has adopted `v0.2.3` (U37; `actor-names` U3; `factory-defaults` U5)" | G3 holds when CPBH has adopted `v0.2.3` or later (U37; `actor-names` U3; `factory-defaults` U5; `object-timestamp` U6) |
+
+---
+
+## Addendum: v0.4.0 (fingerprint prompt 02, 2026-10-14)
+
+*Written by `fingerprint` prompt 02 on 2026-10-14, and added after `object-timestamp` prompt 02's
+`v0.3.0` addendum. 07a's text and the `v0.2.1`, `v0.2.2`, `v0.2.3` and `v0.3.0` addenda stay as
+written, each true of the release it names (`CLAUDE.md` rule 6). CPBH was not re-measured (as
+decision U37); what this section says of CPBH comes from reads through `git` only, at `2792a85`
+(CPBH's `HEAD` when read, 2026-10-14, branch `read-only-plots`).*
+
+**The pin.** CPBH has adopted **`v0.3.0`** (G3 holds, 2026-10-13, the extraction board; CPBH's
+`requirements.txt:17` pins it at `2792a85`), and may stay on it or move to **`v0.4.0`**, as CPBH
+chooses, a move being a commit of its own (decision U6 of the `fingerprint` campaign). G3 reads,
+as before, "CPBH has adopted `v0.2.3` or later":
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.3.0
+```
+
+or
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.4.0
+```
+
+`v0.4.0` carries `key_on_version`, `v0.2.0`'s feature, `v0.2.1`'s three fixes, `v0.2.2`'s fix,
+`v0.2.3`'s change and `v0.3.0`'s change, unchanged.
+
+**What changed for CPBH since `v0.3.0`.** One module was added to the package, by `fingerprint`
+prompt 01 (`d1b61d6`): `datastorekit/store_fingerprint.py`, which takes a store's fingerprint from
+what `read_inventory` returns, compares two and lists one, recording the package's own
+`ENCODING_FORMAT` beside the client's format. The detail is
+[`docs/client-contract.md` §9.7](../client-contract.md#97-fingerprint-prompt-01), and
+[`README.md`'s addendum](README.md#addendum-v040-fingerprint-prompt-02-2026-10-14) gives it for
+every client. The layer never calls the module: nothing CPBH supplies changes, nothing the layer
+writes or reads changes, and no message, refusal or exception of the layer's. **Nothing changes for
+CPBH.**
+- **CPBH defines and calls none of the three functions.** By an `ast` read of every `.py` file
+  through `git show` at `2792a85`, outside `prompts/`, `.prompts/`, `docs/` and `.documents/`: no
+  `def` and no call of `fingerprint_of`, `compare_fingerprints` or `listing_lines`, and no file
+  names `datastorekit.store_fingerprint`.
+- **It meets the module only when it adopts RunRegistryKit**, whose `[stores]` extra will require
+  this release (`fingerprint` README §7). When and how CPBH does that is CPBH's.
+- **Item 8 still holds**, as at `v0.3.0`: nothing the layer writes or reads changes, so a CPBH store
+  opens, or is refused, under `v0.4.0` as under `v0.3.0`.
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`), and one in the `v0.2.1` addendum stays `v0.2.1`'s (`33778b0`). The `v0.2.2`, `v0.2.3`
+and `v0.3.0` addenda cite none, and neither does this addendum; one cited here would be `v0.4.0`'s,
+whose `datastorekit/` is the tree of `fingerprint` prompt 01's commit `d1b61d6`. A CPBH line is
+CPBH's at the commit named.
+
+**What this addendum supersedes**, in this file. Each `path:line` below is this file's as committed
+with this addendum. In the file as `object-timestamp` prompt 02 left it (`2f5417e`), every line
+after `:39` is six lines earlier, since this addendum's italic line under the title adds six
+(N = 6). The `v0.3.0` addendum's italic line added six too (k = 6), and the rule it states for the
+earlier addenda still holds, each shift now N more. So:
+- the `v0.3.0` addendum's citations, which are that file's, are read at `2f5417e`, or **6** lines
+  later here (all but `:28-32`, which is above the insert);
+- the `v0.2.3` addendum's, which the `v0.3.0` addendum reads at `0de2b16` or six lines later, are
+  read at `0de2b16`, or **12** lines later here (all but `:22-26`);
+- the `v0.2.2` addendum's, which the `v0.3.0` addendum reads at `6d8ee9a` or twelve lines later,
+  are read at `6d8ee9a`, or **18** lines later here (all but `:17-20`);
+- the `v0.2.1` addendum's, which the `v0.3.0` addendum reads at `33778b0` or eighteen lines later,
+  are read at `33778b0`, or **24** lines later here (all but `:6`).
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/champbh.md:34-38` | the `v0.3.0` addendum gives "CPBH's pin, `v0.2.3` or `v0.3.0` as CPBH chooses" | it gives `v0.3.0`'s pins and changes, true of `v0.3.0`; this addendum gives CPBH's pins at `v0.4.0`: `v0.3.0`, which CPBH has adopted, or `v0.4.0`, as CPBH chooses |
+| `docs/adoption/champbh.md:636-648` | in part: "CPBH may stay on **`v0.2.3`** or move to **`v0.3.0`**, as CPBH chooses", and the pins `…@v0.2.3` or `…@v0.3.0` | CPBH has adopted `v0.3.0` (G3 holds, 2026-10-13), and may stay on it or move to `v0.4.0` (`fingerprint` U6); the pins `…@v0.3.0` or `…@v0.4.0`; "The pin", above. The rest stands: a move is a commit of CPBH's own, and G3's reading (`:638`) |
+| `docs/adoption/champbh.md:650-651` | "`v0.3.0` carries `key_on_version`, `v0.2.0`'s feature, `v0.2.1`'s three fixes, `v0.2.2`'s fix and `v0.2.3`'s change, unchanged" | true of `v0.3.0`; `v0.4.0` carries those and `v0.3.0`'s change, unchanged |
+| `docs/adoption/champbh.md:685-693` | the `v0.3.0` addendum's `path:line`s are "this file's as committed with this addendum", and the earlier addenda's are read 6, 12 and 18 lines later | they are read at `2f5417e`, or 6 lines later here; the `v0.2.3` addendum's 12, the `v0.2.2` addendum's 18, and the `v0.2.1` addendum's 24; above |
+| `docs/adoption/champbh.md:697` | the row for `:28-32`: "this addendum gives CPBH's pins at `v0.3.0`: `v0.2.3` or `v0.3.0`, as CPBH chooses" | the `v0.3.0` addendum gives those, true of `v0.3.0`; this addendum gives `v0.3.0` or `v0.4.0`, above |
+| `docs/adoption/champbh.md:698` | in part, the row for `:546-548`: "CPBH may stay on `v0.2.3` or move to `v0.3.0` (`object-timestamp` U6)" | CPBH has adopted `v0.3.0`, and may stay on it or move to `v0.4.0` (`fingerprint` U6), as `:636-648`. The row's G3 reading stands |
+| `docs/adoption/champbh.md:699` | the row for `:550-552`: "`…@v0.2.3` or `…@v0.3.0`, as CPBH chooses, above" | `…@v0.3.0` or `…@v0.4.0`, as CPBH chooses, above |
+| `docs/adoption/champbh.md:700` | the row for `:598-604`: read "at `0de2b16`, or six lines later here; the `v0.2.2` addendum's twelve, and the `v0.2.1` addendum's eighteen" | at `0de2b16`, or twelve lines later here; the `v0.2.2` addendum's eighteen, and the `v0.2.1` addendum's twenty-four; above |
+| `docs/adoption/champbh.md:701` | the row for `:612`: "as `:546-548`" | as `:698` |
+| `docs/adoption/champbh.md:702` | the row for `:613`: "as `:550-552`" | as `:699` |
+| `docs/adoption/champbh.md:703` | the row for `:614`: the `v0.2.2` addendum's citations are read "at `6d8ee9a`, or twelve lines later here" | at `6d8ee9a`, or eighteen lines later here (all but `:17-20`) |
+| `docs/adoption/champbh.md:704` | the rows for `:615-616`: "as `:546-548` and `:550-552`" | as `:698` and `:699` |
+| `docs/adoption/champbh.md:705` | the row for `:617`: "at `v0.2.3` or `v0.3.0`, as CPBH chooses, with the four addenda" | at `v0.3.0` or `v0.4.0`, as CPBH chooses, with the five addenda |
+
+**Standing, not superseded:** G3's reading, "CPBH has adopted `v0.2.3` or later", in the `v0.3.0`
+addendum's pin (`:638`) and its row (`:706`), which is `fingerprint` U6's reading too, G3 holding
+(2026-10-13, the extraction board); and the `v0.3.0` addendum's account of the object (`:653-677`),
+true of `v0.4.0`, whose `datastorekit/object.py` is `v0.3.0`'s.
 
 ---
 

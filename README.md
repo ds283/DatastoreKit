@@ -7,6 +7,18 @@ one shard by a shard key, and checks the store's integrity each time it is opene
 
 ## Status
 
+**`v0.4.0`** is a minor release with one change (`fingerprint` prompt 01, on the user's ruling): a
+new module, `datastorekit.store_fingerprint`, takes a store's fingerprint from what
+`read_inventory` returns (`fingerprint_of`), compares two fingerprints (`compare_fingerprints`)
+and lists one (`listing_lines`). The client gives its own format number, `fingerprint_format`,
+which it keeps and bumps; the package records its own, `ENCODING_FORMAT`, beside it in every
+fingerprint, outside the digest, and a comparison refuses two fingerprints whose formats of either
+kind differ. Nothing the layer writes or reads changes, no message, refusal or exception of the
+layer's changes, and `store_inventory` is unchanged: a client that does not import the module
+meets nothing new. The release adds API, so it is a minor release.
+[`docs/client-contract.md`](docs/client-contract.md)
+[§9.7](docs/client-contract.md#97-fingerprint-prompt-01) gives the detail.
+
 **`v0.3.0`** is a minor release with one change (`object-timestamp` prompt 01, on the user's
 ruling): `DatastoreObject` takes an optional, keyword-only `timestamp` argument and exposes it as a
 read-only `timestamp` property. The layer never sets it and never reads it: a factory that reads a
@@ -90,13 +102,13 @@ separate unit of work.
 A client depends on a tagged release, pinned in its `requirements.txt`:
 
 ```text
-datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.3.0
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.4.0
 ```
 
-`v0.2.3`, `v0.2.2`, `v0.2.1`, `v0.2.0` and `v0.1.0` remain tagged, and no tag is moved or
-deleted. StochasticInstantons adopts `v0.3.0`. ChamPBH may stay on `v0.2.3` and SecondaryGWKit on
-`v0.2.2`, or either may move, in a commit of its own, as it chooses: neither reads the value back,
-and nothing they call changes.
+`v0.3.0`, `v0.2.3`, `v0.2.2`, `v0.2.1`, `v0.2.0` and `v0.1.0` remain tagged, and no tag is moved
+or deleted. SecondaryGWKit adopts `v0.4.0`. ChamPBH may stay on `v0.3.0` and StochasticInstantons
+adopt `v0.3.0`, or either may move to `v0.4.0`, in a commit of its own, as it chooses: neither
+calls the new module, and nothing they call changes.
 
 An editable install (`pip install -e`) is for developing this package, never for a client's
 production runs: a production run must be reproducible from its pin.
@@ -121,6 +133,13 @@ the layer does with it, and what happens when it is wrong or absent.
   class or to an instance of one ([§9.5](docs/client-contract.md#95-factory-defaults-prompt-01)).
 - **The inventory declarations**: an `InventorySpec` per class, with its `Parent`s and
   `ParentSet`s (`datastorekit.store_inventory`) ([§4](docs/client-contract.md#4-the-inventorys-declarations)).
+- **The store fingerprint**, optional: `datastorekit.store_fingerprint`'s
+  `fingerprint_of(inventory, fingerprint_format, taken=None)`, `compare_fingerprints(recorded,
+  current)` and `listing_lines(inventory, fingerprint)`, over what `read_inventory` returns. The
+  client gives its own `fingerprint_format`, an `int` of at least 1, which it bumps when its specs
+  or registry change what the fingerprint sees; it never bumps the package's `ENCODING_FORMAT`,
+  which every fingerprint records beside the digest
+  ([§9.7](docs/client-contract.md#97-fingerprint-prompt-01)).
 - **The two tables the layer owns**: `version` and `store_tag`, named in `datastorekit.contract`,
   each registered by the client under that name ([§5](docs/client-contract.md#5-the-layers-own-tables)).
 - **Version-keyed lookups**, optional: a factory whose `register()` declares
@@ -131,10 +150,13 @@ the layer does with it, and what happens when it is wrong or absent.
 - **What changed after `v0.2.0`**: the three fixes of `v0.2.1`, and the fix of `v0.2.2`, that a
   closed pool releases its actors' names, with the property it keeps, that closing a pool never
   starts Ray; the change of `v0.2.3`, that the base defaults `store`, `validate` and
-  `validate_on_startup`, so a factory may be an instance; and the change of `v0.3.0`, that a stored
+  `validate_on_startup`, so a factory may be an instance; the change of `v0.3.0`, that a stored
   object may carry its row's `timestamp`, which a factory passes and the layer never sets or reads
-  ([§9.6](docs/client-contract.md#96-object-timestamp-prompt-01)); each with what the layer now
-  does and the test that pins it ([§9](docs/client-contract.md#9-changes-after-v020)).
+  ([§9.6](docs/client-contract.md#96-object-timestamp-prompt-01)); and the change of `v0.4.0`, a
+  new module, which the layer itself never calls, that takes, compares and lists a store's
+  fingerprint, recording the package's `ENCODING_FORMAT` beside the client's format
+  ([§9.7](docs/client-contract.md#97-fingerprint-prompt-01)); each with what the layer now does and
+  the test that pins it ([§9](docs/client-contract.md#9-changes-after-v020)).
 
 The worked example is the neutral test client, [`datastorekit/tests/client/`](datastorekit/tests/client/).
 Its registry module, [`datastorekit/tests/client/registry.py`](datastorekit/tests/client/registry.py),

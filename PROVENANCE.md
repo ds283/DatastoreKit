@@ -270,3 +270,50 @@ contract gained §9.6, and the verification document §4.9. The suite went from 
 - `docs/client-contract.md` (§9.6); `docs/extraction-verification.md` (§4.9).
 
 The log is `prompts/object-timestamp/logs/01-the-object-carries-a-timestamp.md`.
+
+### `fingerprint` prompt 01: the store fingerprint moves into the package (`v0.4.0`)
+
+**Its source is SGK, after the import commit.** `datastorekit/store_fingerprint.py` comes from
+SGK's `RunRegistry/stores.py:1164-1400` at `c8a7f14` (2026-10-12; `RunRegistry/` is unchanged from
+there to SGK's `a5a6f6d`, `git diff --stat c8a7f14 a5a6f6d -- RunRegistry`): the five functions
+`_sha256_lines`, `_tag_sets`, `fingerprint_of`, `compare_fingerprints` and `listing_lines`, and the
+helpers `_tags_text`, `_difference` and `_presence`. The extract (`git show
+c8a7f14:RunRegistry/stores.py`, lines 1164-1400, 237 lines) has SHA-256
+`9b1a8aedb006ffa9c2635038eda2e87cad451106283d022a94f8038cd8eb0108`. The move is the user's ruling
+of 2026-10-12, SGK's D3 (`prompts/fingerprint/README.md` §0), and was made by `fingerprint` prompt
+01 (`d1b61d6`). Unlike `v0.1.0`'s files, this one is not under `compare_with_source.py`, which is
+retired at `v0.1.0`; its comparison with the source is the equivalence check in 01's log (§4.3).
+
+**The differences from the source**, each a decision of `prompts/fingerprint/README.md` §6.2:
+- the client's format is a required argument of `fingerprint_of`, positional or by keyword, refused
+  unless an `int` of at least 1, where the source read its own `FINGERPRINT_FORMAT` (U1);
+- every fingerprint carries `encoding_format` beside the digest, outside the object the digest
+  hashes; `compare_fingerprints` refuses two fingerprints whose `fingerprint_format` or
+  `encoding_format` differ, keeping the source's `format` entry verbatim and adding an `encoding`
+  entry; and the listing's first line gains ` encoding_format <e>` at its end (U2);
+- `ENCODING_FORMAT = 1`, the package's version of the encoding and the algorithm, under a comment
+  stating its bump rule, which contract §9.7 states too (U3);
+- `canonical_json` is imported from `datastorekit.store_inventory` at module scope, where the
+  source imported it inside two functions;
+- the prose is rewritten for the package, naming no client, and the source's history comment of
+  its own formats is left out.
+
+Every digest, count and comparison entry is the source's: the equivalence check of 01's log §4.3,
+on the neutral client's full store and 37 changed stores, at client formats 1 and 6, at both tested
+ends, found 0 differences, every fingerprint equal to the source's but for `encoding_format`.
+`datastorekit/store_inventory.py` is unchanged (`git diff --stat v0.2.2 d1b61d6 --
+datastorekit/store_inventory.py` is empty).
+
+**What changed in the package**: one module added, `datastorekit/store_fingerprint.py` (351
+lines); every other file in the wheel is `v0.3.0`'s (`git diff --stat 2f5417e d1b61d6 --
+datastorekit` lists the module, its test module and the golden only). In this repository only,
+outside the wheel, `datastorekit/tests/test_store_fingerprint.py` (21 tests) and the golden
+fingerprint `datastorekit/tests/data/store_fingerprint-neutral-1-encoding-1.json` are new, and the
+contract gained §9.7 and its head line. The suite went from 509 to 530.
+
+**The files 01 changes:**
+- the new `datastorekit/store_fingerprint.py`, `datastorekit/tests/test_store_fingerprint.py` and
+  `datastorekit/tests/data/store_fingerprint-neutral-1-encoding-1.json`;
+- `docs/client-contract.md` (§9.7 and its head line).
+
+The log is `prompts/fingerprint/logs/01-the-fingerprint-moves-into-the-package.md`.

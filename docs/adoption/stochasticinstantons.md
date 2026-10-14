@@ -35,6 +35,12 @@ addendum, gives the pin **`v0.3.0`** and what changed for SI since `v0.2.3`, and
 statements it names. The text before it, the `v0.2.1`, `v0.2.2` and `v0.2.3` addenda included, is
 unchanged and true of the release each names.*
 
+*Added by `fingerprint` prompt 02 on 2026-10-14: the section
+[Addendum: v0.4.0](#addendum-v040-fingerprint-prompt-02-2026-10-14), after the `v0.3.0`
+addendum, gives SI's pin, `v0.3.0` or `v0.4.0` as SI chooses, and what changed for SI since
+`v0.3.0`, and supersedes the statements it names. The text before it, the four earlier addenda
+included, is unchanged and true of the release each names.*
+
 Unless another commit is named, a `path:line` is SI's at `7bb3efd`, and one under `datastorekit/`
 is the package's at `v0.2.0`.
 
@@ -673,6 +679,97 @@ with this addendum. In the file as `factory-defaults` prompt 02 left it (`0de2b1
 | `docs/adoption/stochasticinstantons.md:580-581` | the rows for `:493` and `:494`, "as `:448-450`" and "the pin `…@v0.2.3`, above" | as `:515-521` |
 | `docs/adoption/stochasticinstantons.md:582` | the row for `:496`: "at `v0.2.3`, with the three addenda" | at `v0.3.0`, with the four addenda |
 | `docs/adoption/stochasticinstantons.md:583` | the row for `:497`: "G4 holds when SI has adopted `v0.2.3` (U37; `actor-names` U3; `factory-defaults` U5)" | G4 holds when SI has adopted `v0.3.0` (U37; `actor-names` U3; `factory-defaults` U5; `object-timestamp` U6) |
+
+---
+
+## Addendum: v0.4.0 (fingerprint prompt 02, 2026-10-14)
+
+*Written by `fingerprint` prompt 02 on 2026-10-14, and added after `object-timestamp` prompt 02's
+`v0.3.0` addendum. 07a's text and the `v0.2.1`, `v0.2.2`, `v0.2.3` and `v0.3.0` addenda stay as
+written, each true of the release it names (`CLAUDE.md` rule 6). SI was not re-measured (as
+decision U37); what this section says of SI comes from reads through `git` only, at `5fb4a1d` (SI's
+`HEAD` when read, 2026-10-14, branch `dk-and-rpk-migration`).*
+
+**The pin.** SI adopts **`v0.3.0`** or **`v0.4.0`**, as SI chooses, when it is next active, a move
+being a commit of its own (decision U6 of the `fingerprint` campaign, which amends
+`object-timestamp` decision U6 for SI), and G4 reads "SI has adopted `v0.3.0` or later". SI's tree
+at `5fb4a1d` has no `datastorekit` line in its `requirements.txt`.
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.3.0
+```
+
+or
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.4.0
+```
+
+`v0.4.0` carries `key_on_version`, `v0.2.0`'s feature, `v0.2.1`'s three fixes, `v0.2.2`'s fix,
+`v0.2.3`'s change and `v0.3.0`'s change, unchanged.
+
+**What changed for SI since `v0.3.0`.** One module was added to the package, by `fingerprint`
+prompt 01 (`d1b61d6`): `datastorekit/store_fingerprint.py`, which takes a store's fingerprint from
+what `read_inventory` returns, compares two and lists one, recording the package's own
+`ENCODING_FORMAT` beside the client's format. The detail is
+[`docs/client-contract.md` §9.7](../client-contract.md#97-fingerprint-prompt-01), and
+[`README.md`'s addendum](README.md#addendum-v040-fingerprint-prompt-02-2026-10-14) gives it for
+every client. The layer never calls the module: nothing SI supplies changes, nothing the layer
+writes or reads changes, and no message, refusal or exception of the layer's. **Nothing changes for
+SI.**
+- **SI defines and calls none of the three functions.** By an `ast` read of every `.py` file
+  through `git show` at `5fb4a1d`, outside `prompts/`, `.prompts/`, `docs/` and `.documents/`: no
+  `def` and no call of `fingerprint_of`, `compare_fingerprints` or `listing_lines`, and no file
+  names `datastorekit.store_fingerprint`.
+- **It meets the module only when it adopts RunRegistryKit**, whose `[stores]` extra will require
+  this release (`fingerprint` README §7). When and how SI does that is SI's.
+- **The `v0.3.0` addendum's account of `DatastoreObject.timestamp` holds at `v0.4.0`**, whose
+  `datastorekit/object.py` is `v0.3.0`'s: SI's 24 sites work as they stand once their import is
+  rewritten, and `DatastoreObject.timestamp` does not leave the layer. Items 5, 6 and 8 are
+  unchanged: every SI store is refused at open, and is rebuilt (U31).
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`), one in the `v0.2.1` addendum stays `v0.2.1`'s (`33778b0`), and one in the `v0.3.0`
+addendum stays `v0.3.0`'s (`2f5417e`, whose `datastorekit/` is `1b2f91a`'s). The `v0.2.2` and
+`v0.2.3` addenda cite none, and neither does this addendum; one cited here would be `v0.4.0`'s,
+whose `datastorekit/` is the tree of `fingerprint` prompt 01's commit `d1b61d6`. An SI line is SI's
+at the commit named.
+
+**What this addendum supersedes**, in this file. Each `path:line` below is this file's as committed
+with this addendum. In the file as `object-timestamp` prompt 02 left it (`2f5417e`), every line
+after `:37` is six lines earlier, since this addendum's italic line under the title adds six
+(N = 6). The `v0.3.0` addendum's italic line added six too (k = 6), and the rule it states for the
+earlier addenda still holds, each shift now N more. So:
+- the `v0.3.0` addendum's citations, which are that file's, are read at `2f5417e`, or **6** lines
+  later here (all but `:26-30`, which is above the insert), its rows for `:44-45` and later among
+  them;
+- the `v0.2.3` addendum's, which the `v0.3.0` addendum reads at `0de2b16` or six lines later, are
+  read at `0de2b16`, or **12** lines later here (all but `:20-24`);
+- the `v0.2.2` addendum's, which the `v0.3.0` addendum reads at `6d8ee9a` or twelve lines later,
+  are read at `6d8ee9a`, or **18** lines later here (all but `:15-18`);
+- the `v0.2.1` addendum's, which the `v0.3.0` addendum reads at `33778b0` or eighteen lines later,
+  are read at `33778b0`, or **24** lines later here (all but `:5`).
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/stochasticinstantons.md:32-36` | the `v0.3.0` addendum gives the pin **`v0.3.0`** | it gives `v0.3.0`'s pin and changes, true of `v0.3.0`; this addendum gives SI's pins at `v0.4.0`: `v0.3.0` or `v0.4.0`, as SI chooses |
+| `docs/adoption/stochasticinstantons.md:601-607` | "SI adopts **`v0.3.0`** in place of `v0.2.3`, when it is next active", G4 reads "SI has adopted `v0.3.0`", and the pin `…@v0.3.0` | SI adopts `v0.3.0` or `v0.4.0`, as SI chooses, when it is next active (`fingerprint` U6), and G4 reads "SI has adopted `v0.3.0` or later"; the pins `…@v0.3.0` or `…@v0.4.0`; "The pin", above |
+| `docs/adoption/stochasticinstantons.md:609-610` | "`v0.3.0` carries `key_on_version`, `v0.2.0`'s feature, `v0.2.1`'s three fixes, `v0.2.2`'s fix and `v0.2.3`'s change, unchanged" | true of `v0.3.0`; `v0.4.0` carries those and `v0.3.0`'s change, unchanged |
+| `docs/adoption/stochasticinstantons.md:654-662` | the `v0.3.0` addendum's `path:line`s are "this file's as committed with this addendum", and the earlier addenda's are read 6, 12 and 18 lines later | they are read at `2f5417e`, or 6 lines later here; the `v0.2.3` addendum's 12, the `v0.2.2` addendum's 18, and the `v0.2.1` addendum's 24; above |
+| `docs/adoption/stochasticinstantons.md:674` | the row for `:515-521`: "SI adopts `v0.3.0` in place of `v0.2.3`, when it is next active (`object-timestamp` U6), and G4 reads 'SI has adopted `v0.3.0`'; the pin `…@v0.3.0`" | as `:601-607` |
+| `docs/adoption/stochasticinstantons.md:675` | the row for `:563-569`: read "at `0de2b16`, or six lines later here; the `v0.2.2` addendum's twelve, and the `v0.2.1` addendum's eighteen" | at `0de2b16`, or twelve lines later here; the `v0.2.2` addendum's eighteen, and the `v0.2.1` addendum's twenty-four; above |
+| `docs/adoption/stochasticinstantons.md:676` | the row for `:577`: "as `:515-521`" | as `:601-607` |
+| `docs/adoption/stochasticinstantons.md:677` | the row for `:578`: "the pin `…@v0.3.0`, above" | the pins `…@v0.3.0` or `…@v0.4.0`, above |
+| `docs/adoption/stochasticinstantons.md:678` | the row for `:579`: the `v0.2.2` addendum's citations are read "at `6d8ee9a`, or twelve lines later here" | at `6d8ee9a`, or eighteen lines later here (all but `:15-18`) |
+| `docs/adoption/stochasticinstantons.md:679` | the rows for `:580-581`: "as `:515-521`" | as `:601-607` |
+| `docs/adoption/stochasticinstantons.md:680` | the row for `:582`: "at `v0.3.0`, with the four addenda" | at `v0.3.0` or `v0.4.0`, as SI chooses, with the five addenda |
+| `docs/adoption/stochasticinstantons.md:681` | the row for `:583`: "G4 holds when SI has adopted `v0.3.0` (U37; `actor-names` U3; `factory-defaults` U5; `object-timestamp` U6)" | G4 holds when SI has adopted `v0.3.0` or later (U37; `actor-names` U3; `factory-defaults` U5; `object-timestamp` U6; `fingerprint` U6) |
+
+**Standing, not superseded:** the `v0.3.0` addendum's account of `DatastoreObject.timestamp`, true
+of `v0.4.0`, whose `datastorekit/object.py` is `v0.3.0`'s: its "What changed for SI since `v0.2.3`"
+(`:612-646`), with its line that `DatastoreObject.timestamp` "does not leave the layer" (`:641`);
+its row for the `v0.2.3` addendum's head line (`:666`); and its rows for `:44-45` to `:160`
+(`:667-673`), each a statement about `DatastoreObject.timestamp` that `v0.3.0` superseded.
 
 ---
 
