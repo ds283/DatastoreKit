@@ -317,3 +317,58 @@ contract gained §9.7 and its head line. The suite went from 509 to 530.
 - `docs/client-contract.md` (§9.7 and its head line).
 
 The log is `prompts/fingerprint/logs/01-the-fingerprint-moves-into-the-package.md`.
+
+### `extra-values` prompt 01: an inventory spec counts more than one value table (`v0.5.0`)
+
+**It has no source in a client.** It is the package's own change, made at StochasticInstantons'
+request: SI's brief, `.prompts/dk-and-rpk-migration/datastorekit-second-value-table-brief.md`,
+committed in SI as `f5f395b`, read here through `git` only, as evidence and not as a
+specification. The change was decided by `prompts/extra-values/README.md` §6.2 (U1–U4; U2 the
+user's ruling of 2026-10-21) and made by `extra-values` prompt 01 (`5475cef`). Where it departs
+from the brief (the field keyed by table, the neutral client declaring it, the refusal in
+`inventory_classes`, and `ENCODING_FORMAT` kept at 1) is that README's §0.2.
+
+**What changed in the package**: two modules, and none added or removed from the wheel.
+- `datastorekit/store_inventory.py` (+57 −18, `git diff --numstat c8570e8 5475cef`):
+  `InventorySpec.extra_values`, each further value table → its column naming the class's serial,
+  the spec's last field, defaulted empty, which `keywords()` hands to `read_records` as its last
+  keyword; `Record.extra_value_counts`, the record's last field, defaulted empty, for each declared
+  table the number of its rows naming the record's row, 0 where none; `Record.as_json`, which
+  carries the counts as a fifth key only where the mapping is not empty; the counting, one
+  `GROUP BY` per table per shard through one inner function that also counts `values`, with rows
+  naming a serial not on their shard an `orphan-value` problem; one refusal in
+  `inventory_classes`, of a spec whose `values` table is also one of its `extra_values`; and the
+  module's docstrings.
+- `datastorekit/store_fingerprint.py` (+6): a paragraph in the comment beside `ENCODING_FORMAT`,
+  saying how its item 1 is read, so that an omitted-when-empty field is not a bump.
+  `ENCODING_FORMAT` stays `1`.
+
+Every record of a class that declares no extra table is `v0.4.0`'s, byte for byte, and so is
+every fingerprint of a store read with unchanged specs. 01's test 1
+(`datastorekit/tests/test_inventory_extra_values.py`) shows it: the neutral client's full store,
+which holds the new table and its rows, read through a spec that does not declare the field,
+reproduces the format-1 golden fingerprint,
+`datastorekit/tests/data/store_fingerprint-neutral-1-encoding-1.json`, in every field but `taken`.
+Every other file in the wheel is `v0.4.0`'s (`git diff --stat c8570e8 5475cef -- datastorekit`
+lists the two modules and, outside the wheel, the files below).
+
+**Outside the wheel**, in this repository only: the new test module
+`datastorekit/tests/test_inventory_extra_values.py` (8 tests); the neutral client's further value
+table `TraceMark`, under `Trace`, which `Trace`'s spec declares; a new schema witness,
+`datastorekit/tests/data/schema_at_extra-values-01.json`; the neutral client's format 2 and a new
+golden fingerprint beside the old, `datastorekit/tests/data/store_fingerprint-neutral-2-encoding-1.json`;
+the test literals that name what changed; and the contract's §9.8 and its head line. The suite went
+from 530 to 538.
+
+**The files 01 changes:**
+- `datastorekit/store_inventory.py` and `datastorekit/store_fingerprint.py`;
+- the neutral client, `datastorekit/tests/client/build.py`, `factories.py`, `objects.py` and
+  `registry.py`, and `datastorekit/tests/real_store_fixtures.py`;
+- the new `datastorekit/tests/test_inventory_extra_values.py`,
+  `datastorekit/tests/data/schema_at_extra-values-01.json` and
+  `datastorekit/tests/data/store_fingerprint-neutral-2-encoding-1.json`;
+- `datastorekit/tests/test_neutral_client.py`, `test_schema_builder.py`,
+  `test_store_fingerprint.py` and `test_store_inventory.py`;
+- `docs/client-contract.md` (§9.8 and its head line).
+
+The log is `prompts/extra-values/logs/01-a-spec-counts-more-than-one-value-table.md`.

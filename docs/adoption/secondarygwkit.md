@@ -42,6 +42,12 @@ addendum, gives SGK's pin, `v0.4.0`, and what changed for SGK since `v0.3.0`: no
 until SGK calls the package's fingerprint functions. It supersedes the statements it names. The
 text before it, the four earlier addenda included, is unchanged and true of the release each names.*
 
+*Added by `extra-values` prompt 02 on 2026-10-21: the section
+[Addendum: v0.5.0](#addendum-v050-extra-values-prompt-02-2026-10-21), after the `v0.4.0`
+addendum, gives SGK's pin, `v0.4.0` or `v0.5.0` as SGK chooses, and what a move changes for SGK,
+one edit to its spec guard among it. It supersedes the statements it names. The text before it,
+the five earlier addenda included, is unchanged and true of the release each names.*
+
 Unless another commit is named, a `path:line` is SGK's at `b510bc9`, and one under
 `datastorekit/` is the package's at `v0.2.0`.
 
@@ -953,6 +959,161 @@ addendum's "What changed for SGK since `v0.2.3`" (`:673-693`), true of `v0.4.0`,
 `datastorekit/object.py` is `v0.3.0`'s; item 9's fingerprint statements (`:333-360`), of SGK's
 own code; and item 2's import table (`:112`) and the appendix's rows (`:1230-1232`), which count
 SGK's imports of `canonical_json` and `read_inventory` at `b510bc9`, true of that commit.
+
+---
+
+## Addendum: v0.5.0 (extra-values prompt 02, 2026-10-21)
+
+*Written by `extra-values` prompt 02 on 2026-10-21, and added after `fingerprint` prompt 02's
+`v0.4.0` addendum. 07a's text and the `v0.2.1`, `v0.2.2`, `v0.2.3`, `v0.3.0` and `v0.4.0` addenda
+stay as written, each true of the release it names (`CLAUDE.md` rule 6). SGK was not re-measured
+(as decision U37); what this section says of SGK comes from reads through `git` only, at `031bcb4`
+(SGK's `HEAD` when read, 2026-10-21, branch `handover-remedial`). An SGK `path:line` here is SGK's
+at `031bcb4`. Nothing of SGK was imported, run or opened.*
+
+**The pin.** SGK has adopted **`v0.4.0`** (its `requirements.txt:17` pins it at `031bcb4`, since
+SGK's `5b81f2e`), and may stay on it or move to **`v0.5.0`**, as SGK chooses, a move being a commit
+of its own (decision U5 of the `extra-values` campaign, as amended by the user on 2026-10-21). A
+move needs one edit to SGK's spec guard (below). G2's reading is unchanged, "SGK has adopted
+`v0.2.2` or later", and so is its holding (the extraction board):
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.4.0
+```
+
+or
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.5.0
+```
+
+`v0.5.0` carries `v0.2.1`'s three fixes, `v0.2.2`'s fix, `v0.2.3`'s change, `v0.3.0`'s change and
+`v0.4.0`'s change, unchanged.
+
+**What changed since `v0.4.0`.** One prompt changed the package, `extra-values` prompt 01
+(`5475cef`), at StochasticInstantons' request: an `InventorySpec` may name further value tables,
+`extra_values`, each counted as `values` is into each record's `extra_value_counts`, which
+`Record.as_json` carries only where it is not empty; `ENCODING_FORMAT` stays `1`; and
+`inventory_classes` gains one refusal, of a spec whose value table is also one of its
+`extra_values`. A spec now has seven fields. The detail is
+[`docs/client-contract.md` §9.8](../client-contract.md#98-extra-values-prompt-01), and
+[`README.md`'s addendum](README.md#addendum-v050-extra-values-prompt-02-2026-10-21) gives it for
+every client.
+
+### What a move to `v0.5.0` changes for SGK
+
+- **Nothing SGK calls.** By an `ast` read of every `.py` file through `git show` at `031bcb4`,
+  outside `prompts/`, `.prompts/`, `docs/` and `.documents/`: SGK's 21 `InventorySpec(...)` calls
+  each pass keywords, and none passes `extra_values`; its two `Record(...)` calls pass keywords
+  (`tools/tests/test_inventory_report_labels.py:89`, `:113`); its two `read_records` calls pass
+  four positional arguments and `parents=` (`ObjectFactories/tests/test_quadsource_parent_key.py:453`,
+  `ObjectFactories/tests/test_wkb_numeric_parent_key.py:991`); and `tools/inventory_report.py`
+  reads `record.value_count` by attribute (`:556-557`, `:582`). No SGK file reads `extra_values`,
+  `extra_value_counts` or `as_json`. A field added last, with a default, reaches none of them.
+- **No record and no fingerprint of a store read with SGK's specs moves, at format 6.** No SGK
+  spec declares an extra table, so every record SGK's specs read is `v0.4.0`'s, byte for byte, and
+  every fingerprint is `v0.4.0`'s, at the same `ENCODING_FORMAT`, `1`. The fingerprints SGK holds
+  stay comparable with fresh ones, and G2's reference fingerprint (`39809dca…`, item 9) is taken
+  as before.
+- **Item 8 still holds: no SGK store is refused.** Nothing the pool writes or reads changes
+  (contract [§9.8](../client-contract.md#98-extra-values-prompt-01)), so every SGK store opens
+  under `v0.5.0` as under `v0.4.0`.
+- **SGK's spec guard fails, unless it is edited.**
+  `ObjectFactories/tests/test_fingerprint_format_guard.py` is RunRegistryKit's recipe (its
+  `docs/adoption/README.md` §6, at its tag `v0.2.0`; the module's docstring says so, `:11-16`):
+  `plain` (`:33-44`) turns a spec into JSON by walking `dataclasses.fields`, and
+  `test_every_spec_is_pinned_for_the_current_format` (`:56-94`) compares `spec_digests(factories)`
+  (`:47-52`) with `config/fingerprint.py`'s `SPEC_DIGESTS` (`:60`) at `FINGERPRINT_FORMAT` 6
+  (`:49`). Under `v0.5.0` a spec has seven fields, so every plain spec gains
+  `"extra_values": {}`, every class's digest moves, and the test fails naming every class as
+  "spec changed", its message saying to bump `FINGERPRINT_FORMAT` (`:90-93`).
+- **The format is not bumped for this.** No `inventory_spec()` changed, which is what SGK's rule
+  for a bump names (`config/fingerprint.py:51-59`), and no record or fingerprint moves; a bump
+  would move the format every fingerprint SGK holds is compared at, for a release that changes
+  none of its records.
+- **The edit is one condition in `plain`: leave out a field named `extra_values` whose value is
+  empty.** For example:
+
+  ```python
+  def plain(value):
+      if dataclasses.is_dataclass(value):
+          return {
+              f.name: plain(getattr(value, f.name))
+              for f in dataclasses.fields(value)
+              if not (f.name == "extra_values" and len(getattr(value, f.name)) == 0)
+          }
+      ...  # the rest of plain unchanged
+  ```
+
+  With it, every plain spec under `v0.5.0` is what it was under `v0.4.0`, so every pin in
+  `SPEC_DIGESTS[6]` holds at format 6; a spec that comes to declare an extra table then moves its
+  digest, as the guard means it to, and that is a bump under SGK's own rule. This was shown on
+  DatastoreKit's neutral registry and on hand-built specs in the installed `v0.4.0` and `v0.5.0`
+  wheels ([`README.md`'s addendum](README.md#addendum-v050-extra-values-prompt-02-2026-10-21), "The
+  spec guard"), not by running SGK's guard. The condition touches only a dataclass field of that
+  name: `test_a_key_keeps_its_type` (`:96-100`), which calls `plain` on mappings, is unaffected.
+- **Advice:** make the edit in the commit that moves the pin, and run the guard before and after
+  it: under `v0.4.0` the edit changes no digest, and under `v0.5.0` the guard passes only with it.
+
+The same condition belongs in RunRegistryKit's recipe, whose text is that repository's to amend.
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`), one in the `v0.2.1` addendum stays `v0.2.1`'s (`33778b0`), and one in the `v0.2.2`
+addendum stays `v0.2.2`'s (`6d8ee9a`). The `v0.2.3`, `v0.3.0` and `v0.4.0` addenda cite none, and
+neither does this addendum; one cited here would be `v0.5.0`'s, whose `datastorekit/` is the tree
+of `extra-values` prompt 01's commit `5475cef`. An SGK line is SGK's at the commit named, and at
+`031bcb4` in this addendum.
+
+**What this addendum supersedes**, in this file. Each `path:line` below is this file's as committed
+with this addendum. In the file as `fingerprint` prompt 02 left it (`c8570e8`), every line after
+`:44` is six lines earlier, since this addendum's italic line under the title adds six (N = 6),
+and every line of the appendix, which follows this addendum, is 161 lines earlier (N and this
+addendum's 155 lines). The `v0.4.0` addendum's italic line added six too (k = 6), and the rule it
+states for the earlier addenda still holds, each shift now N more. So:
+- the `v0.4.0` addendum's citations, which are that file's, are read at `c8570e8`, or **6** lines
+  later here (all but `:33-37`, which is above the insert, and its appendix rows `:1230-1232`,
+  which are **161** lines later);
+- the `v0.3.0` addendum's, which the `v0.4.0` addendum reads at `2f5417e` or six lines later, are
+  read at `2f5417e`, or **12** lines later here (all but `:27-31`);
+- the `v0.2.3` addendum's, which the `v0.4.0` addendum reads at `0de2b16` or twelve lines later,
+  are read at `0de2b16`, or **18** lines later here (all but `:21-25`);
+- the `v0.2.2` addendum's, which the `v0.4.0` addendum reads at `6d8ee9a` or eighteen lines later,
+  are read at `6d8ee9a`, or **24** lines later here (all but `:16-19`);
+- the `v0.2.1` addendum's, which the `v0.4.0` addendum reads at `33778b0` or twenty-four lines
+  later, are read at `33778b0`, or **30** lines later here (all but `:6`).
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/secondarygwkit.md:39-43` | the `v0.4.0` addendum gives "SGK's pin, `v0.4.0`" | it gives `v0.4.0`'s pin and changes, true of `v0.4.0`; this addendum gives SGK's pins at `v0.5.0`: `v0.4.0`, which SGK has adopted, or `v0.5.0`, as SGK chooses |
+| `docs/adoption/secondarygwkit.md:752-760` | in part: "SGK adopts **`v0.4.0`** in place of `v0.2.2`, by its `runregistry-extraction` prompt 03", and "SGK's `requirements.txt:17` pins `v0.2.2`" | SGK has adopted `v0.4.0` (`requirements.txt:17` at `031bcb4`, since its `5b81f2e`), and may stay on it or move to `v0.5.0` (`extra-values` U5, as amended), a move needing the guard's one edit; "The pin", above. The rest stands: G2's reading and its holding |
+| `docs/adoption/secondarygwkit.md:762-763` | "`v0.4.0` carries `v0.2.1`'s three fixes, `v0.2.2`'s fix, `v0.2.3`'s change and `v0.3.0`'s change, unchanged" | true of `v0.4.0`; `v0.5.0` carries those and `v0.4.0`'s change, unchanged |
+| `docs/adoption/secondarygwkit.md:783-788` | in part: `datastorekit/store_inventory.py`, "which no release since `v0.2.2` has changed. So every digest and count SGK's code takes is as at `v0.2.2`" | true of `v0.4.0`; `v0.5.0` changes it, and no SGK spec declares an extra table, so every record and fingerprint of a store read with SGK's specs is as at `v0.4.0`; a digest of a spec taken by walking its fields is not ("What a move to `v0.5.0` changes for SGK", above) |
+| `docs/adoption/secondarygwkit.md:905` | the row "The pin `…@v0.4.0`, in place of `v0.2.2`": "SGK does it: `requirements.txt:17`" | SGK did it (its `5b81f2e`): `requirements.txt:17` at `031bcb4` pins `v0.4.0`; a move to `v0.5.0` is SGK's choice, above |
+| `docs/adoption/secondarygwkit.md:906` | in part, the row "Nothing SGK calls changes; …": "over `store_inventory`, unchanged since `v0.2.2`" | as `:783-788` |
+| `docs/adoption/secondarygwkit.md:923-935` | the `v0.4.0` addendum's `path:line`s are "this file's as committed with this addendum", and the earlier addenda's are read 6, 12, 18 and 24 lines later | they are read at `c8570e8`, or 6 lines later here (its appendix rows 161); the `v0.3.0` addendum's 12, the `v0.2.3` addendum's 18, the `v0.2.2` addendum's 24, and the `v0.2.1` addendum's 30; above |
+| `docs/adoption/secondarygwkit.md:939` | in part, the row for `:33-37`: "this addendum gives SGK's pin at `v0.4.0`: `v0.4.0`, by its `runregistry-extraction` prompt 03" | the `v0.4.0` addendum gives that, true of `v0.4.0`; this addendum gives `v0.4.0` or `v0.5.0`, above |
+| `docs/adoption/secondarygwkit.md:940` | in part, the row for `:649-669`: "SGK adopts `v0.4.0` in place of `v0.2.2`, by its `runregistry-extraction` prompt 03 (`fingerprint` U6); the pin `…@v0.4.0`" | as `:752-760`. The row's G2 reading and its holding stand |
+| `docs/adoption/secondarygwkit.md:941` | the row for `:671`: "`v0.4.0` carries those and `v0.3.0`'s change, unchanged" | as `:762-763` |
+| `docs/adoption/secondarygwkit.md:942` | the row for `:701-709`: read "at `2f5417e`, or 6 lines later here; the `v0.2.3` addendum's 12, the `v0.2.2` addendum's 18, and the `v0.2.1` addendum's 24" | at `2f5417e`, or 12 lines later here; the `v0.2.3` addendum's 18, the `v0.2.2` addendum's 24, and the `v0.2.1` addendum's 30; above |
+| `docs/adoption/secondarygwkit.md:943` | in part, the row for `:713`: "this addendum gives `v0.4.0`, above" | the `v0.4.0` addendum gives `v0.4.0`; this addendum gives `v0.4.0` or `v0.5.0`, above |
+| `docs/adoption/secondarygwkit.md:944` | in part, the row for `:714`: "SGK adopts `v0.4.0` (`fingerprint` U6), as `:649-669`" | as `:752-760`. The row's G2 reading stands |
+| `docs/adoption/secondarygwkit.md:945` | the row for `:715`: "`…@v0.4.0`, above" | `…@v0.4.0` or `…@v0.5.0`, as SGK chooses, above |
+| `docs/adoption/secondarygwkit.md:946` | the row for `:716`: read "at `0de2b16`, or twelve lines later here; the `v0.2.2` addendum's eighteen, and the `v0.2.1` addendum's twenty-four" | at `0de2b16`, or eighteen lines later here; the `v0.2.2` addendum's twenty-four, and the `v0.2.1` addendum's thirty; above |
+| `docs/adoption/secondarygwkit.md:947` | the row for `:717`: "as `:714`" | as `:944` |
+| `docs/adoption/secondarygwkit.md:948` | the row for `:718`: "as `:715`" | as `:945` |
+| `docs/adoption/secondarygwkit.md:949` | the row for `:719`: the `v0.2.2` addendum's citations are read "at `6d8ee9a`, or eighteen lines later here" | at `6d8ee9a`, or twenty-four lines later here (all but `:16-19`) |
+| `docs/adoption/secondarygwkit.md:950` | the row for `:720`: "as `:717` and `:718`" | as `:947` and `:948` |
+| `docs/adoption/secondarygwkit.md:951` | the row for `:721`: "at `v0.4.0`, with the five addenda" | at `v0.4.0` or `v0.5.0`, as SGK chooses, with the six addenda |
+| `docs/adoption/secondarygwkit.md:952` | the row for `:722`: "at `v0.4.0` also the change of contract §9.7, which changes nothing SGK's calls use until SGK calls the package's functions, its prompt 06" | at `v0.5.0` also the change of contract §9.8, which changes nothing SGK calls and needs one edit to SGK's spec guard; "What a move to `v0.5.0` changes for SGK", above |
+| `docs/adoption/secondarygwkit.md:953` | the row for `:723`: item 8's reasoning "extended to `v0.4.0`" | extended to `v0.5.0`, since nothing the pool writes or reads changes; "Item 8 still holds", above |
+
+**Standing, not superseded:** G2's reading and its holding, in the `v0.4.0` addendum's pin
+(`:759-760`) and in its rows (`:940`, `:944`); the `v0.4.0` addendum's account of what changes
+when SGK calls the package's functions (`:798-899`, items (1)–(7) and item 9's paragraph), true of
+`v0.5.0`, whose `store_fingerprint.py` differs from `v0.4.0`'s by a comment alone: SGK has since
+called them (its prompt 06), which this addendum does not re-measure; the rest of "What moving the
+pin changes" (`:775-796`), true of the move to `v0.4.0`, which SGK made; and the `v0.4.0`
+addendum's "Standing" paragraph (`:955-961`), its appendix rows read as above.
 
 ---
 

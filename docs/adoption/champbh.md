@@ -43,6 +43,12 @@ addendum, gives CPBH's pin, `v0.3.0` or `v0.4.0` as CPBH chooses, and what chang
 `v0.3.0`, and supersedes the statements it names. The text before it, the four earlier addenda
 included, is unchanged and true of the release each names.*
 
+*Added by `extra-values` prompt 02 on 2026-10-21: the section
+[Addendum: v0.5.0](#addendum-v050-extra-values-prompt-02-2026-10-21), after the `v0.4.0`
+addendum, gives CPBH's pin, `v0.4.0` or `v0.5.0` as CPBH chooses, and what a move changes for
+CPBH, one edit to its spec guard among it. It supersedes the statements it names. The text before
+it, the five earlier addenda included, is unchanged and true of the release each names.*
+
 Unless another commit is named, a `path:line` is CPBH's at `52142d7`, and one under
 `datastorekit/` is the package's at `v0.2.0`.
 
@@ -791,6 +797,153 @@ earlier addenda still holds, each shift now N more. So:
 addendum's pin (`:638`) and its row (`:706`), which is `fingerprint` U6's reading too, G3 holding
 (2026-10-13, the extraction board); and the `v0.3.0` addendum's account of the object (`:653-677`),
 true of `v0.4.0`, whose `datastorekit/object.py` is `v0.3.0`'s.
+
+---
+
+## Addendum: v0.5.0 (extra-values prompt 02, 2026-10-21)
+
+*Written by `extra-values` prompt 02 on 2026-10-21, and added after `fingerprint` prompt 02's
+`v0.4.0` addendum. 07a's text and the `v0.2.1`, `v0.2.2`, `v0.2.3`, `v0.3.0` and `v0.4.0` addenda
+stay as written, each true of the release it names (`CLAUDE.md` rule 6). CPBH was not re-measured
+(as decision U37); what this section says of CPBH comes from reads through `git` only, at
+`7055532` (CPBH's `HEAD` when read, 2026-10-21, branch `jordan-normalization`). A CPBH `path:line`
+here is CPBH's at `7055532`. Nothing of CPBH was imported, run or opened.*
+
+**The pin.** CPBH has adopted **`v0.4.0`** (its `requirements.txt:17` pins it at `7055532`, since
+CPBH's `f41b104`), and may stay on it or move to **`v0.5.0`**, as CPBH chooses, a move being a
+commit of its own (decision U5 of the `extra-values` campaign, as amended by the user on
+2026-10-21). A move needs one edit to CPBH's spec guard (below). G3's reading is unchanged, "CPBH
+has adopted `v0.2.3` or later", and so is its holding (the extraction board):
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.4.0
+```
+
+or
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.5.0
+```
+
+`v0.5.0` carries `key_on_version`, `v0.2.0`'s feature, `v0.2.1`'s three fixes, `v0.2.2`'s fix,
+`v0.2.3`'s change, `v0.3.0`'s change and `v0.4.0`'s change, unchanged.
+
+**What changed since `v0.4.0`.** One prompt changed the package, `extra-values` prompt 01
+(`5475cef`), at StochasticInstantons' request: an `InventorySpec` may name further value tables,
+`extra_values`, each counted as `values` is into each record's `extra_value_counts`, which
+`Record.as_json` carries only where it is not empty; `ENCODING_FORMAT` stays `1`; and
+`inventory_classes` gains one refusal, of a spec whose value table is also one of its
+`extra_values`. A spec now has seven fields. The detail is
+[`docs/client-contract.md` §9.8](../client-contract.md#98-extra-values-prompt-01), and
+[`README.md`'s addendum](README.md#addendum-v050-extra-values-prompt-02-2026-10-21) gives it for
+every client.
+
+### What a move to `v0.5.0` changes for CPBH
+
+- **Nothing CPBH calls.** By an `ast` read of every `.py` file through `git show` at `7055532`,
+  outside `prompts/`, `.prompts/`, `docs/` and `.documents/`: CPBH's 13 `InventorySpec(...)` calls
+  each pass keywords, and none passes `extra_values`; CPBH builds no `Record` and calls no
+  `read_records`; and `tools/inventory_report.py` reads `record.value_count` by attribute
+  (`:364-365`, `:383`). No CPBH file reads `extra_values`, `extra_value_counts` or `as_json`. A
+  field added last, with a default, reaches none of them.
+- **No record and no fingerprint of a store read with CPBH's specs moves, at format 3.** No CPBH
+  spec declares an extra table, so every record CPBH's specs read is `v0.4.0`'s, byte for byte,
+  and every fingerprint is `v0.4.0`'s, at the same `ENCODING_FORMAT`, `1`. The fingerprints CPBH
+  holds stay comparable with fresh ones.
+- **Item 8 still holds**: nothing the pool writes or reads changes (contract
+  [§9.8](../client-contract.md#98-extra-values-prompt-01)), so a CPBH store opens, or is refused,
+  under `v0.5.0` as under `v0.4.0`.
+- **CPBH's spec guard fails, unless it is edited.**
+  `ObjectFactories/tests/test_fingerprint_format_guard.py` is RunRegistryKit's recipe (its
+  `docs/adoption/README.md` §6, at its tag `v0.2.0`; the module's docstring says so, `:29-34`):
+  `plain` (`:51-62`) turns a spec into JSON by walking `dataclasses.fields`, and
+  `test_every_spec_is_pinned_for_the_current_format` (`:75-113`) compares
+  `spec_digests(factories)` (`:65-71`) with `config/fingerprint.py`'s `SPEC_DIGESTS` (`:88`) at
+  `FINGERPRINT_FORMAT` 3 (`:67`). Under `v0.5.0` a spec has seven fields, so every plain spec gains
+  `"extra_values": {}`, every class's digest moves, and the test fails naming every class as "spec
+  changed", its message saying to bump `FINGERPRINT_FORMAT` (`:109-112`).
+- **The format is not bumped for this.** No `inventory_spec()` changed, which is what CPBH's rule
+  for a bump names (`config/fingerprint.py:79-80`), and no record or fingerprint moves; a bump
+  would move the format every fingerprint CPBH holds is compared at, for a release that changes
+  none of its records.
+- **The edit is one condition in `plain`: leave out a field named `extra_values` whose value is
+  empty.** For example:
+
+  ```python
+  def plain(value):
+      if dataclasses.is_dataclass(value):
+          return {
+              f.name: plain(getattr(value, f.name))
+              for f in dataclasses.fields(value)
+              if not (f.name == "extra_values" and len(getattr(value, f.name)) == 0)
+          }
+      ...  # the rest of plain unchanged
+  ```
+
+  With it, every plain spec under `v0.5.0` is what it was under `v0.4.0`, so every pin in
+  `SPEC_DIGESTS[3]` holds at format 3, and the pins of formats 1 and 2 are untouched; a spec that
+  comes to declare an extra table then moves its digest, as the guard means it to, and that is a
+  bump under CPBH's own rule. This was shown on DatastoreKit's neutral registry and on hand-built
+  specs in the installed `v0.4.0` and `v0.5.0` wheels
+  ([`README.md`'s addendum](README.md#addendum-v050-extra-values-prompt-02-2026-10-21), "The spec
+  guard"), not by running CPBH's guard. The condition touches only a dataclass field of that name:
+  `test_the_pin_has_one_pair_per_class_with_a_spec` (`:115-119`), `test_a_key_keeps_its_type`
+  (`:121-125`) and `test_a_parent_keyed_by_an_int_keeps_its_type` (`:127-148`) are unaffected, and
+  the latter's `dataclasses.asdict` calls (`:147-148`) are on a `Parent`, whose fields `v0.5.0`
+  does not change.
+- **Advice:** make the edit in the commit that moves the pin, and run the guard before and after
+  it: under `v0.4.0` the edit changes no digest, and under `v0.5.0` the guard passes only with it.
+
+The same condition belongs in RunRegistryKit's recipe, whose text is that repository's to amend.
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`), and one in the `v0.2.1` addendum stays `v0.2.1`'s (`33778b0`). The `v0.2.2`, `v0.2.3`,
+`v0.3.0` and `v0.4.0` addenda cite none, and neither does this addendum; one cited here would be
+`v0.5.0`'s, whose `datastorekit/` is the tree of `extra-values` prompt 01's commit `5475cef`. A
+CPBH line is CPBH's at the commit named, and at `7055532` in this addendum.
+
+**What this addendum supersedes**, in this file. Each `path:line` below is this file's as committed
+with this addendum. In the file as `fingerprint` prompt 02 left it (`c8570e8`), every line after
+`:45` is six lines earlier, since this addendum's italic line under the title adds six (N = 6),
+and every line of the appendix, which follows this addendum, is 153 lines earlier (N and this
+addendum's 147 lines). The `v0.4.0` addendum's italic line added six too (k = 6), and the rule it
+states for the earlier addenda still holds, each shift now N more. So:
+- the `v0.4.0` addendum's citations, which are that file's, are read at `c8570e8`, or **6** lines
+  later here (all but `:34-38`, which is above the insert);
+- the `v0.3.0` addendum's, which the `v0.4.0` addendum reads at `2f5417e` or six lines later, are
+  read at `2f5417e`, or **12** lines later here (all but `:28-32`);
+- the `v0.2.3` addendum's, which the `v0.4.0` addendum reads at `0de2b16` or twelve lines later,
+  are read at `0de2b16`, or **18** lines later here (all but `:22-26`);
+- the `v0.2.2` addendum's, which the `v0.4.0` addendum reads at `6d8ee9a` or eighteen lines later,
+  are read at `6d8ee9a`, or **24** lines later here (all but `:17-20`);
+- the `v0.2.1` addendum's, which the `v0.4.0` addendum reads at `33778b0` or twenty-four lines
+  later, are read at `33778b0`, or **30** lines later here (all but `:6`).
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/champbh.md:40-44` | the `v0.4.0` addendum gives "CPBH's pin, `v0.3.0` or `v0.4.0` as CPBH chooses" | it gives `v0.4.0`'s pins and changes, true of `v0.4.0`; this addendum gives CPBH's pins at `v0.5.0`: `v0.4.0`, which CPBH has adopted, or `v0.5.0`, as CPBH chooses |
+| `docs/adoption/champbh.md:724-737` | in part: "CPBH has adopted **`v0.3.0`** (…; CPBH's `requirements.txt:17` pins it at `2792a85`), and may stay on it or move to **`v0.4.0`**", and the pins `…@v0.3.0` or `…@v0.4.0` | CPBH has adopted `v0.4.0` (`requirements.txt:17` at `7055532`, since its `f41b104`), and may stay on it or move to `v0.5.0` (`extra-values` U5, as amended), a move needing the guard's one edit; the pins `…@v0.4.0` or `…@v0.5.0`; "The pin", above. The rest stands: a move is a commit of CPBH's own, and G3's reading |
+| `docs/adoption/champbh.md:739-740` | "`v0.4.0` carries `key_on_version`, `v0.2.0`'s feature, `v0.2.1`'s three fixes, `v0.2.2`'s fix, `v0.2.3`'s change and `v0.3.0`'s change, unchanged" | true of `v0.4.0`; `v0.5.0` carries those and `v0.4.0`'s change, unchanged |
+| `docs/adoption/champbh.md:766-778` | the `v0.4.0` addendum's `path:line`s are "this file's as committed with this addendum", and the earlier addenda's are read 6, 12, 18 and 24 lines later | they are read at `c8570e8`, or 6 lines later here; the `v0.3.0` addendum's 12, the `v0.2.3` addendum's 18, the `v0.2.2` addendum's 24, and the `v0.2.1` addendum's 30; above |
+| `docs/adoption/champbh.md:782` | in part, the row for `:34-38`: "this addendum gives CPBH's pins at `v0.4.0`: `v0.3.0`, which CPBH has adopted, or `v0.4.0`, as CPBH chooses" | the `v0.4.0` addendum gives those, true of `v0.4.0`; this addendum gives `v0.4.0` or `v0.5.0`, above |
+| `docs/adoption/champbh.md:783` | in part, the row for `:636-648`: "CPBH has adopted `v0.3.0` (G3 holds, 2026-10-13), and may stay on it or move to `v0.4.0` (`fingerprint` U6); the pins `…@v0.3.0` or `…@v0.4.0`" | as `:724-737`. The row's G3 reading stands |
+| `docs/adoption/champbh.md:784` | the row for `:650-651`: "`v0.4.0` carries those and `v0.3.0`'s change, unchanged" | as `:739-740` |
+| `docs/adoption/champbh.md:785` | the row for `:685-693`: read "at `2f5417e`, or 6 lines later here; the `v0.2.3` addendum's 12, the `v0.2.2` addendum's 18, and the `v0.2.1` addendum's 24" | at `2f5417e`, or 12 lines later here; the `v0.2.3` addendum's 18, the `v0.2.2` addendum's 24, and the `v0.2.1` addendum's 30; above |
+| `docs/adoption/champbh.md:786` | in part, the row for `:697`: "this addendum gives `v0.3.0` or `v0.4.0`, above" | the `v0.4.0` addendum gives those; this addendum gives `v0.4.0` or `v0.5.0`, above |
+| `docs/adoption/champbh.md:787` | in part, the row for `:698`: "CPBH has adopted `v0.3.0`, and may stay on it or move to `v0.4.0` (`fingerprint` U6), as `:636-648`" | as `:724-737`. The row's G3 reading stands |
+| `docs/adoption/champbh.md:788` | the row for `:699`: "`…@v0.3.0` or `…@v0.4.0`, as CPBH chooses, above" | `…@v0.4.0` or `…@v0.5.0`, as CPBH chooses, above |
+| `docs/adoption/champbh.md:789` | the row for `:700`: read "at `0de2b16`, or twelve lines later here; the `v0.2.2` addendum's eighteen, and the `v0.2.1` addendum's twenty-four" | at `0de2b16`, or eighteen lines later here; the `v0.2.2` addendum's twenty-four, and the `v0.2.1` addendum's thirty; above |
+| `docs/adoption/champbh.md:790` | the row for `:701`: "as `:698`" | as `:787` |
+| `docs/adoption/champbh.md:791` | the row for `:702`: "as `:699`" | as `:788` |
+| `docs/adoption/champbh.md:792` | the row for `:703`: the `v0.2.2` addendum's citations are read "at `6d8ee9a`, or eighteen lines later here" | at `6d8ee9a`, or twenty-four lines later here (all but `:17-20`) |
+| `docs/adoption/champbh.md:793` | the row for `:704`: "as `:698` and `:699`" | as `:787` and `:788` |
+| `docs/adoption/champbh.md:794` | the row for `:705`: "at `v0.3.0` or `v0.4.0`, as CPBH chooses, with the five addenda" | at `v0.4.0` or `v0.5.0`, as CPBH chooses, with the six addenda |
+
+**Standing, not superseded:** G3's reading and its holding, in the `v0.4.0` addendum's pin
+(`:724-727`) and in its rows (`:783`, `:787`); its "What changed for CPBH since `v0.3.0`"
+(`:742-758`), true of `v0.4.0`: CPBH defines and calls none of the package's fingerprint functions
+as read at `2792a85`, and "It meets the module only when it adopts RunRegistryKit" is a condition,
+which this addendum does not re-measure; and its "Standing" paragraph (`:796-799`).
 
 ---
 

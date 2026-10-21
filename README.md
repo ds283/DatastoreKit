@@ -7,6 +7,20 @@ one shard by a shard key, and checks the store's integrity each time it is opene
 
 ## Status
 
+**`v0.5.0`** is a minor release with one change (`extra-values` prompt 01, at a client's
+request): a factory's `InventorySpec` may name further value tables, `extra_values` (each table →
+its column naming the class's serial), and the inventory counts each as it counts `values`, into
+each record's `extra_value_counts`, 0 where a row has none. A record of a class that declares none
+is `v0.4.0`'s, byte for byte, and so is every fingerprint of a store read with unchanged specs:
+`ENCODING_FORMAT` stays 1. Nothing the pool writes or reads changes, and no message, refusal or
+exception of the pool's; the inventory reads a further table only where a spec declares one, and
+gains one refusal, in `inventory_classes`, of a spec whose value table is also one of its
+`extra_values`. A spec now has seven fields, so a client that hashes a spec by walking its fields
+sees every digest move; the adoption addenda ([`docs/adoption/`](docs/adoption/README.md)) say
+what to do. The release adds API, so it is a minor release.
+[`docs/client-contract.md`](docs/client-contract.md)
+[§9.8](docs/client-contract.md#98-extra-values-prompt-01) gives the detail.
+
 **`v0.4.0`** is a minor release with one change (`fingerprint` prompt 01, on the user's ruling): a
 new module, `datastorekit.store_fingerprint`, takes a store's fingerprint from what
 `read_inventory` returns (`fingerprint_of`), compares two fingerprints (`compare_fingerprints`)
@@ -102,13 +116,13 @@ separate unit of work.
 A client depends on a tagged release, pinned in its `requirements.txt`:
 
 ```text
-datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.4.0
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.5.0
 ```
 
-`v0.3.0`, `v0.2.3`, `v0.2.2`, `v0.2.1`, `v0.2.0` and `v0.1.0` remain tagged, and no tag is moved
-or deleted. SecondaryGWKit adopts `v0.4.0`. ChamPBH may stay on `v0.3.0` and StochasticInstantons
-adopt `v0.3.0`, or either may move to `v0.4.0`, in a commit of its own, as it chooses: neither
-calls the new module, and nothing they call changes.
+`v0.4.0`, `v0.3.0`, `v0.2.3`, `v0.2.2`, `v0.2.1`, `v0.2.0` and `v0.1.0` remain tagged, and no tag
+is moved or deleted. StochasticInstantons adopts `v0.5.0`. SecondaryGWKit and ChamPBH may stay on
+`v0.4.0` or move to `v0.5.0`, in a commit of their own, as each chooses. A client whose tests pin
+digests of its specs reads its addendum in [`docs/adoption/`](docs/adoption/README.md) first.
 
 An editable install (`pip install -e`) is for developing this package, never for a client's
 production runs: a production run must be reproducible from its pin.
@@ -132,7 +146,9 @@ the layer does with it, and what happens when it is wrong or absent.
   ([§3](docs/client-contract.md#3-the-factory-hooks)). A registry may map a name to a factory
   class or to an instance of one ([§9.5](docs/client-contract.md#95-factory-defaults-prompt-01)).
 - **The inventory declarations**: an `InventorySpec` per class, with its `Parent`s and
-  `ParentSet`s (`datastorekit.store_inventory`) ([§4](docs/client-contract.md#4-the-inventorys-declarations)).
+  `ParentSet`s (`datastorekit.store_inventory`) ([§4](docs/client-contract.md#4-the-inventorys-declarations)),
+  and, optionally, the further value tables its records are counted in, `extra_values`
+  ([§9.8](docs/client-contract.md#98-extra-values-prompt-01)).
 - **The store fingerprint**, optional: `datastorekit.store_fingerprint`'s
   `fingerprint_of(inventory, fingerprint_format, taken=None)`, `compare_fingerprints(recorded,
   current)` and `listing_lines(inventory, fingerprint)`, over what `read_inventory` returns. The
@@ -152,10 +168,13 @@ the layer does with it, and what happens when it is wrong or absent.
   starts Ray; the change of `v0.2.3`, that the base defaults `store`, `validate` and
   `validate_on_startup`, so a factory may be an instance; the change of `v0.3.0`, that a stored
   object may carry its row's `timestamp`, which a factory passes and the layer never sets or reads
-  ([§9.6](docs/client-contract.md#96-object-timestamp-prompt-01)); and the change of `v0.4.0`, a
-  new module, which the layer itself never calls, that takes, compares and lists a store's
+  ([§9.6](docs/client-contract.md#96-object-timestamp-prompt-01)); the change of `v0.4.0`, a new
+  module, which the layer itself never calls, that takes, compares and lists a store's
   fingerprint, recording the package's `ENCODING_FORMAT` beside the client's format
-  ([§9.7](docs/client-contract.md#97-fingerprint-prompt-01)); each with what the layer now does and
+  ([§9.7](docs/client-contract.md#97-fingerprint-prompt-01)); and the change of `v0.5.0`, that a
+  spec may name further value tables, each counted into its records' `extra_value_counts`, which a
+  record carries only where its class declares one, with `ENCODING_FORMAT` unchanged
+  ([§9.8](docs/client-contract.md#98-extra-values-prompt-01)); each with what the layer now does and
   the test that pins it ([§9](docs/client-contract.md#9-changes-after-v020)).
 
 The worked example is the neutral test client, [`datastorekit/tests/client/`](datastorekit/tests/client/).

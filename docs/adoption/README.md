@@ -29,6 +29,11 @@ it, the three earlier addenda included, is unchanged and true of the release eac
 client and what changed since `v0.3.0`, and supersedes the statements it names. The text before it,
 the four earlier addenda included, is unchanged and true of the release each names.*
 
+*Added by `extra-values` prompt 02 on 2026-10-21: the section
+[Addendum: v0.5.0](#addendum-v050-extra-values-prompt-02-2026-10-21) at the end gives the pins by
+client and what changed since `v0.4.0`, and supersedes the statements it names. The text before
+it, the five earlier addenda included, is unchanged and true of the release each names.*
+
 This directory holds one **adoption checklist** per client project, and what the three share.
 Each checklist says what its client must do to depend on `datastorekit` at `v0.2.0`: what it
 deletes, which imports it rewrites, what leaves its copy of the layer, what its factories, call
@@ -735,3 +740,160 @@ and G3's, "CPBH has adopted `v0.2.3` or later", with G2 holding; the `v0.3.0` ad
 `v0.3.0`'s; and its "Not superseded" (`:600-602`). §2's module map (`:91-95`) maps the modules a
 client's own layer has, and `store_fingerprint` is not one of them: the map gains no row, and stays
 true.
+
+---
+
+## Addendum: v0.5.0 (extra-values prompt 02, 2026-10-21)
+
+*Written by `extra-values` prompt 02 on 2026-10-21, and added after `fingerprint` prompt 02's
+`v0.4.0` addendum. 07a's text and the `v0.2.1`, `v0.2.2`, `v0.2.3`, `v0.3.0` and `v0.4.0` addenda
+stay as written, each true of the release it names (`CLAUDE.md` rule 6). No checklist was
+re-measured (as decision U37); the clients below were read through `git` only, and nothing of a
+client was imported, run or opened.*
+
+**The pins, by client** (decision U5 of the `extra-values` campaign, as amended by the user on
+2026-10-21). Every client is on `v0.4.0`: SGK's `requirements.txt:17` at `031bcb4` (since its
+`5b81f2e`), CPBH's `requirements.txt:17` at `7055532` (since its `f41b104`) and SI's
+`requirements.txt:16` at `f5f395b` (since its `1b1ca6d`) each pin
+`datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.4.0`.
+- **SI adopts `v0.5.0`**, by a pin prompt of its own:
+
+  ```text
+  datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.5.0
+  ```
+
+  What it declares to adopt it is in
+  [SI's addendum](stochasticinstantons.md#addendum-v050-extra-values-prompt-02-2026-10-21).
+- **SGK and CPBH may stay on `v0.4.0` or move to `v0.5.0`**, as each chooses. A move needs one
+  edit to its spec guard ("The spec guard", below).
+
+A move is a commit of the client's own. G2 ("SGK has adopted `v0.2.2` or later"), G3 ("CPBH has
+adopted `v0.2.3` or later") and G4 ("SI has adopted `v0.3.0` or later") read as before.
+
+`v0.5.0` carries `key_on_version`, `v0.2.0`'s feature, `v0.2.1`'s three fixes, `v0.2.2`'s fix,
+`v0.2.3`'s change, `v0.3.0`'s change and `v0.4.0`'s change, unchanged.
+
+**What changed since `v0.4.0`.** One prompt changed the package, `extra-values` prompt 01
+(`5475cef`), at StochasticInstantons' request: two modules, `datastorekit/store_inventory.py` and,
+by a comment only, `datastorekit/store_fingerprint.py`. No module was added or removed. The release
+adds API, so it is minor (U5). What a client sees is what
+[`docs/client-contract.md` §9.8](../client-contract.md#98-extra-values-prompt-01) states in full:
+
+| What | At `v0.5.0` (`datastorekit/store_inventory.py`, unless another file is named) |
+|---|---|
+| `InventorySpec.extra_values` | the spec's last field (`:317`), default `{}`: each further value table → its column naming the class's serial. `keywords()` hands it to `read_records` as its last keyword (`:319-329`, `:535`), and each table is counted as `values` is, one `GROUP BY` per table per shard, through the one inner function that counts `values` (`_count_values`, `:660-683`), the extra tables in sorted name order (`:688-692`). Rows naming a serial not on their shard are an `orphan-value` problem, naming the table and the shard. A table or column the store lacks raises `KeyError` when the inventory is read, as for `values`. `dependencies()` is unchanged |
+| `Record.extra_value_counts` | the record's last field (`:194`), default `{}`: for each declared table, the number of its rows naming the record's row, 0 where none (`:803-806`). It is empty only where the class declares no extra table |
+| `Record.as_json` | its four keys as before, and a fifth, `"extra_value_counts"`, **only where the mapping is not empty** (`:196-205`). So a record of a class that declares no extra table is `v0.4.0`'s, byte for byte, and so is every fingerprint of a store read with unchanged specs. `canonical_json`, `identity` and `__hash__` are unchanged, and a record with counts still hashes |
+| `ENCODING_FORMAT` | stays `1` (`store_fingerprint.py:71`); the comment that states its rule (`:38-70`) ends with a paragraph (`:66-70`) saying why a field carried only where a spec declares what fills it is not a bump. A client whose spec comes to declare an extra table changes its own fingerprints, which is its `fingerprint_format` |
+| One new refusal | in `inventory_classes` only (`:990-994`): a spec whose `values` table is also in its `extra_values` raises `ValueError`, naming the class and the table. No spec's construction refuses, nor `inventory_specs` nor `read_records`, so nothing of the pool changes |
+| A spec's fields | seven (`InventorySpec`, `:304-344`), where they were six. That is invisible to the package, and to a client that does not walk them. A client that hashes a spec by walking them sees every digest move ("The spec guard", below) |
+
+**Nothing any client supplies or stores changes, and no message of the layer's.** A store that
+opened under `v0.4.0` opens under `v0.5.0`, and a store refused under `v0.4.0` is refused under
+`v0.5.0`, by the same exception and message. A spec that declares no extra table reads the records
+it read, and a fingerprint taken through it is the one taken at `v0.4.0`, at the same
+`ENCODING_FORMAT`.
+
+**What the clients do with it.** `extra-values` read the three clients through `git` only: a script
+parsed every `.py` file outside each client's `prompts/`, `.prompts/`, `docs/` and `.documents/`,
+from `git show <commit>:<path>`, with `ast`, importing and running nothing of a client, and found
+every call of `InventorySpec`, `Record`, `read_records`, `dataclasses.fields`, `is_dataclass` and
+`asdict`, every attribute `extra_values`, `extra_value_counts`, `value_count` and `as_json`, and
+where `SPEC_DIGESTS` and `FINGERPRINT_FORMAT` are assigned. The planner measured it, and prompt 02
+re-ran it, on 2026-10-21:
+
+| Client, commit | Its pin | `InventorySpec(` | `Record(` | A spec's fields walked | `extra_*` read |
+|---|---|---|---|---|---|
+| SGK `031bcb4` (its `HEAD` when read, branch `handover-remedial`) | `v0.4.0` (`requirements.txt:17`) | 21, each by keyword, none passing `extra_values` | 2, by keyword (`tools/tests/test_inventory_report_labels.py:89`, `:113`) | **yes**, in its spec guard alone: `ObjectFactories/tests/test_fingerprint_format_guard.py:33-44` (`plain`), pinned by `config/fingerprint.py:60` (`SPEC_DIGESTS`), format 6 (`:49`) | none |
+| CPBH `7055532` (its `HEAD` when read, branch `jordan-normalization`) | `v0.4.0` (`requirements.txt:17`) | 13, each by keyword, none passing `extra_values` | none | **yes**, in its spec guard alone: `ObjectFactories/tests/test_fingerprint_format_guard.py:51-62` (`plain`), pinned by `config/fingerprint.py:88` (`SPEC_DIGESTS`), format 3 (`:67`); its `asdict` calls (`:147-148`) are on a `Parent`, which is unchanged | none |
+| SI `f5f395b` (its `HEAD` when read, branch `dk-and-rpk-migration`) | `v0.4.0` (`requirements.txt:16`) | 22, each by keyword, none passing `extra_values` | 1, by keyword (`tests/test_inventory_report.py:67`) | no | none |
+
+Each client's `tools/inventory_report.py` reads `record.value_count` by attribute, which is
+unchanged; the other `fields` calls the script finds, in those reports, are each report's own
+`fields()` method, not `dataclasses.fields`. SGK's two `read_records` calls pass four positional
+arguments and `parents=` (`ObjectFactories/tests/test_quadsource_parent_key.py:453`,
+`ObjectFactories/tests/test_wkb_numeric_parent_key.py:991`), which the new last keyword does not
+reach; CPBH and SI make none.
+
+**The spec guard.** SGK and CPBH each have one, `ObjectFactories/tests/test_fingerprint_format_guard.py`,
+and each is RunRegistryKit's recipe (its `docs/adoption/README.md` §6, "The Q5 guard", at its tag
+`v0.2.0`): `plain` turns each `InventorySpec` into JSON by walking `dataclasses.fields`, and the
+SHA-256 of each class's plain spec is pinned per `FINGERPRINT_FORMAT` in `config/fingerprint.py`'s
+`SPEC_DIGESTS`. Under `v0.5.0` every plain spec gains `"extra_values": {}`, so **every class's
+digest moves, though no spec changed**, and the guard fails naming every class and saying to bump
+`FINGERPRINT_FORMAT`. A bump would move the format every fingerprint the client holds is compared
+at, for a release that changes none of its records. **The edit is one condition in `plain`: leave
+out a field named `extra_values` whose value is empty.** With it every digest is `v0.4.0`'s, so
+every pin the client holds stays valid at the same format, and a spec that comes to declare an
+extra table moves its digest, as the guard means it to. Measured by `extra-values` prompt 02, never
+by running a client's code:
+- on this repository's neutral registry, the recipe's digests at `v0.4.0` (an export of
+  `c8570e8`) and at `v0.5.0`'s tree: all 13 classes differ; with the condition, only `Trace`'s,
+  whose spec declares an extra table;
+- on two hand-built specs, in the installed `v0.4.0` and `v0.5.0` wheels: the recipe's digests
+  under `v0.5.0` differ from `v0.4.0`'s, and with the condition are equal to them; a third spec,
+  declaring an extra table, moves its digest with the condition.
+
+The recipe is RunRegistryKit's, and its text is that repository's to amend. The
+[SGK](secondarygwkit.md#addendum-v050-extra-values-prompt-02-2026-10-21) and
+[CPBH](champbh.md#addendum-v050-extra-values-prompt-02-2026-10-21) addenda give the edit for each.
+SI has no spec guard.
+
+**The checklists are not re-measured** (as U37). Each has an addendum of its own, after its `v0.4.0`
+addendum: [SGK's](secondarygwkit.md#addendum-v050-extra-values-prompt-02-2026-10-21),
+[CPBH's](champbh.md#addendum-v050-extra-values-prompt-02-2026-10-21) and
+[SI's](stochasticinstantons.md#addendum-v050-extra-values-prompt-02-2026-10-21).
+
+**Line citations.** A `datastorekit/` line in 07a's text and in the `v0.2.1` to `v0.3.0` addenda
+stays the release's it names, as the `v0.4.0` addendum states, and one in the `v0.4.0` addendum
+stays `v0.4.0`'s (`c8570e8`, whose `datastorekit/` is `d1b61d6`'s). A `datastorekit/` line in this
+addendum is `v0.5.0`'s, whose `datastorekit/` is the tree of `extra-values` prompt 01's commit
+`5475cef`; prompt 02 does not change it. A client's line is that client's at the commit named.
+
+**What this addendum supersedes**, in this file. Each `path:line` below is this file's as committed
+with this addendum. In the file as `fingerprint` prompt 02 left it (`c8570e8`), every line after
+`:31` is five lines earlier, since this addendum's italic line at the head adds five (N = 5). The
+`v0.4.0` addendum's italic line added five too (k = 5), and the rule it states for the earlier
+addenda still holds, each shift now N more. So:
+- the `v0.4.0` addendum's citations, which are that file's, are read at `c8570e8`, or **5** lines
+  later here (all but `:22-25`, which is above the insert);
+- the `v0.3.0` addendum's, which the `v0.4.0` addendum reads at `2f5417e` or five lines later, are
+  read at `2f5417e`, or **10** lines later here (all but `:17-20`);
+- the `v0.2.3` addendum's, which the `v0.4.0` addendum reads at `0de2b16` or ten lines later, are
+  read at `0de2b16`, or **15** lines later here (all but `:12-15`);
+- the `v0.2.2` addendum's, which the `v0.4.0` addendum reads at `6d8ee9a` or fifteen lines later,
+  are read at `6d8ee9a`, or **20** lines later here (all but `:7-10`);
+- the `v0.2.1` addendum's, which the `v0.4.0` addendum reads at `33778b0` or twenty lines later,
+  are read at `33778b0`, or **25** lines later here (all but `:3`).
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/README.md:27-30` | the `v0.4.0` addendum, "at the end", gives "the pins by client" | it gives `v0.4.0`'s pins and changes, true of `v0.4.0`; this addendum, now at the end, gives the pins of `v0.5.0` |
+| `docs/adoption/README.md:618-634` | in part, the pins: "SGK adopts `v0.4.0` in place of `v0.2.2`", the pin `…@v0.4.0`; "CPBH has adopted `v0.3.0` …, and may stay on it or move to `v0.4.0`"; "SI adopts `v0.3.0` or `v0.4.0`"; and "nothing they call changes", of `v0.4.0` | every client is on `v0.4.0`; SI adopts `v0.5.0`; SGK and CPBH may stay on `v0.4.0` or move to `v0.5.0`, a move needing the guard's one edit; "The pins, by client" and "The spec guard", above. G2's, G3's and G4's readings stand |
+| `docs/adoption/README.md:636-637` | "`v0.4.0` carries `key_on_version`, `v0.2.0`'s feature, `v0.2.1`'s three fixes, `v0.2.2`'s fix, `v0.2.3`'s change and `v0.3.0`'s change, unchanged" | true of `v0.4.0`; `v0.5.0` carries those and `v0.4.0`'s change, unchanged |
+| `docs/adoption/README.md:641-642` | in part: "`datastorekit/store_inventory.py` … is unchanged since `v0.2.2`" | true of `v0.4.0`; `v0.5.0` changes it ("What changed since `v0.4.0`", above), and a spec that declares no extra table reads the records it read |
+| `docs/adoption/README.md:658-659` | in part: "A digest a client takes with its own code does not move: what it reads from the package is unchanged" | true of `v0.4.0`; under `v0.5.0` a digest a client takes of a spec by walking its fields moves ("The spec guard", above). A fingerprint of a store read with unchanged specs does not |
+| `docs/adoption/README.md:678-680` | in part, the column "Its pin": SGK `v0.2.2`, CPBH `v0.3.0`, SI none | true of the commits read then; each client now pins `v0.4.0`, as read at the commits in this addendum's table. The rest of each row stands, of those commits |
+| `docs/adoption/README.md:705-717` | the `v0.4.0` addendum's `path:line`s are "this file's as committed with this addendum", and the earlier addenda's are read 5, 10, 15 and 20 lines later | they are read at `c8570e8`, or 5 lines later here; the `v0.3.0` addendum's 10, the `v0.2.3` addendum's 15, the `v0.2.2` addendum's 20, and the `v0.2.1` addendum's 25; above |
+| `docs/adoption/README.md:721` | in part, the row for `:22-25`: "this addendum, now at the end, gives the pins of `v0.4.0`" | the `v0.4.0` addendum gives the pins of `v0.4.0`; this addendum is now at the end, and gives those of `v0.5.0` |
+| `docs/adoption/README.md:722` | in part, the row for `:491-506`: "SGK adopts `v0.4.0` in place of `v0.2.2` …; CPBH, which has adopted `v0.3.0`, may stay on it or move to `v0.4.0`; SI adopts `v0.3.0` or `v0.4.0`" | as `:618-634`. The row's G2, G3 and G4 readings stand |
+| `docs/adoption/README.md:723` | the row for `:508-509`: "`v0.4.0` carries those and `v0.3.0`'s change, unchanged" | as `:636-637` |
+| `docs/adoption/README.md:724` | the row for `:576-584`: read "at `2f5417e`, or 5 lines later here; the `v0.2.3` addendum's 10, the `v0.2.2` addendum's 15, and the `v0.2.1` addendum's 20" | at `2f5417e`, or 10 lines later here; the `v0.2.3` addendum's 15, the `v0.2.2` addendum's 20, and the `v0.2.1` addendum's 25; above |
+| `docs/adoption/README.md:725` | in part, the row for `:588`: "this addendum is now at the end, and gives those of `v0.4.0`" | the `v0.4.0` addendum gives those of `v0.4.0`; this addendum is now at the end, and gives those of `v0.5.0` |
+| `docs/adoption/README.md:726` | the row for `:589`: "as `:491-506`" | as `:722` |
+| `docs/adoption/README.md:727` | the row for `:590`: "as `:508-509`" | as `:723` |
+| `docs/adoption/README.md:728` | the row for `:591`: read "at `0de2b16`, or ten lines later here; the `v0.2.2` addendum's fifteen, and the `v0.2.1` addendum's twenty" | at `0de2b16`, or fifteen lines later here; the `v0.2.2` addendum's twenty, and the `v0.2.1` addendum's twenty-five; above |
+| `docs/adoption/README.md:729` | the row for `:592`: "as `:491-506`" | as `:722` |
+| `docs/adoption/README.md:730` | the row for `:593`: "for SGK the pin `…@v0.4.0`; for CPBH `…@v0.3.0` or `…@v0.4.0`; for SI `…@v0.3.0` or `…@v0.4.0`" | for SI the pin `…@v0.5.0`; for SGK and CPBH `…@v0.4.0` or `…@v0.5.0`, as each chooses |
+| `docs/adoption/README.md:731` | the row for `:594`: the `v0.2.2` addendum's citations are read "at `6d8ee9a`, or fifteen lines later here" | at `6d8ee9a`, or twenty lines later here (all but `:7-10`) |
+| `docs/adoption/README.md:732` | the row for `:595`: "as `:592` and `:593`" | as `:729` and `:730` |
+| `docs/adoption/README.md:733` | the row for `:596`: "at `v0.4.0`, each checklist with its five addenda" | at `v0.5.0`, each checklist with its six addenda |
+| `docs/adoption/README.md:734` | the row for `:597`: "as `:592` and `:593`" | as `:729` and `:730` |
+
+**Standing, not superseded:** in `:618-634`, G2's reading, "SGK has adopted `v0.2.2` or later",
+G3's, "CPBH has adopted `v0.2.3` or later", and G4's, "SI has adopted `v0.3.0` or later", and the
+row for them (`:735`); the `v0.4.0` addendum's account of `datastorekit.store_fingerprint`
+(`:639-667`), true of `v0.5.0`, whose `store_fingerprint.py` differs from `v0.4.0`'s by a comment
+alone, its line numbers read at `v0.4.0`'s tree; its account of the clients' fingerprint functions
+(`:669-690`), of the commits it names; and its "Standing" paragraph (`:737-742`). §2's module map
+(`:96-100`) gains no row: `v0.5.0` adds no module.

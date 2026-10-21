@@ -1,9 +1,10 @@
 # extra-values campaign — implementation state
 
-**Last updated:** 2026-10-21 · **Status: IN PROGRESS — 2 of 2 prompts written, 1 landed (01,
-`5475cef`, reviewed; CI green at both ends, run 39680233763); U2 the user's ruling 2026-10-21; U1, U3–U5 taken 2026-10-21, as
-recommended, U5 amended by the user the same day; 02 is written and ready to be dispatched; one
-issue open, assigned to 02.**
+**Last updated:** 2026-10-21 · **Status: IN PROGRESS — 2 of 2 prompts written, 2 landed (01,
+`5475cef`, reviewed; CI green at both ends, run 39680233763; 02, this commit, `v0.5.0` ready to be
+tagged once CI passes on it at both ends); U2 the user's ruling 2026-10-21; U1, U3–U5 taken
+2026-10-21, as recommended, U5 amended by the user the same day; no issue open
+(`[01-a-new-spec-field-moves-every-spec-guard-digest]` closed by 02).**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** no issue. It carries out the user's request of 2026-10-21, from SI's brief (README §0) ·
@@ -30,7 +31,7 @@ issue open, assigned to 02.**
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [A spec counts more than one value table](01-a-spec-counts-more-than-one-value-table.md) | `extra_values` and `extra_value_counts` (U1); the `ENCODING_FORMAT` comment (U2); the neutral client's `TraceMark`, witness, `NEUTRAL_FORMAT` 2 and golden (U3); the new test module and amended literals (U4); contract §9.8 | ✍️ yes, 2026-10-21 | ✅ 2026-10-21; reviewed; CI green at both ends (run 39680233763) | `5475cef` | [log](logs/01-a-spec-counts-more-than-one-value-table.md) |
-| 02 | [Release `v0.5.0`](02-release-v0.5.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SI's saying what it does; ChamPBH's and SGK's that nothing they call or hold changes, and the spec guard's one edit); G4's sentence; closes `[01-a-new-spec-field-moves-every-spec-guard-digest]`; the tag after green CI (U5) | ✍️ yes, 2026-10-21, against `c583c56` | ⬜ | — | — |
+| 02 | [Release `v0.5.0`](02-release-v0.5.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SI's saying what it does; ChamPBH's and SGK's that nothing they call or hold changes, and the spec guard's one edit); G4's sentence; closes `[01-a-new-spec-field-moves-every-spec-guard-digest]`; the tag after green CI (U5) | ✍️ yes, 2026-10-21, against `c583c56` | ✅ 2026-10-21; untagged, unpushed | this commit | [log](logs/02-release-v0.5.0.md) |
 
 **Planning note (2026-10-21, at `38ebb9f`).** The brief's five checks hold (README §0.1). One
 finding departs from it: `test_every_declaration_field_is_in_use` requires the neutral registry to
@@ -135,6 +136,22 @@ SQLAlchemy 2.0.39, SQLite 3.45.1, `Ran 538 tests … OK`, 0 `ResourceWarning` li
 connections reported from SQLAlchemy: timing, the note's correction 4). Nothing is tagged; 02
 (`v0.5.0`) is written next, against the tree 01 left.
 
+**Prompt 02 (2026-10-21).** The package is ready to be released as `v0.5.0`: `pyproject.toml`
+says `0.5.0`; `README.md` and `PROVENANCE.md` describe it; each of the four files under
+`docs/adoption/` gains an italic line at its head and a dated addendum, by addition only (`git
+diff` has no `-` line), SI's the note its pin prompt reads, SGK's and ChamPBH's giving the spec
+guard's one condition and that the format is not bumped for it; the extraction board's G4 gains a
+dated sentence. No line of code changed. The suite is `Ran 538 tests … OK` in `venv/` (0
+`ResourceWarning` lines; `pip show` `0.5.0` after the offline reinstall) and at the high end (4
+lines, timing). The release check, offline from an export: `datastorekit-0.5.0-py3-none-any.whl`,
+26 entries, none under `tests/`; against `v0.4.0`'s wheel two `RECORD` lines differ
+(`store_inventory.py`, `store_fingerprint.py`) and 19 are equal; the probe, in the two installed
+wheels, gives the prompt's §1.2 in every check, the guard's recipe included. Breakages (a)–(c) fail
+the check as §4.5 says. §1.1's measure of the clients, re-run through `git`, reproduces the
+prompt's table. `[01-a-new-spec-field-moves-every-spec-guard-digest]` is closed (§4). Nothing was
+pushed or tagged, no client or RunRegistryKit was written, run or opened, and Ray was not started.
+See the [log](logs/02-release-v0.5.0.md).
+
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
 
@@ -147,6 +164,10 @@ None of this campaign's own. SI's pin prompt waits on the tag (README §7). When
 object, its commit and the SI addendum are given to the user.
 
 ## 3. Active and unresolved issues
+
+None open.
+
+## 4. Resolved issues
 
 - **[01-a-new-spec-field-moves-every-spec-guard-digest]** — *opened 2026-10-21 by the
   orchestrator, while writing 02; measured against 01's tree (`5475cef`) and the clients through
@@ -167,7 +188,15 @@ object, its commit and the SI addendum are given to the user.
     not affected. RunRegistryKit's recipe has the same exposure, in that repository.
   - **Next step.** U5 as amended (README §0.3, §6.2): 02's SGK and ChamPBH addenda give the one
     condition, and say not to bump the format for it. Closed by 02.
-
-## 4. Resolved issues
-
-None yet.
+  - **Closed (2026-10-21, 02):** by `extra-values` prompt 02, this commit. The SGK and ChamPBH
+    addenda ([`docs/adoption/secondarygwkit.md`](../../docs/adoption/secondarygwkit.md#addendum-v050-extra-values-prompt-02-2026-10-21),
+    [`docs/adoption/champbh.md`](../../docs/adoption/champbh.md#addendum-v050-extra-values-prompt-02-2026-10-21))
+    each say that a move to `v0.5.0` changes nothing the client calls or holds, that its spec guard
+    then fails, that the format is not bumped for it, and give the edit: `plain` leaves out a field
+    named `extra_values` whose value is empty; the README addendum's "The spec guard" gives it for
+    every client. The release check probes it (log 02, §5.3): RunRegistryKit's `plain` and
+    `spec_digests`, copied from its `v0.2.0` tag, over two hand-built specs in the installed
+    `v0.4.0` and `v0.5.0` wheels, give differing digests, and with the condition equal ones; a spec
+    declaring an extra table moves its digest with the condition; and on the neutral registry all
+    13 classes differ, and with the condition only `Trace`. No package change. The same condition
+    in RunRegistryKit's recipe is that repository's, in a campaign of its own (prompt 02 §8).

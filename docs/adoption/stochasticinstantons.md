@@ -41,6 +41,12 @@ addendum, gives SI's pin, `v0.3.0` or `v0.4.0` as SI chooses, and what changed f
 `v0.3.0`, and supersedes the statements it names. The text before it, the four earlier addenda
 included, is unchanged and true of the release each names.*
 
+*Added by `extra-values` prompt 02 on 2026-10-21: the section
+[Addendum: v0.5.0](#addendum-v050-extra-values-prompt-02-2026-10-21), after the `v0.4.0`
+addendum, gives SI's pin, `v0.5.0`, and what SI declares to adopt it, what then holds and what of
+SI's own code and tests moves. It supersedes the statements it names. The text before it, the
+five earlier addenda included, is unchanged and true of the release each names.*
+
 Unless another commit is named, a `path:line` is SI's at `7bb3efd`, and one under `datastorekit/`
 is the package's at `v0.2.0`.
 
@@ -770,6 +776,181 @@ of `v0.4.0`, whose `datastorekit/object.py` is `v0.3.0`'s: its "What changed for
 (`:612-646`), with its line that `DatastoreObject.timestamp` "does not leave the layer" (`:641`);
 its row for the `v0.2.3` addendum's head line (`:666`); and its rows for `:44-45` to `:160`
 (`:667-673`), each a statement about `DatastoreObject.timestamp` that `v0.3.0` superseded.
+
+---
+
+## Addendum: v0.5.0 (extra-values prompt 02, 2026-10-21)
+
+*Written by `extra-values` prompt 02 on 2026-10-21, and added after `fingerprint` prompt 02's
+`v0.4.0` addendum. 07a's text and the `v0.2.1`, `v0.2.2`, `v0.2.3`, `v0.3.0` and `v0.4.0` addenda
+stay as written, each true of the release it names (`CLAUDE.md` rule 6). SI was not re-measured
+(as decision U37); what this section says of SI comes from reads through `git` only, at `f5f395b`
+(SI's `HEAD` when read, 2026-10-21, branch `dk-and-rpk-migration`). An SI `path:line` here is SI's
+at `f5f395b`. Nothing of SI was imported, run or opened.*
+
+**This is the note SI's pin prompt reads.** `v0.5.0` is the release SI asked for, in its brief
+(`.prompts/dk-and-rpk-migration/datastorekit-second-value-table-brief.md`, committed as
+`f5f395b`), and it carries the one change SI asked for. It says what SI declares, where, what then
+holds, and what of SI's own code and tests moves.
+
+**The pin.** SI adopts **`v0.5.0`** in place of `v0.4.0`, which its `requirements.txt:16` pins at
+`f5f395b` (since SI's `1b1ca6d`), by a pin prompt of its own, a commit of its own (decision U5 of
+the `extra-values` campaign, as amended by the user on 2026-10-21):
+
+```text
+datastorekit @ git+https://github.com/ds283/DatastoreKit@v0.5.0
+```
+
+G4 reads, as before, "SI has adopted `v0.3.0` or later"; whether it holds is not recorded here.
+
+`v0.5.0` carries `key_on_version`, `v0.2.0`'s feature, `v0.2.1`'s three fixes, `v0.2.2`'s fix,
+`v0.2.3`'s change, `v0.3.0`'s change and `v0.4.0`'s change, unchanged.
+
+**What changed since `v0.4.0`.** One prompt changed the package, `extra-values` prompt 01
+(`5475cef`): an `InventorySpec` may name further value tables, `extra_values`, each table → its
+column naming the class's serial, and the inventory counts each as it counts `values`, into each
+record's `extra_value_counts`, which `Record.as_json` carries only where it is not empty;
+`ENCODING_FORMAT` stays `1`; and `inventory_classes` gains one refusal, of a spec whose value table
+is also one of its `extra_values`. The detail is
+[`docs/client-contract.md` §9.8](../client-contract.md#98-extra-values-prompt-01), and
+[`README.md`'s addendum](README.md#addendum-v050-extra-values-prompt-02-2026-10-21) gives it for
+every client. Nothing the pool writes or reads changes, and no message, refusal or exception of
+the pool's.
+
+**Nothing SI calls changes.** By an `ast` read of every `.py` file through `git show` at
+`f5f395b`, outside `prompts/`, `.prompts/`, `docs/` and `.documents/`: SI's 22 `InventorySpec(...)`
+calls each pass keywords, and none passes `extra_values`; its one `Record(...)` call passes
+keywords (`tests/test_inventory_report.py:67`); it calls no `read_records`, walks no spec's fields
+with `dataclasses.fields`, and reads no `extra_values`, `extra_value_counts` or `as_json`. Its
+reads of `record.value_count` (`tools/inventory_report.py:373-374`, `:405-406`;
+`tests/test_inventory_store.py:306`) are unchanged. Until SI declares the field, every record and
+fingerprint of a store read with SI's specs is `v0.4.0`'s.
+
+### What SI declares, and where
+
+In `GradientCoupledInstanton`'s spec (`Datastore/SQL/ObjectFactories/GradientCoupledInstanton.py`,
+`inventory_spec`, `:147-182`; `InventorySpec(` at `:158`), beside its `values=` (`:180`,
+`("GradientCoupledInstantonProfile", "parent_serial")`), one keyword:
+
+```python
+extra_values={"GradientCoupledInstantonValue": "instanton_serial"},
+```
+
+`instanton_serial` is `GradientCoupledInstantonValue`'s column naming its owner, a foreign key to
+`GradientCoupledInstanton.serial` (`:686-692`). The mapping is keyed by the table's name; the count
+is read back as `record.extra_value_counts["GradientCoupledInstantonValue"]`.
+
+### What then holds
+
+- **Each `GradientCoupledInstanton` record carries `extra_value_counts`**,
+  `{"GradientCoupledInstantonValue": n}`, n the number of that table's rows naming the record's
+  row, **0 where none** (a row stored without full values). `value_count` still counts
+  `GradientCoupledInstantonProfile`, as now. The record's canonical line, and so its class's digest
+  in a fingerprint, gains the fifth key; every other class's records are `v0.4.0`'s.
+- **Rows of `GradientCoupledInstantonValue` naming a serial not on their shard** are an
+  `orphan-value` problem of `GradientCoupledInstanton`, naming the table and the shard, in the
+  words of the `values` table's.
+- **The table and its column are read whenever the inventory is.** A store that lacks either
+  raises `KeyError` when read, as for `values`.
+- **Naming `GradientCoupledInstantonProfile` in both slots is refused**: `inventory_classes`
+  raises `ValueError`, naming the class and the table. `inventory_specs` does not, and no spec's
+  construction does.
+- **SI's fingerprints of the class change**, which is SI's `fingerprint_format`, never
+  `ENCODING_FORMAT`. SI has recorded no fingerprint, so none it holds moves.
+
+### What of SI's own moves
+
+Each is SI's to change, as SI chooses; this addendum names them and makes no choice.
+- **Its coverage test**, `tests/test_inventory_specs.py`: `EXCLUDED` names
+  `GradientCoupledInstantonValue` (`:208-214`); `READ_THROUGH` maps a class to `(owner, slot)`
+  (`:199-205`), checked against `SLOTS`, which names `tags`, `values` and `parent_sets` (`:216`);
+  `_slot_tables` (`:224-228`) reads a slot's table as `value[0]`, a pair's first item, where
+  `extra_values` is a mapping, table → column; and the counts it asserts, `(24, 5, 1)` declaring,
+  read through and excluded (`:412`).
+- **Its spec tests**: `_as_table` (`:283-297`), which `test_each_spec_is_the_identity_its_build_matches`
+  (`:325-…`) compares with `EXPECTED_SPECS`, holds `spec.values` and not `extra_values`; and
+  `test_every_named_column_is_a_column_of_its_table` checks the `values` table's column and its
+  foreign key (`:351-358`) and not an extra table's. Neither sees the declaration unless it is
+  extended.
+- **Its report**, `tools/inventory_report.py`, which reads `value_count` (`:373-374`, `:405-406`),
+  if SI chooses to show the new counts.
+- **The comment in the spec** (`:152-155`), which says the table "is outside the inventory".
+- **The issue SI holds**, `[gci-value-table-outside-the-inventory]`, which is SI's to close.
+
+SI has recorded no fingerprint and has no spec guard. **Advice:** if SI adds a spec guard, use
+RunRegistryKit's recipe (its `docs/adoption/README.md` §6) with the one condition
+[`README.md`'s addendum](README.md#addendum-v050-extra-values-prompt-02-2026-10-21) gives ("The
+spec guard"): `plain` leaves out a field named `extra_values` whose value is empty.
+
+### Where this release departs from SI's brief
+
+As `prompts/extra-values/README.md` §0.2 records, each point:
+1. **The field's shape.** The brief advises a name SI chooses for each table,
+   `Mapping[str, Tuple[str, str]]`. `v0.5.0` keys the mapping by the table's name,
+   `extra_values: Mapping[str, str]`, table → column, and `extra_value_counts` the same way. A
+   table cannot be named twice and no name can be empty, so of the brief's three refusals one is
+   left: an extra table that is also the `values` table.
+2. **The tests are not on a separate registry alone.** This repository's neutral client declares
+   the field (a `TraceMark` table under `Trace`), since a test requires the neutral registry to use
+   every field; its format became 2 with a new golden beside the old, and the format-1 golden is
+   kept as the test that a spec which does not declare the field gives the records it gave.
+3. **Where the refusal is.** In `inventory_classes`, naming the class, not in the spec's
+   construction, so that a spec stays as forgiving as it is for the pool's drop, which reads
+   `inventory_specs` and never `inventory_classes`.
+4. **`ENCODING_FORMAT`** stays `1`, by the user's ruling; the comment beside it and contract §9.8
+   say how its rule's item 1 is read.
+5. **Everything else the brief measured holds.**
+
+**Line citations.** A `datastorekit/` line in 07a's text stays `v0.2.0`'s, read at that tag
+(`240028e`), one in the `v0.2.1` addendum stays `v0.2.1`'s (`33778b0`), and one in the `v0.3.0`
+addendum stays `v0.3.0`'s (`2f5417e`, whose `datastorekit/` is `1b2f91a`'s). The `v0.2.2`,
+`v0.2.3` and `v0.4.0` addenda cite none, and neither does this addendum; one cited here would be
+`v0.5.0`'s, whose `datastorekit/` is the tree of `extra-values` prompt 01's commit `5475cef`. An SI
+line is SI's at the commit named, and at `f5f395b` in this addendum.
+
+**What this addendum supersedes**, in this file. Each `path:line` below is this file's as committed
+with this addendum. In the file as `fingerprint` prompt 02 left it (`c8570e8`), every line after
+`:43` is six lines earlier, since this addendum's italic line under the title adds six (N = 6),
+and every line of the appendix, which follows this addendum, is 181 lines earlier (N and this
+addendum's 175 lines). The `v0.4.0` addendum's italic line added six too (k = 6), and the rule it
+states for the earlier addenda still holds, each shift now N more. So:
+- the `v0.4.0` addendum's citations, which are that file's, are read at `c8570e8`, or **6** lines
+  later here (all but `:32-36`, which is above the insert);
+- the `v0.3.0` addendum's, which the `v0.4.0` addendum reads at `2f5417e` or six lines later, are
+  read at `2f5417e`, or **12** lines later here (all but `:26-30`), its rows for `:44-45` and
+  later among them;
+- the `v0.2.3` addendum's, which the `v0.4.0` addendum reads at `0de2b16` or twelve lines later,
+  are read at `0de2b16`, or **18** lines later here (all but `:20-24`);
+- the `v0.2.2` addendum's, which the `v0.4.0` addendum reads at `6d8ee9a` or eighteen lines later,
+  are read at `6d8ee9a`, or **24** lines later here (all but `:15-18`);
+- the `v0.2.1` addendum's, which the `v0.4.0` addendum reads at `33778b0` or twenty-four lines
+  later, are read at `33778b0`, or **30** lines later here (all but `:5`).
+
+| `path:line` | The statement | What replaces it |
+|---|---|---|
+| `docs/adoption/stochasticinstantons.md:38-42` | the `v0.4.0` addendum gives "SI's pin, `v0.3.0` or `v0.4.0` as SI chooses" | it gives `v0.4.0`'s pins and changes, true of `v0.4.0`; this addendum gives SI's pin at `v0.5.0`: `v0.5.0` |
+| `docs/adoption/stochasticinstantons.md:699-712` | in part: "SI adopts **`v0.3.0`** or **`v0.4.0`**, as SI chooses, when it is next active", "SI's tree at `5fb4a1d` has no `datastorekit` line in its `requirements.txt`", and the pins `…@v0.3.0` or `…@v0.4.0` | SI is on `v0.4.0` (`requirements.txt:16` at `f5f395b`, since its `1b1ca6d`), and adopts `v0.5.0` (`extra-values` U5, as amended); the pin `…@v0.5.0`; "The pin", above. The rest stands: a move is a commit of SI's own, and G4's reading |
+| `docs/adoption/stochasticinstantons.md:714-715` | "`v0.4.0` carries `key_on_version`, `v0.2.0`'s feature, `v0.2.1`'s three fixes, `v0.2.2`'s fix, `v0.2.3`'s change and `v0.3.0`'s change, unchanged" | true of `v0.4.0`; `v0.5.0` carries those and `v0.4.0`'s change, unchanged |
+| `docs/adoption/stochasticinstantons.md:744-757` | the `v0.4.0` addendum's `path:line`s are "this file's as committed with this addendum", and the earlier addenda's are read 6, 12, 18 and 24 lines later | they are read at `c8570e8`, or 6 lines later here; the `v0.3.0` addendum's 12, the `v0.2.3` addendum's 18, the `v0.2.2` addendum's 24, and the `v0.2.1` addendum's 30; above |
+| `docs/adoption/stochasticinstantons.md:761` | in part, the row for `:32-36`: "this addendum gives SI's pins at `v0.4.0`: `v0.3.0` or `v0.4.0`, as SI chooses" | the `v0.4.0` addendum gives those, true of `v0.4.0`; this addendum gives `v0.5.0`, above |
+| `docs/adoption/stochasticinstantons.md:762` | in part, the row for `:601-607`: "SI adopts `v0.3.0` or `v0.4.0`, as SI chooses, when it is next active (`fingerprint` U6) …; the pins `…@v0.3.0` or `…@v0.4.0`" | as `:699-712`. The row's G4 reading stands |
+| `docs/adoption/stochasticinstantons.md:763` | the row for `:609-610`: "`v0.4.0` carries those and `v0.3.0`'s change, unchanged" | as `:714-715` |
+| `docs/adoption/stochasticinstantons.md:764` | the row for `:654-662`: read "at `2f5417e`, or 6 lines later here; the `v0.2.3` addendum's 12, the `v0.2.2` addendum's 18, and the `v0.2.1` addendum's 24" | at `2f5417e`, or 12 lines later here; the `v0.2.3` addendum's 18, the `v0.2.2` addendum's 24, and the `v0.2.1` addendum's 30; above |
+| `docs/adoption/stochasticinstantons.md:765` | the row for `:674`: "as `:601-607`" | as `:762` |
+| `docs/adoption/stochasticinstantons.md:766` | the row for `:675`: read "at `0de2b16`, or twelve lines later here; the `v0.2.2` addendum's eighteen, and the `v0.2.1` addendum's twenty-four" | at `0de2b16`, or eighteen lines later here; the `v0.2.2` addendum's twenty-four, and the `v0.2.1` addendum's thirty; above |
+| `docs/adoption/stochasticinstantons.md:767` | the row for `:676`: "as `:601-607`" | as `:762` |
+| `docs/adoption/stochasticinstantons.md:768` | the row for `:677`: "the pins `…@v0.3.0` or `…@v0.4.0`, above" | the pin `…@v0.5.0`, above |
+| `docs/adoption/stochasticinstantons.md:769` | the row for `:678`: the `v0.2.2` addendum's citations are read "at `6d8ee9a`, or eighteen lines later here" | at `6d8ee9a`, or twenty-four lines later here (all but `:15-18`) |
+| `docs/adoption/stochasticinstantons.md:770` | the row for `:679`: "as `:601-607`" | as `:762` |
+| `docs/adoption/stochasticinstantons.md:771` | the row for `:680`: "at `v0.3.0` or `v0.4.0`, as SI chooses, with the five addenda" | at `v0.5.0`, with the six addenda |
+
+**Standing, not superseded:** G4's reading, "SI has adopted `v0.3.0` or later", in the `v0.4.0`
+addendum's pin (`:699-701`) and its rows (`:762`, `:772`); its "What changed for SI since
+`v0.3.0`" (`:717-735`), true of `v0.4.0`: SI defines and calls none of the package's fingerprint
+functions as read at `5fb4a1d`, "It meets the module only when it adopts RunRegistryKit" is a
+condition, which this addendum does not re-measure, and the `v0.3.0` addendum's account of
+`DatastoreObject.timestamp` holds at `v0.5.0` too, whose `datastorekit/object.py` is `v0.3.0`'s;
+and its "Standing" paragraph (`:774-778`).
 
 ---
 
