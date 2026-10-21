@@ -1,0 +1,193 @@
+{
+  "classes": {
+    "Gadget": {
+      "count": 2,
+      "digest": "8f0c8d5da0ebbc626dc13890947d5416b39446f2686996cc4eb09f90dc6265b2",
+      "tag_sets": [
+        {
+          "count": 1,
+          "digest": "70bd04bcf86596085cd4135ecdaffee0d53d6b5f486d5236cf63612365f35527",
+          "tags": [
+            "fixture-run"
+          ]
+        },
+        {
+          "count": 1,
+          "digest": "d6ca40d80e64cf6b273cb6a94b5ee7550cd9390f090b8318eccd4eb50d1edbca",
+          "tags": [
+            "fixture-run",
+            "grid-A"
+          ]
+        }
+      ]
+    },
+    "Sample": {
+      "count": 3,
+      "digest": "d86715e513d7035502a6028896e44ba613b443528f241aaea52c166ad8ad9e87",
+      "tag_sets": [
+        {
+          "count": 2,
+          "digest": "38e3c7d60c03369c441f0b8a397a82e2d424db4c907778d3dadf47c6d6e29f1c",
+          "tags": [
+            "fixture-run"
+          ]
+        },
+        {
+          "count": 1,
+          "digest": "96f94141724dcda8c5519ff4b232aba7e43f28fbf136077744bb759a2c7a266c",
+          "tags": [
+            "fixture-run",
+            "grid-A"
+          ]
+        }
+      ]
+    },
+    "Tessera": {
+      "count": 5,
+      "digest": "b38fda242a0b06b201f38a5e62ea5f8c9aa6cd716f974a9ffe4c201aef9e89ae",
+      "tag_sets": [
+        {
+          "count": 5,
+          "digest": "b38fda242a0b06b201f38a5e62ea5f8c9aa6cd716f974a9ffe4c201aef9e89ae",
+          "tags": []
+        }
+      ]
+    },
+    "Trace": {
+      "count": 4,
+      "digest": "21635f493951c9bf37d8156daf0c90b13a231a489a9916890cf7b45c663efe3d",
+      "tag_sets": [
+        {
+          "count": 1,
+          "digest": "7d25585026ef8180e1b00ed337d8d5474d2c981afd404b7b905987fedd3c31a4",
+          "tags": [
+            "fixture-run"
+          ]
+        },
+        {
+          "count": 2,
+          "digest": "ae06a10075a435ccb38791a9d875330cd597e4a8d3e4f3a1931212702aae9057",
+          "tags": [
+            "fixture-run",
+            "grid-A"
+          ]
+        },
+        {
+          "count": 1,
+          "digest": "06c43176c195d27f735ed3eabb9dc629ab06a7385a74a51e71cee1e61dee7dd1",
+          "tags": [
+            "fixture-run",
+            "grid-B"
+          ]
+        }
+      ]
+    },
+    "Weave": {
+      "count": 1,
+      "digest": "e23514a5a9c676cb2dcc81fcff0cde30a1d3196710bc0527b542c493a8108121",
+      "tag_sets": [
+        {
+          "count": 1,
+          "digest": "e23514a5a9c676cb2dcc81fcff0cde30a1d3196710bc0527b542c493a8108121",
+          "tags": [
+            "fixture-run",
+            "weave-tag"
+          ]
+        }
+      ]
+    },
+    "dial_setting": {
+      "count": 2,
+      "digest": "fc13b3fa123d47b74651abb4dd18f3da3fff3bf626d5608aa6e46437c42191c9",
+      "tag_sets": [
+        {
+          "count": 2,
+          "digest": "fc13b3fa123d47b74651abb4dd18f3da3fff3bf626d5608aa6e46437c42191c9",
+          "tags": []
+        }
+      ]
+    },
+    "gauge_setting": {
+      "count": 2,
+      "digest": "5b142d6bd7cf5772ceebfcbeb22eb208d0c82bfceabe7348fcf4d290b3b3504e",
+      "tag_sets": [
+        {
+          "count": 2,
+          "digest": "5b142d6bd7cf5772ceebfcbeb22eb208d0c82bfceabe7348fcf4d290b3b3504e",
+          "tags": []
+        }
+      ]
+    },
+    "keypoint": {
+      "count": 3,
+      "digest": "13e93196b3ebf0011cee4c07efb54060dbc64e5f4dd9166502dc1ab5b674ff59",
+      "tag_sets": [
+        {
+          "count": 3,
+          "digest": "13e93196b3ebf0011cee4c07efb54060dbc64e5f4dd9166502dc1ab5b674ff59",
+          "tags": []
+        }
+      ]
+    },
+    "keypoint_alias": {
+      "count": 4,
+      "digest": "0d672949800fb231bcc2d05ffe16236534baa18736a728159a087a574f038887",
+      "tag_sets": [
+        {
+          "count": 4,
+          "digest": "0d672949800fb231bcc2d05ffe16236534baa18736a728159a087a574f038887",
+          "tags": []
+        }
+      ]
+    },
+    "knob_setting": {
+      "count": 1,
+      "digest": "83e8ef57be4d52667bb6e2f56952e15965d603ea4c36cdeedce38bbecd91702f",
+      "tag_sets": [
+        {
+          "count": 1,
+          "digest": "83e8ef57be4d52667bb6e2f56952e15965d603ea4c36cdeedce38bbecd91702f",
+          "tags": []
+        }
+      ]
+    },
+    "routing_rule": {
+      "count": 3,
+      "digest": "67ab597e9db02c40ef44211a0a2cb419defb377de64e576918bc52ec6fd6d37b",
+      "tag_sets": [
+        {
+          "count": 3,
+          "digest": "67ab597e9db02c40ef44211a0a2cb419defb377de64e576918bc52ec6fd6d37b",
+          "tags": []
+        }
+      ]
+    },
+    "store_tag": {
+      "count": 5,
+      "digest": "6a1bd5181722dade4f1071ddf0f7e13dedb4ccf7e571d5f3d14597de22890d00",
+      "tag_sets": [
+        {
+          "count": 5,
+          "digest": "6a1bd5181722dade4f1071ddf0f7e13dedb4ccf7e571d5f3d14597de22890d00",
+          "tags": []
+        }
+      ]
+    },
+    "version": {
+      "count": 2,
+      "digest": "dab0c5f3b627ebc84b834e92e4d5e4ef855f5a9ebedbac569f369c3d8f025416",
+      "tag_sets": [
+        {
+          "count": 2,
+          "digest": "dab0c5f3b627ebc84b834e92e4d5e4ef855f5a9ebedbac569f369c3d8f025416",
+          "tags": []
+        }
+      ]
+    }
+  },
+  "digest": "524cefd41ab593f73abe0610558d8444c64f9514c4d1edb5041591737161d14a",
+  "encoding_format": 1,
+  "fingerprint_format": 2,
+  "problems": {},
+  "taken": null
+}

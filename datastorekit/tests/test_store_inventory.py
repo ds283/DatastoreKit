@@ -77,7 +77,13 @@ FACTORIES = REPO_ROOT / "datastorekit" / "tests" / "client"
 VALUE_TABLES = (
     "GadgetPart",
     "TraceStep",
+    # Trace's further value table (extra_values), added by extra-values prompt 01
+    "TraceMark",
 )
+
+# the classes whose spec declares a further value table (extra_values), and whose records'
+# as_json therefore carries "extra_value_counts" (added by extra-values prompt 01)
+EXTRA_VALUE_CLASSES = ("Trace",)
 
 # class -> key field -> (table, serial, column, a new value) that changes that one identity column
 # of one row. Each list is read from the class's build() lookup, optional filters included
@@ -240,7 +246,12 @@ class TestTheFullStore(_Stores):
                     text = json.dumps(record.as_json(), allow_nan=False)
                     self.assertEqual(
                         set(json.loads(text)),
-                        {"key", "tags", "validated", "value_count"},
+                        {"key", "tags", "validated", "value_count"}
+                        | (
+                            {"extra_value_counts"}
+                            if name in EXTRA_VALUE_CLASSES
+                            else set()
+                        ),
                     )
                     for leaf in record.key.values():
                         self.assertIsInstance(leaf, (str, int, bool, type(None)))

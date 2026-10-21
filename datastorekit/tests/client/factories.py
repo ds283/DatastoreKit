@@ -22,6 +22,9 @@ Prompt 04a (U15) adds the sharded family: ``Trace`` and ``Weave`` are computed c
 ``Weave_members`` are written by their owner's ``store``. Of the sharded classes, the inventory
 reads a validated flag of ``Trace`` alone.
 
+``extra-values`` prompt 01 adds ``TraceMark``, a further value table of ``Trace``, written by
+``Trace``'s ``store`` for a Trace that carries marks.
+
 This module imports only the standard library, ``sqlalchemy`` and ``datastorekit``.
 """
 
@@ -1322,12 +1325,43 @@ class TraceStep_factory(SQLAFactoryBase):
         raise NotImplementedError("TraceStep rows are written by Trace's store")
 
 
+class TraceMark_factory(SQLAFactoryBase):
+    """A second child table of the sharded Trace, one row per mark, written only for a Trace that
+    carries marks: a further value table its ``inventory_spec`` counts (``extra_values``; added
+    by ``extra-values`` prompt 01)."""
+
+    @staticmethod
+    def register():
+        return {
+            "version": False,
+            "timestamp": False,
+            "columns": [
+                sqla.Column(
+                    "trace_serial",
+                    sqla.Integer,
+                    sqla.ForeignKey("Trace.serial"),
+                    index=True,
+                    nullable=False,
+                ),
+                sqla.Column("mark_index", sqla.Integer, nullable=False),
+            ],
+        }
+
+    @staticmethod
+    def build(payload, conn, table, inserter, tables, inserters):
+        raise NotImplementedError("TraceMark rows are written by Trace's store")
+
+
 class Trace_factory(SQLAFactoryBase):
     """
     A sharded class, sharded on ``k`` (a keypoint), with a polymorphic parent (``frame``, through
     the same ``FRAME_TYPES`` as ``Gadget``), tags and value rows (added by prompt 04a). A Trace is
     validated when it holds as many ``TraceStep`` rows as its ``step_count`` says. It declares no
     ``validate_on_startup``, so neither the pool's prune nor an actor's sees it.
+
+    A Trace may carry marks, one ``TraceMark`` row each, written by ``store`` after the steps and
+    not read back by ``build``; its ``inventory_spec`` counts them as a further value table
+    (``extra_values``; added by ``extra-values`` prompt 01).
     """
 
     @staticmethod
@@ -1433,6 +1467,10 @@ class Trace_factory(SQLAFactoryBase):
                     "step_value": step.step_value,
                 },
             )
+        for index in obj.marks:
+            inserters["TraceMark"](
+                conn, {"trace_serial": store_id, "mark_index": index}
+            )
         return obj
 
     @staticmethod
@@ -1470,6 +1508,7 @@ class Trace_factory(SQLAFactoryBase):
             tags=("Trace_tags", "trace_serial"),
             values=("TraceStep", "trace_serial"),
             validated="trace_validated",
+            extra_values={"TraceMark": "trace_serial"},
         )
 
 

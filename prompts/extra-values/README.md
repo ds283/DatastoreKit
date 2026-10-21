@@ -4,7 +4,8 @@
 StochasticInstantons session (§0). **Prompt 01 is written** (2026-10-21). U2 is the user's ruling
 of 2026-10-21; the user took U1 and U3–U5 as recommended the same day, and 01 is ready to be
 dispatched. Prompt 02, the release, is written after 01 has landed and been reviewed, against the
-tree 01 leaves.
+tree 01 leaves. **Prompt 01 landed** 2026-10-21 (its
+[log](logs/01-a-spec-counts-more-than-one-value-table.md)); not yet reviewed.
 
 ## 0. Why this campaign exists
 
@@ -181,7 +182,7 @@ To be reported back to the SI session with the tag:
 
 | # | Prompt | Covers | Status |
 |---|---|---|---|
-| 01 | [`01-a-spec-counts-more-than-one-value-table.md`](01-a-spec-counts-more-than-one-value-table.md) | `InventorySpec.extra_values` and `Record.extra_value_counts`, `as_json`'s conditional key, the counting and its orphans, the refusal (U1); the `ENCODING_FORMAT` comment (U2); the neutral client's `TraceMark`, the witness, `NEUTRAL_FORMAT` 2 and its golden (U3); `tests/test_inventory_extra_values.py` and the amended literals (U4); contract §9.8. | **written** 2026-10-21; U1–U4 taken |
+| 01 | [`01-a-spec-counts-more-than-one-value-table.md`](01-a-spec-counts-more-than-one-value-table.md) | `InventorySpec.extra_values` and `Record.extra_value_counts`, `as_json`'s conditional key, the counting and its orphans, the refusal (U1); the `ENCODING_FORMAT` comment (U2); the neutral client's `TraceMark`, the witness, `NEUTRAL_FORMAT` 2 and its golden (U3); `tests/test_inventory_extra_values.py` and the amended literals (U4); contract §9.8. | **written** 2026-10-21; U1–U4 taken; **landed** 2026-10-21 ([log](logs/01-a-spec-counts-more-than-one-value-table.md)), not yet reviewed |
 | 02 | Release (planned) | `pyproject.toml`, `README.md`, `PROVENANCE.md`; dated addenda to `docs/adoption/` (SI's saying what it does; ChamPBH's and SGK's that nothing changes and their recorded fingerprints stay valid); both ends locally and in CI; **the tag** on its commit after green CI (U5). | planned; U5 taken; written after 01 is reviewed |
 
 **Order.** 01 → 02. 02 releases what 01 leaves. Each is landed and reviewed on its own.

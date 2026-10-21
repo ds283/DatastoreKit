@@ -62,6 +62,12 @@ from datastorekit.store_inventory import canonical_json
 # fingerprints then differ from those it holds. A change that the neutral golden does not see is
 # still a bump if it is in the list: the golden is a guard, not the rule. A change to a client's
 # specs or registry is that client's ``fingerprint_format``, never ENCODING_FORMAT.
+#
+# Item 1 is read by the rule above it. A field added to ``Record.as_json`` that a record carries
+# only where its class's spec declares what fills it (``extra_value_counts``, from
+# ``InventorySpec.extra_values``) is not a bump: a store read with the same specs gives the same
+# records. A client whose spec comes to declare it changes its own fingerprints, which is its
+# ``fingerprint_format``.
 ENCODING_FORMAT = 1
 
 

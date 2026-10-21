@@ -64,6 +64,9 @@ TRACES = {
     "trace-one": (0, "dial", ("tag-north",), (0.5, 1.5, 2.5), True),
     "trace-two": (1, "knob", ("tag-north", "tag-south"), (3.0,), False),
 }
+# added by extra-values prompt 01: the marks a Trace carries, one TraceMark row each, a further
+# value table its spec counts; a Trace not named here carries none
+TRACE_MARKS = {"trace-one": (0, 1)}
 WEAVE_LABEL = "weave-one"
 
 
@@ -324,7 +327,12 @@ def write_every_class(pool) -> Dict[str, list]:
     traces = {}
     for label, (index, frame, tag_labels, values, validated) in TRACES.items():
         trace = make_trace(
-            points[index], frames[frame], label, [tags[t] for t in tag_labels], values
+            points[index],
+            frames[frame],
+            label,
+            [tags[t] for t in tag_labels],
+            values,
+            marks=TRACE_MARKS.get(label, ()),
         )
         traces[label] = store_trace(pool, trace, validate=validated)
     written["Trace"] = list(traces.values())
@@ -409,10 +417,16 @@ def make_sample_on(
 
 
 def make_trace(
-    k: keypoint, frame, label: str, tags: Sequence[tag_entry], values: Sequence[float]
+    k: keypoint,
+    frame,
+    label: str,
+    tags: Sequence[tag_entry],
+    values: Sequence[float],
+    marks: Sequence[int] = (),
 ) -> Trace:
     """An unstored ``Trace`` on keypoint ``k`` and ``frame`` (a ``dial_setting`` or a
-    ``knob_setting``), with one unstored step per value, as a computation would leave it.
+    ``knob_setting``), with one unstored step per value, as a computation would leave it, and
+    ``marks``, each written as a ``TraceMark`` row when it is stored.
     """
     return Trace(
         None,
@@ -421,6 +435,7 @@ def make_trace(
         label,
         tags=tags,
         steps=[TraceStep(None, i, v) for i, v in enumerate(values)],
+        marks=marks,
     )
 
 

@@ -54,7 +54,7 @@ from datastorekit.tests.real_store_fixtures import (
 
 # stands for a client's fingerprint_format. It is bumped, with a new golden file beside the old
 # one, when the neutral client's specs or its full store change what the fingerprint sees
-NEUTRAL_FORMAT = 1
+NEUTRAL_FORMAT = 2
 
 # the golden fingerprint of build_full_store() at (NEUTRAL_FORMAT, ENCODING_FORMAT); a golden file
 # is never rewritten
@@ -648,8 +648,8 @@ class TestTheFormatArgument(_FullStores):
             fingerprint_of(object(), "1")
 
     def test_another_format_moves_only_the_overall_digest(self):
-        other = fingerprint_of(self.baseline_inventory, 2)
-        self.assertEqual(other["fingerprint_format"], 2)
+        other = fingerprint_of(self.baseline_inventory, NEUTRAL_FORMAT + 1)
+        self.assertEqual(other["fingerprint_format"], NEUTRAL_FORMAT + 1)
         self.assertEqual(other["classes"], self.baseline["classes"])
         self.assertEqual(entries(other), entries(self.baseline))
         self.assertNotEqual(other["digest"], self.baseline["digest"])

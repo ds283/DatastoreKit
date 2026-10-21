@@ -312,7 +312,16 @@ class TestCoverageByDeclaration(unittest.TestCase):
         # the fields, counted, so that a field added to a declaration fails here until it is used
         self.assertEqual(
             [f.name for f in dataclasses.fields(InventorySpec)],
-            ["leaves", "parents", "tags", "values", "validated", "parent_sets"],
+            # extra_values added by extra-values prompt 01
+            [
+                "leaves",
+                "parents",
+                "tags",
+                "values",
+                "validated",
+                "parent_sets",
+                "extra_values",
+            ],
         )
         self.assertEqual(
             [f.name for f in dataclasses.fields(Parent)],

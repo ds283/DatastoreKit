@@ -15,7 +15,10 @@ The one schema builder, ``datastorekit/SQL/schema.py`` ``build_schema``.
   differs from the earlier ``schema_at_extraction-04a.json``, captured by prompt 04a in the same way
   and kept, only by the ``key_on_version`` of each record. The source repository's witnesses, the
   first of which was captured before its schema builder moved and witnessed a refactor that changed
-  nothing, are that repository's history of its own schema, and are not copied here.
+  nothing, are that repository's history of its own schema, and are not copied here. The current
+  witness is now ``schema_at_extra-values-01.json``, captured in the same way by prompt 01 of the
+  ``extra-values`` campaign; it differs from ``schema_at_extraction-06.json``, which is kept, only
+  by the ``TraceMark`` table, a further value table of ``Trace``.
 - **A registration of ``None``**: a factory whose ``register()`` returns ``None`` gets a record
   with no table, and no ``AttributeError``.
 
@@ -41,7 +44,7 @@ from datastorekit.tests.schema_description import (
 # and no inserter (extraction prompt 04a, U20). TestNoneRegistration covers such a class
 _factories = {n: f for n, f in _registered.items() if f.register() is not None}
 
-WITNESS = Path(__file__).resolve().parent / "data" / "schema_at_extraction-06.json"
+WITNESS = Path(__file__).resolve().parent / "data" / "schema_at_extra-values-01.json"
 
 
 def _witness_text() -> str:

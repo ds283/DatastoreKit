@@ -32,8 +32,8 @@ it):
 | ``Sample`` | sharded on ``k`` | ``validate_on_startup`` (each actor's prune); ``read_batch``; a ``cross_shard`` and ``nullable`` ``Parent``; a ``ParentSet`` |
 | ``Sample_tags`` | neither | the sharded class's tag association |
 | ``Sample_members`` | neither | the ``ParentSet``'s member table, named by foreign key, with no ``inventory_spec`` |
-| ``Trace`` | sharded on ``k`` | tags, values (``TraceStep``) and the validated flag the inventory reads; the polymorphic ``frame``, through ``Gadget``'s type map (prompt 04a) |
-| ``Trace_tags``, ``TraceStep`` | neither | ``Trace``'s tag association and value table (prompt 04a) |
+| ``Trace`` | sharded on ``k`` | tags, values (``TraceStep``) and the validated flag the inventory reads; the polymorphic ``frame``, through ``Gadget``'s type map (prompt 04a); a further value table (``TraceMark``) in ``extra_values`` (``extra-values`` prompt 01) |
+| ``Trace_tags``, ``TraceStep``, ``TraceMark`` | neither | ``Trace``'s tag association and value table (prompt 04a), and its further value table, written only for a Trace that carries marks (``extra-values`` prompt 01) |
 | ``Weave`` | sharded on ``k`` | tagged, with no validated flag and no values; a ``Trace`` of its shard; a nullable ``anchor``; a ``ParentSet`` (``strands``) (prompt 04a) |
 | ``Weave_tags``, ``Weave_members`` | neither | ``Weave``'s tag association, and its ``ParentSet``'s member table, with serials and nullable members (prompt 04a) |
 
@@ -92,6 +92,8 @@ factories = {
     "Trace": _f.Trace_factory,
     "Trace_tags": _f.Trace_tags_factory,
     "TraceStep": _f.TraceStep_factory,
+    # added by extra-values prompt 01
+    "TraceMark": _f.TraceMark_factory,
     "Weave": _f.Weave_factory,
     "Weave_tags": _f.Weave_tags_factory,
     "Weave_members": _f.Weave_members_factory,
@@ -154,6 +156,7 @@ drop_groups = {
         "Trace",
         "Trace_tags",
         "TraceStep",
+        "TraceMark",
         "Weave",
         "Weave_tags",
         "Weave_members",

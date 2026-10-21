@@ -209,7 +209,8 @@ class Trace(DatastoreObject):
     A sharded class, sharded on ``k`` (a ``keypoint``): tagged (``Trace_tags``), with value rows
     (``TraceStep``) and a validated flag, and a polymorphic parent (``frame``, a ``dial_setting``
     or a ``knob_setting``), as ``Gadget`` has. Unstored (``store_id`` None) until stored (added by
-    prompt 04a).
+    prompt 04a). ``marks``, a sequence of indices, is written as one ``TraceMark`` row each, a
+    further value table (added by ``extra-values`` prompt 01).
     """
 
     def __init__(
@@ -221,6 +222,7 @@ class Trace(DatastoreObject):
         tags: Sequence[tag_entry] = (),
         steps: Optional[List[TraceStep]] = None,
         validated: bool = False,
+        marks: Sequence[int] = (),
     ):
         super().__init__(store_id)
         self.k = k
@@ -229,6 +231,7 @@ class Trace(DatastoreObject):
         self.tags = list(tags)
         self.steps = list(steps) if steps is not None else []
         self.validated = validated
+        self.marks = list(marks)
 
 
 class Weave(DatastoreObject):

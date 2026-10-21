@@ -20,16 +20,20 @@ writes, and it needs no Ray.
 - ``validated``: the row's flag, or ``None`` where the class has no such column;
 - ``value_count``: the number of rows in the class's value table whose parent is this row, or
   ``None`` where the class has none. The value tables are counted, one ``GROUP BY`` per table per
-  shard, and never listed.
+  shard, and never listed;
+- ``extra_value_counts``: for each further value table the class's spec declares
+  (``InventorySpec.extra_values``), the number of its rows whose parent is this row, 0 where none,
+  counted as ``value_count`` is. It is empty, and then absent from ``as_json``, where the class
+  declares no extra table, so such a class's records are what they were before the field.
 
 A computed-values field can be added to ``Record`` later, beside these four and outside ``key``,
 without changing what they are.
 
 **Who defines identity.** Each factory declares its key, as data, in a static ``inventory_spec()``
 beside its existing ``inventory()``: an ``InventorySpec`` naming the leaf columns, the parent
-references and the association and value tables. A factory whose class is not in the inventory
-declares none (``SQLAFactoryBase.inventory_spec`` returns ``None``). This module does the reading,
-in ``read_records``.
+references, the association and value tables and any further value tables. A factory whose class
+is not in the inventory declares none (``SQLAFactoryBase.inventory_spec`` returns ``None``). This
+module does the reading, in ``read_records``.
 
 **Which classes, in which order.** The classes are those of the registry that declare a spec, and
 their order is derived from what the specs declare (``inventory_classes``): first the classes that
@@ -51,17 +55,18 @@ becomes ``float.hex`` of the value **as stored**; an integer, string, boolean or
 it is. The lookups match floats within 1e-7; the key records the stored bits.
 
 **Shards.** A sharded class is the union of every shard's records. A replicated class is read from
-every shard and compared on key, tags, validated flag and value count; its records are the
-lowest-serial shard's, and any shard that differs is a named problem (``replicated-divergence``).
-Which classes are replicated is what the store's primary records in its ``replicated_tables`` table
-(``ReadOnlyStore.replicated_tables``), not anything this module or its caller says. Nothing is
-repaired.
+every shard and compared on key, tags, validated flag, value count and extra value counts; its
+records are the lowest-serial shard's, and any shard that differs is a named problem
+(``replicated-divergence``). Which classes are replicated is what the store's primary records in
+its ``replicated_tables`` table (``ReadOnlyStore.replicated_tables``), not anything this module or
+its caller says. Nothing is repaired.
 
 **Named problems.** Each problem string starts with its name:
 
 - ``replicated-divergence``: a replicated class differs between shards;
 - ``duplicate``: two or more records of a class share a key and a tag set. All are kept;
-- ``orphan-value``: value rows whose parent row is not on their shard;
+- ``orphan-value``: value rows, of the value table or of a further value table, whose parent row
+  is not on their shard;
 - ``orphan-tag``: association rows whose parent row or whose tag is not on their shard;
 - ``unresolved-parent``: rows referencing a parent row that cannot be resolved. They are not
   records;
@@ -183,14 +188,21 @@ class Record:
     tags: Tuple[str, ...]
     validated: Optional[bool]
     value_count: Optional[int]
+    # each further value table the class's spec declares (InventorySpec.extra_values) -> the
+    # number of its rows naming this row, 0 where none; empty, and then not in as_json, where the
+    # class declares no extra table
+    extra_value_counts: Mapping[str, int] = field(default_factory=dict)
 
     def as_json(self) -> Dict[str, Any]:
-        return {
+        out = {
             "key": dict(self.key),
             "tags": list(self.tags),
             "validated": self.validated,
             "value_count": self.value_count,
         }
+        if len(self.extra_value_counts) > 0:
+            out["extra_value_counts"] = dict(self.extra_value_counts)
+        return out
 
     def canonical_json(self) -> str:
         return canonical_json(self.as_json())
@@ -293,7 +305,8 @@ class ParentSet:
 class InventorySpec:
     """What a factory's ``inventory_spec()`` declares: how its class's records are read. The
     fields are ``read_records``' keywords, and mean what they mean there; ``keywords()`` gives
-    them as such. A spec holds no connection and reads nothing."""
+    them as such (``extra_values``, the further value tables, among them). A spec holds no
+    connection and reads nothing."""
 
     leaves: Sequence[str] = ()
     parents: Mapping[str, Parent] = field(default_factory=dict)
@@ -301,6 +314,7 @@ class InventorySpec:
     values: Optional[Tuple[str, str]] = None
     validated: Optional[str] = None
     parent_sets: Mapping[str, ParentSet] = field(default_factory=dict)
+    extra_values: Mapping[str, str] = field(default_factory=dict)
 
     def keywords(self) -> Dict[str, Any]:
         """The spec as ``read_records``' keyword arguments."""
@@ -311,6 +325,7 @@ class InventorySpec:
             "values": self.values,
             "validated": self.validated,
             "parent_sets": self.parent_sets,
+            "extra_values": self.extra_values,
         }
 
     def dependencies(self) -> Tuple[str, ...]:
@@ -517,6 +532,7 @@ def read_records(
     values: Optional[Tuple[str, str]] = None,
     validated: Optional[str] = None,
     parent_sets: Optional[Mapping[str, ParentSet]] = None,
+    extra_values: Optional[Mapping[str, str]] = None,
 ) -> ShardRead:
     """
     Read one class's records from one shard, as its factory's ``inventory_spec`` declares them
@@ -530,6 +546,9 @@ def read_records(
       members;
     - ``tags``: ``(association table, its column naming this class's serial)``, or ``None``;
     - ``values``: ``(value table, its column naming this class's serial)``, or ``None``;
+    - ``extra_values``: further value table -> its column naming this class's serial, each counted
+      as ``values`` is, into the record's ``extra_value_counts``; ``None`` or empty where there
+      are none;
     - ``validated``: the name of the class's validated-flag column, or ``None`` where it has
       none. It is read into the record's ``validated``.
     """
@@ -637,18 +656,18 @@ def read_records(
                 )
             )
 
-    # the number of value rows under each parent: one GROUP BY, never a listing
-    counts: Dict[int, int] = {}
-    if values is not None:
-        value_table_name, parent_column = values
+    # the number of value rows under each parent: one GROUP BY per value table, never a listing
+    def _count_values(value_table_name: str, parent_column: str) -> Dict[int, int]:
+        """The rows of one value table under each serial on this shard; the rest are orphans."""
         value_table = tables[value_table_name]
         parent_col = value_table.c[parent_column]
+        found: Dict[int, int] = {}
         orphans: Dict[int, int] = {}
         for parent, n in conn.execute(
             sqla.select(parent_col, sqla.func.count()).group_by(parent_col)
         ):
             if parent in serials:
-                counts[parent] = n
+                found[parent] = n
             else:
                 orphans[parent] = n
         if len(orphans) > 0:
@@ -661,6 +680,16 @@ def read_records(
                     f"serials {_examples(orphans)}",
                 )
             )
+        return found
+
+    counts: Dict[int, int] = {}
+    if values is not None:
+        counts = _count_values(*values)
+    extra = dict(extra_values or {})
+    extra_counts: Dict[str, Dict[int, int]] = {
+        extra_table: _count_values(extra_table, extra[extra_table])
+        for extra_table in sorted(extra)
+    }
 
     # the member rows of each set of parents, grouped by the row that owns them: one read of each
     # member table, never one per row
@@ -771,6 +800,10 @@ def read_records(
                 else None
             ),
             value_count=counts.get(row.serial, 0) if values is not None else None,
+            extra_value_counts={
+                extra_table: found.get(row.serial, 0)
+                for extra_table, found in extra_counts.items()
+            },
         )
         out.append(
             (row.serial, record, mapping["timestamp"] if has_timestamp else None)
@@ -936,7 +969,8 @@ def inventory_classes(factories: Mapping[str, Any]) -> List[str]:
     dependencies have all been placed. So every class comes after every class it references.
 
     A spec whose dependency is not a class of the inventory, a polymorphic parent whose type
-    column is not one of its class's leaves, or a cycle, raises ``ValueError`` naming the classes.
+    column is not one of its class's leaves, a spec whose value table is also one of its
+    ``extra_values``, or a cycle, raises ``ValueError`` naming the classes.
     """
     specs = inventory_specs(factories)
     depends: Dict[str, Tuple[str, ...]] = {}
@@ -953,6 +987,11 @@ def inventory_classes(factories: Mapping[str, Any]) -> List[str]:
                     f"inventory_classes(): {name}.{field_name} is a polymorphic parent whose "
                     f"type column {parent.type_column} is not one of {name}'s leaves"
                 )
+        if spec.values is not None and spec.values[0] in spec.extra_values:
+            raise ValueError(
+                f"inventory_classes(): {name} names {spec.values[0]} both as its value table "
+                f"and in its extra_values"
+            )
         depends[name] = tuple(d for d in spec.dependencies() if d != name)
         if name in spec.dependencies():
             raise ValueError(f"inventory_classes(): {name} references itself")

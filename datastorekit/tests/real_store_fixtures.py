@@ -236,9 +236,10 @@ def _write_shard(
     missing_tables: Iterable[str],
     missing_columns: Mapping[str, Iterable[str]],
     extra_sql: Iterable[str] = (),
+    factories: Optional[Mapping[str, object]] = None,
 ) -> None:
     metadata = sqla.MetaData()
-    built = build_schema(metadata, _factories)
+    built = build_schema(metadata, _factories if factories is None else factories)
     missing_tables = set(missing_tables)
 
     engine = sqla.create_engine(f"sqlite:///{path}", future=True)
@@ -279,6 +280,7 @@ def build_real_store(
     missing_tables: Optional[Mapping[int, Iterable[str]]] = None,
     missing_columns: Optional[Mapping[int, Mapping[str, Iterable[str]]]] = None,
     extra_sql: Optional[Mapping[int, Iterable[str]]] = None,
+    factories: Optional[Mapping[str, object]] = None,
 ) -> RealStore:
     """
     Build a real store in ``directory`` (which must exist) and return it.
@@ -288,6 +290,8 @@ def build_real_store(
     shard ``n`` is created without; ``missing_columns[n][table]`` lists columns dropped from that
     table on shard ``n``. No row may be given for a missing table. ``extra_sql[n]`` lists SQL
     statements run on shard ``n`` last, e.g. to add a column or a table the code does not declare.
+    ``factories`` is the registry each shard's schema is built from, the neutral client's when
+    ``None``; the primary's table lists are the neutral registry's either way.
     """
     replicated = copy.deepcopy(REPLICATED_ROWS if replicated is None else replicated)
     sharded = copy.deepcopy(SHARDED_ROWS if sharded is None else sharded)
@@ -317,6 +321,7 @@ def build_real_store(
             missing_tables.get(serial, ()),
             missing_columns.get(serial, {}),
             extra_sql.get(serial, ()),
+            factories,
         )
 
     _write_primary(primary, shard_files, shard_keys)
@@ -593,6 +598,14 @@ def _full_shard0() -> RowSet:
         _tags("Trace_tags", "trace_serial", 4, (1,)),
         _values("TraceStep", "trace_serial", 3, ((31, 1), (32, 2))),
         _values("TraceStep", "trace_serial", 4, ((41, 1),)),
+        # two marks on Trace 3, a further value table (added by extra-values prompt 01); Trace 4
+        # carries none
+        {
+            "TraceMark": [
+                {"serial": 1, "trace_serial": 3, "mark_index": 0},
+                {"serial": 2, "trace_serial": 3, "mark_index": 1},
+            ]
+        },
         # Weave 1 shares its serial with Trace 1, and carries different tags, so reading its tags
         # from the wrong association table is visible
         {
