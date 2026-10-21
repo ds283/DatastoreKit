@@ -1,8 +1,8 @@
 # Log 01 — a spec counts more than one value table
 
-**Subject:** Let an inventory spec count more than one value table · **Commit:** this commit ·
-**Date:** 2026-10-21 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and untagged; not
-yet reviewed.
+**Subject:** Let an inventory spec count more than one value table · **Commit:** `5475cef` ·
+**Date:** 2026-10-21 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and untagged;
+reviewed 2026-10-21 (the board's §1).
 
 A factory's `InventorySpec` can now name further value tables, `extra_values` (table → its column
 naming this class's serial), and each record of such a class carries `extra_value_counts` (table →
@@ -46,9 +46,9 @@ its conventions. §2 classifies each.
 
 ## 1. What shipped
 
-Line numbers are this commit's.
+Line numbers are `5475cef`'s.
 
-### 1.1 `datastorekit/store_inventory.py` (§2.1, U1), +55 −16
+### 1.1 `datastorekit/store_inventory.py` (§2.1, U1), +57 −18
 
 - **`Record`** (`:183-215`): a last field `extra_value_counts: Mapping[str, int] =
   field(default_factory=dict)` (`:194`), under a comment (`:191-193`) saying what it holds and that
@@ -514,7 +514,7 @@ also errored test 4. That is more than (i) describes. The recorded (i) (§5) cou
 reports orphans in `values`' words; under it only `test_value_tables_are_only_counted` fails, on a
 `TraceMark` statement.
 
-**D11. One docstring line reflowed** — UNINTENDED DRIFT, corrected before this commit. My edit
+**D11. One docstring line reflowed** — UNINTENDED DRIFT, corrected before `5475cef`. My edit
 of the "Who defines identity" paragraph of `store_inventory.py`'s docstring had left a
 120-character line (`:34`); the paragraph was reflowed to the file's width, the line count
 unchanged. Found by a length scan before committing; the suite at both ends, the port check,
@@ -678,7 +678,7 @@ datastorekit.tests.test_neutral_client` (91 tests), the copy's own `datastorekit
 this log was written, each diff was extracted from it (`<scratch>/scripts/extract_diffs.py`),
 found byte-identical to the patch applied, and checked again with `git apply --check`, then
 applied and checked with `git apply -R --check`, against a fresh copy of `<scratch>/exp-final2`,
-the tree this commit holds under `datastorekit/` and `docs/` (§5.10). A subtest failure is counted
+the tree `5475cef` holds under `datastorekit/` and `docs/` (§5.10). A subtest failure is counted
 once per subtest. A first round, on copies of `<scratch>/exp-01` (the tree before D9 and D11,
 whose `store_inventory.py` differed only in D11's docstring line), gave the same failures, test
 for test, but for (i)'s first form (D10).
@@ -963,7 +963,7 @@ None opened, none closed. `docs/OPEN_ISSUES.md` is unchanged at **4 open**.
 
 ## 8. State handed to the next prompt
 
-- `HEAD` is this commit, on `main`, unpushed; `origin/main` is `38ebb9f`. No tag was made; seven
+- `HEAD` is `5475cef`, on `main`, unpushed; `origin/main` is `38ebb9f`. No tag was made; seven
   tags, `v0.1.0` … `v0.4.0`. `pyproject.toml` is at `0.4.0`.
 - After 01 (README §4): `InventorySpec.extra_values` and `Record.extra_value_counts`;
   `ENCODING_FORMAT` 1 and its paragraph; the neutral client's `TraceMark`; the witness
