@@ -1,8 +1,9 @@
 # extra-values campaign — implementation state
 
-**Last updated:** 2026-10-21 · **Status: IN PROGRESS — 1 of 2 prompts written (01), 1 landed (01,
+**Last updated:** 2026-10-21 · **Status: IN PROGRESS — 2 of 2 prompts written, 1 landed (01,
 `5475cef`, reviewed; CI green at both ends, run 39680233763); U2 the user's ruling 2026-10-21; U1, U3–U5 taken 2026-10-21, as
-recommended; 02 is written after 01's review.**
+recommended, U5 amended by the user the same day; 02 is written and ready to be dispatched; one
+issue open, assigned to 02.**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** no issue. It carries out the user's request of 2026-10-21, from SI's brief (README §0) ·
@@ -22,14 +23,14 @@ recommended; 02 is written after 01's review.**
 | **U2** `ENCODING_FORMAT` | stays 1; a paragraph after the comment's last sentence says item 1 is read by the rule above it, and why an omitted-when-empty field is not a bump; contract §9.8 states it | **the user's ruling** 2026-10-21 |
 | **U3** the neutral client declares it | `TraceMark` under `Trace`, declared in Trace's spec, written for `trace-one` and two rows in the full store; witness `schema_at_extra-values-01.json`; `NEUTRAL_FORMAT` 2 and golden `store_fingerprint-neutral-2-encoding-1.json` beside the format-1 golden, which is kept as the compatibility test; the test literals that name what changed | **taken** 2026-10-21 |
 | **U4** the tests | `tests/test_inventory_extra_values.py`, eight tests: compatibility against the format-1 golden, counts, two tables, orphans, replicated divergence, the fingerprint, the refusal, `dependent_tables`; `build_real_store` taking `factories`; no Ray | **taken** 2026-10-21 |
-| **U5** the shape, release and adoption | two prompts; `v0.5.0`, minor (added API); SI adopts it in a pin prompt of its own; ChamPBH and SGK need nothing, may stay, recorded fingerprints valid | **taken** 2026-10-21 (needed by 02) |
+| **U5** the shape, release and adoption | two prompts; `v0.5.0`, minor (added API); SI adopts it in a pin prompt of its own; ChamPBH and SGK may stay, recorded fingerprints valid; **amended**: a move needs one edit to each one's spec guard (README §0.3) | **taken** 2026-10-21 (needed by 02); **amended by the user** 2026-10-21 |
 
 ## 1. Prompts
 
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [A spec counts more than one value table](01-a-spec-counts-more-than-one-value-table.md) | `extra_values` and `extra_value_counts` (U1); the `ENCODING_FORMAT` comment (U2); the neutral client's `TraceMark`, witness, `NEUTRAL_FORMAT` 2 and golden (U3); the new test module and amended literals (U4); contract §9.8 | ✍️ yes, 2026-10-21 | ✅ 2026-10-21; reviewed; CI green at both ends (run 39680233763) | `5475cef` | [log](logs/01-a-spec-counts-more-than-one-value-table.md) |
-| 02 | Release `v0.5.0` (planned) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SI's saying what it does; ChamPBH's and SGK's that nothing changes); the tag after green CI (U5) | ⬜ | ⬜ | — | — |
+| 02 | [Release `v0.5.0`](02-release-v0.5.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SI's saying what it does; ChamPBH's and SGK's that nothing they call or hold changes, and the spec guard's one edit); G4's sentence; closes `[01-a-new-spec-field-moves-every-spec-guard-digest]`; the tag after green CI (U5) | ✍️ yes, 2026-10-21, against `c583c56` | ⬜ | — | — |
 
 **Planning note (2026-10-21, at `38ebb9f`).** The brief's five checks hold (README §0.1). One
 finding departs from it: `test_every_declaration_field_is_in_use` requires the neutral registry to
@@ -147,7 +148,25 @@ object, its commit and the SI addendum are given to the user.
 
 ## 3. Active and unresolved issues
 
-No issue is held on this board (2026-10-21: prompt 01 opened none).
+- **[01-a-new-spec-field-moves-every-spec-guard-digest]** — *opened 2026-10-21 by the
+  orchestrator, while writing 02; measured against 01's tree (`5475cef`) and the clients through
+  `git`. Assigned to 02.*
+  - **The defect.** U5 told ChamPBH and SGK that they "need nothing" to move to `v0.5.0`. Each has a
+    spec guard (`ObjectFactories/tests/test_fingerprint_format_guard.py`, at SGK `031bcb4` and
+    ChamPBH `7055532`), RunRegistryKit's recipe (its `docs/adoption/README.md` §6, `v0.2.0`), which
+    hashes each `InventorySpec` by walking `dataclasses.fields` and pins the digests per
+    `FINGERPRINT_FORMAT` (`config/fingerprint.py`'s `SPEC_DIGESTS`; SGK format 6, ChamPBH 3).
+    01's `extra_values` is a seventh field, so every plain spec gains `"extra_values": {}`.
+  - **Measured.** The recipe on the neutral registry: all 13 classes' digests differ between
+    `c8570e8` and `5475cef`; with `plain` leaving out an empty `extra_values`, only `Trace`'s,
+    which declares one. The same on two hand-built specs in the installed `v0.4.0` and `v0.5.0`
+    wheels: differing plain, equal with the condition.
+  - **Impact.** On moving its pin, each client's guard fails naming every class and says to bump
+    `FINGERPRINT_FORMAT`; a bump would move the format of every fingerprint it holds, for a
+    release that changes none of its records. No record or fingerprint moves, and SI (no guard) is
+    not affected. RunRegistryKit's recipe has the same exposure, in that repository.
+  - **Next step.** U5 as amended (README §0.3, §6.2): 02's SGK and ChamPBH addenda give the one
+    condition, and say not to bump the format for it. Closed by 02.
 
 ## 4. Resolved issues
 

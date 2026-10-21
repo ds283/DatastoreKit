@@ -5,7 +5,9 @@ StochasticInstantons session (§0). **Prompt 01 is written** (2026-10-21). U2 is
 of 2026-10-21; the user took U1 and U3–U5 as recommended the same day, and 01 is ready to be
 dispatched. Prompt 02, the release, is written after 01 has landed and been reviewed, against the
 tree 01 leaves. **Prompt 01 landed** 2026-10-21 (its
-[log](logs/01-a-spec-counts-more-than-one-value-table.md)), `5475cef`, and was reviewed the same day.
+[log](logs/01-a-spec-counts-more-than-one-value-table.md)), `5475cef`, and was reviewed the same day;
+CI passed on it at both ends. **Prompt 02 is written** (2026-10-21), after U5 was amended by the
+user the same day (§0.3).
 
 ## 0. Why this campaign exists
 
@@ -153,6 +155,29 @@ To be reported back to the SI session with the tag:
    read, so that the next editor does not have to decide it again.
 5. **Everything else the brief measured holds** (§0.1).
 
+### 0.3 Found while writing 02: every client's spec guard moves (2026-10-21)
+
+Measured at `c583c56`, through `git` only for the clients, while writing 02. U5 said ChamPBH and SGK
+"need nothing". That is not so for a client that **hashes its specs**:
+- SGK (`031bcb4`) and ChamPBH (`7055532`) each have a spec guard,
+  `ObjectFactories/tests/test_fingerprint_format_guard.py`, which is RunRegistryKit's recipe (its
+  `docs/adoption/README.md` §6, at its `v0.2.0`): `plain` turns each `InventorySpec` into JSON by
+  walking `dataclasses.fields`, and `config/fingerprint.py`'s `SPEC_DIGESTS` pins each class's
+  SHA-256 per `FINGERPRINT_FORMAT` (SGK 6, ChamPBH 3). SI has none;
+- under 01's tree every plain spec gains `"extra_values": {}`, so **every digest moves** though no
+  spec changed: all 13 of the neutral registry's, measured at `c8570e8` and at `5475cef`, and the
+  same for two hand-built specs in the installed `v0.4.0` and `v0.5.0` wheels. The guard then fails
+  naming every class and says to bump the format, which would move the format every fingerprint
+  the client holds is compared at;
+- **with one condition in `plain`, leaving out `extra_values` where it is empty, every digest is
+  `v0.4.0`'s**, and only a spec that declares an extra table moves (`Trace`, on the neutral
+  registry).
+
+No record and no fingerprint moves; §0's constraint holds. The defect is in what U5 told the clients.
+Opened as `[01-a-new-spec-field-moves-every-spec-guard-digest]` on the board, and settled by U5's
+amendment (§6.2): no package change; the SGK and ChamPBH addenda say what a move needs. The same
+condition belongs in RunRegistryKit's recipe, which is that repository's to amend.
+
 ## 1. Scope
 
 **In scope:**
@@ -183,7 +208,7 @@ To be reported back to the SI session with the tag:
 | # | Prompt | Covers | Status |
 |---|---|---|---|
 | 01 | [`01-a-spec-counts-more-than-one-value-table.md`](01-a-spec-counts-more-than-one-value-table.md) | `InventorySpec.extra_values` and `Record.extra_value_counts`, `as_json`'s conditional key, the counting and its orphans, the refusal (U1); the `ENCODING_FORMAT` comment (U2); the neutral client's `TraceMark`, the witness, `NEUTRAL_FORMAT` 2 and its golden (U3); `tests/test_inventory_extra_values.py` and the amended literals (U4); contract §9.8. | **written** 2026-10-21; U1–U4 taken; **landed** 2026-10-21, `5475cef` ([log](logs/01-a-spec-counts-more-than-one-value-table.md)); **reviewed** 2026-10-21 |
-| 02 | Release (planned) | `pyproject.toml`, `README.md`, `PROVENANCE.md`; dated addenda to `docs/adoption/` (SI's saying what it does; ChamPBH's and SGK's that nothing changes and their recorded fingerprints stay valid); both ends locally and in CI; **the tag** on its commit after green CI (U5). | planned; U5 taken; written after 01 is reviewed |
+| 02 | [`02-release-v0.5.0.md`](02-release-v0.5.0.md) | `pyproject.toml`, `README.md`, `PROVENANCE.md`; dated addenda to `docs/adoption/` (SI's saying what it does; ChamPBH's and SGK's that nothing they call or hold changes, and that a move needs one edit to their spec guard, §0.3); the extraction board's G4 sentence; closes `[01-a-new-spec-field-moves-every-spec-guard-digest]`; both ends locally and in CI; **the tag** on its commit after green CI (U5). | **written** 2026-10-21, against `c583c56`; U5 taken and amended (§0.3) |
 
 **Order.** 01 → 02. 02 releases what 01 leaves. Each is landed and reviewed on its own.
 
@@ -370,6 +395,16 @@ U3, the bump rule, is not reopened: U2 records how its item 1 is read.
     prompt.
 
   **Rejected:** one prompt for the change and the release; `v0.4.1`, treating added API as a fix.
+
+  **Amended 2026-10-21, by the user** (§0.3), in its fourth item: ChamPBH and SGK may stay on
+  `v0.4.0` or move, as before, but **a move needs one edit to each one's spec guard**: its `plain`
+  leaves out `extra_values` where it is empty, after which every pin holds at the same format. The
+  SGK and ChamPBH addenda say so, and that the format is not bumped for this. Every client is now on
+  `v0.4.0` (§0.3's commits), so the addenda give that as the starting pin. **Rejected:** moving
+  `extra_values` out of `InventorySpec` (a separate factory hook) so that no spec's fields change:
+  the guard would then miss a client that comes to declare an extra table, which does move its
+  fingerprints; letting the clients re-pin their digests at the same format, against their own
+  guards' rule.
 
 ## 7. Gates outside this repository
 

@@ -3,7 +3,7 @@
 One line per open issue, pointing at the board that holds it. The board is right if the two
 disagree. See `CLAUDE.md` for the maintenance rule.
 
-**Last updated:** 2026-10-12 · **4 open**, all on this repository's boards (§1.2).
+**Last updated:** 2026-10-21 · **5 open**, all on this repository's boards (§1.2, §1.4).
 
 ## 1. By campaign
 
@@ -29,3 +29,11 @@ the package. None is assigned to a campaign.
 `actor-names` prompt 01 closed the one issue assigned to it, on the `extraction` board (2026-10-10).
 
 None open (2026-10-11: `[02-closing-a-pool-can-start-ray]` was closed by `actor-names` prompt 01b).
+
+### 1.4 `extra-values` ([board](../prompts/extra-values/IMPLEMENTATION_STATE.md)): campaign in progress (`v0.5.0`)
+
+Assigned to its prompt 02.
+
+| Issue | Hook |
+|---|---|
+| `[01-a-new-spec-field-moves-every-spec-guard-digest]` | A client's spec guard that walks a spec's fields sees every digest move under `v0.5.0`; the SGK and ChamPBH addenda must give the one-condition edit |
