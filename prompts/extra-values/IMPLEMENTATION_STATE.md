@@ -1,7 +1,7 @@
 # extra-values campaign — implementation state
 
 **Last updated:** 2026-10-21 · **Status: IN PROGRESS — 1 of 2 prompts written (01), 1 landed (01,
-`5475cef`, reviewed); U2 the user's ruling 2026-10-21; U1, U3–U5 taken 2026-10-21, as
+`5475cef`, reviewed; CI green at both ends, run 39680233763); U2 the user's ruling 2026-10-21; U1, U3–U5 taken 2026-10-21, as
 recommended; 02 is written after 01's review.**
 
 **Campaign:** [`README.md`](README.md) ·
@@ -28,7 +28,7 @@ recommended; 02 is written after 01's review.**
 
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
-| 01 | [A spec counts more than one value table](01-a-spec-counts-more-than-one-value-table.md) | `extra_values` and `extra_value_counts` (U1); the `ENCODING_FORMAT` comment (U2); the neutral client's `TraceMark`, witness, `NEUTRAL_FORMAT` 2 and golden (U3); the new test module and amended literals (U4); contract §9.8 | ✍️ yes, 2026-10-21 | ✅ 2026-10-21; reviewed | `5475cef` | [log](logs/01-a-spec-counts-more-than-one-value-table.md) |
+| 01 | [A spec counts more than one value table](01-a-spec-counts-more-than-one-value-table.md) | `extra_values` and `extra_value_counts` (U1); the `ENCODING_FORMAT` comment (U2); the neutral client's `TraceMark`, witness, `NEUTRAL_FORMAT` 2 and golden (U3); the new test module and amended literals (U4); contract §9.8 | ✍️ yes, 2026-10-21 | ✅ 2026-10-21; reviewed; CI green at both ends (run 39680233763) | `5475cef` | [log](logs/01-a-spec-counts-more-than-one-value-table.md) |
 | 02 | Release `v0.5.0` (planned) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SI's saying what it does; ChamPBH's and SGK's that nothing changes); the tag after green CI (U5) | ⬜ | ⬜ | — | — |
 
 **Planning note (2026-10-21, at `38ebb9f`).** The brief's five checks hold (README §0.1). One
@@ -123,6 +123,16 @@ this itself).
 
 *Observations, none an issue.* The agent's four (log §6) stand. The agent made its own constraints
 file from the cache; it did not read the orchestrator's scratch.
+
+*CI (2026-10-21).* With the user's approval, `main` was pushed, fast-forwarding `origin/main`
+from `38ebb9f` to `dde3201` (`d401e84`, `3e6d550`, `5475cef` and the review's records). The
+workflow ran on `dde3201`, [run 39680233763](https://github.com/ds283/DatastoreKit/actions/runs/39680233763),
+the first CI run on 01's code: **both ends passed**. `suite (low)`: Python 3.12.15 / Ray 2.43.0 /
+SQLAlchemy 2.0.39, SQLite 3.45.1, `Ran 538 tests … OK`, 0 `ResourceWarning` lines, and `black`
+"79 files would be left unchanged". `suite (high)`: Python 3.13.16 / Ray 2.55.1 / SQLAlchemy
+2.0.46, SQLite 3.45.1, `Ran 538 tests … OK`, 4 `ResourceWarning` lines (two unclosed SQLite
+connections reported from SQLAlchemy: timing, the note's correction 4). Nothing is tagged; 02
+(`v0.5.0`) is written next, against the tree 01 left.
 
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
