@@ -1,8 +1,8 @@
 # Log 02 — release `v0.5.0`
 
-**Subject:** Make the package ready to be released as v0.5.0 · **Commit:** this commit ·
-**Date:** 2026-10-21 · **Model:** Claude Opus 5.5 · **Result:** landed; unpushed and untagged;
-awaiting the orchestrator's review.
+**Subject:** Make the package ready to be released as v0.5.0 · **Commit:** `f47b9a2` ·
+**Date:** 2026-10-21 · **Model:** Claude Opus 5.5 · **Result:** landed; untagged;
+reviewed 2026-10-21 (the board's §1).
 
 The package is ready to be released as **`v0.5.0`** (U5, as amended). `pyproject.toml` says
 `0.5.0`, and nothing else in it changed. `README.md` has a `v0.5.0` status paragraph, the `v0.5.0`
@@ -378,13 +378,13 @@ Every run in the foreground, its output in `<scratch>/out/`, the verdict grepped
 |---|---|---|---|---|
 | `venv/` (3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39, SQLite 3.53.4) | at the start, before any change | `Ran 538 tests in 107.299s` `OK` | 0 | 0.4.0 |
 | `venv/` | after `pyproject.toml` and the reinstall | `Ran 538 tests in 101.701s` `OK` | 0 | 0.5.0 |
-| `<scratch>/venv-high` (3.13.16 / 2.55.1 / 2.0.46, SQLite 3.53.4, `setuptools` 84.0.0), `git archive d8a497c` (every document of this commit's but the records) installed editable `--no-deps --no-build-isolation` | after the documents | `Ran 538 tests in 100.415s` `OK` | 4 | 0.5.0 |
+| `<scratch>/venv-high` (3.13.16 / 2.55.1 / 2.0.46, SQLite 3.53.4, `setuptools` 84.0.0), `git archive d8a497c` (every document of `f47b9a2`'s but the records) installed editable `--no-deps --no-build-isolation` | after the documents | `Ran 538 tests in 100.415s` `OK` | 4 | 0.5.0 |
 | `venv/` | after the records, before the commit | `Ran 538 tests in 103.366s` `OK` | 0 | 0.5.0 |
 
 The count is **538** before and after, at both ends. The four high-end lines are two warnings,
 unclosed SQLite connections reported from SQLAlchemy (`sql/type_api.py` and `sql/selectable.py:3160`),
 each with its tracemalloc hint: timing (the note's facts; `actor-names` log 01, correction 8).
-`datastorekit/` at `d8a497c` is this commit's.
+`datastorekit/` at `d8a497c` is `f47b9a2`'s.
 
 ### 5.2 The checks (§4.2)
 
@@ -1070,7 +1070,7 @@ file and each earlier addendum (`v0.2.1` at `33778b0`, `v0.2.2` at `6d8ee9a`, `v
 `0de2b16`, `v0.3.0` at `2f5417e`, `v0.4.0` at `c8570e8`), every own-file citation in that
 addendum's text as committed then (an explicit `docs/adoption/<file>:a-b`, a bare `:a-b` in its
 "Standing" or "Not superseded" paragraph, or an "all but `:a-b`" of its shift prose) is mapped by
-the rule this commit's addendum states (unchanged for a head line above the inserts; the appendix's
+the rule `f47b9a2`'s addendum states (unchanged for a head line above the inserts; the appendix's
 offset for an appendix line; otherwise the stated N, k + N, …) and by the true mapping, from `git
 diff -U0 <commit> -- <file>` against the tree (every hunk an addition), and its text then compared
 with its text now: **816 cited lines in the four files, 0 differ**; the three appendix lines,
@@ -1111,7 +1111,7 @@ ls-tree`, `git log` and `git cat-file -e`:
 1. Each diff below was made with `diff -u` of `pyproject.toml` before and after the one change,
    labelled `a/` and `b/`, and is recorded exactly as applied (`<scratch>/breaks/`).
 2. Each has its own export: `git archive 79294bf` (whose `pyproject.toml` and `datastorekit/` are
-   this commit's) into `<scratch>/exports/break-a` and `break-b`, and `git archive v0.4.0` into
+   `f47b9a2`'s) into `<scratch>/exports/break-a` and `break-b`, and `git archive v0.4.0` into
    `break-c`.
 3. In each export, `git apply --check` passed on the clean export, `git apply` applied it, and
    `git apply -R --check` passed on the applied one. (a) and (b) were checked the same way again on
@@ -1337,12 +1337,12 @@ a version number with no change behind it.
 
 ## 9. State handed to the next prompt
 
-- `HEAD` is this commit, unpushed and untagged. The tree is clean apart from the ignored entries at
+- `HEAD` is `f47b9a2`, unpushed and untagged. The tree is clean apart from the ignored entries at
   the start. `venv/` has `datastorekit 0.5.0` installed editable from this checkout, its
   `egg-info` removed.
 - **Not pushed, not tagged.** The local `origin/main` is `bda6dbc`, and the tags are `v0.1.0` to
   `v0.4.0`.
-- **After the review**, this commit is pushed as `main`. CI's run on it is the tag's gate: `v0.5.0`
+- **After the review**, `f47b9a2` is pushed as `main`. CI's run on it is the tag's gate: `v0.5.0`
   is made on it, annotated, only once CI passes there at both ends (U23, U28). If CI fails, a fix
   prompt lands first, and no tag is made on a commit whose CI is red.
 - **The suite is 538** in `venv/` and at the high end. `compare_ported_tests.py`: 20 modules and one

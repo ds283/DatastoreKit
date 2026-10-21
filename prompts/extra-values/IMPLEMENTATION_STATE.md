@@ -1,8 +1,8 @@
 # extra-values campaign — implementation state
 
 **Last updated:** 2026-10-21 · **Status: IN PROGRESS — 2 of 2 prompts written, 2 landed (01,
-`5475cef`, reviewed; CI green at both ends, run 39680233763; 02, this commit, `v0.5.0` ready to be
-tagged once CI passes on it at both ends); U2 the user's ruling 2026-10-21; U1, U3–U5 taken
+`5475cef`, reviewed; CI green at both ends, run 39680233763; 02, `f47b9a2`, reviewed, `v0.5.0` ready to
+be tagged on it once CI passes there at both ends); U2 the user's ruling 2026-10-21; U1, U3–U5 taken
 2026-10-21, as recommended, U5 amended by the user the same day; no issue open
 (`[01-a-new-spec-field-moves-every-spec-guard-digest]` closed by 02).**
 
@@ -31,7 +31,7 @@ tagged once CI passes on it at both ends); U2 the user's ruling 2026-10-21; U1, 
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [A spec counts more than one value table](01-a-spec-counts-more-than-one-value-table.md) | `extra_values` and `extra_value_counts` (U1); the `ENCODING_FORMAT` comment (U2); the neutral client's `TraceMark`, witness, `NEUTRAL_FORMAT` 2 and golden (U3); the new test module and amended literals (U4); contract §9.8 | ✍️ yes, 2026-10-21 | ✅ 2026-10-21; reviewed; CI green at both ends (run 39680233763) | `5475cef` | [log](logs/01-a-spec-counts-more-than-one-value-table.md) |
-| 02 | [Release `v0.5.0`](02-release-v0.5.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SI's saying what it does; ChamPBH's and SGK's that nothing they call or hold changes, and the spec guard's one edit); G4's sentence; closes `[01-a-new-spec-field-moves-every-spec-guard-digest]`; the tag after green CI (U5) | ✍️ yes, 2026-10-21, against `c583c56` | ✅ 2026-10-21; untagged, unpushed | this commit | [log](logs/02-release-v0.5.0.md) |
+| 02 | [Release `v0.5.0`](02-release-v0.5.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SI's saying what it does; ChamPBH's and SGK's that nothing they call or hold changes, and the spec guard's one edit); G4's sentence; closes `[01-a-new-spec-field-moves-every-spec-guard-digest]`; the tag after green CI (U5) | ✍️ yes, 2026-10-21, against `c583c56` | ✅ 2026-10-21; reviewed; untagged | `f47b9a2` | [log](logs/02-release-v0.5.0.md) |
 
 **Planning note (2026-10-21, at `38ebb9f`).** The brief's five checks hold (README §0.1). One
 finding departs from it: `test_every_declaration_field_is_in_use` requires the neutral registry to
@@ -152,11 +152,70 @@ prompt's table. `[01-a-new-spec-field-moves-every-spec-guard-digest]` is closed 
 pushed or tagged, no client or RunRegistryKit was written, run or opened, and Ray was not started.
 See the [log](logs/02-release-v0.5.0.md).
 
+**Orchestrator review of prompt 02 (2026-10-21).** Dispatched from `62c69d7` to one Opus
+subagent, with the note's three corrections and its additions. Reviewed against its commit
+`f47b9a2`, with nothing landed after it. **Every check of the note's §3 passed**, and acceptance
+1–7 are met. No stop condition fired. Nothing was pushed or tagged; `origin/main` is `bda6dbc`,
+and the tags are `v0.1.0` to `v0.4.0` only.
+
+*At dispatch.* The tree was clean, one worktree, at `62c69d7`; `origin/main` `bda6dbc`. The
+baseline was 01's review's (538 in `venv/`, port check 0, `black` 79). While writing the note the
+orchestrator built the release wheel and `v0.4.0`'s offline and probed both installed, and built
+breakages (b) and (c): (b) 79 entries, 53 under `tests/`; (c) a `0.5.0` wheel with `v0.4.0`'s
+`RECORD`. It found that each `v0.4.0` head line is followed by a blank, so k = 5 and 6
+(correction 1), and that the `v0.4.0` addenda's statements of each client's pin are now history
+(correction 2). The clients (SGK `031bcb4`, CPBH `7055532`, SI `f5f395b`) and RunRegistryKit
+(`33a2cd2`) were clean and unchanged at writing, at dispatch and at the review.
+
+*The checks.*
+1. **Scope.** `f47b9a2` touches the prompt's §7 files only. The diff over `datastorekit/`,
+   `docs/client-contract.md`, `docs/extraction-verification.md`, `docs/extraction/`, `.github/`,
+   `CLAUDE.md` and `orchestrator/` is empty; `pyproject.toml`'s is the version line alone.
+2. **The release.** Rebuilt offline from `git archive f47b9a2` and `git archive v0.4.0`: 105,087
+   and 104,424 bytes, 26 entries each, none under `tests/`; of the 21 `RECORD` lines, the two the
+   prompt names differ and 19 are equal. The log's probe (SHA-256 `c2f82e83…`, as the log says),
+   run with `python -I` from outside the repository in fresh venvs of each wheel, gave the log's
+   output in every field at both versions, `file` aside: seven spec fields against six; a record
+   without counts with `v0.4.0`'s keys and canonical line; the hand-built inventory's digest
+   `d493e0fe…` in both; the guard's plain digests differing, and equal with the condition; the
+   refusal. A fresh import loads no Ray; `import datastorekit.tests` fails; `sharded_store --help`
+   exits 0.
+3. **The breakages.** (a)–(c) extracted from the log, each passing `git apply --check` and, once
+   applied, `-R --check`, and built: (a) a `0.4.0` wheel; (b) 79 entries, 53 under `tests/`; (c) a
+   `0.5.0` wheel whose `RECORD` equals `v0.4.0`'s and whose `InventorySpec` has six fields. Each as
+   the log records.
+4. **The README and `PROVENANCE.md`**, by reading: as §2.2 and §2.3; §9.8's anchor resolves;
+   nothing says `v0.5.0` is tagged.
+5. **The addenda**, by reading. SGK's and ChamPBH's give the one condition as code, say the format
+   is not bumped, citing each client's own rule, and mark one **Advice:**; SI's gives the
+   declaration, what then holds, what of SI's moves, and §0.2's departures. Their client
+   citations, read through `git show` at `031bcb4`, `7055532` and `f5f395b`, hold. The shifts: 15
+   lines the `v0.4.0` addenda cite, across the four files, are each at `c8570e8`'s line + 5
+   (README) or + 6 (checklists).
+6. **Additive.** `git diff` of `docs/adoption/` has no `-` line.
+7. **The gate.** G4's row is the row as it was with one dated sentence appended; G1–G3 and the
+   rest of that board unchanged.
+8. **The issue.** In §4 with its closing line; its index row gone; the index **4**, dated
+   2026-10-21.
+9. **Both ends.** `Ran 538 tests … OK` in `venv/` (0 `ResourceWarning` lines, `pip show` `0.5.0`
+   editable, no `egg-info` left) and in the review's high-end venv with `f47b9a2`'s export
+   installed editable (4 lines, timing). Port check: "OK: 20 module(s) … 1 test(s) declared not
+   ported"; `black`: 79 files.
+10. **Nothing left behind.** No Ray process; seven tags; `origin` unchanged; no `build/`, `dist/`
+    or `*.egg-info` in the checkout.
+
+*Residue fixed in the review's records commit.* "this commit" → `f47b9a2` on the board, in the
+log, in the README and in `prompts/INDEX.md`; "reviewed" for 02 there; the notes line.
+
+*Observations, none an issue.* The agent's six (log §7) stand. Its second, whether G4 holds now
+that SI pins `v0.4.0` (SI `1b1ca6d`), is for the user, when SI's adoption is accepted against its
+checklist §9.
+
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
 
 **Orchestrator notes:** [`orchestrator/prompt-01.md`](orchestrator/prompt-01.md) (`3e6d550`),
-used for 01.
+used for 01; [`orchestrator/prompt-02.md`](orchestrator/prompt-02.md) (`62c69d7`), used for 02.
 
 ## 2. Gates outside this repository
 
@@ -188,7 +247,7 @@ None open.
     not affected. RunRegistryKit's recipe has the same exposure, in that repository.
   - **Next step.** U5 as amended (README §0.3, §6.2): 02's SGK and ChamPBH addenda give the one
     condition, and say not to bump the format for it. Closed by 02.
-  - **Closed (2026-10-21, 02):** by `extra-values` prompt 02, this commit. The SGK and ChamPBH
+  - **Closed (2026-10-21, 02):** by `extra-values` prompt 02, `f47b9a2`. The SGK and ChamPBH
     addenda ([`docs/adoption/secondarygwkit.md`](../../docs/adoption/secondarygwkit.md#addendum-v050-extra-values-prompt-02-2026-10-21),
     [`docs/adoption/champbh.md`](../../docs/adoption/champbh.md#addendum-v050-extra-values-prompt-02-2026-10-21))
     each say that a move to `v0.5.0` changes nothing the client calls or holds, that its spec guard
