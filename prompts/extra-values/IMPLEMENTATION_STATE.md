@@ -1,8 +1,8 @@
 # extra-values campaign — implementation state
 
 **Last updated:** 2026-10-21 · **Status: IN PROGRESS — 2 of 2 prompts written, 2 landed (01,
-`5475cef`, reviewed; CI green at both ends, run 39680233763; 02, `f47b9a2`, reviewed, `v0.5.0` ready to
-be tagged on it once CI passes there at both ends); U2 the user's ruling 2026-10-21; U1, U3–U5 taken
+`5475cef`, reviewed; CI green at both ends, run 39680233763; 02, `f47b9a2`, reviewed, CI green at both ends on its tree, run 39729857177; `v0.5.0` ready to
+be tagged on it with the user's approval); U2 the user's ruling 2026-10-21; U1, U3–U5 taken
 2026-10-21, as recommended, U5 amended by the user the same day; no issue open
 (`[01-a-new-spec-field-moves-every-spec-guard-digest]` closed by 02).**
 
@@ -31,7 +31,7 @@ be tagged on it once CI passes there at both ends); U2 the user's ruling 2026-10
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [A spec counts more than one value table](01-a-spec-counts-more-than-one-value-table.md) | `extra_values` and `extra_value_counts` (U1); the `ENCODING_FORMAT` comment (U2); the neutral client's `TraceMark`, witness, `NEUTRAL_FORMAT` 2 and golden (U3); the new test module and amended literals (U4); contract §9.8 | ✍️ yes, 2026-10-21 | ✅ 2026-10-21; reviewed; CI green at both ends (run 39680233763) | `5475cef` | [log](logs/01-a-spec-counts-more-than-one-value-table.md) |
-| 02 | [Release `v0.5.0`](02-release-v0.5.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SI's saying what it does; ChamPBH's and SGK's that nothing they call or hold changes, and the spec guard's one edit); G4's sentence; closes `[01-a-new-spec-field-moves-every-spec-guard-digest]`; the tag after green CI (U5) | ✍️ yes, 2026-10-21, against `c583c56` | ✅ 2026-10-21; reviewed; untagged | `f47b9a2` | [log](logs/02-release-v0.5.0.md) |
+| 02 | [Release `v0.5.0`](02-release-v0.5.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SI's saying what it does; ChamPBH's and SGK's that nothing they call or hold changes, and the spec guard's one edit); G4's sentence; closes `[01-a-new-spec-field-moves-every-spec-guard-digest]`; the tag after green CI (U5) | ✍️ yes, 2026-10-21, against `c583c56` | ✅ 2026-10-21; reviewed; CI green at both ends on its tree (run 39729857177, on `dfd45c4`); untagged | `f47b9a2` | [log](logs/02-release-v0.5.0.md) |
 
 **Planning note (2026-10-21, at `38ebb9f`).** The brief's five checks hold (README §0.1). One
 finding departs from it: `test_every_declaration_field_is_in_use` requires the neutral registry to
@@ -210,6 +210,20 @@ log, in the README and in `prompts/INDEX.md`; "reviewed" for 02 there; the notes
 *Observations, none an issue.* The agent's six (log §7) stand. Its second, whether G4 holds now
 that SI pins `v0.4.0` (SI `1b1ca6d`), is for the user, when SI's adoption is accepted against its
 checklist §9.
+
+*CI (2026-10-22).* With the user's approval, `main` was pushed, fast-forwarding `origin/main` from
+`bda6dbc` to `dfd45c4` (`62c69d7`, `f47b9a2` and the review's records). GitHub runs the workflow on
+a push's head only, so it ran on `dfd45c4`, not on 02's commit `f47b9a2`:
+[run 39729857177](https://github.com/ds283/DatastoreKit/actions/runs/39729857177), **both ends
+passed**. `suite (low)`: Python 3.12.15 / Ray 2.43.0 / SQLAlchemy 2.0.39, SQLite 3.45.1,
+`Ran 538 tests … OK`, 0 `ResourceWarning` lines, and `black` "79 files would be left unchanged".
+`suite (high)`: Python 3.13.16 / Ray 2.55.1 / SQLAlchemy 2.0.46, SQLite 3.45.1, `Ran 538 tests …
+OK`, 4 `ResourceWarning` lines (timing). **The user's ruling (2026-10-22): this run is the gate for
+`v0.5.0` on `f47b9a2`**, since `git diff --stat f47b9a2 dfd45c4 -- . ':!prompts'` is empty: the
+package, its tests, `pyproject.toml` and the workflow the run tested are `f47b9a2`'s, byte for byte,
+and the four files that differ are this campaign's records. The rule of extraction U23 and U28, CI
+green on the tree the tag marks, holds in substance; a workflow dispatched on `f47b9a2` itself was
+offered and not taken. The tag is still made on `f47b9a2`, not on a records commit.
 
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
