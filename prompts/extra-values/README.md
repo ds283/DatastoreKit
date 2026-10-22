@@ -8,8 +8,9 @@ tree 01 leaves. **Prompt 01 landed** 2026-10-21 (its
 [log](logs/01-a-spec-counts-more-than-one-value-table.md)), `5475cef`, and was reviewed the same day;
 CI passed on it at both ends. **Prompt 02 is written** (2026-10-21), after U5 was amended by the
 user the same day (§0.3). **Prompt 02 landed** 2026-10-21 (its [log](logs/02-release-v0.5.0.md)),
-`f47b9a2`, and was reviewed the same day: the package is ready to be released as `v0.5.0`, untagged, and
-`[01-a-new-spec-field-moves-every-spec-guard-digest]` is closed.
+`f47b9a2`, and was reviewed the same day, and `[01-a-new-spec-field-moves-every-spec-guard-digest]`
+is closed. **`v0.5.0` was tagged** on `f47b9a2` (tag object `6a6809d`) on 2026-10-22, after CI
+passed at both ends on its tree (run 39729857177), and **the campaign is closed**.
 
 ## 0. Why this campaign exists
 
@@ -210,7 +211,7 @@ condition belongs in RunRegistryKit's recipe, which is that repository's to amen
 | # | Prompt | Covers | Status |
 |---|---|---|---|
 | 01 | [`01-a-spec-counts-more-than-one-value-table.md`](01-a-spec-counts-more-than-one-value-table.md) | `InventorySpec.extra_values` and `Record.extra_value_counts`, `as_json`'s conditional key, the counting and its orphans, the refusal (U1); the `ENCODING_FORMAT` comment (U2); the neutral client's `TraceMark`, the witness, `NEUTRAL_FORMAT` 2 and its golden (U3); `tests/test_inventory_extra_values.py` and the amended literals (U4); contract §9.8. | **written** 2026-10-21; U1–U4 taken; **landed** 2026-10-21, `5475cef` ([log](logs/01-a-spec-counts-more-than-one-value-table.md)); **reviewed** 2026-10-21 |
-| 02 | [`02-release-v0.5.0.md`](02-release-v0.5.0.md) | `pyproject.toml`, `README.md`, `PROVENANCE.md`; dated addenda to `docs/adoption/` (SI's saying what it does; ChamPBH's and SGK's that nothing they call or hold changes, and that a move needs one edit to their spec guard, §0.3); the extraction board's G4 sentence; closes `[01-a-new-spec-field-moves-every-spec-guard-digest]`; both ends locally and in CI; **the tag** on its commit after green CI (U5). | **written** 2026-10-21, against `c583c56`; U5 taken and amended (§0.3); **landed** 2026-10-21, `f47b9a2` ([log](logs/02-release-v0.5.0.md)); **reviewed** 2026-10-21; untagged |
+| 02 | [`02-release-v0.5.0.md`](02-release-v0.5.0.md) | `pyproject.toml`, `README.md`, `PROVENANCE.md`; dated addenda to `docs/adoption/` (SI's saying what it does; ChamPBH's and SGK's that nothing they call or hold changes, and that a move needs one edit to their spec guard, §0.3); the extraction board's G4 sentence; closes `[01-a-new-spec-field-moves-every-spec-guard-digest]`; both ends locally and in CI; **the tag** on its commit after green CI (U5). | **written** 2026-10-21, against `c583c56`; U5 taken and amended (§0.3); **landed** 2026-10-21, `f47b9a2` ([log](logs/02-release-v0.5.0.md)); **reviewed** 2026-10-21; **tagged `v0.5.0`** 2026-10-22 (tag object `6a6809d`) |
 
 **Order.** 01 → 02. 02 releases what 01 leaves. Each is landed and reviewed on its own.
 

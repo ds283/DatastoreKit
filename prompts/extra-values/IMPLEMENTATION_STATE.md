@@ -1,10 +1,10 @@
 # extra-values campaign — implementation state
 
-**Last updated:** 2026-10-21 · **Status: IN PROGRESS — 2 of 2 prompts written, 2 landed (01,
-`5475cef`, reviewed; CI green at both ends, run 39680233763; 02, `f47b9a2`, reviewed, CI green at both ends on its tree, run 39729857177; `v0.5.0` ready to
-be tagged on it with the user's approval); U2 the user's ruling 2026-10-21; U1, U3–U5 taken
-2026-10-21, as recommended, U5 amended by the user the same day; no issue open
-(`[01-a-new-spec-field-moves-every-spec-guard-digest]` closed by 02).**
+**Last updated:** 2026-10-22 · **Status: CLOSED 2026-10-22 — 2 of 2 prompts written and landed (01,
+`5475cef`; 02, `f47b9a2`), each reviewed; `v0.5.0` made, annotated, on `f47b9a2` (tag object
+`6a6809d`) after CI passed at both ends on its tree (run 39729857177, on `dfd45c4`, the user's
+ruling); U1–U5 taken 2026-10-21 (U2 the user's ruling; U5 amended by the user the same day); no
+issue open (`[01-a-new-spec-field-moves-every-spec-guard-digest]` closed by 02).**
 
 **Campaign:** [`README.md`](README.md) ·
 **Owns:** no issue. It carries out the user's request of 2026-10-21, from SI's brief (README §0) ·
@@ -31,7 +31,7 @@ be tagged on it with the user's approval); U2 the user's ruling 2026-10-21; U1, 
 | # | Prompt | Covers | Written? | Landed? | Commit | Log |
 |---|---|---|---|---|---|---|
 | 01 | [A spec counts more than one value table](01-a-spec-counts-more-than-one-value-table.md) | `extra_values` and `extra_value_counts` (U1); the `ENCODING_FORMAT` comment (U2); the neutral client's `TraceMark`, witness, `NEUTRAL_FORMAT` 2 and golden (U3); the new test module and amended literals (U4); contract §9.8 | ✍️ yes, 2026-10-21 | ✅ 2026-10-21; reviewed; CI green at both ends (run 39680233763) | `5475cef` | [log](logs/01-a-spec-counts-more-than-one-value-table.md) |
-| 02 | [Release `v0.5.0`](02-release-v0.5.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SI's saying what it does; ChamPBH's and SGK's that nothing they call or hold changes, and the spec guard's one edit); G4's sentence; closes `[01-a-new-spec-field-moves-every-spec-guard-digest]`; the tag after green CI (U5) | ✍️ yes, 2026-10-21, against `c583c56` | ✅ 2026-10-21; reviewed; CI green at both ends on its tree (run 39729857177, on `dfd45c4`); untagged | `f47b9a2` | [log](logs/02-release-v0.5.0.md) |
+| 02 | [Release `v0.5.0`](02-release-v0.5.0.md) | the version, `README.md`, `PROVENANCE.md`, adoption addenda (SI's saying what it does; ChamPBH's and SGK's that nothing they call or hold changes, and the spec guard's one edit); G4's sentence; closes `[01-a-new-spec-field-moves-every-spec-guard-digest]`; the tag after green CI (U5) | ✍️ yes, 2026-10-21, against `c583c56` | ✅ 2026-10-21; reviewed; CI green at both ends on its tree (run 39729857177, on `dfd45c4`); tagged `v0.5.0` (tag object `6a6809d`) | `f47b9a2` | [log](logs/02-release-v0.5.0.md) |
 
 **Planning note (2026-10-21, at `38ebb9f`).** The brief's five checks hold (README §0.1). One
 finding departs from it: `test_every_declaration_field_is_in_use` requires the neutral registry to
@@ -225,6 +225,11 @@ and the four files that differ are this campaign's records. The rule of extracti
 green on the tree the tag marks, holds in substance; a workflow dispatched on `f47b9a2` itself was
 offered and not taken. The tag is still made on `f47b9a2`, not on a records commit.
 
+*The tag (2026-10-22).* With the user's approval, `v0.5.0` was made, annotated, on `f47b9a2` (tag
+object `6a6809d`), and pushed; `git ls-remote origin` gives `refs/tags/v0.5.0^{}` as `f47b9a2`,
+whose `pyproject.toml` says `0.5.0`. The extraction board's G4 records it. The campaign is closed in
+the commit that records this.
+
 **Legend.** ✍️ written · ⏸ held, with what it waits on · ⬜ not written / not landed ·
 ✅ landed.
 
@@ -233,8 +238,10 @@ used for 01; [`orchestrator/prompt-02.md`](orchestrator/prompt-02.md) (`62c69d7`
 
 ## 2. Gates outside this repository
 
-None of this campaign's own. SI's pin prompt waits on the tag (README §7). When it is made, its tag
-object, its commit and the SI addendum are given to the user.
+None of this campaign's own. SI's pin prompt waited on the tag (README §7). *(2026-10-22: the tag is
+made, `v0.5.0`, tag object `6a6809d` → `f47b9a2`; SI's addendum is
+[`docs/adoption/stochasticinstantons.md`](../../docs/adoption/stochasticinstantons.md#addendum-v050-extra-values-prompt-02-2026-10-21).
+Both given to the user for SI's pin prompt.)*
 
 ## 3. Active and unresolved issues
 
